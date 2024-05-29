@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]; then
+	echo "Usage: ngg [gpg encrypted file]"
+	exit 1
+fi
+
+date=$(date +"%Y%m%d_%H%M%S_gpg.txt")
+tmp_edit_file="/tmp/$date"
+
+if [ -f "$1" ]; then
+	gpg -o "$tmp_edit_file" -d "$1" ||
+		{
+			rm $tmp_edit_file
+			echo
+			echo "Wrong password"
+			exit 1
+		}
+fi
+
+nvim "$tmp_edit_file"
+
+tmp_encrypted_file="$tmp_edit_file.gpg"
+
+if [ -f "$tmp_edit_file" ]; then
+	gpg -o "$tmp_encrypted_file" -er tisorlawan@gmail.com "$tmp_edit_file"
+
+	if [ $? -eq 0 ]; then
+		echo "Success"
+		mv "$tmp_encrypted_file" "$1"
+	else
+		echo "Fail"
+	fi
+
+	rm "$tmp_edit_file"
+fi

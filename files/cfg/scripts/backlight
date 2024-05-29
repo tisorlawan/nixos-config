@@ -1,0 +1,45 @@
+#!/bin/sh
+
+if [ $# -ne 4 ]; then
+    echo "Invalid arguments" >&2
+    echo "Usage: backlight <file_current> <file_max> <'+'|'-'> <percentage_value>" >&2
+    echo "example: backlight /sys/class/backlight/intel_backlight/brightness /sys/class/backlight/intel_backlight/max_brightness + 10"
+    exit 1
+fi
+
+file=$1
+file_max=$2
+op=$3
+delta=$4
+
+if [ "$op" != "+" ] && [ "$op" != "-" ]; then
+    echo "Invalid operator. Must be +/-." >&2
+    exit 1
+fi
+
+number_re='^[0-9]+$'
+if ! [[ "$delta" =~ $number_re ]]; then
+    echo "Invalid value: not a number." >&2
+    exit 1
+fi
+
+current_val="$(cat $file)"
+
+max_val="$(cat $file_max)"
+pct_val=$((max_val/100))
+min_val=$((pct_val * 5))
+
+delta=$((delta * pct_val))
+if [ "$op" == "+" ]; then
+    num=$((current_val + delta))
+    if [ "$num" -gt $max_val ]; then
+        num=$max_val
+    fi
+elif [ "$op" == "-" ]; then
+    num=$((current_val - delta))
+    if [ "$num" -lt $min_val ]; then
+        num=$min_val
+    fi
+fi
+
+echo $num > "$file"

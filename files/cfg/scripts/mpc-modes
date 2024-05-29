@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+# This script show mpc mode
+# echo "random"
+
+status=$(mpc | grep volume)
+
+repeat_status=""
+repeat=$(echo $status | cut -d ":" -f 3 | awk '{print $1}')
+if [ "$repeat" == "on" ]; then
+	repeat_status=" r "
+fi
+
+random_status=""
+random=$(echo $status | cut -d ":" -f 4 | awk '{print $1}')
+if [ "$random" == "on" ]; then
+	random_status=" z "
+fi
+
+single_status=""
+single=$(echo $status | cut -d ":" -f 5 | awk '{print $1}')
+if [ "$single" == "on" ]; then
+	single_status=" y "
+fi
+
+consume_status=""
+consume=$(echo $status | cut -d ":" -f 6 | awk '{print $1}')
+if [ "$consume" == "on" ]; then
+	consume_status=" R "
+fi
+
+status="$repeat_status$random_status$single_status$consume_status"
+if [ -z "$status" ]; then
+	echo "*"
+else
+	echo "$status"
+fi
+
+sleep 1

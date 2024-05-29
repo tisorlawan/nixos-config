@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+if [[ `mpc current` ]]; then
+    mpc current -f "%artist% - %title%" | xclip -sel clip
+fi

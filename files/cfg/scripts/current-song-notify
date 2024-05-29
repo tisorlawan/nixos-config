@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+if [[ `mpc current` ]]; then
+    notify-send -t 2000 "`mpc current -f \"%artist% - %title%\n%comment%"`"
+fi

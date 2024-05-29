@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+
+error() {
+    echo "abort"
+    exit
+}
+
+usage() {
+    echo "Usage: "
+    echo "   add_sub_to_video SUBTITLE_FILE VIDEO_FILE OUTPUT_FILE"
+    exit
+}
+
+if [[ "$#" != 3 ]]; then
+    usage
+fi
+
+SUB_FILE="$1"
+VID_FILE="$2"
+OUT_FILE="$3"
+SUB_FILE_NEW="xxxyyyzzz.ass"
+
+if [ ! -f "$SUB_FILE" ]; then
+    echo "$SUB_FILE doesn't exsist"
+    error
+else
+    if [[ "$SUB_FILE" != *.ass ]]; then
+        if [[ "$SUB_FILE" != *.srt ]]; then
+            echo "SUBTITLE_FILE must be 'srt' or 'ass' file"
+            error
+        else
+            ffmpeg -i "$SUB_FILE" "$SUB_FILE_NEW"
+            SUB_FILE="$SUB_FILE_NEW"
+        fi
+    fi
+fi
+
+if [ ! -f "$VID_FILE" ]; then
+    echo "$VID_FILE doesn't exsist"
+    error
+fi
+
+if [[ "$OUT_FILE" == *.mp4 ]]; then
+    ffmpeg -i "$VID_FILE" -f ass -i "$SUB_FILE" -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s mov_text "$OUT_FILE"
+    echo "Success"
+elif [[ "$OUT_FILE" == *.mkv ]]; then
+    ffmpeg -i $VID_FILE -f ass -i $SUB_FILE -map 0:0 -map 0:1 -map 1:0 -c:v copy -c:a copy -c:s srt "$OUT_FILE"
+    echo "Success"
+fi
+
+rm $SUB_FILE_NEW

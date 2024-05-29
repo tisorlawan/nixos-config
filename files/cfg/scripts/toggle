@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+command=$1
+if [ -z "$command" ]; then
+	exit 0
+fi
+
+pid=$(pidof "$command")
+
+if [ -z "$pid" ]; then
+	echo "Not running"
+	nohup "$command" 2>/dev/null &
+	exit 0
+fi
+
+echo "kill $pid"
+kill "$pid"

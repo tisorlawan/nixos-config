@@ -1,0 +1,7 @@
+#!/bin/env bash
+
+if [ "$#" = 2 ]; then
+    wmctrl -x -a "$1" || $2
+else
+    wmctrl -x -a "$1" || $1
+fi

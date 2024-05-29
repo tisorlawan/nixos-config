@@ -1,0 +1,95 @@
+## Available values:
+##
+## - 0 - default window color (discards all other colors)
+## - 1 - black
+## - 2 - red
+## - 3 - green
+## - 4 - yellow
+## - 5 - blue
+## - 6 - magenta
+## - 7 - cyan
+## - 8 - white
+## - 9 - end of current color
+
+mpd_music_dir = ~/Music
+execute_on_song_change="~/.config/ncmpcpp/mnuc.sh"
+
+allow_for_physical_item_deletion = yes
+user_interface = classic
+external_editor = "nvim"
+autocenter_mode = "yes"
+centered_cursor = "yes"
+follow_now_playing_lyrics = "yes"
+
+
+main_window_color = default
+current_item_prefix = "$(7)$r"
+current_item_suffix = "$/r$(end)"
+
+
+# MODE
+playlist_display_mode = "columns"
+browser_display_mode = "columns"
+search_engine_display_mode = "columns"
+playlist_editor_display_mode = "columns"
+
+
+# HEADER
+header_visibility = "no"
+titles_visibility = "no"
+
+
+# VISUALIZER
+# visualizer_data_source = "/tmp/mpd.fifo"
+visualizer_output_name = "my_fifo"
+# visualizer_sync_interval = "30"
+# set 'buffer_time' parameter of your MPD audio output to '100000' (100ms) or lower if you experience synchronization issues between audio and visualization
+visualizer_in_stereo = "yes"
+visualizer_type = "spectrum"
+visualizer_look = "●▮"
+visualizer_color = 2,3,4,5,6,7,8
+
+
+# LYRICS
+# lyrics_fetchers = lyricwiki
+
+
+# PROGRESSBAR
+  # progressbar_look = "=>"
+  # progressbar_look = "─- "
+  # progressbar_look = "┅┅┄"
+  # progressbar_look = "─➞─"
+  # progressbar_look = "─┅─"
+  # progressbar_look = "▪▪▪"
+  # progressbar_look = "───"
+  # progressbar_look = "▁▁▁"
+  # progressbar_look = "‒‒‒"
+  # progressbar_look = "◈◆◇"
+  # progressbar_look = "▒▒░"
+  # progressbar_look = "─⊙┄"
+  # progressbar_look = "■◣ "
+progressbar_look = "▪▪▫"
+progressbar_elapsed_color = 7
+
+
+# PLAYLIST
+# song_columns_list_format = "(2)[]{} (25)[blue]{a} (34)[white]{t|f} (10f)[magenta]{l} (1)[]{}"
+song_columns_list_format = "(25)[6]{a} (35)[4]{t} (5)[2]{l}"
+
+
+
+# NOW PLAYING
+now_playing_prefix = "$b$7  *"
+now_playing_suffix = "$/b$9"
+
+
+# song_list_format = "  %t $R%a  "
+song_list_format = "$6{%a »$4 %t$/r$R}|{%f}"
+
+
+# STATUSBAR
+statusbar_visibility = "yes"
+song_status_format = "$b$7♫ $2%a $4⟫$3⟫ $8%t $4⟫$3⟫ $5%b "
+display_bitrate = "yes"
+message_delay_time = "1"
+statusbar_color = "white"

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+amixer sset "Capture" 50%
+amixer sset "Master" 80%

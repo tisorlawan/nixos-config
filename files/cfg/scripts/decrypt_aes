@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+if [ $# -eq 0 ]
+  then
+    echo "Usage: decrypt_aes [base64 decrypted file]"
+    exit 1
+fi
+
+
+echo -n Password:
+read -s password
+echo
+
+d=$(date +"%Y%m%d_%H%M%S_aes.txt")
+fname="/tmp/$d"
+
+(base64 -d $1 | openssl aes-256-cbc -d -pass pass:$password) > "$fname"\
+    || { rm $fname; echo; echo "Wrong password"; exit 1; }
+
+nvim "$fname"
+rm $1
+(openssl aes-256-cbc -pass pass:$password < "$fname" | base64 -w 0) > $1
+rm $fname

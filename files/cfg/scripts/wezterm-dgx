@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+wezterm ssh agung.sorlawan@43.245.191.194 -o IdentityFile=~/.ssh/sso-prosa -- ssh -i /home/agung.sorlawan/.ssh/sso-prosa agung.sorlawan@10.181.131.251

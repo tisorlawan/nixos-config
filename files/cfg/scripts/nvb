@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+NVIM_BEGINNER=/home/tiso/.config/nvim-beginner
+export NVIM_BEGINNER
+
+XDG_DATA_HOME=$HOME/.local/share/nvb XDG_CONFIG_HOME=$HOME/.config/nvb nvim $@

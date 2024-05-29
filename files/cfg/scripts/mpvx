@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+if [ $# -lt 2 ]; then
+	echo "Usage:"
+	echo "  $0 <path> <name>"
+	exit 1
+fi
+
+set -xe
+
+mpv "--ytdl-format=bestvideo[height<=720]+bestaudio/best[height<=720]" "$1" --stream-record="$2" --no-resume-playback "$@"

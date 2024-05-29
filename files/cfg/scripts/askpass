@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+zenity --password --title=Authentication 2>/dev/null

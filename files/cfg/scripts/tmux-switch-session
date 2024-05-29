@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+sessions=$(tmux list-sessions | grep -v attached | cut -d ":" -f1)
+selectedSession=$(echo "$sessions" | fzy)
+echo "$selectedSession"
+# echo "$sessions" | grep "$selectedSession"
+
+# if [ -z "$(echo "$sessions" | grep "$selectedSession")" ]; then
+# 	tmux new -d -s "$selectedSession"
+# fi
+# tmux switch-client -t "$selectedSession"

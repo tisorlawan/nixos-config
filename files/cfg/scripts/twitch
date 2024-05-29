@@ -1,0 +1,3 @@
+#!/bin/sh
+
+streamlink -r $3 https://www.twitch.tv/$1 $2 --player-no-close --player "mpv --cache=yes"

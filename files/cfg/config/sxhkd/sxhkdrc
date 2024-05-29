@@ -1,0 +1,179 @@
+# Sxhkd
+super + Escape
+	pkill -USR1 -x sxhkd && notify-send "Reload sxhkd success"
+
+# Menu
+{alt, super} + space
+	rofi -show {run, drun} -matching fuzzy
+
+# Terminal
+super + Return
+	wezterm-gui
+
+super + shift + Return
+	alacritty
+
+# Lock
+super + shift + 9
+	/home/tiso/.scripts/lock
+
+# Volume
+XF86Audio{Lower,Raise}Volume
+	/home/tiso/.scripts/alsa-{lower,raise}
+XF86AudioMute
+	/home/tiso/.scripts/alsa-toggle-mute
+XF86AudioMicMute
+	amixer set Capture toggle && amixer get Capture | grep '\[off\]' && notify-send "MIC switched OFF" || notify-send "MIC switched ON"
+
+XF86MonBrightness{Up,Down}
+	brightnessctl set 5%{+,-}
+
+# MPD / MPC
+XF86Audio{Play,Next,Prev}
+	/home/tiso/.scripts/mpc-{toggle,next,prev}
+
+super + control + {Up, Right, Left, Down}
+	/home/tiso/.scripts/mpc-{toggle,next,prev,stop}
+
+# Touchpad
+super + control + {p, o}
+	/home/tiso/.scripts/touchpad-{enable,disable}
+
+# Greenclip
+super + backslash
+	rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}'
+
+# Redshift
+super + 5
+	/home/tiso/.scripts/toggle-redshift
+
+# Song and Playlist
+super + {semicolon, apostrophe}
+	/home/tiso/.scripts/{song,playlist}-switcher
+
+# Wallpaper
+super + {bracketleft, bracketright}
+	/home/tiso/.scripts/wallpaper-switcher {prev, next}
+
+# Notification
+super + y
+    /home/tiso/.scripts/close-notifications
+
+# Scratchbar
+super + u
+	tdrop -ma -w 700 -x 600 -h 500 -y 290 urxvt -e sh -c 'ncmpcpp -c /home/tiso/.config/ncmpcpp/config-albumart'
+
+# Kill recording
+super + 7
+	/home/tiso/.scripts/killrecording
+
+# Printscreen full
+Print
+	/home/tiso/.scripts/screenshot area
+
+# Printscreen full
+shift + Print
+	/home/tiso/.scripts/screenshot full
+
+
+#############################################
+
+# quit/restart bspwm
+super + shift + {x,r}
+	bspc {quit,wm -r}
+
+# close and kill
+super + shift + {c,alt + c}
+	bspc node -{c,k}
+
+# alternate between the tiled and monocle layout
+super + m
+	bspc desktop -l next
+
+# send the newest marked node to the newest preselected node
+super + y
+	bspc node newest.marked.local -n newest.!automatic.local
+
+# swap the current node and the biggest node
+super + g
+	bspc node -s biggest
+
+#
+# state/flags
+#
+
+# set the window state
+super + {t,shift + t,f,shift + f}
+	bspc node -t {tiled,pseudo_tiled,floating,fullscreen}
+
+# set the node flags
+super + ctrl + {m,x,y,z}
+	bspc node -g {marked,locked,sticky,private}
+
+#
+# focus/swap
+#
+
+# focus the node in the given direction
+super + {h,j,k,l}
+	bspc node -f {west,next,prev,east}.local.window
+super + shift + {h,j,k,l}
+	bspc node -s {west,south,north,east}.local
+
+# focus the node for the given path jump
+super + {p,b,comma,period}
+	bspc node -f @{parent,brother,first,second}
+
+# focus the next/previous desktop in the current monitor
+super + bracket{left,right}
+	bspc desktop -f {prev,next}.local
+
+# focus the last node/desktop
+super + {grave,Tab}
+	bspc {node,desktop} -f last
+
+# focus the older or newer node in the focus history
+super + {o,i}
+	bspc wm -h off; \
+	bspc node {older,newer} -f; \
+	bspc wm -h on
+
+# focus or send to the given desktop
+super + {_,shift + }{1,2,3,q,w,e,a,s,d,0}
+	bspc {desktop -f,node -d} '^{1-9,10}' --follow
+
+#
+# preselect
+#
+
+# preselect the direction
+super + ctrl + {h,j,k,l}
+	bspc node -p {west,south,north,east}
+
+# preselect the ratio
+super + ctrl + {1-9}
+	bspc node -o 0.{1-9}
+
+# cancel the preselection for the focused node
+super + ctrl + space
+	bspc node -p cancel
+
+# cancel the preselection for the focused desktop
+super + ctrl + shift + space
+	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+#
+# move/resize
+#
+
+# expand a window by moving one of its side outward
+super + alt + {h,j,k,l}
+	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+# contract a window by moving one of its side inward
+super + alt + shift + {h,j,k,l}
+	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
+
+# move a floating window
+super + {Left,Down,Up,Right}
+	bspc node -v {-20 0,0 20,0 -20,20 0}

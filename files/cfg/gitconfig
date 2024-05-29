@@ -1,0 +1,140 @@
+[user]
+	email = tisorlawan@gmail.com
+	name = Agung Baptiso Sorlawan
+
+[http]
+	postBuffer = 1048576000
+
+[core]
+  pager = delta
+	precomposeunicode = true
+	quotePath = false
+
+
+[diff]
+	tool = difftastic
+	colorMoved = default
+[difftool]
+	prompt = false
+[difftool "difftastic"]
+	cmd = difft "$LOCAL" "$REMOTE"
+
+[interactive]
+    diffFilter = delta --color-only --features=interactive
+
+[delta]
+    line-numbers = false
+    side-by-side = false
+    features = decorations
+    whitespace-error-style = 22 reverse
+    syntax-theme = Monokai Extended
+
+[delta "interactive"]
+    keep-plus-minus-markers = false
+[delta "decorations"]
+    commit-decoration-style = blue ol
+    commit-style = raw
+    hunk-header-decoration-style = blue box
+    hunk-header-file-style = red
+    hunk-header-line-number-style = "#067a00"
+    hunk-header-style = file line-number syntax
+    commit-decoration-style = bold yellow box ul
+    file-style = bold yellow ul
+    file-decoration-style = none
+
+[pager]
+	difftool = true
+
+[merge]
+	conflictstyle = diff3
+[mergetool "vimdiff"]
+	cmd = nvim -d $BASE $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+
+
+[alias]
+	bl = "blame -w -C -C -C -L"
+	s = status --short --branch
+	cf = clean -f
+	co = checkout
+	cob = checkout -b
+	cl = clone
+	br = branch
+	ci = commit
+	u = restore --staged
+
+	pr = pull --rebase
+
+    ; ---- log ----
+	l = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate
+	ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+	ld = log --pretty=format:"%C(yellow)%h\\ %C(green)%ad%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --date=relative
+	lg1 = log --graph --abbrev-commit --decorate --format=format:'%C(reset)%C(yellow)%h%C(reset) - %C(green)(%ar)%C(reset) %C(bold red)%d%C(reset) %C(white)%s%C(reset) %C(blue)<%an>%C(reset)' --all
+	lg = !"git lg1"
+
+	lg2 = log --graph --abbrev-commit --decorate --format=format:'%C(yellow)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(bold red)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)' --all
+
+    ; ---- file log ----
+	fl = log -u
+
+
+    ; ---- reset ----
+	r = reset
+	r1 = reset HEAD^
+	r2 = reset HEAD^^
+	rh = reset --hard
+	rh1 = reset HEAD^ --hard
+	rh2 = reset HEAD^^ --hard
+
+    ; ---- apply ----
+	ar = apply --reject
+
+
+    ; ---- diff ----
+	d = diff
+	dc = diff --cached
+	dt = difftool
+	dtc = difftool --cached
+
+	df = "!git ll -1"
+	dl = diff --cached HEAD^
+	dlr  = "!f() { git diff "$1"~1.."$1"; }; f"
+	dfr  = "!f() { git ll "$1"^.."$1"; }; f"
+
+
+    ; ---- assume ----
+	assume = update-index --assume-unchanged
+	unassume = update-index --no-assume-unchanged
+	assumed = "!git ls-files -v | grep ^h | cut -c 3-"
+	unassumeall = "!git assumed | xargs git update-index --no-assume-unchanged"
+	assumeall = "!git status -s | awk {'print $2'} | xargs git assume"
+
+    ; ---- stash ----
+	sl = stash list
+	sa = stash apply
+	ss = stash save
+	sp = stash pop
+
+
+	alias = ! git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /
+	la = ! git alias
+
+	ls = ls-files
+	rs = restore --staged
+
+    ; ---- stats -----
+	rank = shortlog -sn --no-merges
+
+	rv = remote -v
+
+	P = push
+
+	ch = !git checkout $(git reflog show --pretty=format:'%gs ~ %gd' --date=relative | grep 'checkout:' | grep -oE '[^ ]+ ~ .*' | awk -F~ '!seen[$    1]++' | head -n 20 | cut -d '~' -f 1 | fzf)
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[rerere]
+	enabled = true
+[branch]
+	sort = -committerdate

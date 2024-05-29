@@ -1,0 +1,3 @@
+#!/bin/sh
+
+mpc prev && pkill -4 dwm-bar && current-song-notify

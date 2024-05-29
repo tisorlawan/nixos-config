@@ -1,0 +1,7 @@
+ytdlp_config() {
+    alias yd="yt-dlp"
+    alias ydv="yt-dlp -f 'bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b' --no-playlist"
+    alias ydp="yt-dlp -f 'bv*[height<=1080][ext=mp4]+ba[ext=m4a]/b' -o '%(playlist_index)s [%(playlist_id)s]  - %(title)s.%(ext)s'"
+}
+
+# vim: set ft=zsh:

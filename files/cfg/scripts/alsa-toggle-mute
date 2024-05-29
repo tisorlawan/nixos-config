@@ -1,0 +1,3 @@
+#!/bin/sh
+
+toggle-mute && pkill -1 dwm-bar

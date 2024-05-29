@@ -1,0 +1,3 @@
+#!/bin/sh
+
+xrandr --output eDP-1-1 --auto --output HDMI-1-2 --auto --same-as eDP-1-1

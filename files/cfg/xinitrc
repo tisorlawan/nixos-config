@@ -1,0 +1,50 @@
+#!/bin/bash
+
+export GTK_THEME="Arc:dark"
+
+# DM Settings
+function run {
+	pkill "$1"
+
+	"$@" &
+}
+
+# # Nvidia Settings
+# xrandr --setprovideroutputsource modesetting NVIDIA-0
+# xrandr --dpi 96
+# xrandr --auto
+
+# X related settings
+xset b off
+xset r rate 350 130
+xrdb ~/.Xresources
+
+# eval "$(ssh-agent)"
+# ~/.scripts/touchpad-init
+# betterlockscreen -u ~/Pictures/wallpapers/background.jpg &
+
+# run redshift-gtk
+# run greenclip daemon
+
+# export _JAVA_AWT_WM_NONREPARENTING=1
+# ln -srf ~/.rice/.config/sxhkd/sxhkdrc-bspwm ~/.config/sxhkd/sxhkdrc
+# exec bspwm
+exec bspwm
+# exec startxfce4
+
+# exec i3
+
+# DM=${1:-l}
+# case "$DM" in
+# l)
+# 	ln -srf ~/.rice/.config/sxhkd/sxhkdrc-leftwm ~/.config/sxhkd/sxhkdrc
+# 	exec dbus-launch leftwm
+# 	;;
+# x)
+# 	exec startxfce4
+# 	;;
+# b)
+# 	ln -srf ~/.rice/.config/sxhkd/sxhkdrc-bspwm ~/.config/sxhkd/sxhkdrc
+# 	exec bspwm
+# 	;;
+# esac

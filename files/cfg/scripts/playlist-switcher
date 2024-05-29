@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+choice=`mpc lsplaylists | rofi -i -dmenu -matching fuzzy -p "playlists: "`
+if [[ $choice ]]; then
+    mpc clear
+    mpc load "$choice"
+    mpc play
+fi

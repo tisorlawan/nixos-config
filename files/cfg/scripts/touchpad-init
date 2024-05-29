@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+id=$(xinput list | grep -i touchpad | cut -d'=' -f2 | awk '{print $1}')
+
+get_libinput_prop_id() {
+	prop_id=$(xinput list-props "$id" | grep "$1" | grep -v "Default" | cut -d "(" -f2 | cut -d ")" -f1)
+	echo "$prop_id"
+}
+
+if [ -z "$id" ]; then
+	echo "No touchpad [libinput]"
+	exit 1
+fi
+
+prop_id=$(get_libinput_prop_id "libinput Tapping Enabled")
+if [ -n "$prop_id" ]; then
+	xinput set-prop "$id" "$prop_id" 1
+fi
+
+prop_id=$(get_libinput_prop_id "libinput Middle Emulation Enabled")
+if [ -n "$prop_id" ]; then
+	xinput set-prop "$id" "$prop_id" 1
+fi
+
+prop_id=$(get_libinput_prop_id "libinput Natural Scrolling Enabled")
+if [ -n "$prop_id" ]; then
+	xinput set-prop "$id" "$prop_id" 0
+fi

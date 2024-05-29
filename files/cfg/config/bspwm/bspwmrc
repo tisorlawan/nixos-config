@@ -1,0 +1,67 @@
+#!/bin/sh
+
+feh --bg-scale ~/.images/background.jpg &
+
+xsetroot -cursor_name left_ptr
+
+bspc config bottom_padding 0
+bspc config left_padding 0
+bspc config right_padding 0
+
+bspc monitor -d 1 2 3 4 5 6 7 8 9
+
+bspc desktop 1 -l monocle
+bspc desktop 2 -l monocle
+bspc desktop 3 -l monocle
+bspc desktop 4 -l monocle
+bspc desktop 5 -l monocle
+bspc desktop 6 -l monocle
+bspc desktop 8 -l monocle
+
+bspc config border_width 1
+bspc config window_gap 2
+
+bspc config split_ratio 0.52
+bspc config borderless_monocle true
+bspc config gapless_monocle true
+
+bspc config focus_follows_pointer true
+bspc config ignore_ewmh_focus true
+bspc config click_to_focus any
+
+bspc rule -a Pavucontrol state=floating
+bspc rule -a mpv desktop='^6' focus=on follow=on
+bspc rule -a Nm-connection-editor state=floating focus=on follow=on
+
+# bspc config external_rules_command "$(which bspwm-external-rules)"
+bspc config external_rules_command "$HOME/.scripts/bspwm-external-rules"
+
+# Autostart
+killall -9 sxhkd dunst nm-applet greenclip redshift-gtk picom
+
+~/.config/polybar/launch.sh bspwm gruvbox &
+
+# # Launch notification daemon
+dunst &
+#
+# # polkit agent
+# # if [[ ! $(pidof polkit-gnome-authentication-agent-1) ]]; then
+# # 	/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
+# # fi
+
+sxhkd &
+nm-applet &
+redshift-gtk &
+
+greenclip daemon &
+
+xset b off
+xset r rate 350 130
+
+# start compositor
+# while pgrep -u $UID -x picom >/dev/null; do sleep 1; done
+picom &
+
+# Java applications
+# wmname LG3D
+# export _JAVA_AWT_WM_NONREPARENTING=1

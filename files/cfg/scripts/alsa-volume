@@ -1,0 +1,24 @@
+#!/bin/sh
+
+info=`amixer -D default get Master`
+status=`echo "$info" | grep "\[off"`
+
+if [ -z "$status" ]; then
+    status="normal"
+else
+    status="muted"
+fi
+
+for arg in "$@"
+do
+    if [ "$arg" = "status" ]; then
+        echo "$status"
+    elif [ "$arg" = "volume"  ]; then
+        vol=`echo $info | sed -E "s/.*\[([0-9]+%)\].*/\1/"`
+        vol=`echo $vol | sed "s/%//"`
+        echo $vol
+    else
+        echo "Unknown query $arg"
+        exit
+    fi
+done

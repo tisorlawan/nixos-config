@@ -1,0 +1,5 @@
+#!/bin/sh
+
+umount $1
+wipefs --all $1
+mkntfs --force --fast --label Agung $1

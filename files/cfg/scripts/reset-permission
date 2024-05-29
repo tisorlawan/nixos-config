@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+find . -type d | xargs -I {} chmod 755 {}
+find . -type f | xargs -I {} chmod 644 {}

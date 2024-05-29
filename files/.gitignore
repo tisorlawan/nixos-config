@@ -1,0 +1,4 @@
+cfg/config/fish/fish_variables
+cfg/config/mpd/log
+cfg/config/fish/lib/secret.fish
+cfg/config/ncmpcpp/error.log

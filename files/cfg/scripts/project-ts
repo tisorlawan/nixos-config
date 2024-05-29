@@ -1,0 +1,110 @@
+#!/usr/bin/env bash
+
+name=${1}
+
+mkdir "$name"
+cd "$name" || exit
+
+npm init -y
+npm install typescript @types/node --save-dev
+
+npx tsc --init --rootDir src --outDir build \
+	--esModuleInterop --resolveJsonModule --lib es6 \
+	--module commonjs --allowJs true --noImplicitAny true
+
+mkdir src
+touch src/index.ts
+
+# Eslint
+npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin
+
+cat <<EOF >.eslintrc
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "no-console": "warn"
+  }
+}
+EOF
+
+cat <<EOF >.eslintignore
+node_modules
+dist
+EOF
+
+cat <<EOF >.gitignore
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# testing
+/coverage
+
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# local env files
+# do not commit any .env files to git, except for the .env.example file. https://create.t3.gg/en/usage/env-variables#using-environment-variables
+.env
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+
+EOF
+
+cat <<EOF >/tmp/.r.cjs
+const fs = require("fs");
+
+const data = JSON.parse(fs.readFileSync("package.json"));
+data["scripts"] = {
+  lint: "npx eslint . --ext .ts",
+  "lint-fix": "npx eslint . --ext .ts --fix"
+};
+console.log(data);
+fs.writeFileSync("package.json", JSON.stringify(data, null, 2));
+
+EOF
+
+node /tmp/.r.cjs
+
+# if [ -z "$name" ]; then
+# 	echo "Usage: project-ts NAME"
+# 	exit 1
+# fi
+#
+# git clone https://github.com/jsynowiec/node-typescript-boilerplate "$name"
+# cd "$name" || exit
+# rm -rf .git
+#
+# echo "Directory $name is created"
+# echo "cd $name"
+# echo "git init"
+# echo "npm install"

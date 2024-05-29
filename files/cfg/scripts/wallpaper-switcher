@@ -1,0 +1,56 @@
+#!/bin/sh
+
+dir="$HOME/pictures/wallpaper"
+current_file="$HOME/.wallpaper"
+
+function set_wallpaper {
+    if [ ! -z "$1" ]; then
+        pkill feh
+        feh --bg-max "$1"
+        echo "$1" > ~/.wallpaper
+    fi
+}
+
+wallpapers=`find $dir -type f`
+
+if [ ! $1 ]; then
+    if [ ! -f "$current_file" ]; then
+        wal=`echo "$wallpapers" | head -1`
+    else
+        current_wallpaper=`cat "$current_file"`
+        wal=`echo "$wallpapers" | grep "$current_wallpaper"`
+
+        if [ -z "$wal" ]; then
+            wal=`echo "$wallpapers" | head -1`
+        fi
+    fi
+    set_wallpaper "$wal"
+elif [ "$1" = "next" ]; then
+    if [ ! -f "$current_file" ]; then
+        wal=`echo "$wallpapers" | head -1`
+    else
+        current_wallpaper=`cat "$current_file"`
+        wal=`echo "$wallpapers" | grep -A1 "$current_wallpaper"`
+
+        if [ -z "$wal" ]; then
+            wal=`echo "$wallpapers" | head -1`
+        else
+            wal=`echo "$wallpapers" | grep -A1 "$current_wallpaper" | tail -1`
+        fi
+    fi
+    set_wallpaper "$wal"
+elif [ "$1" == "prev" ]; then
+    if [ ! -f "$current_file" ]; then
+        wal=`echo "$wallpapers" | tail -1`
+    else
+        current_wallpaper=`cat "$current_file"`
+        wal=`echo "$wallpapers" | grep -A1 "$current_wallpaper"`
+
+        if [ -z "$wal" ]; then
+            wal=`echo "$wallpapers" | head -1`
+        else
+            wal=`echo "$wallpapers" | grep -B1 "$current_wallpaper" | head -1`
+        fi
+    fi
+    set_wallpaper "$wal"
+fi

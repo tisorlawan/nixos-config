@@ -1,0 +1,45 @@
+#!/bin/sh
+
+usage () {
+    echo "Usage:"
+    echo "  ffmpeg-select-subtitle INPUT"
+    exit
+}
+
+if [ -z "$1" ]; then
+    usage
+fi
+
+IN="$1"
+OUT=".$1"
+
+if [ ! -f "$IN" ]; then
+    echo "Input file $IN not found"
+    exit
+fi
+
+TMP="/tmp/ffmpeg-subtitlelist"
+
+STREAMS=$(ffmpeg -i "$IN" 2>&1 | grep Stream | grep Subtitle: | awk '{print $2}' | sed -E "s/#([0-9]:[0-9]+)\((.*)\):/\1 \2/g")
+
+if [ -z "$STREAMS" ]; then
+    echo "No stream found"
+    exit
+fi
+
+echo "$STREAMS" > "$TMP"
+
+nvim "$TMP"
+
+selected=$(cat "$TMP" | awk '{print $1}')
+rm "$TMP"
+echo "$selected"
+
+
+map=""
+while read -r line; do
+    map="$map -map $line"
+done <<< "$selected"
+
+ffmpeg -i "$IN" -map 0:v -c copy -map 0:a -c copy $map -c copy "$OUT"
+mv "$OUT" "$IN"

@@ -1,0 +1,10 @@
+set PLAYLIST_FORMAT "'%(playlist_index)s-%(title)s.%(ext)s'"
+set NORMAL_FORMAT "'%(title)s.%(ext)s'"
+
+# alias ydb="youtube-dl -o $NORMAL_FORMAT -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --no-playlist"
+# alias yd720="youtube-dl -o $NORMAL_FORMAT -f '136+bestaudio' --merge-output-format mp4"
+# alias ydb_playlist="youtube-dl -o $PLAYLIST_FORMAT -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4 --ignore-errors"
+# alias ydb_sub_en="youtube-dl -o $NORMAL_FORMAT --write-srt --sub-lang en -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4"
+# alias ydb_sub_auto="youtube-dl -o $NORMAL_FORMAT --write-auto-sub -f 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio' --merge-output-format mp4"
+# alias ydmp3="youtube-dl -o $NORMAL_FORMAT --extract-audio --audio-format mp3 --audio-quality 0 --no-playlist"
+# alias ydmp3_playlist="youtube-dl -o $PLAYLIST_FORMAT --extract-audio --audio-format mp3 --audio-quality 0"

@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+find $HOME/.config/mpd/playlists -type f -name "*.m3u" | while read file; do
+    base=$(basename "$file")
+
+    cat "$file" | sort | uniq > "/tmp/$base"
+    mv "/tmp/$base" "$file"
+
+    echo "Done deduplicate playlist - $(echo $base | sed 's/.m3u//g') -"
+done

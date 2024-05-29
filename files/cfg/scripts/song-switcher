@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+choice=`mpc playlist -f "%artist% - %title%"  | rofi -i -dmenu -p "songs"`
+if [[ $choice ]]; then
+    c=`mpc playlist | grep -n "$choice" | cut -d":" -f1`
+    mpc play $c
+fi

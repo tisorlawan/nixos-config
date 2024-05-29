@@ -1,0 +1,425 @@
+#!/usr/bin/python
+"""Dwm bar"""
+
+import re
+import subprocess
+import asyncio
+import time
+import os
+import functools
+import signal
+
+from datetime import datetime
+from socket import error as SocketError
+
+import psutil
+import alsaaudio
+import pyric.pyw as pyw
+
+import mpd
+from mpd import MPDClient
+
+HOST = "localhost"
+PORT = "6600"
+CON_ID = {"host": HOST, "port": PORT}
+
+
+def mpd_connect(client):
+    """
+    Simple wrapper to connect MPD.
+    """
+    try:
+        client.connect(**CON_ID)
+    except SocketError:
+        return False
+    return True
+
+
+CLIENT = MPDClient()
+mpd_connect(CLIENT)
+
+WHITE = "#C7C7C7"
+BLACK = "#0F1419"
+
+BACKGROUNDS = [BLACK, WHITE]
+FOREGROUNDS = [WHITE, BLACK]
+
+USED_WIDGETS = [
+    "volume",
+    "mpc",
+    "brightness",
+    "cpu",
+    "memory",
+    "wifi",
+    "bandwidth",
+    "battery",
+    "date",
+]
+
+RESULTS = ["" for _ in USED_WIDGETS]
+SEP = ""
+
+
+def wrap(text, index, cutoff=False):
+    """Wrap text to pango markup"""
+
+    text = str(text).strip()
+
+    background = BACKGROUNDS[(len(USED_WIDGETS) - index) % 2]
+    foreground = FOREGROUNDS[(len(USED_WIDGETS) - index) % 2]
+
+    start = f'<span foreground="{foreground}" background="{background}">{SEP}</span>'
+    end = f'<span foreground="{background}" background="{foreground}">{SEP}</span>'
+
+    if foreground != WHITE:
+        if not cutoff:
+            text = f"""{start}<span background="{background}"
+            foreground="{foreground}"> {text} </span>{end}"""
+        else:
+            text = f"""{start}<span background="{background}"
+            foreground="{foreground}"> {text} </span>"""
+    else:
+        text = f'<span background="{background}" foreground="{foreground}">  {text}  </span>'
+
+    RESULTS[index] = f"{text}"
+
+
+def create_widget(function, sig=None):
+    """Create widget, wrap function into async version"""
+
+    async def widget_handler(index):
+        return function(index)
+
+    return {"handler": widget_handler, "f": function, "signal": sig}
+
+
+def date(index):
+    """Date widget"""
+
+    now = datetime.now()
+    now = now.strftime("%a, %d %b %H:%M:%S")
+    wrap(now, index, True)
+
+
+def volume(index):
+    """Volume widget"""
+
+    m = alsaaudio.Mixer("Master")
+    vol = m.getvolume()[0]
+    is_muted = int(m.getmute()[0])
+
+    if is_muted:
+        return wrap(f'<span foreground="red"> <b><i>{vol}</i></b></span>', index)
+    return wrap(f" {vol}", index)
+
+
+def psutil_(measurement):
+    """Psutil system monitoring"""
+
+    color1 = "#ffa100"
+    color2 = "#ff6100"
+    color3 = "#ff0000"
+
+    def measurement_handler(index):
+        per = 0
+        icon = ""
+        if measurement.lower() == "memory":
+            per = dict(psutil.virtual_memory()._asdict())["percent"]
+            icon = ""
+        elif measurement.lower() == "cpu":
+            per = psutil.cpu_percent()
+            icon = ""
+
+        if per > 80:
+            per = str(per).strip()
+            per = f'<span foreground="{color3}">{icon}</span> {per}'
+        elif per > 50:
+            per = str(per).strip()
+            per = f'<span foreground="{color2}">{icon}</span> {per}'
+        else:
+            per = str(per).strip()
+            per = f"{icon} {per}"
+        return wrap(per, index)
+
+    return measurement_handler
+
+
+BATTERY_RE = re.compile("^Battery \\d+: (.*?),\\s+(\\d+)%(.*)$")
+COLORS = [
+    "#ff0000",
+    "#b24027",
+    "#b25327",
+    "#ed8e00",
+    "#ffffff",
+    "#ffffff",
+]
+
+
+def battery(index):
+    """Battery widget"""
+
+    raw = os.popen("acpi").read().strip()
+    match = BATTERY_RE.match(raw)
+
+    status = match.group(1).strip()
+    percentage = int(match.group(2).strip())
+
+    out = ""
+    if status == "Charging":
+        status = "C"
+        out = f'<span foreground="#00e9ff">[C] {percentage}</span>'
+    elif status == "Discharging":
+        status = "C"
+        idx = percentage // 20
+        out = f'<span foreground="{COLORS[idx]}"><b>{percentage}</b></span>'
+    elif status == "Not charging":
+        out = f'<span foreground="cyan"><b>︇</b></span>'
+
+    return wrap(out, index)
+
+
+INTERFACE_NAME = "wlan0"
+INTERFACE = pyw.getcard(INTERFACE_NAME)
+LAST_UP_DOWN = (0, 0)
+UP_DOWN = (0, 0)
+DL_LABEL = ""
+UL_LABEL = ""
+T0 = time.time()
+
+
+def bandwidth(index):
+    """Bandwidth widget"""
+
+    global T0, LAST_UP_DOWN, UP_DOWN
+
+    LAST_UP_DOWN = UP_DOWN
+
+    ul_speed = 0
+    dl_speed = 0
+
+    current_time = time.time()
+    upload = psutil.net_io_counters(pernic=True)["wlan0"].bytes_sent
+    download = psutil.net_io_counters(pernic=True)["wlan0"].bytes_recv
+
+    UP_DOWN = (upload, download)
+    ul_speed, dl_speed = [
+        (now - last) / (current_time - T0) / 1024.0
+        for now, last in zip(UP_DOWN, LAST_UP_DOWN)
+    ]
+    print(dl_speed, "-", ul_speed)
+
+    T0 = time.time()
+
+    if ul_speed > 1024:
+        ul_speed = ul_speed / 1024
+        ul_str = f'<span foreground="#000cff">{UL_LABEL} <b>{ul_speed:.2f}</b></span>'
+    else:
+        ul_str = f"{UL_LABEL} {ul_speed:.0f}"
+
+    if dl_speed > 1024:
+        dl_speed = dl_speed / 1024
+        dl_str = f'<span foreground="#000cff">{DL_LABEL} <b>{dl_speed:.2f}</b></span>'
+    else:
+        dl_str = f"{DL_LABEL} {dl_speed:.0f}"
+
+    return wrap(f"{dl_str}  {ul_str}", index)
+
+
+RE_QUALITY = re.compile("Link Quality=(\\d+)/.*")
+
+
+def wifi(index):
+    """Wifi widget"""
+    try:
+        link = pyw.link(INTERFACE)
+        ssid = link["ssid"].decode().strip()
+
+        cmd = subprocess.Popen(
+            "iwconfig %s" % INTERFACE_NAME, shell=True, stdout=subprocess.PIPE
+        )
+
+        sig = "**"
+        for line in cmd.stdout:
+            if "Link Quality" in line.decode():
+                line = line.decode().lstrip(" ")
+                match = RE_QUALITY.match(line).group(1)
+                sig = (float(match) * 100) / 70
+            elif "Not-Associated" in line.decode():
+                sig = "No signal"
+                return wrap(f"<i>{sig}</i>", index)
+    except TypeError:
+        return wrap('<span foreground="grey"><i>Not Connected</i></span>', index)
+    except:
+        return wrap('<span foreground="grey"><i>Not Connected</i></span>', index)
+
+    return wrap(f"{sig} - {ssid}", index)
+
+
+def mpc(index):
+    """Mpc widget"""
+
+    try:
+        status = CLIENT.status()
+        random = "Z" if int(status["random"]) else "z"
+        repeat = "R" if int(status["repeat"]) else "r"
+        single = "Y" if int(status["single"]) else "y"
+        consume = "C" if int(status["consume"]) else "c"
+
+        mode = f"[{consume}|{random}|{repeat}|{single}]"
+
+    except mpd.base.ConnectionError:
+        try:
+            mpd_connect(CLIENT)
+        except:
+            pass
+        return wrap(
+            '<span foreground="red"><i><b>Can\'t connect to MPD</b></i></span>', index
+        )
+    except ConnectionResetError:
+        try:
+            mpd_connect(CLIENT)
+        except:
+            pass
+        return wrap(
+            '<span foreground="red"><i><b>Can\'t connect to MPD</b></i></span>', index
+        )
+
+    state = status["state"]
+
+    if state == "stop":
+        return wrap('<span foreground="grey"><i><b>Stopped </b></i></span>', index)
+
+    if state == "play":
+        song = CLIENT.currentsong()
+        try:
+            artist = song["artist"]
+        except KeyError:
+            artist = "<i>No Artist</i>"
+
+        try:
+            title = song["title"].replace("&", "+")
+        except:
+            title = "<i>No Title</i>"
+
+        percentage = float(status["elapsed"]) * 100 // float(status["duration"])
+        return wrap(f"[{percentage:.0f}] {artist} - {title} {mode}", index)
+
+    if state == "pause":
+        song = CLIENT.currentsong()
+        try:
+            artist = song["artist"]
+        except KeyError:
+            artist = "<i>No Artist</i>"
+        try:
+            title = song["title"].replace("&", "+")
+        except:
+            title = "<i>No Title</i>"
+
+        percentage = float(status["elapsed"]) * 100 // float(status["duration"])
+        return wrap(
+            f'<span foreground="#787878"><i>[{percentage:.0f}] {artist} - {title}</i> {mode}</span>',
+            index,
+        )
+    return ""
+
+
+BRIGHTNESS_FILE = "/sys/class/backlight/intel_backlight/brightness"
+
+
+def brightness(index):
+    """Brightness widget"""
+
+    with open(BRIGHTNESS_FILE) as file:
+        percentage = int((int(file.read().strip()) / 7500) * 100)
+        return wrap(f" {percentage}", index)
+
+
+WIDGETS_CONFIG = [
+    ["volume", volume, 1],
+    ["cpu", psutil_("cpu"), None],
+    ["memory", psutil_("memory"), None],
+    ["wifi", wifi, None],
+    ["bandwidth", bandwidth, None],
+    ["date", date, None],
+    ["battery", battery, None],
+    ["brightness", brightness, 3],
+    ["mpc", mpc, 4],
+]
+ALL_WIDGETS = {}
+
+for config in WIDGETS_CONFIG:
+    ALL_WIDGETS[config[0]] = create_widget(config[1], config[2])
+
+FUNCTIONS = []
+for i, widget_name in enumerate(USED_WIDGETS):
+
+    async def handler(i, widget_name):
+        """Create async handler"""
+        while True:
+            await ALL_WIDGETS[widget_name]["handler"](i)
+            await asyncio.sleep(1)
+
+    FUNCTIONS.append(handler(i, widget_name))
+
+
+async def display():
+    """Display output to xsetroot"""
+
+    while True:
+        await asyncio.sleep(1)
+        out = "".join(RESULTS)
+        proc = subprocess.Popen(
+            ["xsetroot", "-name", out.strip()], stderr=subprocess.PIPE
+        )
+        line = proc.stderr.readline().decode().lower()
+
+        if "display" in line:
+            loop = asyncio.get_running_loop()
+            loop.stop()
+
+
+FUNCTIONS.append(display())
+
+
+def get_signal_handler(widget, index):
+    """Signal handler"""
+
+    function = ALL_WIDGETS[widget]["f"]
+
+    def signal_handler():
+        function(index)
+        out = "".join(RESULTS)
+        subprocess.call(["xsetroot", "-name", out.strip()])
+
+    return signal_handler
+
+
+def stop(loop):
+    """Stop loop"""
+    loop.stop()
+
+
+async def main():
+    """Main async function"""
+    loop = asyncio.get_running_loop()
+
+    for index, widget_ in enumerate(USED_WIDGETS):
+        if ALL_WIDGETS[widget_]["signal"]:
+            loop.add_signal_handler(
+                ALL_WIDGETS[widget_]["signal"],
+                functools.partial(get_signal_handler(widget_, index)),
+            )
+    loop.add_signal_handler(signal.SIGINT, functools.partial(stop, loop))
+
+    await asyncio.gather(*FUNCTIONS)
+
+
+if __name__ == "__main__":
+    LOOP = asyncio.get_event_loop()
+    try:
+        LOOP.run_until_complete(main())
+    except RuntimeError:
+        LOOP.run_until_complete(LOOP.shutdown_asyncgens())
+    finally:
+        LOOP.run_until_complete(LOOP.shutdown_asyncgens())
+        LOOP.close()

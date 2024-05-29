@@ -1,0 +1,111 @@
+ZINIT_HOME="${XDG_DATA_HOME:-${HOME}/.local/share}/zinit/zinit.git"
+if [ ! -d "$ZINIT_HOME" ]; then
+   mkdir -p "$(dirname $ZINIT_HOME)"
+   git clone https://github.com/zdharma-continuum/zinit.git "$ZINIT_HOME"
+fi
+source "${ZINIT_HOME}/zinit.zsh"
+
+include () { [[ -f "$1" ]] && source "$1" }
+
+# disable ctr-s
+stty -ixon
+
+# Add in zsh plugins
+zinit light zsh-users/zsh-syntax-highlighting
+zinit light zsh-users/zsh-completions
+zinit light zsh-users/zsh-autosuggestions
+zinit light Aloxaf/fzf-tab
+
+
+# paths
+path=("$HOME/.scripts" $path)
+path=("$HOME/.cargo/bin" $path)
+path=("$HOME/.local/bin" $path)
+
+
+# fpaths
+fpath+="$HOME/.zfunc/"
+
+
+# Add in snippets 
+zinit snippet OMZP::git
+zinit snippet OMZP::sudo
+zinit snippet OMZP::starship
+zinit ice lucid wait; zinit snippet OMZP::fzf
+zinit ice depth=1; zinit light jeffreytse/zsh-vi-mode
+ZVM_CURSOR_STYLE_ENABLED=false
+
+autoload -Uz cargo_config; cargo_config
+autoload -Uz ytdlp_config; ytdlp_config
+autoload -Uz yazi_config; yazi_config
+
+autoload -Uz compinit
+
+# compinit only if ~/.zcompdump is modified in the last 24 hours
+[ ! "$(find ~/.zcompdump -mtime 1)" ] || compinit
+compinit -C
+
+zinit cdreplay -q
+
+# Keybindings
+bindkey '^p' history-search-backward
+bindkey '^n' history-search-forward
+bindkey '^[w' kill-region
+
+# History
+HISTSIZE=100000
+HISTFILE=~/.zsh_history
+SAVEHIST=$HISTSIZE
+HISTDUP=erase
+setopt appendhistory
+setopt sharehistory
+setopt hist_ignore_space
+setopt hist_ignore_all_dups
+setopt hist_save_no_dups
+setopt hist_ignore_dups
+setopt hist_find_no_dups
+
+# Completion styling
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'
+zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+zstyle ':completion:*' menu no
+zstyle ':fzf-tab:complete:cd:*' fzf-preview 'ls --color $realpath'
+zstyle ':fzf-tab:complete:__zoxide_z:*' fzf-preview 'ls --color $realpath'
+
+# environment variable
+export EDITOR=nvim
+export MANPAGER="nvim +Man! -c 'set signcolumn=no ft=man nomod nolist nonumber norelativenumber signcolumn=no cmdheight=1 laststatus=1 hidden autowrite noswapfile statuscolumn='"
+export VISUAL=$EDITOR
+
+export _ZO_MAXAGE=30000
+export _TYPER_STANDARD_TRACEBACK=1
+export BAT_THEME=TwoDark
+
+# nix
+include /etc/profiles/per-user/tiso/etc/profile.d/hm-session-vars.sh
+include "$HOME/.local/state/nix/profiles/profile/etc/profile.d/hm-session-vars.sh"
+include "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"
+
+# Aliases
+alias ls='ls --color'
+alias l='eza -1'
+alias la='eza -1a'
+alias ll='eza -l'
+alias lt='eza -T'
+alias c='clear'
+alias rr="rye run"
+alias nixos-build='sudo nixos-rebuild switch --flake /home/tiso/nixos#default'
+
+alias libinput_debug="sudo libinput debug-events --show-keycodes"
+
+alias clip="xclip -selection clipboard"
+
+alias gpu="sudo intel_gpu_top"
+alias rn="sudo systemctl restart NetworkManager"
+alias nn="nmtui-connect"
+
+alias p="python"
+
+# Shell integrations
+eval "$(zoxide init --cmd z zsh)"
+source "$HOME/.rye/env"

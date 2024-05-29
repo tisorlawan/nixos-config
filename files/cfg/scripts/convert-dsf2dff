@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+for x in *.dff; do
+	echo "$x"
+	basename=${x%.dff}
+	basename=${basename##*/}
+	filename="$basename.dsf"
+	dff2dsf "$x" "$filename"
+done

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+amixer -q sset Master toggle
+
+MASTER_STATE=`amixer get Master | awk -F"dB] " 'NR == 5 {print $2;}'`
+HEADPHONES_PLUGGED=`amixer contents | grep -A 2 Headphone\ Jack | awk -F"=" 'NR == 3 {print $2;}'`
+
+if [[ $HEADPHONES_PLUGGED == 'on' ]]; then
+    SLAVE="Headphone"
+else
+    SLAVE="Speaker"
+fi
+
+if [[ $MASTER_STATE == '[on]' ]]; then
+    amixer -q sset $SLAVE unmute
+else
+    amixer -q sset $SLAVE mute
+fi

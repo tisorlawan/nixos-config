@@ -28,21 +28,6 @@
     # '')
   ];
 
-  # Home Manager is pretty good at managing dotfiles. The primary way to manage
-  # plain files is through 'home.file'.
-  home.file = {
-    # # Building this configuration will create a copy of 'dotfiles/screenrc' in
-    # # the Nix store. Activating the configuration will then make '~/.screenrc' a
-    # # symlink to the Nix store copy.
-    # ".screenrc".source = dotfiles/screenrc;
-
-    # # You can also set the file content immediately.
-    # ".gradle/gradle.properties".text = ''
-    #   org.gradle.console=verbose
-    #   org.gradle.daemon.idletimeout=3600000
-    # '';
-  };
-
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a
   # shell provided by Home Manager. If you don't want to manage your shell
@@ -61,15 +46,6 @@
   #
   home.sessionVariables = {
     EDITOR = "nvim";
-
-    XDG_DESKTOP_DIR = "$HOME/desktop";
-    XDG_DOWNLOAD_DIR = "$HOME/downloads";
-    XDG_TEMPLATES_DIR = "$HOME/templates";
-    XDG_PUBLICSHARE_DIR = "$HOME/public";
-    XDG_DOCUMENTS_DIR = "$HOME/documents";
-    XDG_MUSIC_DIR = "$HOME/music";
-    XDG_PICTURES_DIR = "$HOME/pictures";
-    XDG_VIDEOS_DIR = "$HOME/videos";
   };
 
   xdg.desktopEntries = {

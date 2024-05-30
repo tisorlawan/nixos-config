@@ -16,7 +16,6 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.supportedFilesystems = [ "ntfs" ];
 
-  networking.hostName = "sorlawan"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary
@@ -25,12 +24,10 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
-  networking.extraHosts = builtins.readFile (./. + "../../../files/etc-hosts");
+  networking.hostName = "sorlawan";
+  networking.hostFiles = [ ../../files/etc-hosts ];
 
-  # Set your time zone.
   time.timeZone = "Asia/Jakarta";
-
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
@@ -79,8 +76,6 @@
 
     WLAN_IFACE = "wlp0s20f3";
   };
-
-
 
   sound.enable = true;
   sound.mediaKeys.enable = true;
@@ -165,6 +160,7 @@
     xclip
     xdg-user-dirs
     xorg.xbacklight
+    xorg.xkill
     networkmanagerapplet
     sxhkd
     haskellPackages.greenclip
@@ -188,6 +184,7 @@
     file
     mediainfo
     neovim
+    vim
     killall
     unrar
     yazi
@@ -270,9 +267,17 @@
 
 
   programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
+  programs.nix-ld.libraries = [ ];
 
-  ];
+  xdg.mime.enable = true;
+  xdg.mime.defaultApplications = {
+    "application/pdf" = "org.gnome.Evince.desktop";
+    "image/png" = "feh.desktop";
+    "audio/flac" = "mpv.desktop";
+    "audio/mp3" = "mpv.desktop";
+    "text/plain" = "neovide.desktop";
+    "application/json" = "neovide.desktop";
+  };
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;

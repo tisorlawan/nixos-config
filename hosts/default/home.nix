@@ -62,14 +62,14 @@
   home.sessionVariables = {
     EDITOR = "nvim";
 
-    XDG_DESKTOP_DIR="$HOME/desktop";
-    XDG_DOWNLOAD_DIR="$HOME/downloads";
-    XDG_TEMPLATES_DIR="$HOME/templates";
-    XDG_PUBLICSHARE_DIR="$HOME/public";
-    XDG_DOCUMENTS_DIR="$HOME/documents";
-    XDG_MUSIC_DIR="$HOME/music";
-    XDG_PICTURES_DIR="$HOME/pictures";
-    XDG_VIDEOS_DIR="$HOME/videos";
+    XDG_DESKTOP_DIR = "$HOME/desktop";
+    XDG_DOWNLOAD_DIR = "$HOME/downloads";
+    XDG_TEMPLATES_DIR = "$HOME/templates";
+    XDG_PUBLICSHARE_DIR = "$HOME/public";
+    XDG_DOCUMENTS_DIR = "$HOME/documents";
+    XDG_MUSIC_DIR = "$HOME/music";
+    XDG_PICTURES_DIR = "$HOME/pictures";
+    XDG_VIDEOS_DIR = "$HOME/videos";
   };
 
   xdg.desktopEntries = {
@@ -114,4 +114,24 @@
   programs.ripgrep.enable = true;
   programs.bat.enable = true;
   programs.eza.enable = true;
+
+  home.file.".config/rofi" = { source = ../../files/cfg/config/rofi; };
+  home.file.".config/alacritty.toml" = { source = ../../files/cfg/config/alacritty.toml; };
+  home.file.".config/starship.toml" = { source = ../../files/cfg/config/starship.toml; };
+  home.file.".config/greenclip.toml" = { source = ../../files/cfg/config/greenclip.toml; };
+  home.file.".config/user-dirs.dirs" = { source = ../../files/cfg/config/user-dirs.dirs; };
+  home.file.".config/bspwm" = { source = ../../files/cfg/config/bspwm; };
+  home.file.".config/dunst" = { source = ../../files/cfg/config/dunst; };
+  home.file.".config/picom" = { source = ../../files/cfg/config/picom; };
+  home.file.".config/polybar" = { source = ../../files/cfg/config/polybar; };
+  home.file.".config/sxhkd" = { source = ../../files/cfg/config/sxhkd; };
+  home.file.".config/redshift" = { source = ../../files/cfg/config/redshift; };
+  home.file.".config/wezterm" = { source = ../../files/cfg/config/wezterm; };
+  home.file.".config/yazi" = { source = ../../files/cfg/config/yazi; };
+  home.file.".config/mpd" = { source = ../../files/cfg/config/mpd; };
+  home.file.".config/mpv" = { source = ../../files/cfg/config/mpv; };
+  home.file.".images" = { source = ../../files/cfg/images; };
+  home.file.".gitconfig" = { source = ../../files/cfg/gitconfig; };
+  home.file.".tmux.conf" = { source = ../../files/cfg/tmux.conf; };
+  home.file.".scripts" = { source = ../../files/cfg/scripts; };
 }

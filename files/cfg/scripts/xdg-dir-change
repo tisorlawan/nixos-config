@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+mkdir "$HOME/desktop"
+mkdir "$HOME/dl"
+mkdir "$HOME/templates"
+mkdir "$HOME/public"
+mkdir "$HOME/documents"
+mkdir "$HOME/music"
+mkdir "$HOME/pictures"
+mkdir "$HOME/videos"

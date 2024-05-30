@@ -45,16 +45,10 @@
   };
 
 
-  xdg.portal.enable = true;
-  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
-
-
-  programs.hyprland = {
-    enable = true;
-    xwayland.enable = true;
-  };
+  xdg.portal.enable = false;
 
   services.libinput.enable = true;
+  services.libinput.touchpad.tappingDragLock = false;
   # Configure keymap in X11
   services.xserver = {
     enable = true;
@@ -65,6 +59,7 @@
     xkb.layout = "us";
     xkb.variant = "";
     xkb.options = "caps:swapescape";
+
   };
   services.displayManager.sddm.enable = true;
   console.useXkbConfig = true;
@@ -81,6 +76,8 @@
     LIBVA_DRIVER_NAME = "iHD"; # Force intel-media-driver
     WLR_NO_HARDWARE_CURSORS = "1"; # If your cursor becomes invisible
     NIXOS_OZONE_WL = "1"; # Hint electron apps to use wayland
+
+    WLAN_IFACE = "wlp0s20f3";
   };
 
 
@@ -151,13 +148,6 @@
   # $ nix search wget
   # wayland
   environment.systemPackages = with pkgs; [
-    # @wayland
-    (pkgs.waybar.overrideAttrs (oldAttrs: {
-      mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
-    }))
-    swww
-    wofi
-
     # @terminal
     alacritty
     wezterm
@@ -178,6 +168,7 @@
     networkmanagerapplet
     sxhkd
     haskellPackages.greenclip
+    redshift
 
     # @terminal apps
     bat

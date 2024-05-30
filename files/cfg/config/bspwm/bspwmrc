@@ -37,7 +37,7 @@ bspc rule -a Nm-connection-editor state=floating focus=on follow=on
 bspc config external_rules_command "$HOME/.scripts/bspwm-external-rules"
 
 # Autostart
-killall -9 sxhkd dunst nm-applet greenclip redshift-gtk picom
+killall -9 sxhkd dunst nm-applet greenclip redshift-gtk picom 2>/dev/null | true
 
 ~/.config/polybar/launch.sh bspwm gruvbox &
 

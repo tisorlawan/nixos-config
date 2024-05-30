@@ -3,7 +3,7 @@
 WM="${1:-bspwm}"
 THEME="${2:-gruvbox}"
 
-killall polybar
+killall polybar 2>/dev/null | true
 while pgrep -u $UID -x polybar >/dev/null; do sleep 1; done
 
 CONFIG_DIR=$(dirname $0)/themes/$THEME/config.ini

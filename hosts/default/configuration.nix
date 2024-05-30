@@ -209,6 +209,9 @@
     rustup
     stylua
     lua-language-server
+    guile
+    marksman
+    inlyne # markdown previewer
 
     # @media
     mpv

@@ -21,7 +21,7 @@ bspc desktop 8 -l monocle
 bspc config border_width 1
 bspc config window_gap 2
 
-bspc config split_ratio 0.52
+bspc config split_ratio 0.58
 bspc config borderless_monocle true
 bspc config gapless_monocle true
 
@@ -37,7 +37,10 @@ bspc rule -a Nm-connection-editor state=floating focus=on follow=on
 bspc config external_rules_command "$HOME/.scripts/bspwm-external-rules"
 
 # Autostart
-killall -9 sxhkd dunst nm-applet greenclip redshift-gtk picom 2>/dev/null | true
+pkill -9 sxhkd 2>/dev/null | true
+pkill -9 dunst 2>/dev/null | true
+pkill -9 greenclip 2>/dev/null | true
+pkill -9 picom 2>/dev/null | true
 
 ~/.config/polybar/launch.sh bspwm gruvbox &
 
@@ -50,18 +53,16 @@ dunst &
 # # fi
 
 sxhkd &
-nm-applet &
-redshift-gtk &
+if [[ -z $(pgrep nm-applet) ]]; then 
+    nm-applet&
+fi
+if [[ -z $(pgrep redshift) ]]; then 
+    redshift-gtk&
+fi
 
 greenclip daemon &
+picom &
+
 
 xset b off
 xset r rate 350 130
-
-# start compositor
-# while pgrep -u $UID -x picom >/dev/null; do sleep 1; done
-picom &
-
-# Java applications
-# wmname LG3D
-# export _JAVA_AWT_WM_NONREPARENTING=1

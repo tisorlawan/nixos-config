@@ -165,6 +165,7 @@
     sxhkd
     haskellPackages.greenclip
     redshift
+    maim # screenshot
 
     # @terminal apps
     bat

@@ -198,6 +198,8 @@
     neovide
 
     # @dev
+    man-pages
+    man-pages-posix
     gcc
     git
     rye

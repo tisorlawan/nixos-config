@@ -98,7 +98,6 @@ function M.buf_set_keymap_add_colon()
   vim.keymap.set("i", "<C-d>", "<End>;", { noremap = true, silent = true, buffer = bufnr })
 end
 
-
 function M.is_nixos()
   if M.os_exec("uname") == "Linux" then
     local release_name = M.os_exec("cat /etc/os-release | grep '^NAME=' | cut -d'=' -f2")

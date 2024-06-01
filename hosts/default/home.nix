@@ -4,7 +4,7 @@
   home.username = "tiso";
   home.homeDirectory = "/home/tiso";
 
-  home.stateVersion = "23.11"; # Please read the comment before changing.
+  home.stateVersion = "23.11";
 
   home.packages = with pkgs; [
     neovim

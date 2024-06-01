@@ -12,6 +12,10 @@ if utils.is_nixos() then
   table.insert(servers_install_skip, "ruff_lsp")
   table.insert(servers_install_skip, "lua_ls")
   table.insert(servers_install_skip, "marksman")
+  table.insert(servers_install_skip, "gopls")
+  table.insert(servers_install_skip, "nil_ls")
+  table.insert(servers_install_skip, "prettierd")
+  table.insert(servers_install_skip, "pyright")
 end
 
 local servers = cfg.mason_lspserver
@@ -64,10 +68,10 @@ return {
     { "folke/neodev.nvim", opts = {} },
   },
   config = function()
-    setup_diagnostic()
     vim.api.nvim_create_autocmd("LspAttach", {
       group = vim.api.nvim_create_augroup("lsp-attach", { clear = true }),
       callback = function(event)
+        setup_diagnostic()
         cfg.on_attach(event)
         -- local map = function(keys, func, desc)
         --   vim.keymap.set('n', keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })

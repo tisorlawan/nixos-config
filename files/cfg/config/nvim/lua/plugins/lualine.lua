@@ -55,5 +55,5 @@ return {
     tabline = {},
     extensions = {},
   },
-  event = "VeryLazy",
+  event = "VimEnter",
 }

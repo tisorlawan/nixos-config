@@ -129,14 +129,14 @@ case "$class" in
 	;;
 
 "inlyne")
-    echo "desktop=5"
-    exit 0
-    ;;
+	echo "desktop=5"
+	exit 0
+	;;
 
 "Evince")
-    echo "desktop=7"
-    exit 0
-    ;;
+	echo "desktop=7"
+	exit 0
+	;;
 
 "music-visualizer")
 	echo "desktop=1 state=floating rectangle=$(top_center 500 100)"
@@ -157,4 +157,10 @@ case "$class" in
 	echo "state=floating"
 	exit 0
 	;;
+
+"deus")
+	echo "desktop=5 state=floating"
+	exit 0
+	;;
+
 esac

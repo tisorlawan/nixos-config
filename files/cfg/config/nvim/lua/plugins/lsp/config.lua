@@ -38,7 +38,7 @@ local config = {
   json = {
     formatters = { "biome" },
     linters = { "jsonlint" },
-    servers = { "jsonls" },
+    -- servers = { "jsonls" },
   },
   lua = {
     formatters = { "stylua" },
@@ -46,7 +46,7 @@ local config = {
   },
   markdown = {
     linters = { "markdownlint" },
-    formatters = { { "prettierd", "prettier" } },
+    formatters = { "prettierd" },
     servers = { "marksman" },
   },
   nix = {
@@ -120,6 +120,13 @@ end
 if utils.is_nixos() then
   utils.remove_item_from_array(mason_formatter_install, "ruff")
   utils.remove_item_from_array(mason_formatter_install, "stylua")
+  utils.remove_item_from_array(mason_formatter_install, "gofumpt")
+  utils.remove_item_from_array(mason_formatter_install, "goimports")
+  utils.remove_item_from_array(mason_formatter_install, "golines")
+  utils.remove_item_from_array(mason_formatter_install, "prettierd")
+  utils.remove_item_from_array(mason_formatter_install, "clang-format")
+  utils.remove_item_from_array(mason_formatter_install, "nixpkgs-fmt")
+  utils.remove_item_from_array(mason_formatter_install, "biome")
 end
 
 local linters_by_ft = {}

@@ -101,9 +101,7 @@
     isNormalUser = true;
     description = "Agung Baptiso Sorlawan";
     extraGroups = [ "networkmanager" "wheel" "audio" "video" "docker" ];
-    packages = with pkgs; [
-      #  thunderbird
-    ];
+    packages = [ ];
     shell = pkgs.fish;
   };
   programs.fish.enable = true;
@@ -215,6 +213,16 @@
     guile
     marksman
     inlyne # markdown previewer
+    clang-tools
+    gopls
+    golines
+    gofumpt
+    gotools
+    prettierd
+    nil
+    nixpkgs-fmt
+    pyright
+    biome
 
     # @media
     mpv

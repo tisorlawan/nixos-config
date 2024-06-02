@@ -270,6 +270,7 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
+  programs.ssh.askPassword = "";
 
   # List services that you want to enable:
   services.locate.enable = true;

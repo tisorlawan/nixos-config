@@ -73,6 +73,7 @@
     LIBVA_DRIVER_NAME = "iHD"; # Force intel-media-driver
     WLR_NO_HARDWARE_CURSORS = "1"; # If your cursor becomes invisible
     NIXOS_OZONE_WL = "1"; # Hint electron apps to use wayland
+    SSH_ASKPASS = ""; # disable ask pass UI
 
     WLAN_IFACE = "wlp0s20f3";
   };

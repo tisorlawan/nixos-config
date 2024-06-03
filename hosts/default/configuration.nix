@@ -241,6 +241,7 @@
     gnome.nautilus
     google-chrome
     libreoffice
+    postman
 
     # @hardware
     glxinfo

@@ -104,8 +104,14 @@
   home.file.".config/redshift" = { source = ../../files/cfg/config/redshift; };
   home.file.".config/wezterm" = { source = ../../files/cfg/config/wezterm; };
   home.file.".config/yazi" = { source = ../../files/cfg/config/yazi; };
-  home.file.".config/mpd" = { source = ../../files/cfg/config/mpd; };
-  home.file.".config/mpv" = { source = ../../files/cfg/config/mpv; };
+  home.file.".config/mpd" = {
+    source = ../../files/cfg/config/mpd;
+    recursive = true;
+  };
+  home.file.".config/mpv" = {
+    source = ../../files/cfg/config/mpv;
+    recursive = true;
+  };
   home.file.".images" = { source = ../../files/cfg/images; };
   home.file.".gitconfig" = { source = ../../files/cfg/gitconfig; };
   home.file.".tmux.conf" = { source = ../../files/cfg/tmux.conf; };

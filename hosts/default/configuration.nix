@@ -74,6 +74,7 @@
     WLR_NO_HARDWARE_CURSORS = "1"; # If your cursor becomes invisible
     NIXOS_OZONE_WL = "1"; # Hint electron apps to use wayland
     SSH_ASKPASS = ""; # disable ask pass UI
+    SSL_CERT_FILE = /etc/ssl/certs/ca-bundle.crt;
 
     WLAN_IFACE = "wlp0s20f3";
   };
@@ -194,7 +195,8 @@
     brightnessctl
     unzip
     p7zip
-    neovide
+    openssl
+    jless
 
     # @dev
     man-pages
@@ -224,6 +226,7 @@
     nixpkgs-fmt
     pyright
     biome
+    redis
 
     # @media
     mpv
@@ -237,6 +240,7 @@
     poppler
 
     # @desktop app
+    neovide
     evince
     gnome.nautilus
     google-chrome

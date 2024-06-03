@@ -11,7 +11,7 @@ function M.close_diagnostics()
       elseif vim.bo.buftype == "help" then
         vim.cmd("bdelete")
         ---@diagnostic disable-next-line: param-type-mismatch
-      elseif vim.fn.bufname("%") == "Trouble" then
+      elseif vim.bo.filetype == "trouble" then
         vim.cmd("bdelete")
       end
     end)

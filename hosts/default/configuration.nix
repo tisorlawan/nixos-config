@@ -227,6 +227,7 @@
     pyright
     biome
     redis
+    trashy
 
     # @media
     mpv
@@ -246,6 +247,8 @@
     google-chrome
     libreoffice
     postman
+    firefox
+    obsidian
 
     # @hardware
     glxinfo

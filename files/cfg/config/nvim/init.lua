@@ -37,7 +37,6 @@ local plugins = {
   require("plugins.smart-splits"),
   require("plugins.ufo"),
   require("plugins.colorscheme"),
-  require("plugins.outline"),
   require("plugins.yazi"),
   require("plugins.dressing"),
 

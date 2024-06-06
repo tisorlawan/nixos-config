@@ -3,7 +3,7 @@ local cfg = require("plugins.lsp.config")
 local utils = require("utils")
 
 -- some lsp is setup by separate plugins
-local servers_config_skip = { "tsserver", "rust_analyzer" }
+local servers_config_skip = { "tsserver" }
 -- local servers_config_skip = {}
 
 local servers_install_skip = { "clangd", "rust_analyzer" }
@@ -222,10 +222,24 @@ return {
     })
 
     local lspconfig = require("lspconfig")
+    local handlers = vim.lsp.handlers
+    local border = {
+      { "🭽", "FloatBorder" },
+      { "▔", "FloatBorder" },
+      { "🭾", "FloatBorder" },
+      { "▕", "FloatBorder" },
+      { "🭿", "FloatBorder" },
+      { "▁", "FloatBorder" },
+      { "🭼", "FloatBorder" },
+      { "▏", "FloatBorder" },
+    }
+    handlers["textDocument/hover"] = vim.lsp.with(handlers.hover, { border = border })
+    handlers["textDocument/signatureHelp"] = vim.lsp.with(handlers.signature_help, { border = border })
+
     for _, sn in pairs(servers) do
       if not utils.contains(servers_config_skip, sn) then
         local c = cfg.config[sn]
-        local merged_cfg = vim.tbl_deep_extend("force", { capabilities = capabilities }, c or {})
+        local merged_cfg = vim.tbl_deep_extend("force", { capabilities = capabilities, handlers = handlers }, c or {})
 
         lspconfig[sn].setup(merged_cfg)
       end

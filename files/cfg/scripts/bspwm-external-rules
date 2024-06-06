@@ -143,6 +143,11 @@ case "$class" in
 	exit 0
 	;;
 
+"obsidian")
+	echo "desktop=7"
+	exit 0
+	;;
+
 "music-visualizer")
 	echo "desktop=1 state=floating rectangle=$(top_center 500 100)"
 	exit 0

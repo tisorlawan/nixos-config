@@ -166,6 +166,7 @@
     haskellPackages.greenclip
     redshift
     maim # screenshot
+    flameshot
 
     # @terminal apps
     bat
@@ -211,11 +212,13 @@
     nodejs_22
     docker
     rustup
+    leptosfmt
     stylua
     lua-language-server
     guile
     marksman
     inlyne # markdown previewer
+    clang
     clang-tools
     gopls
     golines
@@ -228,6 +231,10 @@
     biome
     redis
     trashy
+    trunk
+    cocogitto
+    mold # faster linker
+
 
     # @media
     mpv
@@ -249,6 +256,7 @@
     postman
     firefox
     obsidian
+    zoom-us
 
     # @hardware
     glxinfo

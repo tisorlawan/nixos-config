@@ -47,11 +47,5 @@ return {
     vim.keymap.set("n", "zM", require("ufo").closeAllFolds, { desc = "close all folds" })
     vim.keymap.set("n", "zr", require("ufo").openFoldsExceptKinds, { desc = "fold less" })
     vim.keymap.set("n", "zm", require("ufo").closeFoldsWith, { desc = "fold more" })
-    vim.keymap.set("n", "K", function()
-      local winid = require("ufo").peekFoldedLinesUnderCursor()
-      if not winid then
-        vim.lsp.buf.hover()
-      end
-    end, { desc = "peek fold" })
   end,
 }

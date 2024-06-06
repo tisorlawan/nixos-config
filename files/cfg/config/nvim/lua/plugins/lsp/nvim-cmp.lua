@@ -40,10 +40,6 @@ return {
     local lspkind = require("lspkind")
     local luasnip = require("luasnip")
 
-    local lsp_handler = vim.lsp.handlers
-    lsp_handler["textDocument/hover"] = vim.lsp.with(lsp_handler.hover, { border = "single" })
-    lsp_handler["textDocument/signatureHelp"] = vim.lsp.with(lsp_handler.signature_help, { border = "single" })
-
     cmp.setup({
       snippet = {
         expand = function(args)

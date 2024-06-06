@@ -59,6 +59,7 @@ local config = {
   },
   rust = {
     servers = { "rust_analyzer" },
+    formatters = { "rustfmt", "leptosfmt" },
   },
   sh = {
     servers = { "bashls" },
@@ -127,7 +128,9 @@ if utils.is_nixos() then
   utils.remove_item_from_array(mason_formatter_install, "clang-format")
   utils.remove_item_from_array(mason_formatter_install, "nixpkgs-fmt")
   utils.remove_item_from_array(mason_formatter_install, "biome")
+  utils.remove_item_from_array(mason_formatter_install, "rustfmt")
 end
+utils.remove_item_from_array(mason_formatter_install, "leptosfmt")
 
 local linters_by_ft = {}
 for _, ft in pairs(used_ft) do
@@ -161,7 +164,7 @@ local function setup_lsp_keymaps(buf)
   map("gD", vim.lsp.buf.declaration, "Goto Declaration")
   map("gd", vim.lsp.buf.definition, "Goto Definition")
   map("gm", ":vsplit | lua vim.lsp.buf.definition()<cr>", "Goto Definition Vsplit")
-  -- map("K", vim.lsp.buf.hover, "Hover")
+  map("K", vim.lsp.buf.hover, "Hover")
   map("gi", vim.lsp.buf.implementation, "Goto Implementation")
   map("<leader>k", vim.lsp.buf.signature_help, "Signature Help")
   map("gy", vim.lsp.buf.type_definition, "Goto Type Definition")

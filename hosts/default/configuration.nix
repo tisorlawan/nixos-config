@@ -234,6 +234,7 @@
     trunk
     cocogitto
     mold # faster linker
+    postgresql
 
 
     # @media

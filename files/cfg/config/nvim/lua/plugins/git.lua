@@ -1,17 +1,22 @@
 return {
   {
-    "NeogitOrg/neogit",
+    "kdheepak/lazygit.nvim",
+    cmd = {
+      "LazyGit",
+      "LazyGitConfig",
+      "LazyGitCurrentFile",
+      "LazyGitFilter",
+      "LazyGitFilterCurrentFile",
+    },
+    -- optional for floating window border decoration
     dependencies = {
-      "nvim-lua/plenary.nvim", -- required
-      { "sindrets/diffview.nvim", opts = { use_icons = false } },
-
-      "ibhagwan/fzf-lua", -- optional
+      "nvim-lua/plenary.nvim",
     },
-    config = true,
+    -- setting the keybinding for LazyGit with 'keys' is recommended in
+    -- order to load the plugin when the command is run for the first time
     keys = {
-      { "<Leader>gg", "<Cmd>Neogit<Cr>", desc = "Neogit" },
+      { "<leader>gg", "<cmd>LazyGit<cr>", desc = "LazyGit" },
     },
-    cmd = { "Neogit" },
   },
 
   {

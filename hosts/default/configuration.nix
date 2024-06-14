@@ -203,6 +203,7 @@
     man-pages
     man-pages-posix
     gcc
+    gnumake
     git
     rye
     python312
@@ -235,6 +236,10 @@
     cocogitto
     mold # faster linker
     postgresql
+    pdftk # pdf uncompress, remove watermark
+    qpdf # pdf manipulation, e.g: extract specific pages
+    poppler_utils # pdftotext
+    xsv
 
 
     # @media

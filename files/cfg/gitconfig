@@ -60,6 +60,8 @@
 	cl = clone
 	br = branch
 	ci = commit
+    ca = commit --amend
+    can = commit --amend --no-edit
 	u = restore --staged
 
 	pr = pull --rebase
@@ -138,3 +140,5 @@
 	enabled = true
 [branch]
 	sort = -committerdate
+
+; vi: ft=gitconfig

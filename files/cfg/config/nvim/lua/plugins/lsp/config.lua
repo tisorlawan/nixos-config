@@ -59,7 +59,8 @@ local config = {
   },
   rust = {
     servers = { "rust_analyzer" },
-    formatters = { "rustfmt", "leptosfmt" },
+    -- formatters = { "rustfmt", "leptosfmt" },
+    formatters = { "rustfmt" },
   },
   sh = {
     servers = { "bashls" },

@@ -167,6 +167,7 @@
     redshift
     maim # screenshot
     flameshot
+    gnome.adwaita-icon-theme # for xournalapp
 
     # @terminal apps
     bat
@@ -240,6 +241,8 @@
     qpdf # pdf manipulation, e.g: extract specific pages
     poppler_utils # pdftotext
     xsv
+    jupyter-all
+    ghostscript
 
 
     # @media
@@ -252,6 +255,7 @@
     pulseaudio
     ripgrep
     poppler
+    imagemagick
 
     # @desktop app
     neovide
@@ -263,6 +267,7 @@
     firefox
     obsidian
     zoom-us
+    xournalpp # signature pdf
 
     # @hardware
     glxinfo

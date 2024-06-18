@@ -36,6 +36,9 @@ return {
           ["ctrl-x"] = "abort",
         },
       },
+      complete_path = {
+        cmd = "fd -u --exclude .git --exclude .ipynb_checkpoints --exclude node_modules", -- default: auto detect fd|rg|find
+      },
     })
 
     vim.keymap.set({ "n", "v", "i" }, "<C-x><C-f>", function()

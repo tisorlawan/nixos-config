@@ -22,7 +22,10 @@ return {
         enable = true,
         additional_vim_regex_highlighting = { "ruby" },
       },
-      indent = { enable = true, disable = { "python", "css", "rust" } },
+      indent = {
+        enable = true,
+        disable = { "python", "css", "rust", "lua", "javascript", "typescript", "toml", "json" },
+      },
       yati = {
         enable = true,
         disable = { "rust" },

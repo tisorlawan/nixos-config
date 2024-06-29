@@ -8,8 +8,8 @@ return {
     { "gp", "<Plug>(leap-from-window)", mode = { "n", "x", "o" }, desc = "leap from window" },
   },
   opts = {
-    safe_labels = "tyuodfghjklvbn",
-    labels = "sfnjklhodwembuyvrgtqpcxz/SFNJKLHODWEIMBUYVRGTAQPCXZ",
+    safe_labels = "tyuofghjklvbn",
+    labels = "sfnjklhowembuyvrgtqpcxz/SFNJKLHOWEIMBUYVRGTAQPCXZ",
   },
   init = function() -- https://github.com/ggandor/leap.nvim/issues/70#issuecomment-1521177534
     vim.api.nvim_create_autocmd("User", {

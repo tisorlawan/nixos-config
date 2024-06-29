@@ -3,7 +3,7 @@ local cfg = require("plugins.lsp.config")
 local utils = require("utils")
 
 -- some lsp is setup by separate plugins
-local servers_config_skip = { "tsserver" }
+local servers_config_skip = { "tsserver", "rust_analyzer" }
 -- local servers_config_skip = {}
 
 local servers_install_skip = { "clangd", "rust_analyzer" }

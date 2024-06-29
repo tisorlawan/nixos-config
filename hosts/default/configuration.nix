@@ -102,7 +102,7 @@
   users.users.tiso = {
     isNormalUser = true;
     description = "Agung Baptiso Sorlawan";
-    extraGroups = [ "networkmanager" "wheel" "audio" "video" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "audio" "video" ];
     packages = [ ];
     shell = pkgs.fish;
   };
@@ -111,33 +111,6 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-
-  # stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/kanagawa.yaml";
-  # stylix.image = ./../../wallpaper.jpg;
-  # stylix.fonts = {
-  #   monospace = {
-  #     package = pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; };
-  #     name = "JetBrainsMono Nerd Font Mono";
-  #   };
-  #
-  #   sansSerif = {
-  #     package = pkgs.dejavu_fonts;
-  #     name = "DejaVu Sans";
-  #   };
-  #
-  #   serif = {
-  #     package = pkgs.dejavu_fonts;
-  #     name = "DejaVu Serif";
-  #   };
-  # };
-  # stylix.polarity = "dark";
-  # stylix.targets.fish.enable = false;
-  # stylix.fonts.sizes = {
-  #   applications = 9;
-  #   terminal = 8;
-  #   desktop = 9;
-  #   popups = 9;
-  # };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -161,6 +134,7 @@
     xdg-user-dirs
     xorg.xbacklight
     xorg.xkill
+    xorg.xdpyinfo
     networkmanagerapplet
     sxhkd
     haskellPackages.greenclip
@@ -179,8 +153,10 @@
     jq
     lazygit
     fzf
+    skim
     htop
     tmux
+    zellij
     wget
     atool
     curl
@@ -188,6 +164,7 @@
     mediainfo
     neovim
     vim
+    helix
     killall
     unrar
     yazi
@@ -214,6 +191,7 @@
     nodejs_22
     docker
     rustup
+    sccache
     leptosfmt
     stylua
     lua-language-server
@@ -243,13 +221,20 @@
     xsv
     jupyter-all
     ghostscript
+    google-cloud-sdk
+    sqlite
+    openconnect
+    neofetch
 
 
     # @media
     mpv
     exiftool
     feh
-    ffmpeg
+    (ffmpeg.override {
+      withXcb = true;
+    })
+
     ffmpegthumbnailer
     pavucontrol
     pulseaudio
@@ -286,7 +271,7 @@
   virtualisation.docker.enable = true;
   # use docker without Root access (Rootless docker)
   virtualisation.docker.rootless = {
-    enable = true;
+    enable = false;
     setSocketVariable = true;
   };
 

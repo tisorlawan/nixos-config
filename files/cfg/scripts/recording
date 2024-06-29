@@ -72,6 +72,23 @@ screencast_bad() {
 	# updateicon " Screencast"
 }
 
+screencast_bad_mp4() {
+	ffmpeg -y \
+		-f x11grab \
+		-framerate 25 \
+		-s $(xdpyinfo | grep dimensions | awk '{print $2;}') \
+		-i :0.0 \
+		-f alsa -i default \
+		-c:v libx264 -profile:v baseline -level 3.0 -pix_fmt yuv420p \
+		-preset slower -crf 23 \
+		-c:a aac -b:a 128k \
+		-r 30 \
+		"$HOME/screencast_$(date '+%d-%m-%Y_%H:%M:%S').mp4" &
+
+	echo $! >/tmp/recordingpid
+	# updateicon " Screencast"
+}
+
 webcam() {
 	ffmpeg \
 		-f v4l2 \
@@ -94,12 +111,13 @@ audio() {
 }
 
 askrecording() {
-	choice=$(printf "video\\nvideo_bad\\nscreencast\\nscreencast_bad\\naudio\\nwebcam" |
+	choice=$(printf "video\\nvideo_bad\\nscreencast\\nscreencast_bad\\nscreencast_bad_mp4\\naudio\\nwebcam" |
 		rofi -i -dmenu -width 600 -lines 4 -columns 10 -p "Select recording style")
 	case "$choice" in
 	audio) audio ;;
 	screencast) screencast ;;
 	screencast_bad) screencast_bad ;;
+	screencast_bad_mp4) screencast_bad_mp4 ;;
 	video) video ;;
 	video_bad) video_bad ;;
 	webcam) webcam ;;
@@ -116,6 +134,7 @@ case "$1" in
 audio) audio ;;
 screencast) screencast ;;
 screencast_bad) screencast_bad ;;
+screencast_bad_mp4) screencast_bad_mp4 ;;
 video) video ;;
 video_bad) video_bad ;;
 webcam) webcam ;;

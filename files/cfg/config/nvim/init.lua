@@ -48,6 +48,7 @@ local ft_plugins = {
   markdown = require("plugins.langs.markdown").plugins,
   typescript = require("plugins.langs.typescript"),
   norg = require("plugins.langs.neorg"),
+  rust = require("plugins.langs.rust"),
 }
 
 local used_ft = require("plugins.lsp.config").used_ft

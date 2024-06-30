@@ -231,9 +231,7 @@
     mpv
     exiftool
     feh
-    (ffmpeg.override {
-      withXcb = true;
-    })
+    ffmpeg-full
 
     ffmpegthumbnailer
     pavucontrol

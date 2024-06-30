@@ -173,6 +173,16 @@ case "$class" in
 	exit 0
 	;;
 
+"simplescreenrecorder")
+	echo "state=floating"
+	exit 0
+	;;
+
+"SimpleScreenRecorder")
+	echo "state=floating"
+	exit 0
+	;;
+
 "deus")
 	echo "desktop=5 state=floating"
 	exit 0

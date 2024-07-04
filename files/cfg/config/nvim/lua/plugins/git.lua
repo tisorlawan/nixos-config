@@ -31,6 +31,9 @@ return {
           changedelete = { text = "~" },
           untracked = { text = "┆" },
         },
+        signs_staged_enable = false,
+        max_file_length = 10000,
+
         on_attach = function(bufnr)
           local gs = package.loaded.gitsigns
 

@@ -225,6 +225,7 @@
     sqlite
     openconnect
     neofetch
+    rsync
 
 
     # @media

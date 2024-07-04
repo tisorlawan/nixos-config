@@ -24,7 +24,7 @@ return {
       },
       indent = {
         enable = true,
-        disable = { "python", "css", "rust", "lua", "javascript", "typescript", "toml", "json" },
+        disable = { "python", "css", "rust", "lua", "javascript", "typescript", "toml", "json", "c" },
       },
       yati = {
         enable = true,

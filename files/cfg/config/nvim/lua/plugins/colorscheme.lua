@@ -6,7 +6,7 @@ local function set_keymap_toggle_transparency(fn)
   end, { silent = true, desc = "toggle transparent" })
 end
 
-vim.g.transparent = true
+vim.g.transparent = false
 
 return {
   {
@@ -23,7 +23,7 @@ return {
           dimInactive = false,
           terminalColors = true,
         })
-        vim.cmd.colorscheme("kanagawa-wave")
+        vim.cmd.colorscheme("kanagawa-dragon")
       end
 
       fn()

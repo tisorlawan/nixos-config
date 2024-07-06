@@ -11,8 +11,7 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
-  require("plugins.dirvish"),
-  require("plugins.comment"),
+  -- require("plugins.dirvish"),
   require("plugins.fzf"),
   require("plugins.git"),
   require("plugins.treesitter"),

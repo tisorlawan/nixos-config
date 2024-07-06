@@ -303,6 +303,7 @@
     "audio/flac" = "mpv.desktop";
     "audio/mp3" = "mpv.desktop";
     "text/plain" = "neovide.desktop";
+    "text/html" = "google-chrome.desktop";
     "application/json" = "neovide.desktop";
   };
 

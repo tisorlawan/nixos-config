@@ -236,7 +236,9 @@ local M = {
           experimental = {
             classRegex = {
               'class="([^"]*)',
+              'class: "([^"]*)',
               'with_cn\\("([^"]*)',
+              'c\\("([^"]*)',
             },
           },
           validate = true,

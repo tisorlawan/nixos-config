@@ -22,12 +22,12 @@ return {
       tags = { previewer = "bat" },
       btags = { previewer = "bat" },
       files = {
-        fzf_opts = { ["--ansi"] = false },
-        fd_opts = [[--color=never --type f --follow]],
+        -- fzf_opts = { ["--ansi"] = false },
+        -- fd_opts = [[--color=never --type f --follow]],
       },
       defaults = {
-        git_icons = false,
-        file_icons = false,
+        git_icons = true,
+        file_icons = true,
       },
       keymap = {
         fzf = {

@@ -174,6 +174,7 @@
     brightnessctl
     unzip
     p7zip
+    zip
     openssl
     jless
 

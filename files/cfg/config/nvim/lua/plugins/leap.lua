@@ -1,5 +1,6 @@
 return {
   "ggandor/leap.nvim",
+  commit = "eca8108",
   keys = {
     { "s", "<Plug>(leap-forward-to)", mode = { "n", "x", "o" }, desc = "leap forward to" },
     { "S", "<Plug>(leap-backward-to)", mode = { "n", "x", "o" }, desc = "leap backward to" },

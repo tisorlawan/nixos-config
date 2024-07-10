@@ -239,6 +239,7 @@ local M = {
               'class: "([^"]*)',
               'with_cn\\("([^"]*)',
               'c\\("([^"]*)',
+              'class\\("([^"]*)',
             },
           },
           validate = true,

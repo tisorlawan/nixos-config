@@ -16,6 +16,7 @@ if utils.is_nixos() then
   table.insert(servers_install_skip, "nil_ls")
   table.insert(servers_install_skip, "prettierd")
   table.insert(servers_install_skip, "pyright")
+  table.insert(servers_install_skip, "zls")
 end
 
 local servers = cfg.mason_lspserver
@@ -56,6 +57,7 @@ return {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     {
       "j-hui/fidget.nvim",
+      tag = "v1.4.5",
       opts = {
         notification = {
           window = {

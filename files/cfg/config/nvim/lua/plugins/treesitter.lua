@@ -20,11 +20,11 @@ return {
       auto_install = true,
       highlight = {
         enable = true,
-        additional_vim_regex_highlighting = { "ruby" },
+        additional_vim_regex_highlighting = true,
       },
       indent = {
         enable = true,
-        disable = { "python", "css", "rust", "lua", "javascript", "typescript", "toml", "json", "c" },
+        disable = { "python", "css", "rust", "lua", "javascript", "tsx", "typescript", "toml", "json", "c" },
       },
       yati = {
         enable = true,

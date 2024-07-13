@@ -88,6 +88,8 @@ return {
     map("<leader>gt", "<cmd>lua require('fzf-lua').git_tags()<cr>", "git tags")
     map("<leader>gc", "<cmd>lua require('fzf-lua').git_commits()<cr>", "git commits")
 
+    vim.keymap.set("v", "gs", "<cmd>lua require('fzf-lua').grep_visual()<cr>", { desc = "grep visual" })
+
     -- -- Fuzzy find all the symbols in your current document.
     -- --  Symbols are things like variables, functions, types, etc.
     -- -- map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')

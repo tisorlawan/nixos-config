@@ -81,6 +81,10 @@ local config = {
     formatters = { "prettierd" },
     servers = { "tsserver", "eslint" },
   },
+  zig = {
+    formatters = { "zigfmt" },
+    servers = { "zls" },
+  },
 }
 
 local formatters_to_mason = {
@@ -132,6 +136,8 @@ if utils.is_nixos() then
   utils.remove_item_from_array(mason_formatter_install, "rustfmt")
 end
 utils.remove_item_from_array(mason_formatter_install, "leptosfmt")
+utils.remove_item_from_array(mason_formatter_install, "zigfmt")
+utils.remove_item_from_array(mason_formatter_install, "mix")
 
 local linters_by_ft = {}
 for _, ft in pairs(used_ft) do

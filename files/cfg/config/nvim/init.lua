@@ -21,7 +21,6 @@ local plugins = {
   require("plugins.todo-comments"),
   require("plugins.leap"),
   require("plugins.flit"),
-  require("plugins.vim-grepper"),
   require("plugins.mini"),
   require("plugins.scroll-eof"),
   require("plugins.numb"),
@@ -38,7 +37,6 @@ local plugins = {
   require("plugins.colorscheme"),
   require("plugins.yazi"),
   require("plugins.dressing"),
-  -- require("plugins.tiny-inline-diagnostic"),
 
   require("plugins.lsp"),
 }
@@ -49,6 +47,7 @@ local ft_plugins = {
   typescript = require("plugins.langs.typescript"),
   norg = require("plugins.langs.neorg"),
   rust = require("plugins.langs.rust"),
+  elixir = require("plugins.langs.elixir"),
 }
 
 local used_ft = require("plugins.lsp.config").used_ft

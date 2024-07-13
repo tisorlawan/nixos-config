@@ -1,21 +1,30 @@
 return {
   "folke/which-key.nvim",
-  event = "VimEnter",
+  event = "VeryLazy",
+  keys = {
+    {
+      "<leader>?",
+      function()
+        require("which-key").show({ global = false })
+      end,
+      desc = "Buffer Local Keymaps (which-key)",
+    },
+  },
   config = function()
     require("which-key").setup()
-    require("which-key").register({
-      ["<leader>d"] = { name = "[D]ocument", _ = "which_key_ignore" },
-      ["<leader>r"] = { name = "[R]ename", _ = "which_key_ignore" },
-      ["<leader>f"] = { name = "[F]zf search", _ = "which_key_ignore" },
-      ["<leader>g"] = { name = "[G]it", _ = "which_key_ignore" },
-      ["<leader>w"] = { name = "[W]orkspace", _ = "which_key_ignore" },
-      ["<leader>t"] = { name = "[T]oggle", _ = "which_key_ignore" },
-      ["<leader>l"] = { name = "Lazy|Lsp", _ = "which_key_ignore" },
-      ["<leader>z"] = { name = "Fold", _ = "which_key_ignore" },
+    require("which-key").add({
+      { "<leader>d", group = "[D]ocument" },
+      { "<leader>r", group = "[R]ename" },
+      { "<leader>f", group = "[F]zf search" },
+      { "<leader>g", group = "[G]it" },
+      { "<leader>w", group = "[W]orkspace" },
+      { "<leader>t", group = "[T]oggle" },
+      { "<leader>l", group = "Lazy|Lsp" },
+      { "<leader>z", group = "Fold" },
     })
 
-    require("which-key").register({
-      ["<leader>h"] = { "Git [H]unk" },
-    }, { mode = "v" })
+    require("which-key").add({
+      { "<leader>h", group = "Git [H]unk", mode = "v" },
+    })
   end,
 }

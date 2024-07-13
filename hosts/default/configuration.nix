@@ -186,6 +186,7 @@
     git
     rye
     python312
+    poetry
     ruff
     ruff-lsp
     go
@@ -194,6 +195,10 @@
     rustup
     sccache
     leptosfmt
+    zig
+    zls
+    elixir
+    elixir-ls
     stylua
     lua-language-server
     guile

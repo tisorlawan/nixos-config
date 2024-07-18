@@ -41,6 +41,7 @@
     LC_TIME = "en_US.UTF-8";
   };
 
+  nix.settings.trusted-users = [ "root" "tiso" ];
 
   xdg.portal.enable = false;
 
@@ -179,6 +180,7 @@
     jless
 
     # @dev
+    devenv
     man-pages
     man-pages-posix
     gcc
@@ -199,6 +201,7 @@
     zls
     elixir
     elixir-ls
+    livebook
     stylua
     lua-language-server
     guile
@@ -232,6 +235,7 @@
     openconnect
     neofetch
     rsync
+    inotify-tools # for elixir
 
 
     # @media

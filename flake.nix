@@ -6,18 +6,27 @@
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
     };
-
-    # stylix.url = "github:danth/stylix";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/9355fa86e6f27422963132c2c9aeedb0fb963d93";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }@inputs:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, ... }:
     {
       nixosConfigurations = {
-        default = nixpkgs.lib.nixosSystem {
+        default = nixpkgs.lib.nixosSystem rec {
           system = "x86_64-linux";
+          specialArgs = {
+            pkgs = import nixpkgs {
+              inherit system;
+              config.allowUnfree = true;
+            };
+            pkgs-unstable = import nixpkgs-unstable {
+              inherit system;
+              config.allowUnfree = true;
+            };
+          };
+
           modules = [
             ./hosts/default/configuration.nix
-            # inputs.stylix.nixosModules.stylix
             home-manager.nixosModules.home-manager
             {
               home-manager.useGlobalPkgs = true;

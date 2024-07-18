@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+url="$1"
+fname=$(yt-dlp -j "$url" | jq '.filename' | tr -d '"' | tr -d "'")
+echo "fname: $fname"
+
+yt-dlp -f 'bv*[height<=1080][ext=mp4]+ba/b' --no-playlist "$url" -o - | tee "$fname" | mpv -

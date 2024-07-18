@@ -49,9 +49,14 @@ return {
   -- },
   -- Experimental automatic tag closing and renaming (optional)
   {
-    "rayliwell/nvim-ts-autotag",
+    "windwp/nvim-ts-autotag",
     config = function()
-      require("nvim-ts-autotag").setup()
+      require("nvim-ts-autotag").setup({
+        aliases = {
+          ["heex"] = "html",
+        },
+      })
     end,
+    lazy = false,
   },
 }

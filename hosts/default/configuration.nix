@@ -191,6 +191,9 @@
     poetry
     ruff
     ruff-lsp
+    virtualenv
+    black
+    isort
     go
     nodejs_22
     docker
@@ -263,6 +266,7 @@
     zoom-us
     xournalpp # signature pdf
     pkgs-unstable.zed-editor
+    transmission-gtk
 
     # @hardware
     glxinfo

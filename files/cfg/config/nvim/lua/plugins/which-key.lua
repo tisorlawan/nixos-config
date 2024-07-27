@@ -1,7 +1,6 @@
 return {
   "folke/which-key.nvim",
   event = "VeryLazy",
-  tag = "v3.8.0",
   keys = {
     {
       "<leader>?",

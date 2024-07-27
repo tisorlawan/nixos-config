@@ -1,7 +1,6 @@
 return {
   {
     "mrjones2014/smart-splits.nvim",
-    version = "v1.3.0",
     config = function()
       local s = require("smart-splits")
 

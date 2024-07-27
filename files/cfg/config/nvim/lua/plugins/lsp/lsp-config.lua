@@ -57,7 +57,6 @@ return {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     {
       "j-hui/fidget.nvim",
-      tag = "v1.4.5",
       opts = {
         notification = {
           window = {

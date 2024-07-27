@@ -29,7 +29,7 @@ local plugins = {
   require("plugins.undotree"),
   require("plugins.multicursors"),
   require("plugins.executor"),
-  require("plugins.harpoon"),
+  require("plugins.arrow"),
   require("plugins.lastplace"),
   require("plugins.which-key"),
   require("plugins.smart-splits"),

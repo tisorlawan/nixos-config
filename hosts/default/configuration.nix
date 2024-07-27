@@ -163,7 +163,7 @@
     curl
     file
     mediainfo
-    neovim
+    pkgs-unstable.neovim
     vim
     helix
     killall

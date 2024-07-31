@@ -34,6 +34,17 @@ return {
 
     "onsails/lspkind.nvim",
     { "js-everts/cmp-tailwind-colors", opts = {} },
+    {
+      "folke/lazydev.nvim",
+      ft = "lua", -- only load on lua files
+      opts = {
+        library = {
+          -- See the configuration section for more details
+          -- Load luvit types when the `vim.uv` word is found
+          { path = "luvit-meta/library", words = { "vim%.uv" } },
+        },
+      },
+    },
   },
   config = function()
     local cmp = require("cmp")
@@ -83,6 +94,7 @@ return {
       },
 
       sources = cmp.config.sources({
+        { name = "lazydev", group_index = 0 },
         { name = "path", priority = 1200 },
         -- { name = "codeium", priority = 1100 },
         { name = "nvim_lsp", priority = 1000 },

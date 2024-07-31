@@ -1,3 +1,7 @@
+vim.keymap.set({ "n", "x", "o" }, "<C-o>", function()
+  require("leap.treesitter").select()
+end)
+
 return {
   "ggandor/leap.nvim",
   keys = {
@@ -12,24 +16,24 @@ return {
     labels = "sfnjklhowembuyvrgtqpcxz/SFNJKLHOWEIMBUYVRGTAQPCXZ",
   },
   init = function() -- https://github.com/ggandor/leap.nvim/issues/70#issuecomment-1521177534
-    vim.api.nvim_create_autocmd("User", {
-      callback = function()
-        vim.cmd.hi("Cursor", "blend=100")
-        vim.opt.guicursor:append({ "a:Cursor/lCursor" })
-      end,
-      pattern = "LeapEnter",
-    })
-    vim.api.nvim_create_autocmd("User", {
-      callback = function()
-        vim.cmd.hi("Cursor", "blend=0")
-        vim.opt.guicursor:remove({ "a:Cursor/lCursor" })
-      end,
-      pattern = "LeapLeave",
-    })
-
-    vim.keymap.set({ "n", "o" }, "gw", function()
-      require("leap.remote").action()
-    end)
+    -- vim.api.nvim_create_autocmd("User", {
+    --   callback = function()
+    --     vim.cmd.hi("Cursor", "blend=100")
+    --     vim.opt.guicursor:append({ "a:Cursor/lCursor" })
+    --   end,
+    --   pattern = "LeapEnter",
+    -- })
+    -- vim.api.nvim_create_autocmd("User", {
+    --   callback = function()
+    --     vim.cmd.hi("Cursor", "blend=0")
+    --     vim.opt.guicursor:remove({ "a:Cursor/lCursor" })
+    --   end,
+    --   pattern = "LeapLeave",
+    -- })
+    --
+    -- vim.keymap.set({ "n", "o" }, "gw", function()
+    --   require("leap.remote").action()
+    -- end)
   end,
   dependencies = {
     "tpope/vim-repeat",

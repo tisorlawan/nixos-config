@@ -23,6 +23,7 @@ return {
       btags = { previewer = "bat" },
       files = {
         -- fzf_opts = { ["--ansi"] = false },
+        fd_opts = [[--color never --type f --hidden --follow --strip-cwd-prefix -E .git -E node_modules -E .sqlx]],
         -- fd_opts = [[--color=never --type f --follow]],
       },
       defaults = {
@@ -37,7 +38,7 @@ return {
         },
       },
       complete_path = {
-        cmd = "fd -u --exclude .git --exclude .ipynb_checkpoints --exclude node_modules", -- default: auto detect fd|rg|find
+        cmd = "fd -u --exclude .git --exclude .ipynb_checkpoints --exclude .sqlx --exclude node_modules", -- default: auto detect fd|rg|find
       },
     })
 
@@ -53,7 +54,7 @@ return {
 
     map(
       "<leader>fa",
-      [[<cmd>lua require('fzf-lua').files({ cmd = "fd --color=never --type f --hidden --follow -E .git -E node_modules", winopts = {preview = {hidden = 'hidden'}} })<cr>]],
+      [[<cmd>lua require('fzf-lua').files({ cmd = "fd --color=never --type f --hidden --follow -E .git -E node_modules -E .sqlx", winopts = {preview = {hidden = 'hidden'}} })<cr>]],
       "all files"
     )
     map("<leader>fg", "<cmd>lua require('fzf-lua').git_files()<cr>", "git files")

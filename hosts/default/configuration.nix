@@ -235,6 +235,7 @@
     ghostscript
     google-cloud-sdk
     sqlite
+    litecli
     openconnect
     neofetch
     rsync

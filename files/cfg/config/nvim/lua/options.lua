@@ -66,6 +66,7 @@ vim.opt.wildignorecase = true
 vim.opt.wildignore:append("**/node_modules/*")
 vim.opt.wildignore:append("**/.git/*")
 vim.opt.wildignore:append("**/build/*")
+vim.opt.wildignore:append("**/sqlx/*")
 
 vim.o.foldcolumn = "1" -- '0' is not bad
 vim.o.foldlevel = 99 -- Using ufo provider need a large value, feel free to decrease the value

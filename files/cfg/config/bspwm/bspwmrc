@@ -61,7 +61,7 @@ if [[ -z $(pgrep redshift) ]]; then
 fi
 
 greenclip daemon &
-picom &
+# picom &
 
 
 xset b off

@@ -1,6 +1,6 @@
-vim.keymap.set({ "n", "x", "o" }, "<C-o>", function()
-  require("leap.treesitter").select()
-end)
+-- vim.keymap.set({ "n", "x", "o" }, "<C-o>", function()
+--   require("leap.treesitter").select()
+-- end)
 
 return {
   "ggandor/leap.nvim",

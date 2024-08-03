@@ -37,6 +37,7 @@ local plugins = {
   require("plugins.colorscheme"),
   require("plugins.yazi"),
   require("plugins.dressing"),
+  require("plugins.snipe"),
 
   require("plugins.lsp"),
 }

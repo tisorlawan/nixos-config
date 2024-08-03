@@ -258,6 +258,7 @@
     # @desktop app
     neovide
     evince
+    foliate # epub reader
     gnome.nautilus
     google-chrome
     libreoffice

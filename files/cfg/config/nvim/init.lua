@@ -2,6 +2,7 @@ require("options")
 require("mappings")
 require("autocmds")
 require("filetypes")
+require("misc")
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
@@ -38,6 +39,7 @@ local plugins = {
   require("plugins.yazi"),
   require("plugins.dressing"),
   require("plugins.snipe"),
+  require("plugins.quicker"),
 
   require("plugins.lsp"),
 }

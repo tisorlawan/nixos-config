@@ -202,7 +202,7 @@
     leptosfmt
     zig
     zls
-    elixir
+    pkgs-unstable.elixir_1_17
     elixir-ls
     livebook
     stylua

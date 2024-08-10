@@ -60,6 +60,8 @@ return {
     map("<leader>fg", "<cmd>lua require('fzf-lua').git_files()<cr>", "git files")
     map("<leader>fl", "<cmd>lua require('fzf-lua').lines()<cr>", "lines")
 
+    map("<leader>fj", "<cmd>lua require('fzf-lua').jumps()<cr>", "Jumps")
+
     map("<leader>fw", "<cmd>lua require('fzf-lua').live_grep()<cr>", "live grep")
     map("<leader>fW", "<cmd>lua require('fzf-lua').live_grep_resume()<cr>", "live grep resume")
 

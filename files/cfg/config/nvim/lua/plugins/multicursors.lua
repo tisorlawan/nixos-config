@@ -1,6 +1,6 @@
 return {
   "smoka7/multicursors.nvim",
-  event = "VimEnter",
+  event = { "BufReadPost", "BufNewFile" },
   dependencies = { "smoka7/hydra.nvim" },
   opts = {},
   keys = {

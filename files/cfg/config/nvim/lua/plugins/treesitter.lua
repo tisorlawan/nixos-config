@@ -2,7 +2,8 @@ return {
   { -- Highlight, edit, and navigate code
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-    dependencies = { "yioneko/nvim-yati" },
+    dependencies = { "yioneko/nvim-yati", event = { "BufReadPost", "BufNewFile" } },
+    event = { "BufReadPost", "BufNewFile" },
     opts = {
       ensure_installed = {
         "bash",
@@ -57,6 +58,6 @@ return {
         },
       })
     end,
-    lazy = false,
+    event = { "BufReadPost", "BufNewFile" },
   },
 }

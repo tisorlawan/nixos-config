@@ -6,6 +6,7 @@ end
 return {
   "ggandor/flit.nvim",
   opts = { labeled_modes = "nx" },
+  event = { "BufReadPost", "BufNewFile" },
   dependencies = {
     { "ggandor/leap.nvim", dependencies = { "tpope/vim-repeat" } },
     {

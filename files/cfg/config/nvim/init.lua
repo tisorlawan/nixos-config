@@ -37,9 +37,9 @@ local plugins = {
   require("plugins.ufo"),
   require("plugins.colorscheme"),
   require("plugins.yazi"),
-  require("plugins.dressing"),
   require("plugins.snipe"),
   require("plugins.quicker"),
+  require("plugins.live-rename"),
 
   require("plugins.lsp"),
 }

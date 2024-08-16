@@ -46,6 +46,8 @@ return {
       require("fzf-lua").complete_path()
     end, { silent = true, desc = "Fuzzy complete path" })
 
+    map("<leader>s", "<cmd>lua require('fzf-lua').grep()<cr>", "grep")
+
     map("<leader>fn", "<cmd>lua require('fzf-lua').builtin()<cr>", "builtins")
     map("<leader>fk", "<cmd>lua require('fzf-lua').keymaps()<cr>", "keymaps")
 

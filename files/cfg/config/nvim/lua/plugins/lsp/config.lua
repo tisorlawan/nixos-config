@@ -175,7 +175,7 @@ local function setup_lsp_keymaps(buf)
   map("gi", vim.lsp.buf.implementation, "Goto Implementation")
   map("<leader>k", vim.lsp.buf.signature_help, "Signature Help")
   map("gy", vim.lsp.buf.type_definition, "Goto Type Definition")
-  map("<leader>rn", vim.lsp.buf.rename, "Rename")
+  -- map("<leader>rn", vim.lsp.buf.rename, "Rename")
   map("gr", vim.lsp.buf.references, "Goto References")
 
   -- map('<leader>lw', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Workspace Symbols')

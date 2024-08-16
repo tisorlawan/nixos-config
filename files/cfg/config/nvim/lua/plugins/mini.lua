@@ -43,7 +43,12 @@ return {
       require("mini.comment").setup()
 
       ----------------------
-      require("mini.files").setup()
+      require("mini.files").setup({
+        windows = {
+          preview = true,
+          width_preview = 60,
+        },
+      })
       vim.keymap.set("n", "-", "<cmd>lua MiniFiles.open(vim.api.nvim_buf_get_name(0), true)<cr>", { silent = true })
       vim.keymap.set("n", "<M-->", "<cmd>lua MiniFiles.open(nil, false)<cr>", { silent = true })
 

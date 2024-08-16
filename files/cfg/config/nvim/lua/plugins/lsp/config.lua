@@ -265,6 +265,7 @@ local M = {
         "typescriptreact",
         "rust",
         "svelte",
+        "elixir",
       },
     },
   },

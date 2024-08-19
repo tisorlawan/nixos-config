@@ -185,6 +185,8 @@
     man-pages-posix
     gcc
     gnumake
+    cmake
+    pkg-config
     git
     rye
     python312

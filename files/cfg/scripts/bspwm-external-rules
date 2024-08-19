@@ -68,6 +68,16 @@ case "$class" in
 	exit 0
 	;;
 
+"Navigator")
+	echo desktop="3" focus=on follow=on state=tiling
+	exit 0
+	;;
+
+"firefox")
+	echo desktop="3" focus=on follow=on state=tiling
+	exit 0
+	;;
+
 "Zathura")
 	echo "focus=on follow=on state=floating"
 	exit 0

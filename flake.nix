@@ -6,7 +6,7 @@
     home-manager = {
       url = "github:nix-community/home-manager/release-24.05";
     };
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/29ab705c";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/c3aa7b89";
   };
 
   outputs = { nixpkgs, nixpkgs-unstable, home-manager, ... }:

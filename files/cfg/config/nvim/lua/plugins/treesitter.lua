@@ -2,7 +2,10 @@ return {
   { -- Highlight, edit, and navigate code
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
-    dependencies = { "yioneko/nvim-yati", event = { "BufReadPost", "BufNewFile" } },
+    dependencies = {
+      { "yioneko/nvim-yati", event = { "BufReadPost", "BufNewFile" } },
+      { "nvim-treesitter/playground" },
+    },
     event = { "BufReadPost", "BufNewFile" },
     opts = {
       ensure_installed = {

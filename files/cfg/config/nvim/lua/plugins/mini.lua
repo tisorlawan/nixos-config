@@ -35,9 +35,7 @@ return {
       vim.api.nvim_create_autocmd("Filetype", { callback = f })
 
       ----------------------
-      require("mini.icons").setup({
-        style = "glyph",
-      })
+      require("mini.icons").setup({ style = "glyph" })
 
       ----------------------
       require("mini.comment").setup()
@@ -54,7 +52,6 @@ return {
 
       ----------------------
       require("mini.trailspace").setup()
-
       ----------------------
     end,
   },

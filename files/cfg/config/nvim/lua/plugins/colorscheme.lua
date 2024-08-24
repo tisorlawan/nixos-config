@@ -12,6 +12,7 @@ return {
   {
     "rebelot/kanagawa.nvim",
     priority = 0,
+    enabled = false,
     config = function()
       local fn = function()
         require("kanagawa").setup({
@@ -23,54 +24,35 @@ return {
           dimInactive = false,
           terminalColors = true,
         })
-        vim.cmd.colorscheme("kanagawa-dragon")
+        -- vim.cmd.colorscheme("kanagawa-dragon")
       end
 
       fn()
       set_keymap_toggle_transparency(fn)
     end,
   },
+  -- { "blazkowolf/gruber-darker.nvim" },
   {
-    "slugbyte/lackluster.nvim",
+    "aktersnurra/no-clown-fiesta.nvim",
+    priority = 10,
     config = function()
-      require("lackluster").setup({
-        disable_plugin = {
-          which_key = true,
-        },
-      })
+      local fn = function()
+        require("no-clown-fiesta").setup({
+          transparent = vim.g.transparent, -- Enable this to disable the bg color
+          styles = {
+            comments = {},
+            keywords = {},
+            functions = {},
+            variables = {},
+            type = { bold = true },
+            lsp = { underline = true },
+          },
+        })
+        vim.cmd.colorscheme("no-clown-fiesta")
+      end
 
-      -- vim.cmd.colorscheme("lackluster-night")
+      fn()
+      set_keymap_toggle_transparency(fn)
     end,
   },
-  -- {
-  --   "aktersnurra/no-clown-fiesta.nvim",
-  --   priority = 10,
-  --   config = function()
-  --     local fn = function()
-  --       require("no-clown-fiesta").setup({
-  --         transparent = vim.g.transparent, -- Enable this to disable the bg color
-  --         styles = {
-  --           comments = {},
-  --           keywords = {},
-  --           functions = {},
-  --           variables = {},
-  --           type = { bold = true },
-  --           lsp = { underline = true },
-  --         },
-  --       })
-  --       -- vim.cmd.colorscheme("no-clown-fiesta")
-  --     end
-  --
-  --     fn()
-  --     set_keymap_toggle_transparency(fn)
-  --   end,
-  -- },
-  -- {
-  --   "vague2k/vague.nvim",
-  --   config = function()
-  --     require("vague").setup({
-  --       -- optional configuration here
-  --     })
-  --   end,
-  -- },
 }

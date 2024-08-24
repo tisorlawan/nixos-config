@@ -12,11 +12,11 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 local plugins = {
-  -- require("plugins.dirvish"),
+  require("plugins.dirvish"),
   require("plugins.fzf"),
   require("plugins.git"),
   require("plugins.treesitter"),
-  require("plugins.neotree"),
+  -- require("plugins.neotree"),
   require("plugins.nvim-autopairs"),
   require("plugins.lualine"),
   require("plugins.todo-comments"),

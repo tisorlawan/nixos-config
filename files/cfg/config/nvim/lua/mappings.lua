@@ -12,6 +12,32 @@ map("v", "x", '"_dP')
 
 map("n", "gp", "`[v`]", { desc = "reselect pasted text" })
 map({ "n", "v" }, "mp", '"0p', { desc = "paste from 0 register" })
+map("n", "n", "nzzzv", { desc = "keep cursor centered" })
+map("n", "N", "Nzzzv", { desc = "keep cursor centered" })
+map("n", "<M-j>", ":m .+1<CR>==", { desc = "Move line down" })
+map("n", "<M-k>", ":m .-2<CR>==", { desc = "Move line up" })
+map("v", "<M-j>", ":m '>+1<CR>gv=gv", { desc = "Move Line Down in Visual Mode" })
+map("v", "<M-k>", ":m '<-2<CR>gv=gv", { desc = "Move Line Up in Visual Mode" })
+map("v", "<leader>s", ":s/\\%V", { desc = "Search only in visual selection using %V atom" })
+map("v", "<leader>r", '"hy:%s/\\v<C-r>h//g<left><left>', { desc = "change selection" })
+map("i", "<c-p>", function()
+  require("fzf-lua").registers()
+end, { remap = true, silent = false, desc = " and paste register in insert mode" })
+map("n", "<leader>yf", ":%y<cr>", { desc = "yank current file to the clipboard buffer" })
+map("n", "<leader>xc", ":!chmod +x %<cr>", { desc = "make file executable" })
+map(
+  "n",
+  "<leader>pf",
+  ':let @+ = expand("%:p")<cr>:lua print("Copied path to: " .. vim.fn.expand("%:p"))<cr>',
+  { desc = "Copy current file name and path", silent = false }
+)
+map(
+  "n",
+  "<leader>pn",
+  ':let @+ = expand("%:.")<cr>:lua print("Copied relative path: " .. vim.fn.expand("%:."))<cr>',
+  { desc = "Copy current file path relative to cwd", silent = false }
+)
+-- map("n", "<leader>tt", ":vsp term://", { desc = "Open vertical terminal split" })
 
 map("n", "<c-s>", ":update<cr>", { silent = true })
 map("i", "<c-s>", "<esc>:update<cr>", { silent = true })

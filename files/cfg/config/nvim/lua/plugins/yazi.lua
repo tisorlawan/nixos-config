@@ -11,13 +11,13 @@ return {
       end,
       desc = "Open the file manager",
     },
-    {
-      "<leader>e",
-      function()
-        require("yazi").yazi()
-      end,
-      desc = "Open the file manager",
-    },
+    -- {
+    --   "<leader>e",
+    --   function()
+    --     require("yazi").yazi()
+    --   end,
+    --   desc = "Open the file manager",
+    -- },
     {
       "<leader>yw",
       function()

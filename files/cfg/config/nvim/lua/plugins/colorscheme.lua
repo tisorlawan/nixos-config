@@ -12,7 +12,7 @@ return {
   {
     "rebelot/kanagawa.nvim",
     priority = 0,
-    enabled = false,
+    enabled = true,
     config = function()
       local fn = function()
         require("kanagawa").setup({
@@ -24,7 +24,7 @@ return {
           dimInactive = false,
           terminalColors = true,
         })
-        -- vim.cmd.colorscheme("kanagawa-dragon")
+        vim.cmd.colorscheme("kanagawa-dragon")
       end
 
       fn()
@@ -48,7 +48,7 @@ return {
             lsp = { underline = true },
           },
         })
-        vim.cmd.colorscheme("no-clown-fiesta")
+        -- vim.cmd.colorscheme("no-clown-fiesta")
       end
 
       fn()

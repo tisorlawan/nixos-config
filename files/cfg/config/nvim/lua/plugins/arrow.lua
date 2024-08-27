@@ -8,8 +8,8 @@ return {
   lazy = false,
   config = function(_, opts)
     require("arrow").setup(opts)
-    -- vim.keymap.set("n", "H", require("arrow.persist").previous)
-    -- vim.keymap.set("n", "L", require("arrow.persist").next)
+    vim.keymap.set("n", "H", require("arrow.persist").previous)
+    vim.keymap.set("n", "L", require("arrow.persist").next)
     vim.keymap.set("n", "<M-1>", function()
       require("arrow.persist").go_to(1)
     end)

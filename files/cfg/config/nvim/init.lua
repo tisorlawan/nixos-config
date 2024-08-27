@@ -16,7 +16,7 @@ local plugins = {
   require("plugins.fzf"),
   require("plugins.git"),
   require("plugins.treesitter"),
-  -- require("plugins.neotree"),
+  require("plugins.neotree"),
   require("plugins.nvim-autopairs"),
   require("plugins.lualine"),
   require("plugins.todo-comments"),
@@ -37,7 +37,7 @@ local plugins = {
   require("plugins.ufo"),
   require("plugins.colorscheme"),
   require("plugins.yazi"),
-  require("plugins.snipe"),
+  -- require("plugins.snipe"),
   require("plugins.quicker"),
   require("plugins.live-rename"),
 

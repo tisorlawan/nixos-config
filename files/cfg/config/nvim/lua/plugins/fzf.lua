@@ -52,7 +52,8 @@ return {
     map("<leader>fk", "<cmd>lua require('fzf-lua').keymaps()<cr>", "keymaps")
 
     map("<leader>fr", "<cmd>lua require('fzf-lua').resume()<cr>", "resume files")
-    map("<leader>ff", "<cmd>lua require('fzf-lua').files({winopts = {preview = {hidden = 'hidden'}}})<cr>", "files")
+    -- map("<leader>ff", "<cmd>lua require('fzf-lua').files({winopts = {preview = {hidden = 'hidden'}}})<cr>", "files")
+    map("<c-n>", "<cmd>lua require('fzf-lua').files({winopts = {preview = {hidden = 'hidden'}}})<cr>", "files")
 
     map(
       "<leader>fa",
@@ -67,7 +68,8 @@ return {
     map("<leader>fw", "<cmd>lua require('fzf-lua').live_grep()<cr>", "live grep")
     map("<leader>fW", "<cmd>lua require('fzf-lua').live_grep_resume()<cr>", "live grep resume")
 
-    map("<leader>fb", "<cmd>lua require('fzf-lua').buffers()<cr>", "buffers")
+    -- map("<leader>fb", "<cmd>lua require('fzf-lua').buffers()<cr>", "buffers")
+    map("<c-p>", "<cmd>lua require('fzf-lua').buffers()<cr>", "buffers")
     map("<leader>f.", "<cmd>lua require('fzf-lua').grep_cWORD()<cr>", "grep cWORD")
     map("<leader>fm", "<cmd>lua require('fzf-lua').marks()<cr>", "marks")
     map('<leader>f"', "<cmd>lua require('fzf-lua').registers()<cr>", "registers")
@@ -94,64 +96,5 @@ return {
     map("<leader>gc", "<cmd>lua require('fzf-lua').git_commits()<cr>", "git commits")
 
     vim.keymap.set("v", "gs", "<cmd>lua require('fzf-lua').grep_visual()<cr>", { desc = "grep visual" })
-
-    -- -- Fuzzy find all the symbols in your current document.
-    -- --  Symbols are things like variables, functions, types, etc.
-    -- -- map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-
-    -- -- Fuzzy find all the symbols in your current workspace.
-    -- --  Similar to document symbols, except searches over your entire project.
-    -- -- map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-
-    -- map("<leader>fd", [[<CMD>lua require('fzf-lua').lsp_document_diagnostics()<CR>]], silent_noremap)
-    -- map("<leader>fn", [[<CMD>lua require('fzf-lua').lsp_workspace_diagnostics()<CR>]], silent_noremap)
-    --
-    --
-    -- map("<leader>fa", "<cmd>lua require('fzf-lua').lsp_code_actions()<cr>", "code actions")
-    -- require('fzf-lua').setup {
-    --   winopts = {
-    --     hl = {
-    --       border = 'FloatBorder',
-    --     },
-    --   },
-    --   preview_layout = 'flex',
-    --   flip_columns = 150,
-    --   keymap = {
-    --     fzf = {
-    --       ['ctrl-q'] = 'select-all+accept',
-    --     },
-    --   },
-    --   fzf_opts = {
-    --     ['--border'] = 'none',
-    --   },
-    --   previewers = {
-    --     builtin = {
-    --       scrollbar = false,
-    --     },
-    --   },
-    --   buffers = {
-    --     git_icons = false,
-    --     actions = {
-    --       ['ctrl-w'] = actions.buf_del,
-    --     },
-    --   },
-    --   files = {
-    --     fd_opts = [[--color never --type f --hidden --follow --strip-cwd-prefix -E .git -E node_modules]],
-    --     git_icons = false,
-    --   },
-    --   lsp = {
-    --     async_or_timeout = false,
-    --     severity = 'Warning',
-    --     -- icons = {
-    --     --   ['Error'] = { icon = vim.g.diagnostic_icons.Error, color = 'red' },
-    --     --   ['Warning'] = { icon = vim.g.diagnostic_icons.Warning, color = 'yellow' },
-    --     --   ['Information'] = { icon = vim.g.diagnostic_icons.Information, color = 'blue' },
-    --     --   ['Hint'] = { icon = vim.g.diagnostic_icons.Hint, color = 'blue' },
-    --     -- },
-    --     actions = {
-    --       ['default'] = actions.file_edit_or_qf,
-    --     },
-    --   },
-    -- }
   end,
 }

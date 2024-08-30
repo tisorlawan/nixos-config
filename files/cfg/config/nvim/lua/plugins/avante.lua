@@ -1,9 +1,6 @@
 return {
   "yetone/avante.nvim",
-  opts = {
-    -- add any opts here
-  },
-  ft = { "python" },
+  opts = {},
   keys = {
     {
       "<leader>aa",
@@ -51,14 +48,6 @@ return {
           use_absolute_path = true,
         },
       },
-    },
-    {
-      -- Make sure to setup it properly if you have lazy=true
-      "MeanderingProgrammer/render-markdown.nvim",
-      opts = {
-        file_types = { "markdown", "Avante" },
-      },
-      ft = { "markdown", "Avante" },
     },
   },
 }

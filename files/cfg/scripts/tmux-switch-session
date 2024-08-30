@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 sessions=$(tmux list-sessions | grep -v attached | cut -d ":" -f1)
-selectedSession=$(echo "$sessions" | fzy)
+selectedSession=$(echo "$sessions" | fzf)
 echo "$selectedSession"
 # echo "$sessions" | grep "$selectedSession"
 

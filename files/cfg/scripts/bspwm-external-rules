@@ -6,6 +6,8 @@ class=$2
 # consequences=$4
 title="$(xdotool getwindowname "$wid")"
 
+# echo $wid >/tmp/wid
+# notify-send "$title"
 # notify-send "$wid"
 # notify-send "$class"
 # notify-send "\$1=$(printf '0x%08X' "$1") \$2=$2 \$3=$3" "$4"
@@ -14,188 +16,203 @@ Xaxis=$(xrandr --current | grep ' connected ' -A1 | tail -n 1 | uniq | awk '{pri
 Yaxis=$(xrandr --current | grep ' connected ' -A1 | tail -n 1 | uniq | awk '{print $1}' | cut -d 'x' -f2)
 
 function center() {
-	((X = (Xaxis - $1) / 2))
-	((Y = (Yaxis - $2) / 2))
-	echo "$1x$2+$X+$Y"
+    ((X = (Xaxis - $1) / 2))
+    ((Y = (Yaxis - $2) / 2))
+    echo "$1x$2+$X+$Y"
 }
 
 function top_center() {
-	((X = (Xaxis - $1) / 2))
-	echo "$1x$2+$X+10"
+    ((X = (Xaxis - $1) / 2))
+    echo "$1x$2+$X+10"
 }
 
 # $1: width
 # $2: height
 function bottom_right() {
-	((X = Xaxis - $1))
-	((Y = Yaxis - $2))
-	echo "$1x$2+$X+$Y"
+    ((X = Xaxis - $1))
+    ((Y = Yaxis - $2))
+    echo "$1x$2+$X+$Y"
 }
 
-# Float all dialog
 is_dialog=$(xprop -id "$wid" | grep WINDOW_TYPE | grep DIALOG)
-
-if [ -n "$is_dialog" ]; then
-	echo "state=floating"
-	exit 0
-fi
+is_popup=$(xprop -id "$wid" | grep -i role | grep -i popup)
 
 case "$title" in
 "Event Tester")
-	echo "state=floating"
-	exit 0
-	;;
+    echo "state=floating"
+    exit 0
+    ;;
 
 "Google Chrome")
-	echo "state=floating"
-	exit 0
-	;;
+    echo "state=floating"
+    exit 0
+    ;;
 
 "meet.google.com is sharing your screen.")
-	echo "hidden=on"
-	exit 0
-	;;
+    echo "hidden=on"
+    exit 0
+    ;;
+
+"Firefox — Sharing Indicator")
+    echo "hidden=on"
+    exit 0
+    ;;
 esac
+
+# Float all dialogs
+if [ -n "$is_dialog" ]; then
+    echo "state=floating"
+    exit 0
+fi
 
 case "$class" in
 "Pavucontrol")
-	echo "state=floating focus=on rectangle=$(center 900 550)"
-	exit 0
-	;;
+    echo "state=floating focus=on rectangle=$(center 900 550)"
+    exit 0
+    ;;
 
 "Google-chrome")
-	echo desktop="3" focus=on follow=on
-	exit 0
-	;;
+    echo desktop="3" focus=on follow=on
+    exit 0
+    ;;
 
 "Navigator")
-	echo desktop="3" focus=on follow=on state=tiling
-	exit 0
-	;;
+    echo desktop="3" focus=on follow=on state=tiling
+    exit 0
+    ;;
 
 "firefox")
-	echo desktop="3" focus=on follow=on state=tiling
-	exit 0
-	;;
+    if [ -n "$is_popup" ]; then
+        echo focus=on follow=on
+        exit 0
+    fi
+    echo desktop="3" focus=on follow=on state=tiling
+    exit 0
+    ;;
 
 "Zathura")
-	echo "focus=on follow=on state=floating"
-	exit 0
-	;;
+    echo "focus=on follow=on state=floating"
+    exit 0
+    ;;
 
 "zoom")
-	case "$title" in
-	"Meeting Chat")
-		echo "$base state=floating focus=on follow=on rectangle=$(bottom_right 400 800)"
-		exit 0
-		;;
-	esac
+    case "$title" in
+    "Meeting Chat")
+        echo "$base state=floating focus=on follow=on rectangle=$(bottom_right 400 800)"
+        exit 0
+        ;;
+    esac
 
-	echo desktop="9" focus=on follow=on
-	exit 0
-	;;
+    echo desktop="9" focus=on follow=on
+    exit 0
+    ;;
 
 "TopTracker")
-	case "$title" in
-	"New Activity Description")
-		echo "state=floating rectangle=$(top_center 500 100)"
-		exit 0
-		;;
+    case "$title" in
+    "New Activity Description")
+        echo "state=floating rectangle=$(top_center 500 100)"
+        exit 0
+        ;;
 
-	"Current Activity Description")
-		echo "state=floating rectangle=$(top_center 500 100)"
-		exit 0
-		;;
+    "Current Activity Description")
+        echo "state=floating rectangle=$(top_center 500 100)"
+        exit 0
+        ;;
 
-	"Frame")
-		echo "state=floating"
-		exit 0
-		;;
-	esac
+    "Frame")
+        echo "state=floating"
+        exit 0
+        ;;
+    esac
 
-	echo desktop="8" "state=floating focus=on rectangle=$(center 430 600)"
-	exit 0
-	;;
+    echo desktop="8" "state=floating focus=on rectangle=$(center 430 600)"
+    exit 0
+    ;;
 
 "Steam")
-	base="desktop=5"
-	case "$title" in
-	"Friends List")
-		echo "$base state=floating rectangle=$(bottom_right 300 700)"
-		exit 0
-		;;
-	"Steam")
-		echo "$base state=tiling"
-		exit 0
-		;;
-	esac
-	echo "$base"
-	exit 0
-	;;
+    base="desktop=5"
+    case "$title" in
+    "Friends List")
+        echo "$base state=floating rectangle=$(bottom_right 300 700)"
+        exit 0
+        ;;
+    "Steam")
+        echo "$base state=tiling"
+        exit 0
+        ;;
+    esac
+    echo "$base"
+    exit 0
+    ;;
 
 "Postman")
-	echo "desktop=5"
-	exit
-	;;
+    echo "desktop=5"
+    exit
+    ;;
 
 "deadcells")
-	echo "desktop=9 state=floating"
-	exit 0
-	;;
+    echo "desktop=9 state=floating"
+    exit 0
+    ;;
 
 "inlyne")
-	echo "desktop=5"
-	exit 0
-	;;
+    echo "desktop=5"
+    exit 0
+    ;;
+
+"transmission-gtk" | "Transmission-gtk")
+    echo "desktop=5"
+    exit 0
+    ;;
 
 "Evince")
-	echo "desktop=7"
-	exit 0
-	;;
+    echo "desktop=7"
+    exit 0
+    ;;
 
 "obsidian")
-	echo "desktop=7"
-	exit 0
-	;;
+    echo "desktop=7"
+    exit 0
+    ;;
 
 "Soffice")
-	echo "desktop=7"
-	exit 0
-	;;
+    echo "desktop=7"
+    exit 0
+    ;;
 
 "music-visualizer")
-	echo "desktop=1 state=floating rectangle=$(top_center 500 100)"
-	exit 0
-	;;
+    echo "desktop=1 state=floating rectangle=$(top_center 500 100)"
+    exit 0
+    ;;
 
 "Music Visualizer")
-	echo "desktop=1 state=floating"
-	exit 0
-	;;
+    echo "desktop=1 state=floating"
+    exit 0
+    ;;
 
 "timer-gui")
-	echo "desktop=1 state=floating"
-	exit 0
-	;;
+    echo "desktop=1 state=floating"
+    exit 0
+    ;;
 
 "feh")
-	echo "state=floating"
-	exit 0
-	;;
+    echo "state=floating"
+    exit 0
+    ;;
 
 "simplescreenrecorder")
-	echo "state=floating"
-	exit 0
-	;;
+    echo "state=floating"
+    exit 0
+    ;;
 
 "SimpleScreenRecorder")
-	echo "state=floating"
-	exit 0
-	;;
+    echo "state=floating"
+    exit 0
+    ;;
 
 "deus")
-	echo "desktop=5 state=floating"
-	exit 0
-	;;
+    echo "desktop=5 state=floating"
+    exit 0
+    ;;
 
 esac

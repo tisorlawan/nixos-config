@@ -40,6 +40,7 @@ local plugins = {
   -- require("plugins.snipe"),
   require("plugins.quicker"),
   require("plugins.live-rename"),
+  require("plugins.avante"),
 
   require("plugins.lsp"),
 }

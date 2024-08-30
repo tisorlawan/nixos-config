@@ -114,5 +114,5 @@
   home.file.".images" = { source = ../../files/cfg/images; };
   home.file.".gitconfig" = { source = ../../files/cfg/gitconfig; };
   home.file.".tmux.conf" = { source = ../../files/cfg/tmux.conf; };
-  home.file.".scripts" = { source = ../../files/cfg/scripts; };
+  # home.file.".scripts" = { source = ../../files/cfg/scripts; };
 }

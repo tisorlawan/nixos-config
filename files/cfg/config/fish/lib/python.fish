@@ -8,3 +8,5 @@ alias d="deactivate"
 function py_prefix
     python -c "import sys; print(sys.prefix)"
 end
+
+uv generate-shell-completion fish | source

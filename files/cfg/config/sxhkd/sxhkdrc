@@ -177,3 +177,10 @@ super + alt + shift + {h,j,k,l}
 # move a floating window
 super + {Left,Down,Up,Right}
 	bspc node -v {-20 0,0 20,0 -20,20 0}
+
+# resize float
+super + n : {h,j,k,l}
+    bspwm-resize-float expand {west,south,north,east} 50
+
+super + shift + n : {h,j,k,l}
+    bspwm-resize-float contract {east,north,south,west} 50

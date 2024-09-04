@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 feh --bg-scale ~/.images/background.jpg &
 
@@ -53,16 +53,15 @@ dunst &
 # # fi
 
 sxhkd &
-if [[ -z $(pgrep nm-applet) ]]; then 
-    nm-applet&
+if [[ -z $(pgrep nm-applet) ]]; then
+    nm-applet &
 fi
-if [[ -z $(pgrep redshift) ]]; then 
-    redshift-gtk&
+if [[ -z $(pgrep redshift) ]]; then
+    redshift-gtk &
 fi
 
 greenclip daemon &
 # picom &
-
 
 xset b off
 xset r rate 350 130

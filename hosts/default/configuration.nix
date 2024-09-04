@@ -199,6 +199,8 @@
     go
     nodejs_22
     docker
+    kubectl
+    k9s
     rustup
     sccache
     leptosfmt

@@ -9,4 +9,6 @@ function py_prefix
     python -c "import sys; print(sys.prefix)"
 end
 
-uv generate-shell-completion fish | source
+if type -q uv
+    uv generate-shell-completion fish | source
+end

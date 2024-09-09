@@ -75,11 +75,11 @@ local config = {
   },
   typescript = {
     formatters = { "prettierd" },
-    servers = { "tsserver", "eslint" },
+    servers = { "ts_ls", "eslint" },
   },
   typescriptreact = {
     formatters = { "prettierd" },
-    servers = { "tsserver", "eslint" },
+    servers = { "ts_ls", "eslint" },
   },
   zig = {
     formatters = { "zigfmt" },

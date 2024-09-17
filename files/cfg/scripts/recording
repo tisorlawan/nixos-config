@@ -1,120 +1,148 @@
 #!/bin/sh
 
 updateicon() {
-	echo "$1" >/tmp/recordingicon
-	pkill -RTMIN+1 i3blocks
+    echo "$1" >/tmp/recordingicon
+    pkill -RTMIN+1 i3blocks
 }
 
 killrecording() {
-	recpid="$(cat /tmp/recordingpid)"
-	# kill with SIGTERM, allowing finishing touches.
-	kill -15 "$recpid"
-	rm -f /tmp/recordingpid
-	updateicon ""
-	pkill -RTMIN+1 i3blocks
-	exit
+    recpid="$(cat /tmp/recordingpid)"
+    # kill with SIGTERM, allowing finishing touches.
+    kill -15 "$recpid"
+    rm -f /tmp/recordingpid
+    updateicon ""
+    pkill -RTMIN+1 i3blocks
+    exit
 }
 
 video() {
-	ffmpeg \
-		-s $(xdpyinfo | grep dimensions | awk '{print $2;}') \
-		-framerate 30 \
-		-f x11grab \
-		-i :0.0 \
-		-c:v libx264 \
-		-crf 0 \
-		-preset ultrafast \
-		"$HOME/video_$(date '+%d-%m-%Y_%H:%M:%S').mkv" &
+    ffmpeg \
+        -s $(xdpyinfo | grep dimensions | awk '{print $2;}') \
+        -framerate 30 \
+        -f x11grab \
+        -i :0.0 \
+        -c:v libx264 \
+        -crf 0 \
+        -preset ultrafast \
+        "$HOME/video_$(date '+%d-%m-%Y_%H:%M:%S').mkv" &
 
-	echo $! >/tmp/recordingpid
-	# updateicon " Video"
+    echo $! >/tmp/recordingpid
+    # updateicon " Video"
 }
 
 video_bad() {
-	ffmpeg \
-		-f x11grab \
-		-framerate 25 \
-		-s $(xdpyinfo | grep dimensions | awk '{print $2;}') \
-		-i :0.0 \
-		-c:v libx264 -profile:v baseline -level 3.0 -pix_fmt yuv420p \
-		-preset slower -crf 23 \
-		"$HOME/video_$(date '+%d-%m-%Y_%H:%M:%S').mp4" &
+    ffmpeg \
+        -f x11grab \
+        -framerate 25 \
+        -s $(xdpyinfo | grep dimensions | awk '{print $2;}') \
+        -i :0.0 \
+        -c:v libx264 -profile:v baseline -level 3.0 -pix_fmt yuv420p \
+        -preset slower -crf 23 \
+        "$HOME/video_$(date '+%d-%m-%Y_%H:%M:%S').mp4" &
 
-	echo $! >/tmp/recordingpid
-	# updateicon " Video"
+    echo $! >/tmp/recordingpid
+    # updateicon " Video"
+}
+
+video_bad_window() {
+    xwininfo | {
+        while IFS=: read -r k v; do
+            case "$k" in
+            *"Absolute upper-left X"*) x=$v ;;
+            *"Absolute upper-left Y"*) y=$v ;;
+            *"Border width"*) bw=$v ;;
+            *"Width"*) w=$v ;;
+            *"Height"*) h=$v ;;
+            esac
+        done
+        for i in 3 2 1; do
+            echo "$i"
+            sleep 1
+        done
+        ffmpeg -y -f x11grab \
+            -framerate 25 \
+            -video_size "$((w))x$((h))" \
+            -i "+$((x + bw)),$((y + bw))" \
+            -c:v libx264 -profile:v baseline -level 3.0 -pix_fmt yuv420p \
+            -preset slower -crf 23 \
+            "$HOME/video_$(date '+%d-%m-%Y_%H:%M:%S').mp4" &
+        echo $! >/tmp/recordingpid
+    }
+
 }
 
 screencast() {
-	ffmpeg -y \
-		-f x11grab \
-		-framerate 60 \
-		-s $(xdpyinfo | grep dimensions | awk '{print $2;}') \
-		-i :0.0 \
-		-f alsa -i default \
-		-r 30 \
-		-c:v libx264rgb -crf 0 -preset ultrafast -c:a flac \
-		"$HOME/screencast_$(date '+%d-%m-%Y_%H:%M:%S').mkv" &
+    ffmpeg -y \
+        -f x11grab \
+        -framerate 60 \
+        -s $(xdpyinfo | grep dimensions | awk '{print $2;}') \
+        -i :0.0 \
+        -f alsa -i default \
+        -r 30 \
+        -c:v libx264rgb -crf 0 -preset ultrafast -c:a flac \
+        "$HOME/screencast_$(date '+%d-%m-%Y_%H:%M:%S').mkv" &
 
-	echo $! >/tmp/recordingpid
-	# updateicon " Screencast"
+    echo $! >/tmp/recordingpid
+    # updateicon " Screencast"
 }
 
 screencast_bad() {
-	ffmpeg -y \
-		-f x11grab \
-		-framerate 25 \
-		-s $(xdpyinfo | grep dimensions | awk '{print $2;}') \
-		-i :0.0 \
-		-f alsa -i default \
-		-c:v libx264 -profile:v baseline -level 3.0 -pix_fmt yuv420p \
-		-preset slower -crf 23 \
-		-c:a aac -b:a 128k \
-		-r 30 \
-		"$HOME/screencast_$(date '+%d-%m-%Y_%H:%M:%S').mp4" &
+    ffmpeg -y \
+        -f x11grab \
+        -framerate 25 \
+        -s $(xdpyinfo | grep dimensions | awk '{print $2;}') \
+        -i :0.0 \
+        -f alsa -i default \
+        -c:v libx264 -profile:v baseline -level 3.0 -pix_fmt yuv420p \
+        -preset slower -crf 23 \
+        -c:a aac -b:a 128k \
+        -r 30 \
+        "$HOME/screencast_$(date '+%d-%m-%Y_%H:%M:%S').mp4" &
 
-	echo $! >/tmp/recordingpid
-	# updateicon " Screencast"
+    echo $! >/tmp/recordingpid
+    # updateicon " Screencast"
 }
 
 webcam() {
-	ffmpeg \
-		-f v4l2 \
-		-i /dev/video0 \
-		-video_size 1920x1080 \
-		"$HOME/webcam_$(date '+%d-%m-%Y_%H:%M:%S').mkv" &
+    ffmpeg \
+        -f v4l2 \
+        -i /dev/video0 \
+        -video_size 1920x1080 \
+        "$HOME/webcam_$(date '+%d-%m-%Y_%H:%M:%S').mkv" &
 
-	echo $! >/tmp/recordingpid
-	# updateicon " Webcam"
+    echo $! >/tmp/recordingpid
+    # updateicon " Webcam"
 }
 
 audio() {
-	ffmpeg \
-		-f alsa -i default \
-		-c:a flac \
-		"$HOME/audio_$(date '+%d-%m-%Y_%H:%M:%S').mkv" &
+    ffmpeg \
+        -f alsa -i default \
+        -c:a flac \
+        "$HOME/audio_$(date '+%d-%m-%Y_%H:%M:%S').mkv" &
 
-	echo $! >/tmp/recordingpid
-	# updateicon " Audio"
+    echo $! >/tmp/recordingpid
+    # updateicon " Audio"
 }
 
 askrecording() {
-	choice=$(printf "video\\nvideo_bad\\nscreencast\\nscreencast_bad\\nscreencast_bad_mp4\\naudio\\nwebcam" |
-		rofi -i -dmenu -width 600 -lines 4 -columns 10 -p "Select recording style")
-	case "$choice" in
-	audio) audio ;;
-	screencast) screencast ;;
-	screencast_bad) screencast_bad ;;
-	screencast_bad_mp4) screencast_bad_mp4 ;;
-	video) video ;;
-	video_bad) video_bad ;;
-	webcam) webcam ;;
-	esac
+    choice=$(printf "video\\nvideo_bad\\nvideo_bad_window\\nscreencast\\nscreencast_bad\\nscreencast_bad_mp4\\naudio\\nwebcam" |
+        rofi -i -dmenu -width 600 -lines 4 -columns 10 -p "Select recording style")
+    case "$choice" in
+    audio) audio ;;
+    screencast) screencast ;;
+    screencast_bad) screencast_bad ;;
+    screencast_bad_mp4) screencast_bad_mp4 ;;
+    video) video ;;
+    video_bad) video_bad ;;
+    video_bad_window) video_bad_window ;;
+    webcam) webcam ;;
+    esac
 }
 
 asktoend() {
-	response=$(printf "Yes\\nNo" |
-		rofi -i -dmenu -width 370 -lines 2 -columns 10 -p "Recording still active. End recording?") &&
-		[ "$response" = "Yes" ] && killrecording
+    response=$(printf "Yes\\nNo" |
+        rofi -i -dmenu -width 370 -lines 2 -columns 10 -p "Recording still active. End recording?") &&
+        [ "$response" = "Yes" ] && killrecording
 }
 
 case "$1" in
@@ -124,6 +152,7 @@ screencast_bad) screencast_bad ;;
 screencast_bad_mp4) screencast_bad_mp4 ;;
 video) video ;;
 video_bad) video_bad ;;
+video_bad_window) video_bad_window ;;
 webcam) webcam ;;
 kill) killrecording ;;
 *) ([ -f /tmp/recordingpid ] && asktoend && exit) || askrecording ;;

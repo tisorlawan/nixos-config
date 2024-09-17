@@ -136,6 +136,7 @@
     xorg.xbacklight
     xorg.xkill
     xorg.xdpyinfo
+    xorg.xwininfo
     networkmanagerapplet
     sxhkd
     haskellPackages.greenclip
@@ -156,6 +157,7 @@
     fzf
     skim
     htop
+    btop
     tmux
     zellij
     wget
@@ -180,16 +182,16 @@
     jless
 
     # @dev
-    devenv
+    # devenv
     man-pages
     man-pages-posix
     gcc
     gnumake
     cmake
+    valgrind
     pkg-config
     git
     rye
-    python312
     poetry
     ruff
     ruff-lsp
@@ -204,10 +206,10 @@
     rustup
     sccache
     leptosfmt
-    zig
-    zls
-    pkgs-unstable.elixir_1_17
-    elixir-ls
+    pkgs-unstable.zig
+    pkgs-unstable.zls
+    pkgs-unstable.beam.packages.erlang_27.elixir_1_17
+    pkgs-unstable.elixir-ls
     livebook
     stylua
     lua-language-server
@@ -264,14 +266,14 @@
     evince
     foliate # epub reader
     gnome.nautilus
-    google-chrome
+    pkgs-unstable.google-chrome
     libreoffice
     postman
     firefox
     obsidian
     zoom-us
     xournalpp # signature pdf
-    pkgs-unstable.zed-editor
+    # pkgs-unstable.zed-editor
     transmission-gtk
 
     # @hardware

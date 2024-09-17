@@ -55,4 +55,17 @@ return {
       set_keymap_toggle_transparency(fn)
     end,
   },
+  {
+    "ferdinandrau/lavish.nvim",
+    priority = 1000,
+    config = function()
+      require("lavish").setup({
+        style = {
+          italic_comments = true,
+          -- italic_strings = true,
+        },
+      })
+      -- vim.cmd.colorscheme("lavish-dark")
+    end,
+  },
 }

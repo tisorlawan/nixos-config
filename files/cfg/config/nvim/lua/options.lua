@@ -64,6 +64,7 @@ vim.opt.hlsearch = true
 -- Wildignore for better experience
 vim.opt.wildignorecase = true
 vim.opt.wildignore:append("**/node_modules/*")
+vim.opt.wildignore:append("**/resource_snapshots/*")
 vim.opt.wildignore:append("**/.git/*")
 vim.opt.wildignore:append("**/build/*")
 vim.opt.wildignore:append("**/sqlx/*")

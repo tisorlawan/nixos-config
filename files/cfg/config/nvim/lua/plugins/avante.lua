@@ -1,6 +1,7 @@
 return {
   "yetone/avante.nvim",
   opts = {},
+  build = "make",
   keys = {
     {
       "<leader>aa",

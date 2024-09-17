@@ -77,3 +77,5 @@ map("i", "<c-j>", "<down>")
 map("i", "<c-k>", "<up>")
 map("i", "<m-h>", "<esc>I")
 map("i", "<m-l>", "<end>")
+
+map("v", "g<c-b>", "g<c-a>") -- create sequence of numbers

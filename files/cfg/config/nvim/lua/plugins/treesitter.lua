@@ -1,10 +1,11 @@
 return {
-  { -- Highlight, edit, and navigate code
+  {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     dependencies = {
       { "yioneko/nvim-yati", event = { "BufReadPost", "BufNewFile" } },
       { "nvim-treesitter/playground" },
+      { "windwp/nvim-ts-autotag" },
     },
     event = { "BufReadPost", "BufNewFile" },
     opts = {
@@ -24,11 +25,24 @@ return {
       auto_install = true,
       highlight = {
         enable = true,
-        additional_vim_regex_highlighting = true,
+        additional_vim_regex_highlighting = { "ruby", "elixir" },
       },
+
       indent = {
         enable = true,
-        disable = { "python", "css", "rust", "lua", "javascript", "tsx", "typescript", "toml", "json", "c" },
+        disable = {
+          "python",
+          "css",
+          "rust",
+          "lua",
+          "javascript",
+          "tsx",
+          "typescript",
+          "toml",
+          "json",
+          "c",
+          "heex",
+        },
       },
       yati = {
         enable = true,

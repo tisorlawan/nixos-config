@@ -83,7 +83,7 @@ local config = {
   },
   zig = {
     formatters = { "zigfmt" },
-    servers = { "zls" },
+    -- servers = { "zls" },
   },
 }
 
@@ -215,6 +215,11 @@ local M = {
     },
 
     tailwindcss = {
+      userLanguages = {
+        elixir = "html-eex",
+        eelixir = "html-eex",
+        heex = "html-eex",
+      },
       settings = {
         includeLanguages = {
           typescript = "javascript",
@@ -246,6 +251,7 @@ local M = {
               'with_cn\\("([^"]*)',
               'c\\("([^"]*)',
               'class\\("([^"]*)',
+              'class[:]\\s*"([^"]*)"',
             },
           },
           validate = true,
@@ -253,19 +259,18 @@ local M = {
       },
       filetypes = {
         "css",
-        "scss",
-        "sass",
-        "html",
-        "heex",
         "elixir",
         "eruby",
+        "heex",
+        "html",
         "javascript",
         "javascriptreact",
+        "rust",
+        "sass",
+        "scss",
+        "svelte",
         "typescript",
         "typescriptreact",
-        "rust",
-        "svelte",
-        "elixir",
       },
     },
   },

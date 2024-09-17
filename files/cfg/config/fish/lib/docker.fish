@@ -1,0 +1,6 @@
+alias dcl="sudo docker container ls"
+alias di="sudo docker images"
+alias drmi="sudo docker rmi"
+alias dcup="sudo docker compose up"
+alias dcupd="sudo docker compose up -d"
+alias dcd="sudo docker compose down"

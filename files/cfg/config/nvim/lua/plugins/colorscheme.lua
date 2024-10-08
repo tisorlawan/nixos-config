@@ -24,7 +24,8 @@ return {
           dimInactive = false,
           terminalColors = true,
         })
-        vim.cmd.colorscheme("kanagawa-dragon")
+        -- vim.cmd.colorscheme("kanagawa-dragon")
+        vim.cmd.colorscheme("kanagawa")
       end
 
       fn()

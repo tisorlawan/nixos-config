@@ -17,6 +17,7 @@ if utils.is_nixos() then
   table.insert(servers_install_skip, "prettierd")
   table.insert(servers_install_skip, "pyright")
   table.insert(servers_install_skip, "zls")
+  table.insert(servers_install_skip, "hls")
 end
 
 local servers = cfg.mason_lspserver

@@ -185,13 +185,16 @@
     # devenv
     man-pages
     man-pages-posix
+    tldr
     gcc
     gnumake
     cmake
+    gdb
     valgrind
     pkg-config
     git
-    rye
+    # rye
+    python312
     poetry
     ruff
     ruff-lsp
@@ -222,6 +225,8 @@
     golines
     gofumpt
     gotools
+    ghc
+    haskell-language-server
     prettierd
     nil
     nixpkgs-fmt
@@ -264,6 +269,7 @@
     # @desktop app
     neovide
     evince
+    yacreader
     foliate # epub reader
     gnome.nautilus
     pkgs-unstable.google-chrome

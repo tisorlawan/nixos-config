@@ -27,6 +27,10 @@ local config = {
     formatters = { "gofumpt", "goimports", "golines" },
     servers = { "gopls" },
   },
+  haskell = {
+    formatters = { "ormolu" },
+    servers = { "hls" },
+  },
   html = {
     servers = { "html" },
     formatters = { "prettierd" },
@@ -94,8 +98,6 @@ local formatters_to_mason = {
   nixpkgs_fmt = "nixpkgs-fmt",
 }
 
-local linters_to_mason = {}
-
 local mason_lspserver = {}
 for _, ft in pairs(used_ft) do
   for _, name in pairs((config[ft] or {}).servers or {}) do
@@ -149,6 +151,7 @@ end
 
 local mason_linter_install = {}
 
+local linters_to_mason = {}
 for _, names in pairs(linters_by_ft) do
   for _, name in pairs(names) do
     local mason_name = linters_to_mason[name]

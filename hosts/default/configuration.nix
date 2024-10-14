@@ -226,6 +226,7 @@
     gofumpt
     gotools
     ghc
+    cabal-install
     haskell-language-server
     prettierd
     nil

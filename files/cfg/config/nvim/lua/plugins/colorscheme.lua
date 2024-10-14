@@ -32,6 +32,15 @@ return {
       set_keymap_toggle_transparency(fn)
     end,
   },
+  {
+    "killitar/obscure.nvim",
+    lazy = false,
+    priority = 1000,
+    opts = {},
+    config = function()
+      -- vim.cmd.colorscheme("obscure")
+    end,
+  },
   -- { "blazkowolf/gruber-darker.nvim" },
   {
     "aktersnurra/no-clown-fiesta.nvim",

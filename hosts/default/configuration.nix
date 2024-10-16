@@ -193,11 +193,13 @@
     valgrind
     pkg-config
     git
+    jujutsu
     # rye
     python312
     poetry
     ruff
     ruff-lsp
+    pyright
     virtualenv
     black
     isort
@@ -231,7 +233,6 @@
     prettierd
     nil
     nixpkgs-fmt
-    pyright
     biome
     redis
     trashy
@@ -252,6 +253,7 @@
     neofetch
     rsync
     inotify-tools # for elixir
+    texliveSmall
 
 
     # @media
@@ -274,6 +276,7 @@
     foliate # epub reader
     gnome.nautilus
     pkgs-unstable.google-chrome
+    pkgs-unstable.brave
     libreoffice
     postman
     firefox

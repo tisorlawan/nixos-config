@@ -87,7 +87,7 @@ local config = {
   },
   zig = {
     formatters = { "zigfmt" },
-    -- servers = { "zls" },
+    servers = { "zls" },
   },
 }
 

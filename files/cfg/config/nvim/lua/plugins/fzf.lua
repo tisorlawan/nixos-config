@@ -9,6 +9,8 @@ return {
     { "kevinhwang91/nvim-bqf", ft = "qf", opts = {} },
   },
   config = function()
+    local actions = require("fzf-lua.actions")
+
     require("fzf-lua").setup({
       winopts = {
         preview = {
@@ -25,6 +27,13 @@ return {
         -- fzf_opts = { ["--ansi"] = false },
         fd_opts = [[--color never --type f --hidden --follow --strip-cwd-prefix -E .git -E node_modules -E .sqlx -E resource_snapshots ]],
         -- fd_opts = [[--color=never --type f --follow]],
+      },
+      grep = {
+        rg_opts = "--column --line-number --no-heading --color=always --smart-case --max-columns=4096 -e",
+        actions = {
+          ["ctrl-g"] = { actions.grep_lgrep },
+          ["ctrl-r"] = { actions.toggle_ignore },
+        },
       },
       defaults = {
         git_icons = true,

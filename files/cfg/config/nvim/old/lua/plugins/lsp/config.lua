@@ -12,6 +12,9 @@ if utils.file_exists(fpath) then
 end
 
 local config = {
+  blade = {
+    formatters = { "blade-formatter" },
+  },
   c = {
     formatters = { "clang_format" },
     servers = { "clangd" },
@@ -61,6 +64,10 @@ local config = {
     formatters = { "ruff_format", "ruff_fix" },
     servers = { "pyright", "ruff_lsp" },
   },
+  php = {
+    formatters = { "php_cs_fixer" },
+    servers = { "phpactor", "html" },
+  },
   rust = {
     servers = { "rust_analyzer" },
     -- formatters = { "rustfmt", "leptosfmt" },
@@ -96,6 +103,7 @@ local formatters_to_mason = {
   ruff_fix = "ruff",
   ruff_format = "ruff",
   nixpkgs_fmt = "nixpkgs-fmt",
+  php_cs_fixer = "php-cs-fixer",
 }
 
 local mason_lspserver = {}
@@ -217,6 +225,10 @@ local M = {
       },
     },
 
+    html = {
+      filetypes = { "html", "php" },
+    },
+
     tailwindcss = {
       userLanguages = {
         elixir = "html-eex",
@@ -266,6 +278,8 @@ local M = {
         "eruby",
         "heex",
         "html",
+        "blade",
+        "php",
         "javascript",
         "javascriptreact",
         "rust",

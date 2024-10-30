@@ -4,8 +4,7 @@ end
 
 # Basic aliases
 alias cat="bat --plain"
-alias l="eza"
-alias l1="eza -1"
+alias l="eza -1"
 alias ll="eza -l"
 alias lt="eza -T"
 

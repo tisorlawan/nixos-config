@@ -12,6 +12,7 @@ return {
       if vim.bo.buftype ~= "" then
         return
       end
+
       require("lint").try_lint()
     end
 

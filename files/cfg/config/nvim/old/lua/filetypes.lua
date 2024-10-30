@@ -9,5 +9,6 @@ vim.filetype.add({
     [".env.template"] = "bash",
     [".env.example"] = "bash",
     ["poetry.lock"] = "toml",
+    ["composer.lock"] = "json",
   },
 })

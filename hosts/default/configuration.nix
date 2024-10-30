@@ -217,7 +217,9 @@
     pkgs-unstable.elixir-ls
     livebook
     stylua
+    lua5_1
     lua-language-server
+    luarocks
     guile
     marksman
     inlyne # markdown previewer
@@ -254,7 +256,9 @@
     rsync
     inotify-tools # for elixir
     texliveSmall
-
+    sbcl # common lisp
+    php
+    php82Packages.composer
 
     # @media
     mpv

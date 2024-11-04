@@ -14,3 +14,10 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("t", "<C-c>", "<C-c>", { buffer = event.buf, silent = true })
   end,
 })
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "qf",
+  callback = function(event)
+    vim.keymap.set("n", "q", ":q<cr>", { buffer = event.buf, silent = true })
+  end,
+})

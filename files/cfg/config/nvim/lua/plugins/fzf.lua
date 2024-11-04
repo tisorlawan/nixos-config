@@ -25,7 +25,7 @@ return {
       btags = { previewer = "bat" },
       files = {
         -- fzf_opts = { ["--ansi"] = false },
-        fd_opts = [[--color never --type f --hidden --follow --strip-cwd-prefix -E .git -E node_modules -E .sqlx -E resource_snapshots ]],
+        fd_opts = [[--color never --type f --hidden --follow --strip-cwd-prefix -E .git -E node_modules -E .venv -E .sqlx -E resource_snapshots ]],
         -- fd_opts = [[--color=never --type f --follow]],
       },
       grep = {
@@ -62,7 +62,7 @@ return {
 
     map("<leader>fr", "<cmd>lua require('fzf-lua').resume()<cr>", "resume files")
     -- map("<leader>ff", "<cmd>lua require('fzf-lua').files({winopts = {preview = {hidden = 'hidden'}}})<cr>", "files")
-    map("<c-n>", "<cmd>lua require('fzf-lua').files({winopts = {preview = {hidden = 'hidden'}}})<cr>", "files")
+    map("<c-n>", "<cmd>lua require('fzf-lua').buffers()<cr>", "buffers")
 
     map(
       "<leader>fa",
@@ -78,7 +78,7 @@ return {
     map("<leader>fW", "<cmd>lua require('fzf-lua').live_grep_resume()<cr>", "live grep resume")
 
     -- map("<leader>fb", "<cmd>lua require('fzf-lua').buffers()<cr>", "buffers")
-    map("<c-p>", "<cmd>lua require('fzf-lua').buffers()<cr>", "buffers")
+    map("<c-p>", "<cmd>lua require('fzf-lua').files({winopts = {preview = {hidden = 'hidden'}}})<cr>", "files")
     map("<leader>f.", "<cmd>lua require('fzf-lua').grep_cWORD()<cr>", "grep cWORD")
     map("<leader>fm", "<cmd>lua require('fzf-lua').marks()<cr>", "marks")
     map('<leader>f"', "<cmd>lua require('fzf-lua').registers()<cr>", "registers")

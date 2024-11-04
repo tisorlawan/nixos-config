@@ -182,7 +182,7 @@
     jless
 
     # @dev
-    # devenv
+    pkgs-unstable.devenv
     man-pages
     man-pages-posix
     tldr
@@ -289,6 +289,7 @@
     xournalpp # signature pdf
     # pkgs-unstable.zed-editor
     transmission-gtk
+    telegram-desktop
 
     # @hardware
     glxinfo

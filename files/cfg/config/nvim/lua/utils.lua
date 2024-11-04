@@ -5,19 +5,19 @@ function M.close_diagnostics()
   for _, win in ipairs(windows) do
     vim.api.nvim_win_call(win, function()
       if vim.bo.buftype == "quickfix" then
-        vim.cmd "lclose"
+        vim.cmd("lclose")
       elseif vim.bo.buftype == "locationlist" then
-        vim.cmd "cclose"
+        vim.cmd("cclose")
       elseif vim.bo.buftype == "help" then
-        vim.cmd "bdelete"
+        vim.cmd("bdelete")
         ---@diagnostic disable-next-line: param-type-mismatch
       elseif vim.bo.filetype == "trouble" then
-        vim.cmd "bdelete"
+        vim.cmd("bdelete")
       end
     end)
   end
 
-  vim.cmd "cclose"
+  vim.cmd("cclose")
 end
 
 function M.jumps_to_qf()
@@ -34,23 +34,23 @@ function M.jumps_to_qf()
     end
   end
   vim.fn.setqflist(qf_list, " ")
-  vim.cmd "copen"
+  vim.cmd("copen")
 end
 
 function M.toggle_diagnostics()
   if vim.diagnostic.is_disabled() then
     vim.diagnostic.enable()
-    print "enabled diagnostic"
+    print("enabled diagnostic")
   else
     vim.diagnostic.disable()
-    print "disable diagnostic"
+    print("disable diagnostic")
   end
 end
 
 function M.get_linters()
   local linters = require("lint").get_running()
   if #linters == 0 then
-    print "-- No linters --"
+    print("-- No linters --")
   else
     print("Linters: " .. table.concat(linters, ", "))
   end
@@ -58,18 +58,22 @@ end
 
 function M.os_exec(cmd, raw)
   local handle = assert(io.popen(cmd, "r"))
-  local output = assert(handle:read "*a")
+  local output = assert(handle:read("*a"))
 
   handle:close()
 
-  if raw then return output end
+  if raw then
+    return output
+  end
 
   output = string.gsub(string.gsub(string.gsub(output, "^%s+", ""), "%s+$", ""), "[\n\r]+", " ")
 
   return output
 end
 
-function M.trim(s) return s:gsub("^%s*(.-)%s*$", "%1") end
+function M.trim(s)
+  return s:gsub("^%s*(.-)%s*$", "%1")
+end
 
 function M.file_exists(filepath)
   local file = io.open(filepath, "r")
@@ -82,7 +86,9 @@ end
 
 function M.contains(sequence, element)
   for _, value in ipairs(sequence) do
-    if value == element then return true end
+    if value == element then
+      return true
+    end
   end
   return false
 end
@@ -93,9 +99,11 @@ function M.buf_set_keymap_add_colon()
 end
 
 function M.is_nixos()
-  if M.os_exec "uname" == "Linux" then
-    local release_name = M.os_exec "cat /etc/os-release | grep '^NAME=' | cut -d'=' -f2"
-    if release_name == "NixOS" then return true end
+  if M.os_exec("uname") == "Linux" then
+    local release_name = M.os_exec("cat /etc/os-release | grep '^NAME=' | cut -d'=' -f2")
+    if release_name == "NixOS" then
+      return true
+    end
     return false
   end
 end

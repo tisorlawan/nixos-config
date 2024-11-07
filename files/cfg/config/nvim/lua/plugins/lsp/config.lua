@@ -62,7 +62,7 @@ local config = {
   },
   python = {
     formatters = { "ruff_format", "ruff_fix" },
-    servers = { "pyright", "ruff_lsp" },
+    servers = { "pyright", "ruff" },
   },
   php = {
     formatters = { "php_cs_fixer" },
@@ -294,6 +294,12 @@ local M = {
   on_attach = function(ev)
     vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc" -- Enable completion triggered by <c-x><c-o>
     setup_lsp_keymaps(ev.buf)
+
+    -- disable semantic tokens
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    if client ~= nil then
+      client.server_capabilities.semanticTokensProvider = nil
+    end
   end,
 }
 return M

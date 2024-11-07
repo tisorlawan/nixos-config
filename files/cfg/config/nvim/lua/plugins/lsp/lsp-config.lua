@@ -9,7 +9,7 @@ local servers_config_skip = { "tsserver", "rust_analyzer" }
 local servers_install_skip = { "clangd", "rust_analyzer" }
 
 if utils.is_nixos() then
-  table.insert(servers_install_skip, "ruff_lsp")
+  table.insert(servers_install_skip, "ruff")
   table.insert(servers_install_skip, "lua_ls")
   table.insert(servers_install_skip, "marksman")
   table.insert(servers_install_skip, "gopls")

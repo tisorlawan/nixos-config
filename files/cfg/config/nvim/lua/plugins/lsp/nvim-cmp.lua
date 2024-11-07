@@ -6,7 +6,7 @@ return {
       "rafamadriz/friendly-snippets",
       {
         "folke/lazydev.nvim",
-        ft = "lua", -- only load on lua files
+        ft = "lua",
         opts = {
           library = {
             { path = "luvit-meta/library", words = { "vim%.uv" } },
@@ -143,12 +143,21 @@ return {
       },
       windows = {
         autocomplete = {
+          border = "rounded",
+          winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None",
           selection = "preselect",
         },
-        ghost_text = {
-          enabled = false,
+        documentation = {
+          auto_show = true,
+          border = "rounded",
+          winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder,CursorLine:PmenuSel,Search:None",
+        },
+        signature_help = {
+          border = "rounded",
+          winhighlight = "Normal:NormalFloat,FloatBorder:FloatBorder",
         },
       },
+
       kind_icons = {
         Text = "󰉿",
         Method = "󰆧",

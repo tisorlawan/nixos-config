@@ -3,13 +3,12 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
-    home-manager = {
-      url = "github:nix-community/home-manager/release-24.05";
-    };
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/1997e4aa";
+    home-manager.url = "github:nix-community/home-manager/release-24.05";
+    # iwmenu.url = "github:e-tho/iwmenu";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/4aa36568";
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, ... }:
+  outputs = { nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:
     {
       nixosConfigurations = {
         default = nixpkgs.lib.nixosSystem rec {
@@ -23,6 +22,7 @@
               inherit system;
               config.allowUnfree = true;
             };
+            inherit inputs;
           };
 
           modules = [
@@ -39,6 +39,5 @@
           ];
         };
       };
-
     };
 }

@@ -44,6 +44,8 @@ local plugins = {
   require("plugins.asterisks"),
 
   require("plugins.lsp"),
+  require("plugins.snacks"),
+  require("plugins.focus"),
   -- {
   --   "adalessa/laravel.nvim",
   --   dependencies = {

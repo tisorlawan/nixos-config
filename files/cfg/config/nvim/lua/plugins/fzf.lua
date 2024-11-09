@@ -98,12 +98,12 @@ return {
     map("<leader>li", "<cmd>lua require('fzf-lua').lsp_incoming_calls()<cr>", "lsp incoming symbols")
     map("<leader>lo", "<cmd>lua require('fzf-lua').lsp_outgoing_calls()<cr>", "lsp outgoing symbols")
 
-    map("<leader>gf", "<cmd>lua require('fzf-lua').git_files()<cr>", "git files")
-    map("<leader>gs", "<cmd>lua require('fzf-lua').git_status()<cr>", "git status")
-    map("<leader>gb", "<cmd>lua require('fzf-lua').git_branches()<cr>", "git branches")
+    map("<leader>gF", "<cmd>lua require('fzf-lua').git_files()<cr>", "git files")
+    -- map("<leader>gs", "<cmd>lua require('fzf-lua').git_status()<cr>", "git status")
+    -- map("<leader>gb", "<cmd>lua require('fzf-lua').git_branches()<cr>", "git branches")
     map("<leader>gt", "<cmd>lua require('fzf-lua').git_tags()<cr>", "git tags")
     map("<leader>gc", "<cmd>lua require('fzf-lua').git_commits()<cr>", "git commits")
 
-    vim.keymap.set("v", "gs", "<cmd>lua require('fzf-lua').grep_visual()<cr>", { desc = "grep visual" })
+    vim.keymap.set("v", "<C-n>", "<cmd>lua require('fzf-lua').grep_visual()<cr>", { desc = "grep visual" })
   end,
 }

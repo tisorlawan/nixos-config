@@ -9,7 +9,7 @@ return {
     { "S", "<Plug>(leap-backward-to)", mode = { "n", "x", "o" }, desc = "leap backward to" },
     { "x", "<Plug>(leap-forward-till)", mode = { "x", "o" }, desc = "leap forward till" },
     { "X", "<Plug>(leap-backward-till)", mode = { "x", "o" }, desc = "leap backward till" },
-    -- { "gp", "<Plug>(leap-from-window)", mode = { "n", "x", "o" }, desc = "leap from window" },
+    { "gs", "<Plug>(leap-from-window)", mode = { "n", "x", "o" }, desc = "leap from window" },
   },
   opts = {
     safe_labels = "tyuofghjklvbn",

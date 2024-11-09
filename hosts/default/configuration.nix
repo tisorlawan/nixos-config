@@ -1,7 +1,7 @@
 # Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ pkgs, pkgs-unstable, ... }:
+{ pkgs, pkgs-unstable, inputs, ... }:
 
 {
   imports =
@@ -259,6 +259,7 @@
     sbcl # common lisp
     php
     php82Packages.composer
+    # inputs.iwmenu.packages.${pkgs.system}.default
 
     # @media
     mpv

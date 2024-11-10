@@ -40,79 +40,12 @@ end
 
 return {
   "nvim-neo-tree/neo-tree.nvim",
-  branch = "v3.x",
-  keys = {
-    {
-      "<Leader>e",
-      ":Neotree source=filesystem reveal=true position=left toggle<Cr>",
-      desc = "Neotree toggle",
-      silent = true,
-    },
-  },
-  dependencies = {
-    "nvim-lua/plenary.nvim",
-    "MunifTanjim/nui.nvim",
-    -- "3rd/image.nvim", -- Optional image support in preview window: See `# Preview Mode` for more information
-  },
-  opts = function(_, _)
-    local opts = {
-      close_if_last_window = true,
-      enable_git_status = true,
-      window = {
-        mappings = {
-          ["Y"] = copy_path,
-        },
-      },
-      filesystem = {
-        follow_current_file = {
-          enabled = false,
-        },
-        use_libuv_file_watcher = true,
-        hijack_netrw_behavior = "disabled",
-        filtered_items = {
-          always_show = { -- remains visible even if other settings would normally hide it
-            ".gitignore",
-          },
-        },
-      },
-      default_component_configs = {
-        icon = {
-          folder_closed = "",
-          folder_open = "",
-          folder_empty = "󰜌",
-          default = "*",
-          highlight = "NeoTreeFileIcon",
-        },
-
-        git_status = {
-          symbols = {
-            -- Change type
-            added = "",
-            modified = "",
-            deleted = "",
-            renamed = "",
-            -- Status type
-            untracked = "",
-            ignored = "",
-            unstaged = "",
-            staged = "",
-            conflict = "",
-          },
-        },
+  opts = function(_, opts)
+    opts.filesystem.hijack_netrw_behavior = "disabled"
+    opts.window = {
+      mappings = {
+        ["Y"] = copy_path,
       },
     }
-
-    local function on_move(data)
-      Snacks.rename.on_rename_file(data.source, data.destination)
-    end
-
-    local events = require("neo-tree.events")
-    opts.event_handlers = opts.event_handlers or {}
-    vim.list_extend(opts.event_handlers, {
-      { event = events.FILE_MOVED, handler = on_move },
-      { event = events.FILE_RENAMED, handler = on_move },
-    })
-
-    return opts
   end,
 }

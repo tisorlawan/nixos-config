@@ -193,7 +193,6 @@
     valgrind
     pkg-config
     git
-    jujutsu
     # rye
     python312
     poetry

@@ -1,5 +1,5 @@
 local utils = require("utils")
-local used_ft = require("lsp_config").used_ft
+local used_ft = require("plugins.lsp.config").used_ft
 
 return {
   {
@@ -7,8 +7,8 @@ return {
     build = ":TSUpdate",
     dependencies = {
       { "yioneko/nvim-yati", event = { "BufReadPost", "BufNewFile" } },
-      -- { "nvim-treesitter/playground" },
-      -- { "windwp/nvim-ts-autotag" },
+      { "nvim-treesitter/playground" },
+      { "windwp/nvim-ts-autotag" },
     },
     event = { "BufReadPost", "BufNewFile" },
     opts = {
@@ -45,7 +45,6 @@ return {
           "json",
           "c",
           "heex",
-          "zig",
         },
       },
       yati = {
@@ -79,15 +78,15 @@ return {
       end
     end,
   },
-  -- {
-  --   "windwp/nvim-ts-autotag",
-  --   config = function()
-  --     require("nvim-ts-autotag").setup({
-  --       aliases = {
-  --         ["heex"] = "html",
-  --       },
-  --     })
-  --   end,
-  --   event = { "BufReadPost", "BufNewFile" },
-  -- },
+  {
+    "windwp/nvim-ts-autotag",
+    config = function()
+      require("nvim-ts-autotag").setup({
+        aliases = {
+          ["heex"] = "html",
+        },
+      })
+    end,
+    event = { "BufReadPost", "BufNewFile" },
+  },
 }

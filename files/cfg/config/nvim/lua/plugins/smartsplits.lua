@@ -64,6 +64,7 @@ return {
         require("smart-splits").swap_buf_left()
       end,
       { silent = true },
+      desc = "Swap Left",
     },
     {
       "<leader>oj",
@@ -71,6 +72,7 @@ return {
         require("smart-splits").swap_buf_down()
       end,
       { silent = true },
+      desc = "Swap Down",
     },
     {
       "<leader>ok",
@@ -78,6 +80,7 @@ return {
         require("smart-splits").swap_buf_up()
       end,
       { silent = true },
+      desc = "Swap Up",
     },
     {
       "<leader>ol",
@@ -85,6 +88,7 @@ return {
         require("smart-splits").swap_buf_right()
       end,
       { silent = true },
+      desc = "Swap Right",
     },
   },
   config = function()

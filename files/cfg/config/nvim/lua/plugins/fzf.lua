@@ -2,6 +2,7 @@ return {
   { "nvim-telescope/telescope.nvim", enabled = false },
   {
     "ibhagwan/fzf-lua",
+    event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       { "nvim-tree/nvim-web-devicons" },
       { "kevinhwang91/nvim-bqf", ft = "qf", opts = {} },

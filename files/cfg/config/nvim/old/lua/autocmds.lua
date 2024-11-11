@@ -21,3 +21,10 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.keymap.set("n", "q", ":q<cr>", { buffer = event.buf, silent = true })
   end,
 })
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+  pattern = "*",
+  callback = function()
+    vim.api.nvim_set_hl(0, "SnippetTabstop", { link = "NONE" })
+  end,
+})

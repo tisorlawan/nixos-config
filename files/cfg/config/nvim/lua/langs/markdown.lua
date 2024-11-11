@@ -11,7 +11,7 @@ local M = {
 }
 
 vim.cmd([[
-    command! -nargs=? InlynePreview lua require('plugins.langs.markdown').preview_with_inlyne(<f-args>)
+    command! -nargs=? InlynePreview lua require('langs.markdown').preview_with_inlyne(<f-args>)
 ]])
 
 function M.preview_with_inlyne(theme)

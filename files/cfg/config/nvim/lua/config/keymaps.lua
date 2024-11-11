@@ -191,4 +191,8 @@ map("n", "co", ":copen<CR>", { silent = true })
 map("n", "cq", utils.close_diagnostics, { desc = "close diagnostics", silent = true })
 map("n", "cu", utils.jumps_to_qf, { desc = "jumps to qf", silent = true })
 
+map("n", "<leader>d", function()
+  Snacks.bufdelete()
+end, { desc = "Delete Buffer" })
+
 -- telescope

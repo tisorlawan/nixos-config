@@ -180,6 +180,7 @@
     zip
     openssl
     jless
+    inputs.zotimer.packages.${pkgs.system}.default
 
     # @dev
     pkgs-unstable.devenv
@@ -196,8 +197,8 @@
     # rye
     python312
     poetry
-    ruff
-    ruff-lsp
+    pkgs-unstable.ruff
+    pkgs-unstable.ruff-lsp
     pyright
     virtualenv
     black
@@ -301,7 +302,6 @@
     (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
     material-icons
 
-
     (callPackage ./../../pkgs/toptracker.nix { })
   ];
 
@@ -329,7 +329,6 @@
 
   services.gvfs.enable = true;
   services.udisks2.enable = true;
-
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = [ ];

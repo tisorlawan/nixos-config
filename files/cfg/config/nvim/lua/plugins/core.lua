@@ -9,33 +9,15 @@
 -- * disable/enabled LazyVim plugins
 -- * override the configuration of LazyVim plugins
 return {
-  -- add gruvbox
-  {
-    "rebelot/kanagawa.nvim",
-    priority = 0,
-    enabled = true,
-    config = function()
-      require("kanagawa").setup({
-        undercurl = true,
-        commentStyle = { italic = false },
-        keywordStyle = { italic = false },
-        statementStyle = { bold = false },
-        transparent = vim.g.transparent,
-        dimInactive = false,
-        terminalColors = true,
-      })
-    end,
-  },
-
-  -- Configure LazyVim to load gruvbox
   {
     "LazyVim/LazyVim",
     opts = {
       -- colorscheme can be a string like `catppuccin` or a function that will load the colorscheme
       ---@type string|fun()
-      colorscheme = "tokyonight-night",
-      -- colorscheme = "jellybeans",
-      -- colorscheme = "kanagawa",
+      -- colorscheme = "blue-moon",
+      -- colorscheme = "no-clown-fiesta",
+      colorscheme = "kanagawa",
+      -- colorscheme = "tokyonight-storm",
       -- load the default settings
       defaults = {
         autocmds = true, -- lazyvim.config.autocmds

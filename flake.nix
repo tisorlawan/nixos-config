@@ -3,9 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.05";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/dc460ec7";
     home-manager.url = "github:nix-community/home-manager/release-24.05";
     # iwmenu.url = "github:e-tho/iwmenu";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/4aa36568";
+    zotimer.url = "github:tisorlawan/zotimer";
   };
 
   outputs = { nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:

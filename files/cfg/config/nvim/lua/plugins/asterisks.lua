@@ -1,5 +1,5 @@
 return {
-  "haya14busa/vim-asterisk",
+  "tisorlawan/vim-asterisk",
   config = function()
     vim.cmd([[
       map *   <Plug>(asterisk-z*)

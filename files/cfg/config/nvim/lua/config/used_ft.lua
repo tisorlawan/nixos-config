@@ -65,7 +65,7 @@ local config = {
     servers = { "phpactor", "html" },
   },
   python = {
-    formatters = { "ruff_format", "ruff_fix" },
+    formatters = { "ruff_format", "ruff_organize_imports" },
     servers = { "pyright", "ruff" },
   },
   rust = {

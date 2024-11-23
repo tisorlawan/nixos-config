@@ -40,10 +40,10 @@ end
 function M.toggle_diagnostics()
   if vim.diagnostic.is_disabled() then
     vim.diagnostic.enable()
-    print("enabled diagnostic")
+    print("-enabled- diagnostic")
   else
     vim.diagnostic.disable()
-    print("disable diagnostic")
+    print("-disabled- diagnostic")
   end
 end
 
@@ -117,6 +117,58 @@ function M.remove_item_from_array(table, item)
       i = i + 1
     end
   end
+end
+
+function M.cwd()
+  return M.realpath(vim.uv.cwd()) or ""
+end
+
+-- returns the root directory based on:
+-- * lsp workspace folders
+-- * lsp root_dir
+-- * root pattern of filename of the current buffer
+-- * root pattern of cwd
+---@param opts? {normalize?:boolean, buf?:number}
+---@return string
+function M.get_root(opts)
+  opts = opts or {}
+  local buf = opts.buf or vim.api.nvim_get_current_buf()
+  local ret = M.cache[buf]
+  if not ret then
+    local roots = M.detect({ all = false, buf = buf })
+    ret = roots[1] and roots[1].paths[1] or vim.uv.cwd()
+    M.cache[buf] = ret
+  end
+  if opts and opts.normalize then
+    return ret
+  end
+  return M.is_win() and ret:gsub("/", "\\") or ret
+end
+
+function M.norm_path(path)
+  if path:sub(1, 1) == "~" then
+    local home = vim.uv.os_homedir()
+    if home:sub(-1) == "\\" or home:sub(-1) == "/" then
+      home = home:sub(1, -2)
+    end
+    path = home .. path:sub(2)
+  end
+  path = path:gsub("\\", "/"):gsub("/+", "/")
+  return path:sub(-1) == "/" and path:sub(1, -2) or path
+end
+
+function M.is_win()
+  return vim.uv.os_uname().sysname:find("Windows") ~= nil
+end
+
+---@param plugin string
+function M.has(plugin)
+  return M.get_plugin(plugin) ~= nil
+end
+
+---@param name string
+function M.get_plugin(name)
+  return require("lazy.core.config").spec.plugins[name]
 end
 
 return M

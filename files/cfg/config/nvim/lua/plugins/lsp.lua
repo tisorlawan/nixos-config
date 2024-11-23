@@ -15,6 +15,7 @@ local formatters_to_mason = {
   clang_format = "clang-format",
   ruff_fix = "ruff",
   ruff_format = "ruff",
+  ruff_organize_imports = "ruff",
   nixpkgs_fmt = "nixpkgs-fmt",
   php_cs_fixer = "php-cs-fixer",
 }
@@ -128,6 +129,7 @@ local function setup_diagnostic()
   vim.keymap.set("n", "gl", vim.diagnostic.open_float, { desc = "diagnostic line" })
   vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "prev diagnostic" })
   vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "next diagnostic" })
+  vim.keymap.set("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
 
   local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
   for type, icon in pairs(signs) do
@@ -316,7 +318,6 @@ local plugins = {
   {
     "saghen/blink.cmp",
     lazy = false,
-    enabled = true,
     version = "v0.*",
     ---@module 'blink.cmp'
     ---@type blink.cmp.Config
@@ -372,6 +373,7 @@ local plugins = {
         Operator = "󰆕",
         TypeParameter = "",
       },
+      opts_extend = { "sources.completion.enabled_providers" },
     },
   },
   {

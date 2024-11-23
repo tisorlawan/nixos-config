@@ -2,7 +2,7 @@ return {
   {
     "rebelot/kanagawa.nvim",
     priority = 0,
-    enabled = true,
+    -- enabled = false,
     config = function()
       require("kanagawa").setup({
         undercurl = true,
@@ -13,11 +13,37 @@ return {
         dimInactive = false,
         terminalColors = true,
       })
-      vim.cmd.colorscheme("kanagawa")
+      vim.cmd.colorscheme("kanagawa-dragon")
     end,
   },
-  { "aktersnurra/no-clown-fiesta.nvim" },
-  { "kyazdani42/blue-moon" },
-  { "fcancelinha/nordern.nvim", branch = "master", priority = 1000 },
-  { "olivercederborg/poimandres.nvim" },
+  {
+    "aktersnurra/no-clown-fiesta.nvim",
+    enabled = false,
+    config = function()
+      vim.cmd.colorscheme("no-clown-fiesta")
+    end,
+  },
+  {
+    "kyazdani42/blue-moon",
+    enabled = false,
+    config = function()
+      vim.cmd.colorscheme("blue-moon")
+    end,
+  },
+  {
+    "fcancelinha/nordern.nvim",
+    branch = "master",
+    priority = 1000,
+    enabled = false,
+    config = function()
+      vim.cmd.colorscheme("nordern")
+    end,
+  },
+  {
+    "olivercederborg/poimandres.nvim",
+    enabled = false,
+    config = function()
+      vim.cmd.colorscheme("poimandres")
+    end,
+  },
 }

@@ -19,6 +19,7 @@ require("lazy").setup({
       require("plugins.colorschema"),
       require("plugins.conform"),
       require("plugins.dirvish"),
+      require("plugins.dressing"),
       require("plugins.flit"),
       require("plugins.focus"),
       require("plugins.fzf"),
@@ -28,10 +29,11 @@ require("lazy").setup({
       require("plugins.live-rename"),
       require("plugins.lsp"),
       require("plugins.lualine"),
-      require("plugins.mini-icons"),
+      require("plugins.mini"),
       require("plugins.multicursor"),
       require("plugins.neotree"),
       require("plugins.numb"),
+      require("plugins.noice"),
       require("plugins.nvim-lint"),
       require("plugins.scrolleof"),
       require("plugins.smartsplit"),
@@ -39,6 +41,7 @@ require("lazy").setup({
       require("plugins.suda"),
       require("plugins.todo-comments"),
       require("plugins.treesitter"),
+      require("plugins.trouble"),
       require("plugins.ufo"),
       require("plugins.undotree"),
       require("plugins.whichkey"),
@@ -48,6 +51,11 @@ require("lazy").setup({
   change_detection = {
     enabled = false,
     notify = false,
+  },
+  dev = {
+    path = "/home/tiso/software/tisorlawan",
+    patterns = {},
+    fallback = false,
   },
 })
 require("keymaps")

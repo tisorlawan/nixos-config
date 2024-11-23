@@ -14,7 +14,12 @@ vim.g.rustaceanvim = {
   dap = {},
 }
 
-vim.keymap.set("n", "<C-y>", ":RustLsp flyCheck<cr>", { desc = "flycheck", silent = true })
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "rust",
+  callback = function(event)
+    vim.keymap.set("n", "<C-y>", ":RustLsp flyCheck<cr>", { buffer = event.buf, silent = true })
+  end,
+})
 
 return {
   "mrcjkb/rustaceanvim",

@@ -6,9 +6,9 @@ return {
     require("conform").setup({
       formatters_by_ft = used_ft.formatters_by_ft,
       format_on_save = function(bufnr)
-        if string.find(vim.fn.expand("%"), "poetry.lock") then
-          return
-        end
+        -- if string.find(vim.fn.expand("%"), "poetry.lock") then
+        --   return
+        -- end
 
         if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
           return
@@ -16,10 +16,6 @@ return {
         return { timeout_ms = 500, lsp_fallback = true }
       end,
     })
-
-    require("conform").formatters.ruff_fix = {
-      prepend_args = { "--select", "I" },
-    }
 
     require("conform").formatters.biome = {
       args = {
@@ -38,9 +34,9 @@ return {
       ---@diagnostic disable-next-line: inject-field
       vim.b.disable_autoformat = not vim.b.disable_autoformat
       if vim.b.disable_autoformat then
-        print("disable auto format")
+        print("-disabled- auto format")
       else
-        print("enabled auto format")
+        print("-enabled- auto format")
       end
     end, {
       desc = "disable autoformat-on-save",

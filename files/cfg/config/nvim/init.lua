@@ -1,2 +1,72 @@
--- bootstrap lazy.nvim, LazyVim and your plugins
-require("config.lazy")
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
+  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
+  if vim.v.shell_error ~= 0 then
+    error("Error cloning lazy.nvim:\n" .. out)
+  end
+end ---@diagnostic disable-next-line: undefined-field
+vim.opt.rtp:prepend(lazypath)
+
+require("options")
+require("lazy").setup({
+  spec = {
+    {
+      require("plugins.arrow"),
+      require("plugins.asterisks"),
+      require("plugins.autopairs"),
+      require("plugins.bufferline"),
+      require("plugins.colorschema"),
+      require("plugins.conform"),
+      require("plugins.dirvish"),
+      require("plugins.flit"),
+      require("plugins.focus"),
+      require("plugins.fzf"),
+      require("plugins.gitsigns"),
+      require("plugins.lazygit"),
+      require("plugins.leap"),
+      require("plugins.live-rename"),
+      require("plugins.lsp"),
+      require("plugins.lualine"),
+      require("plugins.mini-icons"),
+      require("plugins.multicursor"),
+      require("plugins.neotree"),
+      require("plugins.numb"),
+      require("plugins.nvim-lint"),
+      require("plugins.scrolleof"),
+      require("plugins.smartsplit"),
+      require("plugins.snacks"),
+      require("plugins.suda"),
+      require("plugins.todo-comments"),
+      require("plugins.treesitter"),
+      require("plugins.ufo"),
+      require("plugins.undotree"),
+      require("plugins.whichkey"),
+      require("plugins.yazi"),
+    },
+  },
+  change_detection = {
+    enabled = false,
+    notify = false,
+  },
+})
+require("keymaps")
+require("autocmds")
+
+vim.filetype.add({
+  extension = {
+    ["env"] = "bash",
+    ["templ"] = "templ",
+    ["sls"] = "scheme",
+  },
+  filename = {
+    [".env"] = "bash",
+    [".env.template"] = "bash",
+    [".env.example"] = "bash",
+    ["poetry.lock"] = "toml",
+    ["composer.lock"] = "json",
+  },
+})
+
+-- The line beneath this is called `modeline`. See `:help modeline`
+-- vim: ts=2 sts=2 sw=2 et

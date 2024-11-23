@@ -170,7 +170,7 @@
     helix
     killall
     unrar
-    yazi
+    pkgs-unstable.yazi
     yt-dlp
     zoxide
     nethogs
@@ -260,6 +260,7 @@
     php
     php82Packages.composer
     # inputs.iwmenu.packages.${pkgs.system}.default
+    ngrok
 
     # @media
     mpv

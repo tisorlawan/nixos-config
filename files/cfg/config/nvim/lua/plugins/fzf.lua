@@ -1,5 +1,4 @@
 return {
-  { "nvim-telescope/telescope.nvim", enabled = false },
   {
     "ibhagwan/fzf-lua",
     event = { "BufReadPre", "BufNewFile" },
@@ -9,32 +8,11 @@ return {
     },
     keys = {
       {
-        "<leader>,",
-        function()
-          require("fzf-lua").buffers()
-        end,
-        desc = "Switch Buffer",
-      },
-      {
-        "<leader>/",
-        function()
-          require("fzf-lua").grep_project()
-        end,
-        desc = "Grep (Root Dir)",
-      },
-      {
-        "<leader>:",
+        "<leader>fc",
         function()
           require("fzf-lua").command_history()
         end,
         desc = "Command History",
-      },
-      {
-        "<leader>fb",
-        function()
-          require("fzf-lua").buffers()
-        end,
-        desc = "Buffers",
       },
       {
         "<c-n>",
@@ -42,20 +20,6 @@ return {
           require("fzf-lua").buffers()
         end,
         desc = "Buffers",
-      },
-      {
-        "<leader>fc",
-        function()
-          require("fzf-lua").files({ cwd = vim.fn.stdpath("config") })
-        end,
-        desc = "Find Config File",
-      },
-      {
-        "<leader>ff",
-        function()
-          require("fzf-lua").files()
-        end,
-        desc = "Find Files (Root Dir)",
       },
       {
         "<c-p>",

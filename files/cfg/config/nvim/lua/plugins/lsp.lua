@@ -290,18 +290,18 @@ local plugins = {
 
       local lspconfig = require("lspconfig")
       local handlers = vim.lsp.handlers
-      local border = {
-        { "🭽", "FloatBorder" },
-        { "▔", "FloatBorder" },
-        { "🭾", "FloatBorder" },
-        { "▕", "FloatBorder" },
-        { "🭿", "FloatBorder" },
-        { "▁", "FloatBorder" },
-        { "🭼", "FloatBorder" },
-        { "▏", "FloatBorder" },
-      }
-      handlers["textDocument/hover"] = vim.lsp.with(handlers.hover, { border = border })
-      handlers["textDocument/signatureHelp"] = vim.lsp.with(handlers.signature_help, { border = border })
+      -- local border = {
+      --   { "🭽", "FloatBorder" },
+      --   { "▔", "FloatBorder" },
+      --   { "🭾", "FloatBorder" },
+      --   { "▕", "FloatBorder" },
+      --   { "🭿", "FloatBorder" },
+      --   { "▁", "FloatBorder" },
+      --   { "🭼", "FloatBorder" },
+      --   { "▏", "FloatBorder" },
+      -- }
+      -- handlers["textDocument/hover"] = vim.lsp.with(handlers.hover, { border = border })
+      -- handlers["textDocument/signatureHelp"] = vim.lsp.with(handlers.signature_help, { border = border })
 
       for _, sn in pairs(mason_lspserver) do
         if not utils.contains(servers_config_skip, sn) then
@@ -319,62 +319,69 @@ local plugins = {
     "saghen/blink.cmp",
     lazy = false,
     version = "v0.*",
-    ---@module 'blink.cmp'
-    ---@type blink.cmp.Config
     opts = {
-      windows = {
+      completion = {
+        list = { selection = "auto_insert" },
+        accept = {
+          auto_brackets = {
+            enabled = true,
+          },
+        },
+
+        menu = { enabled = true, border = "single" },
+
         documentation = {
           auto_show = true,
-          border = "single",
+          window = {
+            min_width = 10,
+            max_width = 100,
+            max_height = 30,
+            border = "single",
+          },
         },
-        autocomplete = {
-          selection = "auto_insert",
-          border = "single",
+        ghost_text = {
+          enabled = false,
         },
       },
-      accept = { auto_brackets = { enabled = true } },
-      trigger = { signature_help = { enabled = false } },
+      signature = { enabled = false },
       sources = {
-        -- add lazydev to your completion providers
         completion = {
-          enabled_providers = { "lsp", "path", "snippets", "buffer", "lazydev" },
-        },
-        providers = {
-          -- dont show LuaLS require statements when lazydev has items
-          lsp = { fallback_for = { "lazydev" } },
-          lazydev = { name = "LazyDev", module = "lazydev.integrations.blink" },
+          enabled_providers = { "lsp", "path", "snippets", "buffer" },
         },
       },
 
-      kind_icons = {
-        Text = "󰉿",
-        Method = "󰆧",
-        Function = "󰊕",
-        Constructor = "",
-        Field = "󰜢",
-        Variable = "󰀫",
-        Class = "󰠱",
-        Interface = "",
-        Module = "",
-        Property = "󰜢",
-        Unit = "󰑭",
-        Value = "󰎠",
-        Enum = "",
-        Keyword = "󰌋",
-        Snippet = "",
-        Color = "󰏘",
-        File = "󰈙",
-        Reference = "󰈇",
-        Folder = "󰉋",
-        EnumMember = "",
-        Constant = "󰏿",
-        Struct = "󰙅",
-        Event = "",
-        Operator = "󰆕",
-        TypeParameter = "",
+      appearance = {
+        highlight_ns = vim.api.nvim_create_namespace("blink_cmp"),
+        kind_icons = {
+          Text = "󰉿",
+          Method = "󰆧",
+          Function = "󰊕",
+          Constructor = "",
+          Field = "󰜢",
+          Variable = "󰀫",
+          Class = "󰠱",
+          Interface = "",
+          Module = "",
+          Property = "󰜢",
+          Unit = "󰑭",
+          Value = "󰎠",
+          Enum = "",
+          Keyword = "󰌋",
+          Snippet = "",
+          Color = "󰏘",
+          File = "󰈙",
+          Reference = "󰈇",
+          Folder = "󰉋",
+          EnumMember = "",
+          Constant = "󰏿",
+          Struct = "󰙅",
+          Event = "",
+          Operator = "󰆕",
+          TypeParameter = "󰬛",
+        },
       },
-      opts_extend = { "sources.completion.enabled_providers" },
     },
+    opts_extend = { "sources.completion.enabled_providers" },
   },
   {
     "folke/lazydev.nvim",

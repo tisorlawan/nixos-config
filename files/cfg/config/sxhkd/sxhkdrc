@@ -8,10 +8,10 @@ super + Escape
 
 # Terminal
 super + Return
-	wezterm-gui
+	alacritty
 
 super + shift + Return
-	alacritty
+	wezterm-gui
 
 # Lock
 super + shift + 9

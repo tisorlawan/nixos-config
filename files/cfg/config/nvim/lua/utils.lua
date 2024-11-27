@@ -13,6 +13,8 @@ function M.close_diagnostics()
         ---@diagnostic disable-next-line: param-type-mismatch
       elseif vim.bo.filetype == "trouble" then
         vim.cmd("bdelete")
+      elseif vim.bo.filetype == "toggleterm" then
+        vim.cmd("close")
       end
     end)
   end

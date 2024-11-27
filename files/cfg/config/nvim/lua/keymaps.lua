@@ -51,9 +51,6 @@ map("n", "<leader>w", ":update<cr>", { silent = true })
 -- buffers
 map("n", "<leader>bD", "<cmd>:bd<cr>", { desc = "Delete Buffer and Window" })
 map("n", "<leader><tab>", "<C-^>", { desc = "Alternative Buffer" })
-map("n", "<leader>d", function()
-  Snacks.bufdelete()
-end, { desc = "Delete Buffer" })
 
 map("n", "<leader>pp", ":Lazy<cr>", { desc = "Lazy", silent = true })
 map("n", "<Leader>pt", utils.get_linters, { desc = "lint progress", silent = true })
@@ -61,7 +58,7 @@ map("n", "<Leader>pi", ":LspInfo<cr>", { desc = "lsp info", silent = true })
 map("n", "<Leader>pr", ":LspRestart<cr>", { desc = "lsp restart", silent = true })
 map("n", "<Leader>pm", ":Mason<cr>", { desc = "Mason", silent = true })
 map("n", "<Leader>pc", ":ConformInfo<cr>", { desc = "conform info", silent = true })
-map("n", "<Leader>ud", utils.toggle_diagnostics, { desc = "toggle diagnostics" })
+-- map("n", "<Leader>ud", utils.toggle_diagnostics, { desc = "toggle diagnostics" })
 
 map("n", "[d", vim.diagnostic.goto_prev, { desc = "Go to previous [D]iagnostic message" })
 map("n", "]d", vim.diagnostic.goto_next, { desc = "Go to next [D]iagnostic message" })

@@ -14,7 +14,7 @@ return {
     ----------------------
     require("mini.bufremove").setup()
     -- vim.keymap.set("n", "<leader>D", MiniBufremove.delete, { desc = "Wipeout buffer" })
-    vim.keymap.set("n", "<leader>D", MiniBufremove.wipeout, { desc = "Delete buffer" })
+    vim.keymap.set("n", "<leader>D", MiniBufremove.wipeout, { desc = "Buffer Wipeout" })
 
     ----------------------
     require("mini.indentscope").setup({

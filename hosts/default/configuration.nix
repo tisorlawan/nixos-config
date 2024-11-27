@@ -244,6 +244,7 @@
     postgresql
     pdftk # pdf uncompress, remove watermark
     qpdf # pdf manipulation, e.g: extract specific pages
+    antiword
     poppler_utils # pdftotext
     xsv
     jupyter-all

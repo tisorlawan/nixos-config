@@ -89,6 +89,9 @@ end
 return {
   "nvim-lualine/lualine.nvim",
   event = "VeryLazy",
+  dependencies = {
+    "bwpge/lualine-pretty-path",
+  },
   init = function()
     vim.g.lualine_laststatus = vim.o.laststatus
     if vim.fn.argc(-1) > 0 then
@@ -120,8 +123,7 @@ return {
 
         lualine_c = {
           {
-            "filename",
-            path = 1,
+            "pretty_path",
           },
           {
             "diagnostics",
@@ -188,6 +190,9 @@ return {
             return " " .. os.date("%R")
           end,
         },
+      },
+      inactive_sections = {
+        lualine_c = { "pretty_path" },
       },
       extensions = { "neo-tree", "lazy" },
     }

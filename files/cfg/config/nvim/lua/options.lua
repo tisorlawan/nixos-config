@@ -29,7 +29,7 @@ vim.opt.listchars = { tab = "» ", trail = "·", nbsp = "␣" }
 vim.opt.inccommand = "split"
 vim.opt.cursorline = true
 vim.opt.scrolloff = 10
-vim.opt.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
+-- vim.opt.statuscolumn = [[%!v:lua.require'snacks.statuscolumn'.get()]]
 vim.opt.undofile = true
 vim.opt.undolevels = 10000
 vim.opt.updatetime = 200 -- Save swap file and trigger CursorHold

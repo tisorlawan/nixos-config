@@ -1,8 +1,8 @@
 return {
   {
     "rebelot/kanagawa.nvim",
-    priority = 0,
     enabled = false,
+    priority = 0,
     config = function()
       require("kanagawa").setup({
         undercurl = true,
@@ -18,9 +18,9 @@ return {
   },
   {
     "slugbyte/lackluster.nvim",
+    enabled = false,
     lazy = false,
     priority = 1000,
-    enabled = false,
     init = function()
       vim.cmd.colorscheme("lackluster-hack")
       -- vim.cmd.colorscheme("lackluster-hack") -- my favorite
@@ -34,7 +34,7 @@ return {
     opts = {},
     config = function()
       require("tokyonight").setup({})
-      vim.cmd.colorscheme("tokyonight-moon")
+      vim.cmd.colorscheme("tokyonight-night")
     end,
   },
   {
@@ -53,9 +53,9 @@ return {
   },
   {
     "fcancelinha/nordern.nvim",
+    enabled = false,
     branch = "master",
     priority = 1000,
-    enabled = false,
     config = function()
       vim.cmd.colorscheme("nordern")
     end,

@@ -193,7 +193,8 @@
     gdb
     valgrind
     pkg-config
-    git
+    gitFull
+    git-lfs
     # rye
     python312
     poetry

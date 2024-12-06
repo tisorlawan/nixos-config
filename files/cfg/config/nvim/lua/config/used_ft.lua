@@ -19,6 +19,9 @@ local config = {
     formatters = { "clang_format" },
     servers = { "clangd" },
   },
+  cabal = {
+    formatters = { "cabal_fmt" },
+  },
   css = {
     servers = { "tailwindcss" },
     linters = { "stylelint" },

@@ -1,1 +1,3 @@
-vim.bo.expandtab = false
+local set = vim.opt_local
+
+set.expandtab = false

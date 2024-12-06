@@ -232,6 +232,7 @@
     gotools
     ghc
     cabal-install
+    haskellPackages.cabal-fmt
     haskell-language-server
     prettierd
     nil

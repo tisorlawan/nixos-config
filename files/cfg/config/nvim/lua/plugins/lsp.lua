@@ -54,7 +54,7 @@ end
 utils.remove_item_from_array(mason_formatter_install, "leptosfmt")
 utils.remove_item_from_array(mason_formatter_install, "zigfmt")
 utils.remove_item_from_array(mason_formatter_install, "mix")
-utils.remove_item_from_array(mason_formatter_install, "cabal-fmt")
+utils.remove_item_from_array(mason_formatter_install, "cabal_fmt")
 
 local mason_linter_install = {}
 

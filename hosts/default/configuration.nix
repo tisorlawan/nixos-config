@@ -62,7 +62,7 @@
   services.displayManager.sddm.enable = true;
   console.useXkbConfig = true;
 
-  hardware.opengl = {
+  hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
       intel-media-driver # LIBVA_DRIVER_NAME=iHD
@@ -79,9 +79,6 @@
 
     WLAN_IFACE = "wlp0s20f3";
   };
-
-  sound.enable = true;
-  sound.mediaKeys.enable = true;
 
   hardware.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -143,7 +140,7 @@
     redshift
     maim # screenshot
     flameshot
-    gnome.adwaita-icon-theme # for xournalapp
+    adwaita-icon-theme # for xournalapp
 
     # @terminal apps
     bat
@@ -283,7 +280,7 @@
     evince
     yacreader
     foliate # epub reader
-    gnome.nautilus
+    nautilus
     pkgs-unstable.google-chrome
     pkgs-unstable.brave
     libreoffice
@@ -293,7 +290,7 @@
     zoom-us
     xournalpp # signature pdf
     # pkgs-unstable.zed-editor
-    transmission-gtk
+    transmission_4-gtk
     telegram-desktop
 
     # @hardware

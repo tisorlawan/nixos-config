@@ -75,7 +75,7 @@
     WLR_NO_HARDWARE_CURSORS = "1"; # If your cursor becomes invisible
     NIXOS_OZONE_WL = "1"; # Hint electron apps to use wayland
     SSH_ASKPASS = ""; # disable ask pass UI
-    SSL_CERT_FILE = /etc/ssl/certs/ca-bundle.crt;
+    # SSL_CERT_FILE = /etc/ssl/certs/ca-bundle.crt;
 
     WLAN_IFACE = "wlp0s20f3";
   };
@@ -187,12 +187,13 @@
     gcc
     gnumake
     cmake
+    just
     gdb
     valgrind
     pkg-config
     gitFull
     git-lfs
-    # rye
+    rye
     python312
     poetry
     pkgs-unstable.ruff
@@ -271,6 +272,7 @@
     ffmpegthumbnailer
     pavucontrol
     pulseaudio
+    alsa-utils
     ripgrep
     poppler
     imagemagick

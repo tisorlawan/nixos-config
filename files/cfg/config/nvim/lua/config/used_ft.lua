@@ -50,6 +50,9 @@ local config = {
     linters = { "jsonlint" },
     -- servers = { "jsonls" },
   },
+  just = {
+    formatters = { "just" },
+  },
   lua = {
     formatters = { "stylua" },
     servers = { "lua_ls" },

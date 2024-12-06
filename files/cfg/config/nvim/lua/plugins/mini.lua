@@ -12,8 +12,23 @@ return {
   end,
   config = function()
     ----------------------
+    require("mini.ai").setup()
+
+    ----------------------
+    require("mini.operators").setup({
+      replace = {
+        prefix = "gp",
+        reindent_linewise = true,
+      },
+
+      exchange = {
+        prefix = "gh",
+        reindent_linewise = true,
+      },
+    })
+
+    ----------------------
     require("mini.bufremove").setup()
-    -- vim.keymap.set("n", "<leader>D", MiniBufremove.delete, { desc = "Wipeout buffer" })
     vim.keymap.set("n", "<leader>D", MiniBufremove.wipeout, { desc = "Buffer Wipeout" })
 
     ----------------------

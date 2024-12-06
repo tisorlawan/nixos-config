@@ -30,34 +30,30 @@ return {
   {
     "folke/tokyonight.nvim",
     lazy = false,
-    -- enabled = false,
+    enabled = false,
     opts = {},
     config = function()
       require("tokyonight").setup({})
-      vim.cmd.colorscheme("tokyonight-night")
+      vim.cmd.colorscheme("tokyonight-moon")
+    end,
+  },
+  {
+    "cpwrs/americano.nvim",
+    enabled = false,
+    config = function()
+      require("americano").setup({
+        terminal = true,
+        overrides = {},
+      })
+      vim.cmd.colorscheme("americano")
+      vim.cmd([[hi NonText guifg=#9eaab5 ]])
     end,
   },
   {
     "aktersnurra/no-clown-fiesta.nvim",
-    enabled = false,
+    -- enabled = false,
     config = function()
       vim.cmd.colorscheme("no-clown-fiesta")
-    end,
-  },
-  {
-    "kyazdani42/blue-moon",
-    enabled = false,
-    config = function()
-      vim.cmd.colorscheme("blue-moon")
-    end,
-  },
-  {
-    "fcancelinha/nordern.nvim",
-    enabled = false,
-    branch = "master",
-    priority = 1000,
-    config = function()
-      vim.cmd.colorscheme("nordern")
     end,
   },
   {

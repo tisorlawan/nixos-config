@@ -16,7 +16,10 @@ map("n", "`", "'")
 
 map("v", "x", '"_dP')
 
-map("n", "gp", "`[v`]", { desc = "reselect pasted text" })
+map("n", "gx", "gx", { desc = "Browse" })
+map("v", "gx", "gx", { desc = "Browse" })
+
+map("n", "gV", "`[v`]", { desc = "Reselect pasted text" })
 -- map({ "n", "v" }, "mp", '"0p', { desc = "paste from 0 register" })
 map("n", "n", "nzzzv", { desc = "keep cursor centered" })
 map("n", "N", "Nzzzv", { desc = "keep cursor centered" })

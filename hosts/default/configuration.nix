@@ -43,7 +43,8 @@
 
   nix.settings.trusted-users = [ "root" "tiso" ];
 
-  xdg.portal.enable = false;
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [ pkgs.xdg-desktop-portal-gtk ];
 
   services.libinput.enable = true;
   services.libinput.touchpad.tappingDragLock = false;
@@ -62,6 +63,11 @@
   services.displayManager.sddm.enable = true;
   console.useXkbConfig = true;
 
+  programs.hyprland = {
+    enable = true;
+    xwayland.enable = true;
+  };
+
   hardware.graphics = {
     enable = true;
     extraPackages = with pkgs; [
@@ -72,12 +78,15 @@
   };
   environment.sessionVariables = {
     LIBVA_DRIVER_NAME = "iHD"; # Force intel-media-driver
-    WLR_NO_HARDWARE_CURSORS = "1"; # If your cursor becomes invisible
-    NIXOS_OZONE_WL = "1"; # Hint electron apps to use wayland
     SSH_ASKPASS = ""; # disable ask pass UI
     # SSL_CERT_FILE = /etc/ssl/certs/ca-bundle.crt;
 
+    WLR_NO_HARDWARE_CURSORS = "1"; # If your cursor becomes invisible
+    NIXOS_OZONE_WL = "1"; # Hint electron apps to use wayland
+
     WLAN_IFACE = "wlp0s20f3";
+
+    SXHKD_SHELL = "/bin/sh";
   };
 
   hardware.pulseaudio.enable = false;
@@ -112,7 +121,6 @@
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  # wayland
   environment.systemPackages = with pkgs; [
     # @terminal
     alacritty
@@ -141,6 +149,16 @@
     maim # screenshot
     flameshot
     adwaita-icon-theme # for xournalapp
+
+    waybar
+    eww
+    (pkgs.waybar.overrideAttrs (oldattrs: {
+      mesonFlags = oldattrs.mesonFlags ++ [ "-Dexperimental=true" ];
+    }))
+    swww
+    wofi
+    wl-clipboard
+    socat
 
     # @terminal apps
     bat
@@ -195,7 +213,7 @@
     git-lfs
     rye
     python312
-    poetry
+    # poetry
     pkgs-unstable.ruff
     pkgs-unstable.ruff-lsp
     pyright
@@ -283,6 +301,7 @@
     yacreader
     foliate # epub reader
     nautilus
+    pcmanfm
     pkgs-unstable.google-chrome
     pkgs-unstable.brave
     libreoffice

@@ -15,8 +15,6 @@ alias nn="nmtui-connect"
 alias clip="xclip -selection clipboard"
 alias top="btop"
 
-set -x XDG_CURRENT_DESKTOP GNOME
-
 # Integrations
 zoxide init fish | source
 starship init fish | source

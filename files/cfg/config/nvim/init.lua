@@ -18,6 +18,7 @@ require("lazy").setup({
       require("plugins.bufferline"),
       require("plugins.colorschema"),
       require("plugins.conform"),
+      require("plugins.debugprint"),
       require("plugins.dirvish"),
       require("plugins.dressing"),
       require("plugins.flit"),

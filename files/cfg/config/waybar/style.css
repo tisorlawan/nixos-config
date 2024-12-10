@@ -1,0 +1,150 @@
+window#waybar {
+    background: rgba(31, 31, 40, 0.9);
+    color: #DCD7BA;
+}
+
+window#waybar {
+    margin: 0;
+    padding: 0;
+}
+
+#workspaces {
+    background: #1F1F28;  /* Kanagawa dark background */
+    color: #DCD7BA;       /* Light text color */
+}
+
+#workspaces button {
+    padding: 3px 3px;
+    background: #2A2A37;  /* Slightly lighter than base */
+    color: #828189;       /* Muted text for inactive */
+}
+
+#workspaces button.active {
+    background: transparent;
+    color: #9CABCA;       /* Brighter blue for active */
+}
+
+#workspaces button.focused {
+    background: transparent;
+    color: #9CABCA;       /* Brighter blue for focused */
+}
+
+#workspaces button.visible {
+    background: #425289;  /* Wave blue for visible */
+    color: #DCD7BA;       /* Light text */
+}
+
+#workspaces button.urgent {
+    background: #C34043;  /* Autumn red for urgent */
+    color: #DCD7BA;       /* Light text */
+}
+
+#workspaces button.hidden {
+    background: #2B3328;  /* Subtle green tint for hidden */
+    color: #727169;       /* Muted text */
+}
+
+/*----------------------------------------------------------*/
+
+/* First color set - darker background */
+#memory,
+#backlight,
+#battery,
+#network
+{
+    background: #222249;  /* sumiInk0 - darker */
+    padding: 0 10px;
+    margin: 0 2px;
+    color: #DCD7BA;
+    border-radius: 4px;
+}
+
+/* Second color set - slightly lighter */
+#pulseaudio,
+#cpu,
+#temperature,
+#tray,
+#custom-power,
+#clock,
+#battery.bat2,
+#battery
+{
+    background: #2A2A37;  /* sumiInk2 - lighter */
+    padding: 0 10px;
+    margin: 0 2px;
+    color: #DCD7BA;
+    border-radius: 4px;
+}
+
+/* Special accent for MPD */
+#mpd {
+    background: #223249;  /* waveBlue1 */
+    padding: 0 10px;
+    margin: 0 2px;
+    color: #DCD7BA;
+    border-radius: 4px;
+}
+
+/* Power profiles with unique background */
+#power-profiles-daemon {
+    background: #2B3328;  /* winterGreen */
+    padding: 0 10px;
+    margin: 0 2px;
+    color: #DCD7BA;
+    border-radius: 4px;
+}
+
+/* Workspaces specific styling */
+#workspaces button {
+    padding: 2px 2px;
+    background: #2A2A37;
+    color: #727169;
+    border-bottom: 2px solid transparent;
+}
+
+#workspaces button.active {
+    background: transparent;
+    color: #9CABCA;
+    border-bottom: 2px solid #9CABCA;
+}
+
+#workspaces button.focused {
+    background: transparent;
+    color: #9CABCA;
+    border-bottom: 2px solid #9CABCA;
+}
+
+#workspaces button.visible {
+    background: #223249;
+    color: #DCD7BA;
+    border-bottom: 2px solid transparent;
+}
+
+#workspaces button.urgent {
+    background: #C34043;
+    color: #DCD7BA;
+    border-bottom: 2px solid #FF5D62;
+}
+
+#workspaces button.hidden {
+    background: #2B3328;
+    color: #727169;
+    border-bottom: 2px solid transparent;
+}
+
+/* Battery states */
+#battery.warning {
+    background: #E6C384;  /* autumnYellow */
+    color: #1F1F28;
+}
+
+#battery.critical {
+    background: #C34043;  /* autumnRed */
+    color: #DCD7BA;
+}
+
+/* Network states */
+#network.disconnected {
+    background: #C34043;  /* autumnRed */
+    color: #DCD7BA;
+}

@@ -14,11 +14,11 @@ family = "JetBrainsMono Nerd Font"
 
 [font.offset]
 x = 0
-y = 1
+y = 2
 
 [window]
 decorations = "none"
-opacity = 0.88
+opacity = 0.9
 
 [window.padding]
 x = 0

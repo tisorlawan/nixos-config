@@ -91,7 +91,7 @@
   programs.eza.enable = true;
 
   home.file.".config/rofi" = { source = ../../files/cfg/config/rofi; };
-  home.file.".config/alacritty.toml" = { source = ../../files/cfg/config/alacritty.toml; };
+  # home.file.".config/alacritty.toml" = { source = ../../files/cfg/config/alacritty.toml; };
   home.file.".config/starship.toml" = { source = ../../files/cfg/config/starship.toml; };
   home.file.".config/greenclip.toml" = { source = ../../files/cfg/config/greenclip.toml; };
   home.file.".config/user-dirs.dirs" = { source = ../../files/cfg/config/user-dirs.dirs; };

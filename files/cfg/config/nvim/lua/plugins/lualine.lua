@@ -118,7 +118,12 @@ return {
         disabled_filetypes = { statusline = { "dashboard", "alpha", "ministarter", "snacks_dashboard" } },
       },
       sections = {
-        lualine_a = { "mode" },
+        lualine_a = { {
+          "mode",
+          fmt = function(str)
+            return str:sub(1, 1)
+          end,
+        } },
         lualine_b = { "branch" },
 
         lualine_c = {

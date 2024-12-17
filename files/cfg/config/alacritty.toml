@@ -18,7 +18,7 @@ y = 2
 
 [window]
 decorations = "none"
-opacity = 0.9
+opacity = 0.8
 
 [window.padding]
 x = 0

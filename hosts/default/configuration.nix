@@ -116,6 +116,8 @@
   programs.fish.enable = true;
 
 
+  home-manager.backupFileExtension = "backup";
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -149,6 +151,7 @@
     maim # screenshot
     flameshot
     adwaita-icon-theme # for xournalapp
+    file-roller
 
     waybar
     eww
@@ -159,6 +162,7 @@
     wofi
     wl-clipboard
     socat
+    clipse
 
     # @terminal apps
     bat

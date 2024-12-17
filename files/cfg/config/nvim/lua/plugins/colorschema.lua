@@ -1,3 +1,5 @@
+vim.g.transparent = true
+
 return {
   {
     "rebelot/kanagawa.nvim",
@@ -58,6 +60,10 @@ return {
     "aktersnurra/no-clown-fiesta.nvim",
     priority = 1000,
     config = function()
+      require("no-clown-fiesta").setup({
+        transparent = vim.g.transparent,
+      })
+
       vim.cmd.colorscheme("no-clown-fiesta")
     end,
   },

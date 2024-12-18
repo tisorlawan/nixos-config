@@ -398,12 +398,13 @@ local plugins = {
 }
 
 local ft_plugins = {
+  elixir = require("plugins.langs.elixir"),
   go = require("plugins.langs.go"),
   markdown = require("plugins.langs.markdown").plugins,
-  typescript = require("plugins.langs.typescript"),
   norg = require("plugins.langs.neorg"),
   rust = require("plugins.langs.rust"),
-  elixir = require("plugins.langs.elixir"),
+  typescript = require("plugins.langs.typescript"),
+  yuck = require("plugins.langs.yuck"),
 }
 
 local fts = require("config.used_ft").used_ft

@@ -12,6 +12,7 @@
         "custom/media"
     ],
     "modules-right": [
+        "network#speed",
         "pulseaudio",
         "backlight",
         "cpu",
@@ -152,6 +153,20 @@
         "format-linked": "{ifname} (No IP) ",
         "format-disconnected": "Disconnected ⚠",
         "format-alt": "{ifname}: {ipaddr}/{cidr}"
+    },
+    "network#speed": {
+        "interval": 1,
+        "format": "{ifname}",
+        "format-wifi": "  {bandwidthDownBytes}    {bandwidthUpBytes} ",
+        "format-ethernet": "  {bandwidthDownBytes}    {bandwidthUpBytes} ",
+        "format-disconnected": "󰌙",
+        "tooltip-format": "{ipaddr}",
+        "format-linked": "󰈁 {ifname} (No IP)",
+        "tooltip-format-wifi": "{essid} {icon} {signalStrength}%",
+        "tooltip-format-ethernet": "{ifname} 󰌘",
+        "tooltip-format-disconnected": "󰌙 Disconnected",
+        "max-length": 30,
+        "format-icons": ["󰤯","󰤟","󰤢","󰤥","󰤨"]
     },
     "pulseaudio": {
         "format": "{volume}% {icon} {format_source}",

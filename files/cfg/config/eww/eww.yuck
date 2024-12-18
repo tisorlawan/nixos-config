@@ -1,0 +1,86 @@
+(defvar home_dir "/home/$USER/.config/eww/scripts")
+
+(defpoll time :interval "1s" `date +" %a, %d %b, %H:%M"`)
+(defpoll battery :interval "1s" `/home/$USER/.config/eww/scripts/battery.py`)
+(deflisten system `/home/$USER/.config/eww/scripts/system.py`)
+(deflisten volume `/home/$USER/.config/eww/scripts/volume.py`)
+(deflisten wifi `/home/$USER/.config/eww/scripts/wifi.py`)
+(deflisten workspaces `/home/$USER/.config/eww/scripts/workspaces.py`)
+(defpoll wifi_networks :interval "2s" `/home/$USER/.config/eww/scripts/wifi_selector.py`)
+
+
+(defwindow bar
+  :monitor 0
+  :windowtype "dock"
+  :geometry (geometry 
+    :width "100%"
+    :height "8"
+    :anchor "top center"
+  )
+  :exclusive true	
+  (box :class "main-container"
+    (box 
+      :class "workspaces" 
+      :halign "start" 
+      :hexpand false
+      :width "auto"
+      (literal :content "${workspaces}")
+    )
+    (box :class "right-controls" :halign "end" :spacing 5 :space-evenly false
+      (button :class "mybox" 
+        :onclick "pavucontrol"
+        "${volume}")
+      (system)
+      (button :class "label" (literal :content "${battery}"))
+      (button :class "network" 
+        :valign "center" 
+        :onclick "toggle-ew wifi_selector" 
+        (literal :content "${wifi}"))
+      (systray :icon-size 16 
+        :class "systrays"
+        :orientation "h"
+        :spacing 16)
+      (button :class "mybox" :onclick "${home_dir}/toggle_clipboard_manager.py" 
+        "${time}")
+    )
+  )
+)
+
+(defwidget system []
+  (box 
+    :class "system"
+    :hexpand true
+    (centerbox
+      (box)
+      (box
+        :space-evenly false
+        :spacing 16
+        :halign "center"
+        (box 
+          :space-evenly false
+          :spacing 4
+          (label :text "${system.cpu_icon}")
+          (label :text "${system.cpu_value}"))
+        (box 
+          :space-evenly false
+          :spacing 4
+          (label :text "${system.mem_icon}")
+          (label :text "${system.mem_value}")))
+      (box)
+    )
+  ))
+
+
+
+(defwindow wifi_selector
+  :monitor 0
+  :geometry (geometry :x "70%" :y "2%" :width "280px")
+  :windowtype "dock"
+  :stacking "fg"
+  :focusable false
+  :wm-ignore true
+  :onesckey "toggle-ew wifi_selector"
+  (box :class "wifi-container"
+    :orientation "vertical"
+    :space-evenly false
+    (literal :content wifi_networks)))

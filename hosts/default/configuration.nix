@@ -193,6 +193,8 @@
     yt-dlp
     zoxide
     nethogs
+    iw
+    acpi
     brightnessctl
     unzip
     p7zip

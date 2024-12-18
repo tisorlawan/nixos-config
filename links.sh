@@ -45,6 +45,9 @@ ln -srf ./files/cfg/config/mpd ~/.config/mpd
 rm -rf ~/.config/mpv
 ln -srf ./files/cfg/config/mpv ~/.config/mpv
 
+rm -rf ~/.config/eww
+ln -srf files/cfg/config/eww ~/.config/eww
+
 rm -rf ~/.images
 ln -srf ./files/cfg/images ~/.images
 

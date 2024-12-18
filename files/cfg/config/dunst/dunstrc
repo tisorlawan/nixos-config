@@ -1,8 +1,12 @@
 [global]
-    # Which monitor should the notifications be displayed on.
     monitor = 0
     follow = mouse
-    geometry = "300x5-0+19"
+    # geometry = "300x5-0+80"
+    width = 300
+    height = 90
+    origin = top-right
+    offset = 0x0
+
 
     # Show how many messages are currently hidden (because of geometry).
     indicate_hidden = yes
@@ -12,11 +16,6 @@
     # This option will only work if a compositing window manager is
     # present (e.g. xcompmgr, compiz, etc.).
     transparency = 0
-
-    # The height of she entire notification.  If the height is smaller
-    # than the font height and padding combined, it will be raised
-    # to the font height and padding.
-    notification_height = 0
 
     # Draw a line of "separator_height" pixel height between two
     # notifications.
@@ -128,9 +127,6 @@
     # Scale larger icons down to this size, set to 0 to disable
     max_icon_size = 32
 
-    # Paths to default icons.
-    icon_folders = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/
-
     ### History ###
 
     # Should a notification popped up from history be sticky or timeout
@@ -157,10 +153,6 @@
     # Define the class of the windows spawned by dunst
     class = Dunst
 
-    # Print a notification on startup.
-    # This is mainly for error detection, since dbus (re-)starts dunst
-    # automatically after a crash.
-    startup_notification = false
 
     ### Legacy
 
@@ -184,43 +176,20 @@
     # where there are multiple screens with very different dpi values.
     per_monitor_dpi = false
 
-[shortcuts]
+[urgency_low]
+background = "#282828"
+foreground = "#ebdbb2"
+timeout = 5
 
-    # Shortcuts are specified as [modifier+][modifier+]...key
-    # Available modifiers are "ctrl", "mod1" (the alt-key), "mod2",
-    # "mod3" and "mod4" (windows-key).
-    # Xev might be helpful to find names for keys.
+[urgency_normal]
+background = "#282828"
+foreground = "#ebdbb2"
+timeout = 10
 
-    # Close notification.
-    close = ctrl+space
-
-    # Close all notifications.
-    close_all = ctrl+shift+space
-
-    # Redisplay last message(s).
-    # On the US keyboard layout "grave" is normally above TAB and left
-    # of "1". Make sure this key actually exists on your keyboard layout,
-    # e.g. check output of 'xmodmap -pke'
-    history = ctrl+grave
-
-    # Context menu.
-    context = ctrl+shift+period
-
-
-    [urgency_low]
-    background = "#282828"
-    foreground = "#ebdbb2"
-    timeout = 5
-
-    [urgency_normal]
-    background = "#282828"
-    foreground = "#ebdbb2"
-    timeout = 10
-
-    [urgency_critical]
-    background = "#fb4934"
-    foreground = "#ebdbb2"
-    timeout = 0
+[urgency_critical]
+background = "#fb4934"
+foreground = "#ebdbb2"
+timeout = 0
 
 # Every section that isn't one of the above is interpreted as a rules to
 # override settings for certain messages.

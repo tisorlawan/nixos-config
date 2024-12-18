@@ -1,0 +1,154 @@
+$bg: rgba(#ffffff,0.1);
+$fg: #dddddd;
+$shadow: rgba(#000000,0.3);
+$border_col: rgba(#cccccc,0.18);
+$best_so_far: rgba(255,255,255,0.1); 
+$padding: 0px 15px 0px 15px;
+$font_size: 12px;
+$border_radius: 1px;
+
+.bar {
+  background-color: transparent;
+}
+
+.main-container {
+  margin: 1px 0 1px 0;
+}
+
+.workspaces {
+  background-color: $bg;
+  border-radius: $border_radius;
+  color: $fg;
+  border: 1px solid $border_col;
+  padding: $padding;
+  padding-left:  6px;
+  padding-right: 6px;
+  padding-top: 5px;
+  font-size: $font_size;
+  box-shadow: 2px 2px 2px $shadow;
+  min-height: 25px;	
+}
+.workspaces label {
+  margin: 0 1px;  /* Add spacing between workspace numbers */
+}
+.workspace-active {
+  background-color: #89b4fa;  // Active workspace (bright blue)
+  color: #1e1e2e;  // Dark text
+  padding: 2px 6px;
+  border-radius: 12px;
+}
+.workspace-visible {
+  background-color: #313244;  // Empty workspace (darker gray)
+  color: #cdd6f4;  // Light text
+  padding: 2px 6px;
+  border-radius: 12px;
+}
+.workspace-empty {
+  background-color: #313244;  // Empty workspace (darker gray)
+  color: #cdd6f4;  // Light text
+  padding: 2px 6px;
+  border-radius: 12px;
+}
+
+
+.mybox {
+  background: $bg;
+  border-radius: $border_radius;
+  color: $fg;
+  font-size: $font_size;
+  padding: $padding;
+  // margin-bottom: 10px;
+  border: 1px solid $border_col;
+  box-shadow: 2px 2px 2px $shadow;
+  text-shadow: none;
+}
+
+.label {
+  background: $bg;
+  border-radius: $border_radius;
+  color: $fg;
+  font-size: $font_size;
+  padding: $padding;
+  padding-top: 6px;
+  // margin-bottom: 10px;
+  border: 1px solid $border_col;
+  box-shadow: 2px 2px 2px $shadow;
+  text-shadow: none;
+}
+
+.systrays {
+  background: $bg;
+  border-radius: $border_radius;
+  color: $fg;
+  font-size: $font_size;
+  padding: 5px 15px 5px 14px; 
+  // margin-bottom: 10px;
+  border: 1px solid $border_col;
+  box-shadow: 2px 2px 2px $shadow;
+  text-shadow: none;
+}
+
+.system {
+  background: $bg;
+  border-radius: $border_radius;
+  color: $fg;
+  font-size: $font_size;
+  padding: $padding;
+  // padding-top: 4px;
+  border: 1px solid $border_col;
+  box-shadow: 2px 2px 2px $shadow;
+  text-shadow: none;
+  min-width: 120px;	
+}
+
+.mybox:hover {
+  background: rgba(#ffffff,0.15);
+}
+
+.network {
+  background: $bg;
+  border-radius: $border_radius;
+  color: $fg;
+  font-size: $font_size;
+  padding: $padding;
+  padding-top: 6px;
+  border: 1px solid $border_col;
+  box-shadow: 2px 2px 2px $shadow;
+  text-shadow: none;
+  min-width: 190px;	
+  font-size: $font_size;
+}
+
+.wifi-container {
+  background-color: #1e1e2e;  // Dark background
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.wifi-refresh {
+  padding: 8px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  background-color: #313244;  // Slightly lighter than background
+  
+  &:hover {
+    background-color: #45475a;  // Even lighter for hover
+  }
+}
+
+.wifi-network {
+  padding: 8px;
+  margin: 2px 0;
+  border-radius: 6px;
+  background-color: #313244;  // Same as refresh button background
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: #45475a;  // Same hover color as refresh
+  }
+}
+
+.wifi-error {
+  padding: 8px;
+  color: #f38ba8;  // Red color for errors
+}

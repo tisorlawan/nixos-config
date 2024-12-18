@@ -143,13 +143,6 @@
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
-  programs.rofi.enable = true;
-  programs.fd.enable = true;
-  programs.fzf.enable = true;
-  programs.htop.enable = true;
-  programs.ripgrep.enable = true;
-  programs.bat.enable = true;
-  programs.eza.enable = true;
 
   # home.file.".config/rofi" = { source = ../../files/cfg/config/rofi; };
   # home.file.".config/alacritty.toml" = { source = ../../files/cfg/config/alacritty.toml; };

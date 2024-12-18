@@ -10,8 +10,10 @@ return {
         commentStyle = { italic = false },
         keywordStyle = { italic = false },
         statementStyle = { bold = false },
+        transparent = vim.g.transparent,
       })
       -- vim.cmd.colorscheme("kanagawa-wave")
+      -- vim.cmd.colorscheme("kanagawa-dragon")
     end,
   },
   {

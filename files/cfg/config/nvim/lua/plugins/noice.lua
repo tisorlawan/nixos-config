@@ -105,6 +105,7 @@ return {
             { find = "no manual entry" },
             { find = "No more references" },
             { find = "LSP: no handler for" },
+            { find = "Toggling hidden files" },
           },
         },
         view = "mini",

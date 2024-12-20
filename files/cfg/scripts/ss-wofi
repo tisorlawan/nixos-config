@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+selected=$(printf "Screenshot All (Copy)\nScreenshot All (Save)\nScreenshot Window (Copy)\nScreenshot Window (Save)\nScreenshot Select Area (Copy)\nScreenshot Select Area (Save)" | wofi --dmenu --prompt="Screenshot Type")
+
+case $selected in
+"Screenshot All (Copy)")
+	ss-all-copy
+	;;
+"Screenshot All (Save)")
+	ss-all-save
+	;;
+"Screenshot Window (Copy)")
+	ss-window-copy
+	;;
+"Screenshot Window (Save)")
+	ss-window-save
+	;;
+"Screenshot Select Area (Copy)")
+	ss-select-copy
+	;;
+"Screenshot Select Area (Save)")
+	ss-window-save
+	;;
+esac

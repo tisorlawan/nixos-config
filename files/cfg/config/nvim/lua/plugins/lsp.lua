@@ -347,9 +347,7 @@ local plugins = {
       },
       signature = { enabled = false },
       sources = {
-        completion = {
-          enabled_providers = { "lsp", "path", "snippets", "buffer" },
-        },
+        default = { "lsp", "path", "snippets", "buffer" },
       },
 
       appearance = {
@@ -383,7 +381,7 @@ local plugins = {
         },
       },
     },
-    opts_extend = { "sources.completion.enabled_providers" },
+    opts_extend = { "sources.default" },
   },
   {
     "folke/lazydev.nvim",

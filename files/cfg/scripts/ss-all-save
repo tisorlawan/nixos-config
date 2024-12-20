@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+name=$(echo screenshot_$(date +%Y%m%d_%H%M%S)).png
+grim "$HOME/$name"

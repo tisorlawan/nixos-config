@@ -152,6 +152,8 @@
     flameshot
     adwaita-icon-theme # for xournalapp
     file-roller
+    grim
+    slurp
 
     waybar
     eww
@@ -202,6 +204,7 @@
     openssl
     jless
     inputs.zotimer.packages.${pkgs.system}.default
+    inputs.television.packages.${pkgs.system}.default
 
     # @dev
     pkgs-unstable.devenv
@@ -309,11 +312,10 @@
     nautilus
     pcmanfm
     pkgs-unstable.google-chrome
-    pkgs-unstable.brave
     libreoffice
     postman
     firefox
-    obsidian
+    # obsidian
     zoom-us
     xournalpp # signature pdf
     # pkgs-unstable.zed-editor
@@ -332,6 +334,13 @@
 
     (callPackage ./../../pkgs/toptracker.nix { })
   ];
+
+  programs.steam = {
+    enable = false;
+    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
+    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
+    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
+  };
 
   virtualisation.docker.enable = true;
   # use docker without Root access (Rootless docker)

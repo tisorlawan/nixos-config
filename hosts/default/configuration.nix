@@ -124,19 +124,18 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
-    # @terminal
+    #### @TERMINAL EMULATORS ####
     alacritty
     wezterm
     starship
 
-    # @desktop helper
+    #### @DESKTOP ENVIRONMENT ####
     dunst
     libinput
     libnotify
     picom
     polybar
     polybar-pulseaudio-control
-    rofi
     xdotool
     xclip
     xdg-user-dirs
@@ -148,25 +147,22 @@
     sxhkd
     haskellPackages.greenclip
     redshift
-    maim # screenshot
+    maim
     flameshot
-    adwaita-icon-theme # for xournalapp
+    adwaita-icon-theme
     file-roller
-    grim
-    slurp
 
-    waybar
+    #### @WAYLAND SPECIFIC ####
+    grim
+    hyprpaper
+    slurp
     eww
-    (pkgs.waybar.overrideAttrs (oldattrs: {
-      mesonFlags = oldattrs.mesonFlags ++ [ "-Dexperimental=true" ];
-    }))
-    swww
     wofi
     wl-clipboard
     socat
     clipse
 
-    # @terminal apps
+    #### @CLI UTILITIES ####
     bat
     delta
     difftastic
@@ -174,6 +170,7 @@
     eza
     fd
     jq
+    ripgrep
     lazygit
     fzf
     skim
@@ -185,7 +182,6 @@
     atool
     curl
     file
-    mediainfo
     pkgs-unstable.neovim
     vim
     helix
@@ -206,7 +202,7 @@
     inputs.zotimer.packages.${pkgs.system}.default
     inputs.television.packages.${pkgs.system}.default
 
-    # @dev
+    #### @DEVELOPMENT TOOLS ####
     pkgs-unstable.devenv
     man-pages
     man-pages-posix
@@ -220,20 +216,20 @@
     pkg-config
     gitFull
     git-lfs
+
+    #### @PYTHON DEVELOPMENT ####
     rye
     python312
-    # poetry
     pkgs-unstable.ruff
     pkgs-unstable.ruff-lsp
     pyright
     virtualenv
     black
     isort
+
+    #### @LANGUAGES AND LSP ####
     go
     nodejs_22
-    docker
-    kubectl
-    k9s
     rustup
     sccache
     leptosfmt
@@ -248,7 +244,6 @@
     luarocks
     guile
     marksman
-    inlyne # markdown previewer
     clang
     clang-tools
     gopls
@@ -263,76 +258,79 @@
     nil
     nixpkgs-fmt
     biome
+
+    #### @DATABASES AND SERVICES ####
     redis
-    trashy
-    trunk
-    cocogitto
-    mold # faster linker
     postgresql
-    pdftk # pdf uncompress, remove watermark
-    qpdf # pdf manipulation, e.g: extract specific pages
+    sqlite
+    litecli
+    docker
+    kubectl
+    k9s
+
+    #### @DOCUMENT AND PDF TOOLS ####
+    pdftk
+    qpdf
     antiword
-    poppler_utils # pdftotext
+    poppler_utils
     xsv
     jupyter-all
     ghostscript
+    texliveSmall
+
+    #### @SYSTEM UTILITIES ####
+    trashy
+    trunk
+    cocogitto
+    mold
     google-cloud-sdk
-    sqlite
-    litecli
     openconnect
     neofetch
     rsync
-    inotify-tools # for elixir
-    texliveSmall
-    sbcl # common lisp
+    inotify-tools
+    sbcl
     php
     php82Packages.composer
-    # inputs.iwmenu.packages.${pkgs.system}.default
     ngrok
 
-    # @media
+    #### @MEDIA TOOLS ####
     mpv
     exiftool
     feh
     ffmpeg-full
-
     ffmpegthumbnailer
     pavucontrol
     pulseaudio
     alsa-utils
-    ripgrep
     poppler
     imagemagick
+    mediainfo
 
-    # @desktop app
+    #### @GUI APPLICATIONS ####
     neovide
     evince
     yacreader
-    foliate # epub reader
+    foliate
     nautilus
     pcmanfm
     pkgs-unstable.google-chrome
     libreoffice
     postman
     firefox
-    # obsidian
     zoom-us
-    xournalpp # signature pdf
-    # pkgs-unstable.zed-editor
+    xournalpp
     transmission_4-gtk
     telegram-desktop
 
-    # @hardware
+    #### @HARDWARE AND GRAPHICS ####
     glxinfo
     intel-gpu-tools
     mesa-demos
 
-    # @fonts
+    #### @FONTS ####
     noto-fonts
     (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
     material-icons
-
-    (callPackage ./../../pkgs/toptracker.nix { })
   ];
 
   programs.steam = {
@@ -370,16 +368,16 @@
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = [ ];
 
-  xdg.mime.enable = true;
-  xdg.mime.defaultApplications = {
-    "application/pdf" = "org.gnome.Evince.desktop";
-    "image/png" = "feh.desktop";
-    "audio/flac" = "mpv.desktop";
-    "audio/mp3" = "mpv.desktop";
-    "text/plain" = "neovide.desktop";
-    "text/html" = "google-chrome.desktop";
-    "application/json" = "neovide.desktop";
-  };
+  # xdg.mime.enable = true;
+  # xdg.mime.defaultApplications = {
+  #   "application/pdf" = "org.gnome.Evince.desktop";
+  #   "image/png" = "feh.desktop";
+  #   "audio/flac" = "mpv.desktop";
+  #   "audio/mp3" = "mpv.desktop";
+  #   "text/plain" = "neovide.desktop";
+  #   "text/html" = "google-chrome.desktop";
+  #   "application/json" = "neovide.desktop";
+  # };
 
   # Enable the OpenSSH daemon.
   # services.openssh.enable = true;

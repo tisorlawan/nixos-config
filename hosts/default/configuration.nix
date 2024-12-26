@@ -1,4 +1,18 @@
 { pkgs, pkgs-unstable, inputs, ... }:
+let
+  typestarFont = pkgs.stdenv.mkDerivation {
+    name = "typestar-ocr-regular";
+    src = builtins.path {
+      path = ../../files/fonts/typestar_ocr_regular;
+      name = "typestar-ocr-regular";
+    };
+    phases = [ "installPhase" ];
+    installPhase = ''
+      mkdir -p $out/share/fonts/opentype
+      cp $src/Typestar_OCR_Regular.otf $out/share/fonts/opentype/Typestar_OCR_Regular.otf
+    '';
+  };
+in
 {
   imports = [ ./hardware-configuration.nix ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -333,11 +347,6 @@
     glxinfo
     intel-gpu-tools
     mesa-demos
-
-    #### @FONTS ####
-    noto-fonts
-    (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
-    material-icons
   ];
 
   virtualisation.docker.enable = true;
@@ -367,4 +376,28 @@
   # networking.firewall.enable = false;
 
   system.stateVersion = "23.11"; # Did you read the comment?
+
+  fonts = {
+    enableDefaultPackages = false;
+    packages = with pkgs; [
+      noto-fonts
+      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+      material-icons
+      courier-prime
+      hack-font
+      typestarFont
+    ];
+    fontDir = {
+      enable = true;
+      decompressFonts = true;
+    };
+    fontconfig = {
+      enable = true;
+      defaultFonts = {
+        monospace = [ "JetBrainsMono Nerd Font" ];
+        sansSerif = [ "Noto Sans" ];
+        serif = [ "Noto Serif" ];
+      };
+    };
+  };
 }

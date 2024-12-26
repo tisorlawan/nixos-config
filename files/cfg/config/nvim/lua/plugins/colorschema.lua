@@ -17,6 +17,13 @@ return {
     end,
   },
   {
+    "aliqyan-21/darkvoid.nvim",
+    priority = 1000,
+    config = function()
+      -- vim.cmd.colorscheme("darkvoid")
+    end,
+  },
+  {
     "slugbyte/lackluster.nvim",
     priority = 10000,
     opts = {

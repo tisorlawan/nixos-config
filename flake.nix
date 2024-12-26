@@ -11,12 +11,20 @@
     television.url = "github:alexpasmantier/television";
   };
 
-  outputs = { nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:
+  outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
+    in
     {
       nixosConfigurations = {
         default = nixpkgs.lib.nixosSystem rec {
-          system = "x86_64-linux";
+          inherit system;
           specialArgs = {
+            inherit inputs;
             pkgs = import nixpkgs {
               inherit system;
               config.allowUnfree = true;
@@ -25,7 +33,6 @@
               inherit system;
               config.allowUnfree = true;
             };
-            inherit inputs;
           };
 
           modules = [
@@ -35,9 +42,6 @@
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.tiso = import ./hosts/default/home.nix;
-
-              # Optionally, use home-manager.extraSpecialArgs to pass
-              # arguments to home.nix
             }
           ];
         };

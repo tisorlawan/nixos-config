@@ -5,6 +5,9 @@ WINIT_X11_SCALE_FACTOR = "1.0"
 
 [font.normal]
 family = "JetBrainsMono Nerd Font"
+# family = "Hack"
+# family = "Typestar OCR"
+# family = "Courier Prime"
 
 [font]
 size = 14

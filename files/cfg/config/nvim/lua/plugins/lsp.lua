@@ -330,7 +330,11 @@ local plugins = {
           },
         },
 
-        menu = { enabled = true, border = "single" },
+        menu = {
+          enabled = true,
+          border = "single",
+          auto_show = true,
+        },
 
         documentation = {
           auto_show = true,
@@ -347,7 +351,8 @@ local plugins = {
       },
       signature = { enabled = false },
       sources = {
-        default = { "lsp", "path", "snippets", "buffer" },
+        -- default = { "lsp", "path", "snippets", "buffer" },
+        default = { "buffer" },
       },
 
       appearance = {

@@ -14,17 +14,6 @@
     wezterm
     atool
     dpkg
-
-    noto-fonts
-    (pkgs.nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
-    material-icons
-
-    # # You can also create simple shell scripts directly inside your
-    # # configuration. For example, this adds a command 'my-hello' to your
-    # # environment:
-    # (pkgs.writeShellScriptBin "my-hello" ''
-    #   echo "Hello, ${config.home.username}!"
-    # '')
   ];
 
   # Home Manager can also manage your environment variables through

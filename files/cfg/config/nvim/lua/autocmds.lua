@@ -141,3 +141,8 @@ vim.api.nvim_create_autocmd("BufReadPost", {
     vim.api.nvim_set_hl(0, "SnippetTabstop", { link = "NONE" })
   end,
 })
+
+vim.api.nvim_create_autocmd("VimLeave", {
+  pattern = "*",
+  command = "silent !zellij action switch-mode normal",
+})

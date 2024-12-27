@@ -5,9 +5,17 @@ WINIT_X11_SCALE_FACTOR = "1.0"
 
 [font.normal]
 family = "JetBrainsMono Nerd Font"
-# family = "Hack"
-# family = "Typestar OCR"
-# family = "Courier Prime"
+# family = "Fira Code" # Fira Code (with ligatures)
+# family = "Hack" # Hack
+# family = "Typestar OCR" # Custom Typestar OCR font
+# family = "Courier Prime" # Courier Prime
+# family = "Source Code Pro" # Adobe Source Code Pro
+# family = "BlexMono Nerd Font" # IBM Plex Mono
+# family = "CaskaydiaCove Nerd Font Mono" # Cascadia Code
+# family = "Inconsolata" # Inconsolata
+# family = "Ubuntu Mono" # Ubuntu Mono
+# family = "DejaVu Sans Mono" # DejaVu Sans Mono
+# family = "Liberation Mono" # Liberation Mono
 
 [font]
 size = 14

@@ -9,15 +9,16 @@
     # iwmenu.url = "github:e-tho/iwmenu";
     zotimer.url = "github:tisorlawan/zotimer";
     television.url = "github:alexpasmantier/television";
+    ghostty.url = "github:ghostty-org/ghostty";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:
     let
       system = "x86_64-linux";
-      pkgs = import nixpkgs {
-        inherit system;
-        config.allowUnfree = true;
-      };
+      # pkgs = import nixpkgs {
+      #   inherit system;
+      #   config.allowUnfree = true;
+      # };
     in
     {
       nixosConfigurations = {

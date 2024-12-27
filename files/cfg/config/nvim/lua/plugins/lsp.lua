@@ -351,8 +351,9 @@ local plugins = {
       },
       signature = { enabled = false },
       sources = {
-        -- default = { "lsp", "path", "snippets", "buffer" },
-        default = { "buffer" },
+        default = { "lsp", "path", "snippets", "buffer" },
+        -- default = { "lsp", "path", "buffer" },
+        -- default = { "buffer" },
       },
 
       appearance = {

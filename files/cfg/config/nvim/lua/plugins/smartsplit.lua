@@ -1,6 +1,21 @@
 return {
-  "mrjones2014/smart-splits.nvim",
-  lazy = true,
+  {
+    "https://git.sr.ht/~swaits/zellij-nav.nvim",
+    lazy = true,
+    event = "VeryLazy",
+    enabled = false,
+    keys = {
+      { "<c-h>", "<cmd>ZellijNavigateLeftTab<cr>", { silent = true, desc = "navigate left or tab" } },
+      { "<c-j>", "<cmd>ZellijNavigateDown<cr>", { silent = true, desc = "navigate down" } },
+      { "<c-k>", "<cmd>ZellijNavigateUp<cr>", { silent = true, desc = "navigate up" } },
+      { "<c-l>", "<cmd>ZellijNavigateRightTab<cr>", { silent = true, desc = "navigate right or tab" } },
+    },
+    opts = {},
+  },
+  {
+    "mrjones2014/smart-splits.nvim",
+    enabled = true,
+    lazy = true,
   -- stylua: ignore
   keys = {
     { "<C-h>", function() require("smart-splits").move_cursor_left() end, { silent = true }, },
@@ -16,12 +31,13 @@ return {
     { "<leader>ok", function() require("smart-splits").swap_buf_up() end, { silent = true }, desc = "Swap Up", },
     { "<leader>ol", function() require("smart-splits").swap_buf_right() end, { silent = true }, desc = "Swap Right", },
   },
-  config = function()
-    local s = require("smart-splits")
+    config = function()
+      local s = require("smart-splits")
 
-    s.setup({
-      ignored_filetypes = { "nofile", "quickfix", "qf", "prompt" },
-      ignored_buftypes = { "nofile" },
-    })
-  end,
+      s.setup({
+        ignored_filetypes = { "nofile", "quickfix", "qf", "prompt" },
+        ignored_buftypes = { "nofile" },
+      })
+    end,
+  },
 }

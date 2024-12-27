@@ -1,0 +1,62 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="file:~/.config/zellij/plugins/zjstatus.wasm" {
+                format_left   "#[bg=#1F1F28] {tabs} {mode}"
+                format_center ""
+                format_right  "#[bg=#1F1F28,fg=#7E9CD8]#[bg=#7E9CD8,fg=#16161D,bold] #[bg=#2A2A37,fg=#DCD7BA,bold] {session} #[bg=#363646,fg=#DCD7BA,bold]"
+                format_space  ""
+                format_hide_on_overlength "true"
+                format_precedence "crl"
+
+                border_enabled  "false"
+                border_char     "─"
+                border_format   "#[fg=#6C7086]{char}"
+                border_position "top"
+
+                mode_normal        "#[bg=#76946A,fg=#16161D,bold] NORMAL#[bg=#363646,fg=#76946A]█"
+                mode_locked        "#[bg=#54546D,fg=#16161D,bold] LOCKED #[bg=#363646,fg=#54546D]█"
+                mode_resize        "#[bg=#C34043,fg=#16161D,bold] RESIZE#[bg=#363646,fg=#C34043]█"
+                mode_pane          "#[bg=#7E9CD8,fg=#16161D,bold] PANE#[bg=#363646,fg=#7E9CD8]█"
+                mode_tab           "#[bg=#C8C093,fg=#16161D,bold] TAB#[bg=#363646,fg=#C8C093]█"
+                mode_scroll        "#[bg=#DCA561,fg=#16161D,bold] SCROLL#[bg=#363646,fg=#DCA561]█"
+                mode_enter_search  "#[bg=#7E9CD8,fg=#16161D,bold] ENT-SEARCH#[bg=#363646,fg=#7E9CD8]█"
+                mode_search        "#[bg=#7E9CD8,fg=#16161D,bold] SEARCHARCH#[bg=#363646,fg=#7E9CD8]█"
+                mode_rename_tab    "#[bg=#C8C093,fg=#16161D,bold] RENAME-TAB#[bg=#363646,fg=#C8C093]█"
+                mode_rename_pane   "#[bg=#7E9CD8,fg=#16161D,bold] RENAME-PANE#[bg=#363646,fg=#7E9CD8]█"
+                mode_session       "#[bg=#957FB8,fg=#16161D,bold] SESSION#[bg=#363646,fg=#957FB8]█"
+                mode_move          "#[bg=#FFA066,fg=#16161D,bold] MOVE#[bg=#363646,fg=#FFA066]█"
+                mode_prompt        "#[bg=#7E9CD8,fg=#16161D,bold] PROMPT#[bg=#363646,fg=#7E9CD8]█"
+                mode_tmux          "#[bg=#FFA066,fg=#16161D,bold] TMUX#[bg=#363646,fg=#FFA066]█"
+
+                // formatting for inactive tabs
+                tab_normal              "#[bg=#363646,fg=#7E9CD8]█#[bg=#7E9CD8,fg=#16161D,bold]{index} #[bg=#2A2A37,fg=#DCD7BA,bold] {name}{floating_indicator}#[bg=#363646,fg=#2A2A37,bold]█"
+                tab_normal_fullscreen   "#[bg=#363646,fg=#7E9CD8]█#[bg=#7E9CD8,fg=#16161D,bold]{index} #[bg=#2A2A37,fg=#DCD7BA,bold] {name}{fullscreen_indicator}#[bg=#363646,fg=#2A2A37,bold]█"
+                tab_normal_sync         "#[bg=#363646,fg=#7E9CD8]█#[bg=#7E9CD8,fg=#16161D,bold]{index} #[bg=#2A2A37,fg=#DCD7BA,bold] {name}{sync_indicator}#[bg=#363646,fg=#2A2A37,bold]█"
+
+                // formatting for the current active tab
+                tab_active              "#[bg=#363646,fg=#FFA066]█#[bg=#FFA066,fg=#16161D,bold]{index} #[bg=#2A2A37,fg=#DCD7BA,bold] {name}{floating_indicator}#[bg=#363646,fg=#2A2A37,bold]█"
+                tab_active_fullscreen   "#[bg=#363646,fg=#FFA066]█#[bg=#FFA066,fg=#16161D,bold]{index} #[bg=#2A2A37,fg=#DCD7BA,bold] {name}{fullscreen_indicator}#[bg=#363646,fg=#2A2A37,bold]█"
+                tab_active_sync         "#[bg=#363646,fg=#FFA066]█#[bg=#FFA066,fg=#16161D,bold]{index} #[bg=#2A2A37,fg=#DCD7BA,bold] {name}{sync_indicator}#[bg=#363646,fg=#2A2A37,bold]█"
+
+                // separator between the tabs
+                tab_separator           "#[bg=#1F1F28] "
+
+                // indicators
+                tab_sync_indicator       " "
+                tab_fullscreen_indicator " 󰊓"
+                tab_floating_indicator   " 󰹙"
+
+                command_git_branch_command     "git rev-parse --abbrev-ref HEAD"
+                command_git_branch_format      "#[fg=blue] {stdout} "
+                command_git_branch_interval    "10"
+                command_git_branch_rendermode  "static"
+
+                datetime        "#[fg=#6C7086,bold] {format} "
+                datetime_format "%A, %d %b %Y %H:%M"
+                datetime_timezone "Europe/London"
+            }
+        }
+        children
+    }
+}

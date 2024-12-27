@@ -19,5 +19,4 @@ alias top="btop"
 zoxide init fish | source
 starship init fish | source
 
-## command not found
-set distro $(cat /etc/*-release | grep "^ID=" | cut -d "=" -f2); [ "$distro" = arch ] && source /usr/share/doc/find-the-command/ftc.fish
+atuin init fish --disable-up-arrow | source

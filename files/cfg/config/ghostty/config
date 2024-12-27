@@ -1,0 +1,15 @@
+# vim: ft=config
+
+theme = "Kanagawa Wave"
+# theme = "tokyonight"
+font-family = "JetBrainsMono Nerd Font"
+font-size = 14
+adjust-cell-height = 3
+adjust-underline-position = 2
+
+window-decoration = false
+
+background = 101010
+background-opacity = 0.82
+
+cursor-invert-fg-bg = true

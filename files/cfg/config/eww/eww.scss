@@ -4,11 +4,12 @@ $shadow: rgba(#000000,0.3);
 $border_col: rgba(#cccccc,0.18);
 $best_so_far: rgba(255,255,255,0.1); 
 $padding: 0px 15px 0px 15px;
-$font_size: 12px;
+$font_size: 14px;
 $border_radius: 1px;
 
 .bar {
   background-color: rgba(#181818, 0.35);
+  font-family: "JetBrainsMono Nerd Font";
   // background-color: transparent;
 }
 
@@ -24,8 +25,8 @@ $border_radius: 1px;
   padding: $padding;
   padding-left:  6px;
   padding-right: 6px;
-  padding-top: 5px;
-  font-size: $font_size;
+  padding-top: 3px;
+  font-size: 13px;
   box-shadow: 2px 2px 2px $shadow;
   min-height: 25px;	
 }
@@ -70,7 +71,7 @@ $border_radius: 1px;
   color: $fg;
   font-size: $font_size;
   padding: $padding;
-  padding-top: 6px;
+  padding-top: 4px;
   // margin-bottom: 10px;
   border: 1px solid $border_col;
   box-shadow: 2px 2px 2px $shadow;
@@ -112,7 +113,8 @@ $border_radius: 1px;
   color: $fg;
   font-size: $font_size;
   padding: $padding;
-  padding-top: 6px;
+  padding-top: 4px;
+  padding-bottom: 0px;
   border: 1px solid $border_col;
   box-shadow: 2px 2px 2px $shadow;
   text-shadow: none;
@@ -143,7 +145,7 @@ $border_radius: 1px;
   border-radius: 6px;
   background-color: #313244;  // Same as refresh button background
   transition: background-color 0.2s ease;
-  
+
   &:hover {
     background-color: #45475a;  // Same hover color as refresh
   }

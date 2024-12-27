@@ -1,68 +1,21 @@
+vim.cmd([[ set background=dark ]])
 vim.g.transparent = true
 
+-- no-clown-fiesta tokyonight-moon
+vim.g.colorscheme = "no-clown-fiesta"
+
 return {
-  {
-    "rebelot/kanagawa.nvim",
-    priority = 1000,
-    config = function()
-      require("kanagawa").setup({
-        undercurl = true,
-        commentStyle = { italic = false },
-        keywordStyle = { italic = false },
-        statementStyle = { bold = false },
-        transparent = vim.g.transparent,
-      })
-      -- vim.cmd.colorscheme("kanagawa-wave")
-      -- vim.cmd.colorscheme("kanagawa-dragon")
-    end,
-  },
-  {
-    "aliqyan-21/darkvoid.nvim",
-    priority = 1000,
-    config = function()
-      -- vim.cmd.colorscheme("darkvoid")
-    end,
-  },
-  {
-    "slugbyte/lackluster.nvim",
-    priority = 10000,
-    opts = {
-      tweak_highlight = {
-        ["@keyword"] = { overwrite = false, bold = true, fg = "#ffffff" },
-        ["@type"] = { overwrite = false, bold = true, fg = "#89ff89" },
-        ["@function.call"] = { overwrite = false, fg = "#b0b0ff" },
-        ["@function.builtin"] = { overwrite = true, fg = "#ffffff", bold = true, italic = true },
-        ["@variable.parameter"] = { italic = true },
-        ["DiagnosticWarn"] = { fg = "#eb9534" },
-        ["DiagnosticHint"] = { fg = "#8e7bed" },
-        ["@comment"] = { fg = "#707070", italic = true },
-      },
-    },
-    init = function()
-      -- vim.cmd.colorscheme("lackluster-night")
-      -- vim.cmd.colorscheme("lackluster-hack") -- my favorite
-      -- vim.cmd.colorscheme("lackluster-mint")
-    end,
-  },
   {
     "folke/tokyonight.nvim",
     priority = 1000,
     opts = {},
     config = function()
-      require("tokyonight").setup({})
-      -- vim.cmd.colorscheme("tokyonight-moon")
-    end,
-  },
-  {
-    "cpwrs/americano.nvim",
-    priority = 1000,
-    config = function()
-      require("americano").setup({
-        terminal = true,
-        overrides = {},
+      require("tokyonight").setup({
+        transparent = vim.g.transparent,
       })
-      -- vim.cmd.colorscheme("americano")
-      vim.cmd([[hi NonText guifg=#9eaab5 ]])
+      if vim.g.colorscheme == "tokyonight" then
+        vim.cmd.colorscheme("tokyonight-moon")
+      end
     end,
   },
   {
@@ -73,14 +26,9 @@ return {
         transparent = vim.g.transparent,
       })
 
-      vim.cmd.colorscheme("no-clown-fiesta")
-    end,
-  },
-  {
-    "olivercederborg/poimandres.nvim",
-    priority = 1000,
-    config = function()
-      -- vim.cmd.colorscheme("poimandres")
+      if vim.g.colorscheme == "no-clown-fiesta" then
+        vim.cmd.colorscheme("no-clown-fiesta")
+      end
     end,
   },
 }

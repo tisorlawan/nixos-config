@@ -1,259 +1,277 @@
-// If you'd like to override the default keybindings completely, be sure to change "keybinds" to "keybinds clear-defaults=true"
 keybinds clear-defaults=true {
     normal {
-        bind "a" "Esc" "Ctrl l" { Write 2; SwitchToMode "locked"; }
-        bind "Ctrl a" { ToggleTab; SwitchToMode "locked"; }
-        bind "Ctrl b" "Space" "Enter" { SwitchToMode "locked"; }
-        bind "p" { SwitchToMode "pane"; }
-        bind "r" { SwitchToMode "resize"; }
-        bind "t" { SwitchToMode "tab"; }
-        bind "s" { SwitchToMode "scroll"; }
-        bind "o" { SwitchToMode "session"; }
-        bind "Ctrl q" { Quit; }
-        bind "Alt n" { NewPane; SwitchToMode "locked"; }
-        bind "Ctrl c" { NewTab; SwitchToMode "locked"; }
-        bind "n" { NewPane; SwitchToMode "locked"; }
-        bind "h" { MoveFocusOrTab "Left"; SwitchToMode "locked"; }
-        bind "l" { MoveFocusOrTab "Right"; SwitchToMode "locked"; }
-        // bind "j" { MoveFocus "Down"; SwitchToMode "locked"; }
-        // bind "k" { MoveFocus "Up"; SwitchToMode "locked"; }
-        // bind "H" "Alt h" { MoveFocusOrTab "Left"; }
-        // bind "L" "Alt l" { MoveFocusOrTab "Right"; }
-        // bind "J" "Alt j" { MoveFocus "Down"; }
-        // bind "K" "Alt k" { MoveFocus "Up"; }
-        // bind "[" "Alt [" { FocusPreviousPane; }
-        // bind "]" "Alt [" { FocusNextPane; }
-        // bind "-" { NewPane "Down"; SwitchToMode "locked"; }
-        // bind r"\" { NewPane "Right"; SwitchToMode "locked"; }
-        bind "Ctrl n" { GoToNextTab; SwitchToMode "locked";}
-        bind "Ctrl p" { GoToPreviousTab; SwitchToMode "locked";}
+        // uncomment this and adjust key if using copy_on_select=false
+        // bind "Alt c" { Copy; }
+        unbind "Ctrl s"
+        unbind "Ctrl n"
 
-        bind "l" { NewPane "Right"; SwitchToMode "locked"; }
-        bind "j" { NewPane "Down"; SwitchToMode "locked"; }
 
-        bind "d" { Detach; }
+        bind "Alt x" { SwitchToMode "Move"; }
+        // bind "Ctrl a" { SwitchToMode "Tmux"; }
+        bind "Alt r" { SwitchToMode "Resize"; }
+        bind "Alt s" { SwitchToMode "entersearch"; }
 
-        bind "1" { GoToTab 1; }
-        bind "2" { GoToTab 2; }
-        bind "3" { GoToTab 3; }
-        bind "4" { GoToTab 4; }
-        bind "5" { GoToTab 5; }
-        bind "6" { GoToTab 6; }
-        bind "7" { GoToTab 7; }
-        bind "8" { GoToTab 8; }
-        bind "9" { GoToTab 9; }
-        bind "=" { Resize "Increase"; }
-        bind "+" { Resize "Increase"; }
-        bind "-" { Resize "Decrease"; }
-        bind "Left" { Resize "Left"; }
-        bind "Down" { Resize "Down"; }
-        bind "Up" { Resize "Up"; }
-        bind "Right" { Resize "Right"; }
-        bind "Tab" "t" { ToggleTab; }
-        // bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0; }
-        bind "," { SwitchToMode "RenameTab"; TabNameInput 0; }
-        bind "e" { EditScrollback; SwitchToMode "locked"; }
-
-        bind "[" { SwitchToMode "search"; }
+        bind "Alt v" { EditScrollback; SwitchToMode "Normal"; }
+        bind "Alt ," { SwitchToMode "Scroll"; }
     }
-
     locked {
-        bind "Ctrl a" { SwitchToMode "normal"; }
-
-        bind "Alt j" { MoveFocus "Down"; }
-        bind "Alt k" { MoveFocus "Up"; }
-        bind "Alt h" { MoveFocus "Left"; }
-        bind "Alt l" { MoveFocus "Right"; }
-
-        bind "Alt n" { NewPane "Right"; }
-        bind "Alt o" { NewPane "Down"; }
-
-        bind "Alt r" { SwitchToMode "resize"; }
-
-        bind "Alt m" { NewTab; }
-
-        bind "Alt s" {
-            LaunchOrFocusPlugin "zellij:session-manager" {
-                floating true
-                move_to_focused_tab true
-            };
-            SwitchToMode "locked"
-        }
-
-        bind "Alt f" { SwitchToMode "search"; }
+        bind "Ctrl g" { SwitchToMode "Normal"; }
     }
-
-    search {
-        bind "f" { SwitchToMode "EnterSearch"; SearchInput 0; }
-        bind "Alt f" { SwitchToMode "EnterSearch"; SearchInput 0; }
-        bind "Esc" { SwitchToMode "Locked"; }
+    resize {
+        bind "Alt r" { SwitchToMode "Normal"; }
+        bind "h" "Left" { Resize "Increase Left"; }
+        bind "j" "Down" { Resize "Increase Down"; }
+        bind "k" "Up" { Resize "Increase Up"; }
+        bind "l" "Right" { Resize "Increase Right"; }
+        bind "H" { Resize "Decrease Left"; }
+        bind "J" { Resize "Decrease Down"; }
+        bind "K" { Resize "Decrease Up"; }
+        bind "L" { Resize "Decrease Right"; }
+        bind "=" "+" { Resize "Increase"; }
+        bind "-" { Resize "Decrease"; }
+    }
+    pane {
+        bind "Alt e" { SwitchToMode "Normal"; }
+        bind "h" "Left" { MoveFocus "Left"; }
+        bind "l" "Right" { MoveFocus "Right"; }
+        bind "j" "Down" { MoveFocus "Down"; }
+        bind "k" "Up" { MoveFocus "Up"; }
+        bind "p" { SwitchFocus; }
+        bind "n" { NewPane; SwitchToMode "Normal"; }
+        bind "d" { NewPane "Down"; SwitchToMode "Normal"; }
+        bind "r" { NewPane "Right"; SwitchToMode "Normal"; }
+        bind "x" { CloseFocus; SwitchToMode "Normal"; }
+        bind "f" { ToggleFocusFullscreen; SwitchToMode "Normal"; }
+        bind "z" { TogglePaneFrames; SwitchToMode "Normal"; }
+        bind "w" { ToggleFloatingPanes; SwitchToMode "Normal"; }
+        bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "Normal"; }
+        bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0;}
+    }
+    move {
+        bind "Alt x" { SwitchToMode "Normal"; }
+        bind "n" "Tab" { MovePane; }
+        bind "p" { MovePaneBackwards; }
+        bind "h" "Left" { MovePane "Left"; }
+        bind "j" "Down" { MovePane "Down"; }
+        bind "k" "Up" { MovePane "Up"; }
+        bind "l" "Right" { MovePane "Right"; }
+    }
+    tab {
+        // bind "Alt t" { SwitchToMode "Normal"; }
+        // bind "r" { SwitchToMode "RenameTab"; TabNameInput 0; }
+        // bind "h" "Left" "Up" "k" { GoToPreviousTab; }
+        // bind "l" "Right" "Down" "j" { GoToNextTab; }
+        // bind "n" { NewTab; SwitchToMode "Normal"; }
+        // bind "x" { CloseTab; SwitchToMode "Normal"; }
+        // bind "s" { ToggleActiveSyncTab; SwitchToMode "Normal"; }
+        // bind "b" { BreakPane; SwitchToMode "Normal"; }
+        // bind "]" { BreakPaneRight; SwitchToMode "Normal"; }
+        // bind "[" { BreakPaneLeft; SwitchToMode "Normal"; }
+        bind "1" { GoToTab 1; SwitchToMode "Normal"; }
+        bind "2" { GoToTab 2; SwitchToMode "Normal"; }
+        bind "3" { GoToTab 3; SwitchToMode "Normal"; }
+        bind "4" { GoToTab 4; SwitchToMode "Normal"; }
+        bind "5" { GoToTab 5; SwitchToMode "Normal"; }
+        bind "6" { GoToTab 6; SwitchToMode "Normal"; }
+        bind "7" { GoToTab 7; SwitchToMode "Normal"; }
+        bind "8" { GoToTab 8; SwitchToMode "Normal"; }
+        bind "9" { GoToTab 9; SwitchToMode "Normal"; }
+        // bind "Tab" { ToggleTab; }
+    }
+    scroll {
+        bind "Alt s" { SwitchToMode "Normal"; }
+        bind "e" { EditScrollback; SwitchToMode "Normal"; }
+        bind "s" { SwitchToMode "EnterSearch"; SearchInput 0; }
+        bind "Ctrl c" { ScrollToBottom; SwitchToMode "Normal"; }
         bind "j" "Down" { ScrollDown; }
         bind "k" "Up" { ScrollUp; }
         bind "Ctrl f" "PageDown" "Right" "l" { PageScrollDown; }
         bind "Ctrl b" "PageUp" "Left" "h" { PageScrollUp; }
         bind "d" { HalfPageScrollDown; }
         bind "u" { HalfPageScrollUp; }
+        // uncomment this and adjust key if using copy_on_select=false
+        // bind "Alt c" { Copy; }
+    }
+    search {
+        bind "Ctrl s" { SwitchToMode "Normal"; }
+        bind "Ctrl c" { ScrollToBottom; SwitchToMode "Normal"; }
+        bind "j" "Down" { ScrollDown; }
+        bind "k" "Up" { ScrollUp; }
+        bind "e" { EditScrollback; SwitchToMode "Normal"; }
+        bind "Ctrl f" "PageDown" "Right" "l" { PageScrollDown; }
+        bind "Ctrl b" "PageUp" "Left" "h" { PageScrollUp; }
+        bind "d" { HalfPageScrollDown; }
+        bind "u" { HalfPageScrollUp; }
         bind "n" { Search "down"; }
+        bind "N" { Search "up"; }
         bind "p" { Search "up"; }
         bind "c" { SearchToggleOption "CaseSensitivity"; }
         bind "w" { SearchToggleOption "Wrap"; }
         bind "o" { SearchToggleOption "WholeWord"; }
-        bind "Alt y" { Copy; }
     }
-
     entersearch {
-        bind "Ctrl c" "Esc" { SwitchToMode "Search"; }
+        bind "Ctrl c" "Esc" { SwitchToMode "Scroll"; }
         bind "Enter" { SwitchToMode "Search"; }
     }
-
-
-    pane {
-        bind "Ctrl b" { SwitchToMode "locked"; }
-        bind "Ctrl p" { SwitchToMode "normal"; }
-        bind "Ctrl t" { SwitchToMode "tab"; }
-        bind "Ctrl r" "Enter" "Space" { SwitchToMode "locked"; }
-        bind "Ctrl s" { SwitchToMode "scroll"; }
-        bind "Ctrl q" { Quit; }
-        bind "Alt h" "Left" { MoveFocus "Left"; }
-        bind "Alt l" "Right" { MoveFocus "Right"; }
-        bind "Alt j" "Down" { MoveFocus "Down"; }
-        bind "Alt k" "Up" { MoveFocus "Up"; }
-        bind "p" { SwitchFocus; }
-        bind "n" "Alt n" { NewPane; SwitchToMode "locked"; }
-        bind "N" { NewPane; }
-        bind "d" { NewPane "Down"; SwitchToMode "locked"; }
-        bind "r" { NewPane "Right"; SwitchToMode "locked"; }
-        bind "z" { TogglePaneFrames; SwitchToMode "locked"; }
-        bind "Z" { TogglePaneFrames; }
-        bind "D" { NewPane "Down"; }
-        bind "R" { NewPane "Right"; }
-        bind "x" { CloseFocus; SwitchToMode "locked"; }
-        bind "X" { CloseFocus; }
-        bind "f" { ToggleFocusFullscreen; SwitchToMode "locked"; }
-        bind "F" { ToggleFocusFullscreen; }
-        bind "Alt [" { FocusPreviousPane; }
-        bind "Alt ]" { FocusNextPane; }
-        bind "f" { ToggleFocusFullscreen; SwitchToMode "normal"; }
-        bind "z" { TogglePaneFrames; SwitchToMode "normal"; }
-        bind "w" { ToggleFloatingPanes; SwitchToMode "normal"; }
-        bind "e" { TogglePaneEmbedOrFloating; SwitchToMode "normal"; }
-        bind "c" { SwitchToMode "RenamePane"; PaneNameInput 0; }
+    renametab {
+        bind "Ctrl c" { SwitchToMode "Normal"; }
+        bind "Esc" { UndoRenameTab; SwitchToMode "Tab"; }
     }
-    tab {
-        bind "Ctrl t" { SwitchToMode "normal"; }
-        bind "Ctrl p" { SwitchToMode "pane"; }
-        bind "Ctrl b" "Enter" "Space" { SwitchToMode "locked"; }
-        bind "Ctrl s" { SwitchToMode "scroll"; }
-        bind "r" { SwitchToMode "RenameTab"; TabNameInput 0; }
-        bind "Ctrl q" { Quit; }
-        bind "Alt [" { FocusPreviousPane; }
-        bind "Alt ]" { FocusNextPane; }
-        bind "h" { GoToPreviousTab; }
-        bind "l" { GoToNextTab; }
-        bind "j" { GoToNextTab; }
-        bind "k" { GoToPreviousTab; }
-        bind "n" { NewTab; }
-        bind "x" { CloseTab; }
-        bind "Alt h" { MoveFocus "Left"; }
-        bind "Alt l" { MoveFocus "Right"; }
-        bind "Alt j" { MoveFocus "Down"; }
-        bind "Alt k" { MoveFocus "Up"; }
-        bind "1" { GoToTab 1; }
-        bind "2" { GoToTab 2; }
-        bind "3" { GoToTab 3; }
-        bind "4" { GoToTab 4; }
-        bind "5" { GoToTab 5; }
-        bind "6" { GoToTab 6; }
-        bind "7" { GoToTab 7; }
-        bind "8" { GoToTab 8; }
-        bind "9" { GoToTab 9; }
-    }
-    resize {
-        bind "Esc" { SwitchToMode "locked"; }
-        bind "Ctrl a" { SwitchToMode "locked"; }
-        bind "Ctrl p" { SwitchToMode "pane"; }
-        bind "Ctrl t" { SwitchToMode "tab"; }
-        bind "Ctrl r" "Enter" "Space" { SwitchToMode "locked"; }
-        bind "Ctrl s" { SwitchToMode "scroll"; }
-        bind "Ctrl q" { Quit; }
-        bind "h" "Left" { Resize "Left"; }
-        bind "j" "Down" { Resize "Down"; }
-        bind "k" "Up" { Resize "Up"; }
-        bind "l" "Right" { Resize "Right"; }
-        bind "Alt n" { NewPane; }
-        bind "Alt h" "Left" { MoveFocus "Left"; }
-        bind "Alt l" "Right" { MoveFocus "Right"; }
-        bind "Alt j" "Down" { MoveFocus "Down"; }
-        bind "Alt k" "Up" { MoveFocus "Up"; }
-        bind "Alt [" { FocusPreviousPane; }
-        bind "Alt ]" { FocusNextPane; }
-    }
-    scroll {
-        bind "q" "Esc" { SwitchToMode "locked"; }
-        bind "Ctrl t" { SwitchToMode "tab"; }
-        bind "Ctrl s" { SwitchToMode "normal"; }
-        bind "Ctrl p" { SwitchToMode "pane"; }
-        bind "Ctrl q" { Quit; }
-        bind "j" "Down" { ScrollDown; }
-        bind "k" "Up" { ScrollUp; }
-        bind "Ctrl f" "PageDown" { PageScrollDown; }
-        bind "Ctrl b" "PageUp" { PageScrollUp; }
-        bind "Alt n" { NewPane; }
-        bind "Alt h" { MoveFocus "Left"; }
-        bind "Alt l" { MoveFocus "Right"; }
-        bind "Alt j" { MoveFocus "Down"; }
-        bind "Alt k" { MoveFocus "Up"; }
-        bind "Alt [" { FocusPreviousPane; }
-        bind "Alt ]" { FocusNextPane; }
-        bind "e" { EditScrollback; SwitchToMode "locked"; }
+    renamepane {
+        bind "Ctrl c" { SwitchToMode "Normal"; }
+        bind "Esc" { UndoRenamePane; SwitchToMode "Pane"; }
     }
     session {
-        bind "Esc" { SwitchToMode "locked"; }
-        bind "Ctrl o" { SwitchToMode "normal"; }
-        bind "Ctrl r" { SwitchToMode "resize"; }
-        bind "Ctrl p" { SwitchToMode "pane"; }
-        bind "Ctrl t" { SwitchToMode "tab"; }
-        bind "Ctrl b" "Enter" "Space" { SwitchToMode "locked"; }
-        bind "Ctrl s" { SwitchToMode "scroll"; }
-        bind "Ctrl q" { Quit; }
+        bind "Alt f" { SwitchToMode "Normal"; }
+        bind "Ctrl s" { SwitchToMode "Scroll"; }
         bind "d" { Detach; }
         bind "w" {
-            LaunchOrFocusPlugin "zellij:session-manager" {
+            LaunchOrFocusPlugin "session-manager" {
                 floating true
                 move_to_focused_tab true
             };
-            SwitchToMode "locked"
+            SwitchToMode "Normal"
+        }
+    }
+    tmux {
+        bind "[" { SwitchToMode "Scroll"; }
+        bind "Ctrl b" { Write 2; SwitchToMode "Normal"; }
+        // bind "Ctrl c" { NewTab; SwitchToMode "Normal"; }
+        bind "Ctrl l" { 
+            WriteChars "clear\n";
+            SwitchToMode "Normal";        
+        }
+        bind "e" { EditScrollback; SwitchToMode "Normal"; }
+        bind "/" { SwitchToMode "EnterSearch"; SearchInput 0; }
+
+
+        // bind "Ctrl p" { GoToPreviousTab;SwitchToMode "Normal"; }
+        // bind "Ctrl n" { GoToNextTab; SwitchToMode "Normal";}
+        bind "\"" { NewPane "Down"; SwitchToMode "Normal"; }
+        bind "%" { NewPane "Right"; SwitchToMode "Normal"; }
+        // bind "z" { ToggleFocusFullscreen; SwitchToMode "Normal"; }
+        bind "c" { NewTab; SwitchToMode "Normal"; }
+        bind "," { SwitchToMode "RenameTab"; }
+        // bind "p" { GoToPreviousTab; SwitchToMode "Normal"; }
+        // bind "n" { GoToNextTab; SwitchToMode "Normal"; }
+        bind "Left" { MoveFocus "Left"; SwitchToMode "Normal"; }
+        bind "Right" { MoveFocus "Right"; SwitchToMode "Normal"; }
+        bind "Down" { MoveFocus "Down"; SwitchToMode "Normal"; }
+        bind "Up" { MoveFocus "Up"; SwitchToMode "Normal"; }
+        // bind "j" { NewPane "Down"; SwitchToMode "Normal"; }
+        // bind "l" { NewPane "Right"; SwitchToMode "Normal"; }
+        bind "o" { FocusNextPane; }
+        bind "d" { Detach; }
+        bind "Space" { NextSwapLayout; }
+        bind "x" { CloseFocus; SwitchToMode "Normal"; }
+    }
+
+    shared {
+        bind "Alt ;" { SwitchToMode "Tab"; }
+        bind "Alt t" { SwitchToMode "Session"; }
+		// bind "Alt g" { SwitchToMode "layout"; SwitchToMode "normal"; }
+
+
+        bind "Alt l" { MoveFocus "Right"; }
+        bind "Alt h" { MoveFocus "Left"; }
+        bind "Alt k" { MoveFocus "Up"; }
+        bind "Alt j" { MoveFocus "Down"; }
+
+        bind "Alt i" { NewPane "Down"; SwitchToMode "Normal"; }
+        bind "Alt o" { NewPane "Right"; SwitchToMode "Normal"; }
+
+        // bind "Alt e" { SwitchToMode "Pane"; }
+
+        bind "Alt n" { GoToNextTab; }
+        bind "Alt p" { GoToPreviousTab; }
+
+        bind "Alt ." { NewTab; SwitchToMode "Normal"; }
+        bind "Alt z" { ToggleFocusFullscreen; SwitchToMode "Normal"; }
+
+        bind "Alt y" { SwitchToMode "RenameTab"; }
+
+        bind "Alt Shift z" {
+            MessagePlugin "autolock" {payload "enable";};
         }
 
+        bind "Alt m" {
+            WriteChars "clear\n";
+            SwitchToMode "Normal";
+        }
     }
-    RenameTab {
-        bind "Ctrl r" { SwitchToMode "normal"; }
-        bind "Ctrl b" "Ctrl s" "Space" { SwitchToMode "locked"; }
-        bind "Enter" { SwitchToMode "locked"; }
-        bind "Esc" { TabNameInput 27; SwitchToMode "locked"; }
-        bind "Alt n" { NewPane; }
-        bind "Alt h" { MoveFocus "Left"; }
-        bind "Alt l" { MoveFocus "Right"; }
-        bind "Alt j" { MoveFocus "Down"; }
-        bind "Alt k" { MoveFocus "Up"; }
-        bind "Alt [" { FocusPreviousPane; }
-        bind "Alt ]" { FocusNextPane; }
-    }
-    RenamePane {
-        bind "Enter" "Ctrl c" "Esc" { SwitchToMode "normal"; }
-        bind "Esc" { PaneNameInput 27; SwitchToMode "pane"; }
-        bind "Alt n" { NewPane; }
-        bind "Alt h" { MoveFocus "Left"; }
-        bind "Alt l" { MoveFocus "Right"; }
-        bind "Alt j" { MoveFocus "Down"; }
-        bind "Alt k" { MoveFocus "Up"; }
-        bind "Alt [" { FocusPreviousPane; }
-        bind "Alt ]" { FocusNextPane; }
-        bind "Alt =" { Resize "Increase"; }
-        bind "Alt +" { Resize "Increase"; }
+
+    shared_except "locked" {
+        bind "Ctrl g" { SwitchToMode "Locked"; }
+        bind "Ctrl q" { Quit; }
+        bind "Alt Left" { MoveTab "Left"; }
+        bind "Alt Right" { MoveTab "Right"; }
+        // bind "Alt h" "Alt Left" { MoveFocusOrTab "Left"; }
+        // bind "Alt l" "Alt Right" { MoveFocusOrTab "Right"; }
+        // bind "Alt j" "Alt Down" { MoveFocus "Down"; }
+        // bind "Alt k" "Alt Up" { MoveFocus "Up"; }
+        bind "Alt =" "Alt +" { Resize "Increase"; }
         bind "Alt -" { Resize "Decrease"; }
+        bind "Alt [" { PreviousSwapLayout; }
+        bind "Alt ]" { NextSwapLayout; }
+
+
+        bind "Ctrl h" {
+            // MoveFocusOrTab "Left";
+            MoveFocus "Left";
+        }
+        bind "Ctrl l" {
+            // MoveFocusOrTab "Right";
+            MoveFocus "Right";
+        }
+        bind "Ctrl j" {
+            MoveFocus "Down";
+        }
+        bind "Ctrl k" {
+            MoveFocus "Up";
+        }
+    }
+    shared_except "normal" "locked" {
+        bind "Enter" "Esc" { SwitchToMode "Normal"; }
+    }
+    shared_except "resize" "locked" {
+        bind "Ctrl n" { SwitchToMode "Resize"; }
+    }
+    shared_except "scroll" "locked" {
+        bind "Ctrl s" { SwitchToMode "Scroll"; }
+    }
+    shared_except "session" "locked" {
+        bind "Alt f" { SwitchToMode "Session"; }
+    }
+    shared_except "tmux" "locked" {
+        bind "Ctrl b" { SwitchToMode "Tmux"; }
     }
 }
+
+plugins {
+    // tab-bar location="zellij:tab-bar"
+    // status-bar location="zellij:status-bar"
+    // strider location="zellij:strider"
+    // compact-bar location="zellij:compact-bar"
+    // session-manager location="zellij:session-manager"
+    // welcome-screen location="zellij:session-manager" {
+    //     welcome_screen true
+    // }
+    // filepicker location="zellij:strider" {
+    //     cwd "/"
+    // }
+    // Define the "autolock" plugin.
+    autolock location="file:~/.config/zellij/plugins/zellij-autolock.wasm" {
+        is_enabled true
+        triggers "nvim|vim|git|fzf|zoxide|atuin"
+        reaction_seconds "0.3"
+        print_to_log true
+    }
+}
+
+load_plugins {
+    autolock
+}
+
 
 // Choose what to do when zellij receives SIGTERM, SIGINT, SIGQUIT or SIGHUP
 // eg. when terminal window with an active zellij session is closed
@@ -263,39 +281,55 @@ keybinds clear-defaults=true {
 //
 // on_force_close "quit"
 
-// Send a request for a simplified ui (without arrow fonts) to plugins
-// Options:
-//   - true
-//   - false (Default)
-//
-// simplified_ui true
+simplified_ui true
+pane_frames false
 
-// Choose the path to the default shell that zellij will use for opening new panes
-// Default: $SHELL
-//
-// default_shell "fish"
-
-// Toggle between having pane frames around the panes
+// Toggle between having Zellij lay out panes according to a predefined set of layouts whenever possible
 // Options:
 //   - true (default)
 //   - false
 //
-// pane_frames true
+// auto_layout true
 
-// Choose the theme that is specified in the themes section.
-// Default: default
-//
-// theme "default"
+// Whether pane viewports are serialized along with the session, default is false
+// Options:
+//   - true
+//   - false (default)
+// serialize_pane_viewport true
 
-// The name of the default layout to load on startup
-// Default: "default"
+// Scrollback lines to serialize along with the pane viewport when serializing sessions, 0
+// defaults to the scrollback size. If this number is higher than the scrollback size, it will
+// also default to the scrollback size. This does nothing if `serialize_pane_viewport` is not true.
 //
-// default_layout "compact"
+scrollback_lines_to_serialize 500000
+
+// Define color themes for Zellij
+// For more examples, see: https://github.com/zellij-org/zellij/tree/main/example/themes
+// Once these themes are defined, one of them should to be selected in the "theme" section of this file
+//
+themes {
+     grayscale-dark {
+         fg "#888888"      /* Light gray for foreground */
+         bg "#282828"      /* Dark gray background (kept from original) */
+         black "#1A1A1A"   /* Darker black */
+         red "#808080"     /* Medium gray */
+         green "#ffffff"   /* Light-medium gray */
+         yellow "#B8B8B8"  /* Light gray */
+         blue "#666666"    /* Darker medium gray */
+         magenta "#999999" /* Medium-light gray */
+         cyan "#777777"    /* Medium gray */
+         white "#888888"   /* Very light gray */
+         orange "#949494"  /* Another medium gray */
+     }
+}
+
+theme "grayscale-dark"
+default_layout "default"
 
 // Choose the mode that zellij uses when starting up.
 // Default: normal
 //
-default_mode "locked"
+// default_mode "locked"
 
 // Toggle enabling the mouse mode.
 // On certain configurations, or terminals this could
@@ -304,7 +338,7 @@ default_mode "locked"
 //   - true (default)
 //   - false
 //
-// mouse_mode false
+mouse_mode false
 
 // Configure the scroll back buffer size
 // This is the number of lines zellij stores for each pane in the scroll back
@@ -321,122 +355,7 @@ default_mode "locked"
 // Examples:
 //
 // copy_command "xclip -selection clipboard" // x11
-// copy_command "wl-copy"                    // wayland
-// copy_command "pbcopy"                     // osx
-
-// Choose the destination for copied text
-// Allows using the primary selection buffer (on x11/wayland) instead of the system clipboard.
-// Does not apply when using copy_command.
-// Options:
-//   - system (default)
-//   - primary
-//
-copy_clipboard "system"
-
-// Enable or disable automatic copy (and clear) of selection when releasing mouse
-// Default: true
-//
-copy_on_select true
-
-// Path to the default editor to use to edit pane scrollbuffer
-// Default: $EDITOR or $VISUAL
-//
-// scrollback_editor "/usr/bin/vim"
-
-// When attaching to an existing session with other users,
-// should the session be mirrored (true)
-// or should each user have their own cursor (false)
-// Default: false
-//
-// mirror_session true
-
-// The folder in which Zellij will look for layouts
-//
-// layout_dir /path/to/my/layout_dir
-
-// The folder in which Zellij will look for themes
-//
-// theme_dir "/path/to/my/theme_dir"
-
-plugins {
-    tab-bar { path "tab-bar"; }
-    status-bar { path "status-bar"; }
-    strider { path "strider"; }
-    compact-bar { path "compact-bar"; }
-    session-manager { path "session-manager"; }
-}
-
-// Choose what to do when zellij receives SIGTERM, SIGINT, SIGQUIT or SIGHUP
-// eg. when terminal window with an active zellij session is closed
-// Options:
-//   - detach (Default)
-//   - quit
-//
-// on_force_close "quit"
-
-simplified_ui true
-
-// Default: $SHELL
-default_cwd ""
-pane_frames false
-
-// Toggle between having Zellij lay out panes according to a predefined set of layouts whenever possible
-// Options:
-//   - true (default)
-//   - false
-//
-auto_layout true
-
-// Define color themes for Zellij
-// For more examples, see: https://github.com/zellij-org/zellij/tree/main/example/themes
-// Once these themes are defined, one of them should to be selected in the "theme" section of this file
-//
-// themes {
-//     dracula {
-//         fg 248 248 242
-//         bg 40 42 54
-//         red 255 85 85
-//         green 80 250 123
-//         yellow 241 250 140
-//         blue 98 114 164
-//         magenta 255 121 198
-//         orange 255 184 108
-//         cyan 139 233 253
-//         black 0 0 0
-//         white 255 255 255
-//     }
-// }
-
-// Choose the theme that is specified in the themes section.
-// Default: default
-//
-// theme "default"
-
-default_layout "compact"
-
-// Choose the mode that zellij uses when starting up.
-// Default: normal
-//
-// default_mode "locked"
-
-// Toggle enabling the mouse mode.
-// On certain configurations, or terminals this could
-// potentially interfere with copying text.
-// Options:
-//   - true (default)
-//   - false
-//
-mouse_mode true
-scroll_buffer_size 100000
-
-// Provide a command to execute when copying text. The text will be piped to
-// the stdin of the program to perform the copy. This can be used with
-// terminal emulators which do not support the OSC 52 ANSI control sequence
-// that will be used by default if this option is not set.
-// Examples:
-//
-copy_command "xclip -i -selection clipboard" // x11
-// copy_command "wl-copy"                    // wayland
+copy_command "wl-copy"                    // wayland
 // copy_command "pbcopy"                     // osx
 
 // Choose the destination for copied text
@@ -456,7 +375,7 @@ copy_command "xclip -i -selection clipboard" // x11
 // Path to the default editor to use to edit pane scrollbuffer
 // Default: $EDITOR or $VISUAL
 //
-scrollback_editor "nvim"
+// scrollback_editor "vim"
 
 // When attaching to an existing session with other users,
 // should the session be mirrored (true)
@@ -473,11 +392,25 @@ scrollback_editor "nvim"
 //
 // theme_dir "/path/to/my/theme_dir"
 
+// Enable or disable the rendering of styled and colored underlines (undercurl).
+// May need to be disabled for certain unsupported terminals
+// Default: true
+//
+// styled_underlines false
+
+// Enable or disable writing of session metadata to disk (if disabled, other sessions might not know
+// metadata info on this session)
+// Default: false
+//
+// disable_session_metadata true
+
 session_serialization false
 
 ui {
     pane_frames {
+        rounded_corners true
         hide_session_name true
     }
+	// layout_dir "layouts"
+    // layout_drain ["default", "no-status"]
 }
-

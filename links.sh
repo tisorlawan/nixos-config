@@ -48,6 +48,12 @@ ln -srf ./files/cfg/config/mpv ~/.config/mpv
 rm -rf ~/.config/eww
 ln -srf files/cfg/config/eww ~/.config/eww
 
+rm -rf ~/.config/zellij
+ln -srf files/cfg/config/zellij ~/.config/zellij
+
+rm -rf ~/.config/ghostty
+ln -srf files/cfg/config/ghostty ~/.config/ghostty
+
 rm -rf ~/.images
 ln -srf ./files/cfg/images ~/.images
 

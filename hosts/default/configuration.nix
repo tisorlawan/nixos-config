@@ -146,9 +146,10 @@ in
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     #### @TERMINAL EMULATORS ####
-    alacritty
-    wezterm
+    # alacritty
     starship
+    atuin
+    inputs.ghostty.packages.${pkgs.system}.default
 
     #### @DESKTOP ENVIRONMENT ####
     dunst
@@ -381,11 +382,12 @@ in
     enableDefaultPackages = false;
     packages = with pkgs; [
       noto-fonts
-      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+      noto-fonts-emoji
       material-icons
-      courier-prime
-      hack-font
       typestarFont
+
+      # Popular monospace/programming fonts
+      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
     ];
     fontDir = {
       enable = true;
@@ -397,6 +399,7 @@ in
         monospace = [ "JetBrainsMono Nerd Font" ];
         sansSerif = [ "Noto Sans" ];
         serif = [ "Noto Serif" ];
+        emoji = [ "Noto Color Emoji" ];
       };
     };
   };

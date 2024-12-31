@@ -149,6 +149,7 @@ in
     # alacritty
     starship
     atuin
+    alacritty
     inputs.ghostty.packages.${pkgs.system}.default
 
     #### @DESKTOP ENVIRONMENT ####
@@ -387,7 +388,16 @@ in
       typestarFont
 
       # Popular monospace/programming fonts
-      (nerdfonts.override { fonts = [ "JetBrainsMono" ]; })
+      (nerdfonts.override { fonts = [ "JetBrainsMono" "IBMPlexMono" "CascadiaCode" ]; })
+      fira-code # Fira Code (with ligatures)
+      hack-font # Hack
+      source-code-pro # Adobe Source Code Pro
+      ibm-plex # IBM Plex Mono
+      cascadia-code # Cascadia Code
+      inconsolata # Inconsolata
+      # ubuntu-mono # Ubuntu Mono
+      # dejavu-fonts # DejaVu Sans Mono
+      liberation_ttf # Liberation Mono
     ];
     fontDir = {
       enable = true;

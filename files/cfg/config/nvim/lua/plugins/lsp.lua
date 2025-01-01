@@ -320,7 +320,7 @@ local plugins = {
   {
     "saghen/blink.cmp",
     lazy = false,
-    version = "v0.*",
+    version = "v0.8.*",
     opts = {
       completion = {
         list = { selection = "auto_insert" },

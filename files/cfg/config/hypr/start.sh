@@ -4,3 +4,4 @@
 # waybar &
 nm-applet &
 clipse -listen &
+redshift-gtk &

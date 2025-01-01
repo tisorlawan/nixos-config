@@ -8,7 +8,6 @@ return {
     },
     -- stylua: ignore
     keys = {
-      { "<leader>fc", function() require("fzf-lua").command_history() end, desc = "Command History", },
       { "<c-n>", function() require("fzf-lua").buffers() end, desc = "Buffers", },
       { "<c-p>", function() require("fzf-lua").files() end, desc = "Find Files (Root Dir)", },
       { "<leader>fF", function() require("fzf-lua").files({ cwd = vim.fn.getcwd() }) end, desc = "Find Files (cwd)", },
@@ -20,8 +19,8 @@ return {
       { '<leader>s"', function() require("fzf-lua").registers() end, desc = "Registers", },
       { "<leader>sa", function() require("fzf-lua").autocmds() end, desc = "Auto Commands", },
       { "<leader>sb", function() require("fzf-lua").buffers() end, desc = "Buffer", },
-      { "<leader>sc", function() require("fzf-lua").command_history() end, desc = "Command History", },
-      { "<leader>sC", function() require("fzf-lua").commands() end, desc = "Commands", },
+      { "<leader>sC", function() require("fzf-lua").command_history() end, desc = "Command History", },
+      { "<leader>sc", function() require("fzf-lua").commands() end, desc = "Commands", },
       { "<leader>sd", function() require("fzf-lua").diagnostics_document() end, desc = "Document Diagnostics", },
       { "<leader>sD", function() require("fzf-lua").diagnostics_workspace() end, desc = "Workspace Diagnostics", },
       { "<leader>sg", function() require("fzf-lua").grep_project() end, desc = "Grep (Root Dir)", },

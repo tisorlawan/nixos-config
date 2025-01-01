@@ -27,6 +27,7 @@ require("lazy").setup({
       require("plugins.gitignore"),
       require("plugins.gitsigns"),
       require("plugins.helpview"),
+      require("plugins.hexokinase"),
       require("plugins.leap"),
       require("plugins.live-rename"),
       require("plugins.lsp"),

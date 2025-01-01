@@ -8,7 +8,7 @@
 
     # iwmenu.url = "github:e-tho/iwmenu";
     zotimer.url = "github:tisorlawan/zotimer";
-    television.url = "github:alexpasmantier/television";
+    # television.url = "github:alexpasmantier/television";
     ghostty.url = "github:ghostty-org/ghostty";
   };
 

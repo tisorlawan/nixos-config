@@ -1,20 +1,25 @@
 vim.cmd([[ set background=dark ]])
 vim.g.transparent = true
 
--- no-clown-fiesta tokyonight-moon
-vim.g.colorscheme = "no-clown-fiesta"
+-- no-clown-fiesta mellifluous
+vim.g.colorscheme = "mellifluous"
 
 return {
   {
-    "folke/tokyonight.nvim",
-    priority = 1000,
-    opts = {},
+    "ramojus/mellifluous.nvim",
     config = function()
-      require("tokyonight").setup({
-        transparent = vim.g.transparent,
+      require("mellifluous").setup({
+        mellifluous = {
+          neutral = true,
+        },
+        colorset = "mellifluous", -- mellifluous, alduin, mountain, tender, kanagawa_dragon
+        transparent_background = {
+          enabled = vim.g.colorscheme,
+        },
       })
-      if vim.g.colorscheme == "tokyonight" then
-        vim.cmd.colorscheme("tokyonight-moon")
+
+      if vim.g.colorscheme == "mellifluous" then
+        vim.cmd("colorscheme mellifluous")
       end
     end,
   },

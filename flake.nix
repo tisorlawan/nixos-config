@@ -8,8 +8,9 @@
 
     # iwmenu.url = "github:e-tho/iwmenu";
     zotimer.url = "github:tisorlawan/zotimer";
-    television.url = "github:alexpasmantier/television";
+    # television.url = "github:alexpasmantier/television";
     ghostty.url = "github:ghostty-org/ghostty";
+    helix.url = "github:helix-editor/helix/25.01";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:

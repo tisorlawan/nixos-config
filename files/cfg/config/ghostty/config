@@ -1,16 +1,17 @@
-# vim: ft=config
-
 theme = "Kanagawa Wave"
 # theme = "tokyonight"
-font-family = "JetBrainsMono Nerd Font"
+# font-family = "JetBrainsMono Nerd Font"
+font-family = "BlexMono Nerd Font Propo SemiBold"
 font-size = 14
-adjust-cell-height = 3
-adjust-underline-position = 2
+adjust-font-baseline=1
+adjust-cell-height = 4
+adjust-underline-position = 1
 
 window-decoration = false
 
-background = 101010
-background-opacity = 0.82
+background = 141516
+background-opacity = 0.89
 
 cursor-invert-fg-bg = true
-# grapheme-width-method=legacy
+
+# vim: ft=config

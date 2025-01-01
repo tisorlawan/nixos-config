@@ -171,7 +171,7 @@ in
     haskellPackages.greenclip
     redshift
     maim
-    flameshot
+    (flameshot.override { enableWlrSupport = true; })
     adwaita-icon-theme
     file-roller
 
@@ -207,7 +207,7 @@ in
     file
     pkgs-unstable.neovim
     vim
-    helix
+    inputs.helix.packages.${pkgs.system}.default
     killall
     unrar
     pkgs-unstable.yazi
@@ -223,7 +223,7 @@ in
     openssl
     jless
     inputs.zotimer.packages.${pkgs.system}.default
-    inputs.television.packages.${pkgs.system}.default
+    # inputs.television.packages.${pkgs.system}.default
 
     #### @DEVELOPMENT TOOLS ####
     pkgs-unstable.devenv
@@ -241,8 +241,8 @@ in
     git-lfs
 
     #### @PYTHON DEVELOPMENT ####
-    rye
-    python312
+    # rye
+    python313
     pkgs-unstable.ruff
     pkgs-unstable.ruff-lsp
     pyright
@@ -330,6 +330,7 @@ in
     mediainfo
 
     #### @GUI APPLICATIONS ####
+    (callPackage ./../../pkgs/toptracker.nix { })
     neovide
     evince
     yacreader
@@ -344,6 +345,7 @@ in
     xournalpp
     transmission_4-gtk
     telegram-desktop
+    inlyne
 
     #### @HARDWARE AND GRAPHICS ####
     glxinfo
@@ -384,7 +386,9 @@ in
     packages = with pkgs; [
       noto-fonts
       noto-fonts-emoji
+      noto-fonts-cjk-sans
       material-icons
+      symbola
       typestarFont
 
       # Popular monospace/programming fonts
@@ -407,8 +411,8 @@ in
       enable = true;
       defaultFonts = {
         monospace = [ "JetBrainsMono Nerd Font" ];
-        sansSerif = [ "Noto Sans" ];
-        serif = [ "Noto Serif" ];
+        sansSerif = [ "Noto Sans" "Symbola" ];
+        serif = [ "Noto Serif" "Symbola" ];
         emoji = [ "Noto Color Emoji" ];
       };
     };

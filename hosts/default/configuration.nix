@@ -185,6 +185,7 @@ in
     wl-clipboard
     socat
     clipse
+    rofi-wayland
 
     #### @CLI UTILITIES ####
     bat
@@ -329,6 +330,7 @@ in
     poppler
     imagemagick
     mediainfo
+    wf-recorder
 
     #### @GUI APPLICATIONS ####
     (callPackage ./../../pkgs/toptracker.nix { })

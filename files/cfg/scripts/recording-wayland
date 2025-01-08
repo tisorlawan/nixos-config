@@ -1,0 +1,112 @@
+#!/bin/sh
+
+updateicon() {
+	echo "$1" >/tmp/recordingicon
+	pkill -RTMIN+1 i3blocks
+}
+
+killrecording() {
+	recpid="$(cat /tmp/recordingpid)"
+	# kill with SIGTERM, allowing finishing touches.
+	kill -15 "$recpid"
+	rm -f /tmp/recordingpid
+	updateicon ""
+	pkill -RTMIN+1 i3blocks
+	exit
+}
+
+video() {
+	wf-recorder \
+		-f "$HOME/video_$(date '+%d-%m-%Y_%H:%M:%S').mp4" \
+		-c libx264 &
+
+	echo $! >/tmp/recordingpid
+	# updateicon " Video"
+}
+
+video_low() {
+	wf-recorder \
+		-f "$HOME/video_$(date '+%d-%m-%Y_%H:%M:%S').mp4" \
+		-c libx264 -p crf=28 &
+
+	echo $! >/tmp/recordingpid
+	# updateicon " Video"
+}
+
+video_area() {
+	geometry=$(slurp)
+	if [ -z "$geometry" ]; then
+		notify-send "Recording Cancelled" "No region was selected"
+		exit 1
+	fi
+
+	wf-recorder \
+		-g "$geometry" \
+		-f "$HOME/video_$(date '+%d-%m-%Y_%H:%M:%S').mp4" \
+		-c libx264 &
+
+	echo $! >/tmp/recordingpid
+	# updateicon " Video"
+}
+
+screencast() {
+	wf-recorder \
+		-f "$HOME/screencast_$(date '+%d-%m-%Y_%H:%M:%S').mp4" \
+		-c libx264 \
+		--audio \
+		-C flac &
+
+	echo $! >/tmp/recordingpid
+	# updateicon " Screencast"
+}
+
+screencast_low() {
+	wf-recorder \
+		-f "$HOME/screencast_$(date '+%d-%m-%Y_%H:%M:%S').mp4" \
+		-c libx264 -p crf=28 \
+		--audio \
+		-C aac -P b=128k &
+
+	echo $! >/tmp/recordingpid
+	# updateicon " Screencast"
+}
+
+audio() {
+	wf-recorder \
+		-f "$HOME/audio_$(date '+%d-%m-%Y_%H:%M:%S').mp3" \
+		--audio \
+		-C libmp3lame &
+
+	echo $! >/tmp/recordingpid
+	# updateicon " Audio"
+}
+
+askrecording() {
+	choice=$(printf "video\\nvideo_low\\nvideo_area\\nscreencast\\nscreencast_low\\naudio" |
+		rofi -i -dmenu -width 600 -lines 4 -columns 10 -p "Select recording style")
+	case "$choice" in
+	audio) audio ;;
+	screencast) screencast ;;
+	screencast_low) screencast_low ;;
+	video) video ;;
+	video_low) video_low ;;
+	video_area) video_area ;;
+	esac
+}
+
+asktoend() {
+	response=$(printf "Yes\\nNo" |
+		rofi -i -dmenu -width 370 -lines 2 -columns 10 -p "Recording still active. End recording?") &&
+		[ "$response" = "Yes" ] && killrecording
+}
+
+case "$1" in
+audio) audio ;;
+screencast) screencast ;;
+screencast_low) screencast_low ;;
+video) video ;;
+video_low) video_low ;;
+video_area) video_area ;;
+kill) killrecording ;;
+*) ([ -f /tmp/recordingpid ] && asktoend && exit) || askrecording ;;
+esac

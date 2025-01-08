@@ -125,6 +125,7 @@ in
     LIBVA_DRIVER_NAME = "iHD"; # Force intel-media-driver
     SSH_ASKPASS = ""; # disable ask pass UI
     # SSL_CERT_FILE = /etc/ssl/certs/ca-bundle.crt;
+    BAT_THEME = "gruvbox-dark";
 
     WLR_NO_HARDWARE_CURSORS = "1"; # If your cursor becomes invisible
     NIXOS_OZONE_WL = "1"; # Hint electron apps to use wayland

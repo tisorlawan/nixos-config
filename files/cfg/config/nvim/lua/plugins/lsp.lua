@@ -322,21 +322,22 @@ local plugins = {
     lazy = false,
     -- version = "v0.8.*",
     version = "*",
+    dependencies = {
+      { "rafamadriz/friendly-snippets" },
+    },
     opts = {
       completion = {
-        list = { selection = "auto_insert" },
-        accept = {
-          auto_brackets = {
-            enabled = true,
+        list = {
+          selection = {
+            preselect = true,
+            auto_insert = true,
           },
         },
-
+        accept = { auto_brackets = { enabled = true } },
         menu = {
-          enabled = true,
           border = "single",
           auto_show = true,
         },
-
         documentation = {
           auto_show = true,
           window = {
@@ -356,7 +357,6 @@ local plugins = {
         -- default = { "lsp", "path", "buffer" },
         -- default = { "buffer" },
       },
-
       appearance = {
         highlight_ns = vim.api.nvim_create_namespace("blink_cmp"),
         kind_icons = {

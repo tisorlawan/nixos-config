@@ -1,5 +1,6 @@
 set -x CARGO_TARGET_DIR "$HOME/.cargo_build_artifacts"
 set -x CARGO_REGISTRIES_CRATES_IO_PROTOCOL sparse
+#set -e CARGO_TARGET_DIR
 
 alias cb="cargo build"
 alias cbr="cargo build --release"

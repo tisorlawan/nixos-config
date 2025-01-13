@@ -5,7 +5,7 @@ return {
   },
   -- stylua: ignore
   keys = {
-    { "<leader>yy", function() require("yazi").yazi() end, desc = "Open the file manager", },
+    { "<C-space>", function() require("yazi").yazi() end, desc = "Open the file manager", },
     { "<leader>yw", "<cmd>Yazi cwd<cr>", desc = "Open the file manager in nvim's working directory", },
     { "<leader>yr", "<cmd>Yazi toggle<cr>", desc = "Resume the last yazi session", },
   },

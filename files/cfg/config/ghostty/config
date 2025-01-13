@@ -3,14 +3,14 @@ theme = "Kanagawa Wave"
 # font-family = "JetBrainsMono Nerd Font"
 font-family = "BlexMono Nerd Font Propo SemiBold"
 font-size = 14
-adjust-font-baseline=1
+adjust-font-baseline = 1
 adjust-cell-height = 4
 adjust-underline-position = 1
 
 window-decoration = false
 
-background = 141516
-background-opacity = 0.89
+background = 181818
+background-opacity = 0.93
 
 cursor-invert-fg-bg = true
 

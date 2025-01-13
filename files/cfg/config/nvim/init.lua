@@ -38,6 +38,7 @@ require("lazy").setup({
       require("plugins.numb"),
       require("plugins.noice"),
       require("plugins.nvim-lint"),
+      require("plugins.outline"),
       require("plugins.persistence"),
       require("plugins.scrolleof"),
       require("plugins.smartsplit"),

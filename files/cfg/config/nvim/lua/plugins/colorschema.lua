@@ -12,7 +12,7 @@ return {
         mellifluous = {
           neutral = true,
         },
-        colorset = "mellifluous", -- mellifluous, alduin, mountain, tender, kanagawa_dragon
+        colorset = "mountain", -- mellifluous, alduin, mountain, tender, kanagawa_dragon
         transparent_background = {
           enabled = vim.g.colorscheme,
         },

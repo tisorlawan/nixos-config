@@ -118,12 +118,14 @@ return {
         disabled_filetypes = { statusline = { "dashboard", "alpha", "ministarter", "snacks_dashboard" } },
       },
       sections = {
-        lualine_a = { {
-          "mode",
-          fmt = function(str)
-            return str:sub(1, 1)
-          end,
-        } },
+        lualine_a = {
+          {
+            "mode",
+            fmt = function(str)
+              return str:sub(1, 1)
+            end,
+          },
+        },
         lualine_b = { "branch" },
 
         lualine_c = {
@@ -211,9 +213,9 @@ return {
       format = "{kind_icon}{symbol.name:Normal}",
       hl_group = "lualine_c_normal",
     })
-    table.insert(opts.sections.lualine_c, {
-      symbols and symbols.get,
-    })
+    -- table.insert(opts.sections.lualine_c, {
+    --   symbols and symbols.get,
+    -- })
 
     return opts
   end,

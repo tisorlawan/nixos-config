@@ -255,6 +255,7 @@ in
     #### @LANGUAGES AND LSP ####
     go
     nodejs_22
+    pkgs-unstable.bun
     rustup
     sccache
     leptosfmt
@@ -296,6 +297,7 @@ in
     #### @DOCUMENT AND PDF TOOLS ####
     pdftk
     qpdf
+    wkhtmltopdf
     antiword
     poppler_utils
     xsv

@@ -14,4 +14,7 @@ background-opacity = 0.93
 
 cursor-invert-fg-bg = true
 
+clipboard-paste-protection = false
+confirm-close-surface = false
+
 # vim: ft=config

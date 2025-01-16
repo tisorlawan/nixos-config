@@ -79,15 +79,17 @@ local function setup_lsp_keymaps(buf)
     vim.keymap.set({ "n", "v" }, key, fn, { desc = desc, buffer = buf })
   end
 
+  -- using snacks.nvim
+  -- map("gd", vim.lsp.buf.definition, "Goto Definition")
+  -- map("gi", vim.lsp.buf.implementation, "Goto Implementation")
+  -- map("gy", vim.lsp.buf.type_definition, "Goto Type Definition")
+  -- map("gr", vim.lsp.buf.references, "Goto References")
+
   map("gD", vim.lsp.buf.declaration, "Goto Declaration")
-  map("gd", vim.lsp.buf.definition, "Goto Definition")
   map("gm", ":vsplit | lua vim.lsp.buf.definition()<cr>", "Goto Definition Vsplit")
   map("K", vim.lsp.buf.hover, "Hover")
-  map("gi", vim.lsp.buf.implementation, "Goto Implementation")
   map("<leader>k", vim.lsp.buf.signature_help, "Signature Help")
-  map("gy", vim.lsp.buf.type_definition, "Goto Type Definition")
   -- map("<leader>rn", vim.lsp.buf.rename, "Rename")
-  map("gr", vim.lsp.buf.references, "Goto References")
 
   -- map('<leader>lw', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Workspace Symbols')
   -- map('<leader>ld', require('telescope.builtin').lsp_document_symbols, 'Document Symbols')
@@ -292,18 +294,8 @@ local plugins = {
 
       local lspconfig = require("lspconfig")
       local handlers = vim.lsp.handlers
-      -- local border = {
-      --   { "🭽", "FloatBorder" },
-      --   { "▔", "FloatBorder" },
-      --   { "🭾", "FloatBorder" },
-      --   { "▕", "FloatBorder" },
-      --   { "🭿", "FloatBorder" },
-      --   { "▁", "FloatBorder" },
-      --   { "🭼", "FloatBorder" },
-      --   { "▏", "FloatBorder" },
-      -- }
-      -- handlers["textDocument/hover"] = vim.lsp.with(handlers.hover, { border = border })
-      -- handlers["textDocument/signatureHelp"] = vim.lsp.with(handlers.signature_help, { border = border })
+      handlers["textDocument/hover"] = vim.lsp.with(handlers.hover, { border = "single" })
+      handlers["textDocument/signatureHelp"] = vim.lsp.with(handlers.signature_help, { border = "single" })
 
       for _, sn in pairs(mason_lspserver) do
         if not utils.contains(servers_config_skip, sn) then

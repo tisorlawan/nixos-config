@@ -125,7 +125,7 @@ in
     LIBVA_DRIVER_NAME = "iHD"; # Force intel-media-driver
     SSH_ASKPASS = ""; # disable ask pass UI
     # SSL_CERT_FILE = /etc/ssl/certs/ca-bundle.crt;
-    BAT_THEME = "gruvbox-dark";
+    BAT_THEME = "base16";
 
     WLR_NO_HARDWARE_CURSORS = "1"; # If your cursor becomes invisible
     NIXOS_OZONE_WL = "1"; # Hint electron apps to use wayland
@@ -226,6 +226,7 @@ in
     jless
     inputs.zotimer.packages.${pkgs.system}.default
     # inputs.television.packages.${pkgs.system}.default
+    rlwrap
 
     #### @DEVELOPMENT TOOLS ####
     pkgs-unstable.devenv
@@ -268,7 +269,8 @@ in
     lua5_1
     lua-language-server
     luarocks
-    guile
+    guile # scheme
+    chicken # sheme
     marksman
     clang
     clang-tools
@@ -280,6 +282,7 @@ in
     cabal-install
     haskellPackages.cabal-fmt
     haskell-language-server
+    stack
     prettierd
     nil
     nixpkgs-fmt

@@ -1,6 +1,7 @@
 return {
   "folke/noice.nvim",
   event = "VeryLazy",
+  -- enabled = false,
   dependencies = {
     "MunifTanjim/nui.nvim",
     "rcarriga/nvim-notify",
@@ -117,6 +118,7 @@ return {
             { find = "No results for" },
             { find = "No information available" },
             { find = "Renamed" },
+            { find = "-32802" },
           },
         },
         opts = { skip = true },

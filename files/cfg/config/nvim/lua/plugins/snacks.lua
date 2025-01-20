@@ -8,7 +8,39 @@ return {
     quickfile = { enabled = true },
     statuscolumn = { enabled = true },
     words = { enabled = false },
-    terminal = { enabled = false },
+    terminal = {
+      enabled = true,
+      keys = {
+        q = "hide",
+        gf = function(self)
+          local f = vim.fn.findfile(vim.fn.expand("<cfile>"), "**")
+          if f == "" then
+            Snacks.notify.warn("No file under cursor")
+          else
+            self:hide()
+            vim.schedule(function()
+              vim.cmd("e " .. f)
+            end)
+          end
+        end,
+        term_normal = {
+          "<esc>",
+          function(self)
+            self.esc_timer = self.esc_timer or (vim.uv or vim.loop).new_timer()
+            if self.esc_timer:is_active() then
+              self.esc_timer:stop()
+              vim.cmd("stopinsert")
+            else
+              self.esc_timer:start(200, 0, function() end)
+              return "<esc>"
+            end
+          end,
+          mode = "t",
+          expr = true,
+          desc = "Double escape to normal mode",
+        },
+      },
+    },
     picker = {
       enabled = true,
       win = {
@@ -81,7 +113,28 @@ return {
     { "gI", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
     { "gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
     { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
+    { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Symbols" },
 
+    { "<leader>e", function() Snacks.picker.explorer({
+      win = {
+        list = {
+          keys = {
+            ["<BS>"] = "explorer_up",
+            ["a"] = "explorer_add",
+            ["d"] = "explorer_del",
+            ["f"] = "focus_input",
+            ["i"] = "toggle_ignored",
+            ["h"] = "toggle_hidden",
+            ["r"] = "explorer_rename",
+            ["c"] = "explorer_copy",
+            ["m"] = "explorer_move",
+            ["y"] = "explorer_yank",
+            ["<c-c>"] = "explorer_cd",
+            ["."] = "explorer_focus",
+          },
+        },
+      },
+    }) end, desc = "Explorer" },
     { "<leader>gc", function() Snacks.picker.git_log() end, desc = "Git Log" },
     { "<leader>gs", function() Snacks.picker.git_status() end, desc = "Git Status" },
     { '<leader>s"', function() Snacks.picker.registers() end, desc = "Registers" },

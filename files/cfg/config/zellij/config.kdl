@@ -5,10 +5,7 @@ keybinds clear-defaults=true {
         unbind "Ctrl s"
         unbind "Ctrl n"
 
-
         bind "Alt x" { SwitchToMode "Move"; }
-        // bind "Ctrl a" { SwitchToMode "Tmux"; }
-        bind "Alt r" { SwitchToMode "Resize"; }
         bind "Alt s" { SwitchToMode "entersearch"; }
 
         bind "Alt v" { EditScrollback; SwitchToMode "Normal"; }
@@ -80,6 +77,7 @@ keybinds clear-defaults=true {
     }
     scroll {
         bind "Alt s" { SwitchToMode "Normal"; }
+        bind "q" { SwitchToMode "Normal"; }
         bind "e" { EditScrollback; SwitchToMode "Normal"; }
         bind "s" { SwitchToMode "EnterSearch"; SearchInput 0; }
         bind "Ctrl c" { ScrollToBottom; SwitchToMode "Normal"; }
@@ -115,7 +113,7 @@ keybinds clear-defaults=true {
     }
     renametab {
         bind "Ctrl c" { SwitchToMode "Normal"; }
-        bind "Esc" { UndoRenameTab; SwitchToMode "Tab"; }
+        bind "Esc" { UndoRenameTab; SwitchToMode "Normal"; }
     }
     renamepane {
         bind "Ctrl c" { SwitchToMode "Normal"; }
@@ -164,12 +162,24 @@ keybinds clear-defaults=true {
         bind "d" { Detach; }
         bind "Space" { NextSwapLayout; }
         bind "x" { CloseFocus; SwitchToMode "Normal"; }
+
+        bind "1" { GoToTab 1; SwitchToMode "Normal"; }
+        bind "2" { GoToTab 2; SwitchToMode "Normal"; }
+        bind "3" { GoToTab 3; SwitchToMode "Normal"; }
+        bind "4" { GoToTab 4; SwitchToMode "Normal"; }
+        bind "5" { GoToTab 5; SwitchToMode "Normal"; }
+        bind "6" { GoToTab 6; SwitchToMode "Normal"; }
+        bind "7" { GoToTab 7; SwitchToMode "Normal"; }
+        bind "8" { GoToTab 8; SwitchToMode "Normal"; }
+        bind "9" { GoToTab 9; SwitchToMode "Normal"; }
     }
 
     shared {
+        bind "Alt a" { SwitchToMode "Tmux"; }
         bind "Alt ;" { SwitchToMode "Tab"; }
         bind "Alt t" { SwitchToMode "Session"; }
-		// bind "Alt g" { SwitchToMode "layout"; SwitchToMode "normal"; }
+        bind "Alt r" { SwitchToMode "Resize"; }
+        // bind "Alt g" { SwitchToMode "layout"; SwitchToMode "normal"; }
 
 
         bind "Alt l" { MoveFocus "Right"; }
@@ -179,6 +189,9 @@ keybinds clear-defaults=true {
 
         bind "Alt i" { NewPane "Down"; SwitchToMode "Normal"; }
         bind "Alt o" { NewPane "Right"; SwitchToMode "Normal"; }
+
+        bind "Alt Left" { MoveTab "Left"; }
+        bind "Alt Right" { MoveTab "Right"; }
 
         // bind "Alt e" { SwitchToMode "Pane"; }
 
@@ -193,18 +206,11 @@ keybinds clear-defaults=true {
         bind "Alt Shift z" {
             MessagePlugin "autolock" {payload "enable";};
         }
-
-        bind "Alt m" {
-            WriteChars "clear\n";
-            SwitchToMode "Normal";
-        }
     }
 
     shared_except "locked" {
         bind "Ctrl g" { SwitchToMode "Locked"; }
         bind "Ctrl q" { Quit; }
-        bind "Alt Left" { MoveTab "Left"; }
-        bind "Alt Right" { MoveTab "Right"; }
         // bind "Alt h" "Alt Left" { MoveFocusOrTab "Left"; }
         // bind "Alt l" "Alt Right" { MoveFocusOrTab "Right"; }
         // bind "Alt j" "Alt Down" { MoveFocus "Down"; }
@@ -213,35 +219,24 @@ keybinds clear-defaults=true {
         bind "Alt -" { Resize "Decrease"; }
         bind "Alt [" { PreviousSwapLayout; }
         bind "Alt ]" { NextSwapLayout; }
-
-
-        bind "Ctrl h" {
-            // MoveFocusOrTab "Left";
-            MoveFocus "Left";
-        }
-        bind "Ctrl l" {
-            // MoveFocusOrTab "Right";
-            MoveFocus "Right";
-        }
-        bind "Ctrl j" {
-            MoveFocus "Down";
-        }
-        bind "Ctrl k" {
-            MoveFocus "Up";
-        }
     }
+
     shared_except "normal" "locked" {
         bind "Enter" "Esc" { SwitchToMode "Normal"; }
     }
+
     shared_except "resize" "locked" {
         bind "Ctrl n" { SwitchToMode "Resize"; }
     }
+
     shared_except "scroll" "locked" {
         bind "Ctrl s" { SwitchToMode "Scroll"; }
     }
+
     shared_except "session" "locked" {
         bind "Alt f" { SwitchToMode "Session"; }
     }
+
     shared_except "tmux" "locked" {
         bind "Ctrl b" { SwitchToMode "Tmux"; }
     }

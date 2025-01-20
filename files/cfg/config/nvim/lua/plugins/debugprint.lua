@@ -13,7 +13,7 @@ return {
         textobj_below = "g?o",
         textobj_above = "g?O",
         toggle_comment_debug_prints = "",
-        delete_debug_prints = "",
+        delete_debug_prints = "g?d",
       },
       insert = {
         plain = "<C-G>p",

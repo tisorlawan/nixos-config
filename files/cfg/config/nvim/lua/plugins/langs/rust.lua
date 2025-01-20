@@ -5,9 +5,9 @@ vim.g.rustaceanvim = {
       ["rust-analyzer"] = {
         checkOnSave = true,
         ["check.command"] = "check",
-        -- ["cargo.extraEnv"] = {
-        --   ["RUSTFLAGS"] = "-C linker=clang -C link-arg=-fuse-ld=/run/current-system/sw/bin/mold",
-        -- },
+        ["cargo.extraEnv"] = {
+          ["RUSTFLAGS"] = "-C linker=clang -C link-arg=-fuse-ld=/run/current-system/sw/bin/mold",
+        },
       },
     },
   },

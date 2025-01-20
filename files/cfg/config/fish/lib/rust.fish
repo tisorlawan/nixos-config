@@ -12,4 +12,4 @@ alias cqr="cargo run -q --release"
 alias ct="cargo nextest run"
 alias ctr="cargo nextest run --release"
 alias cdo="cargo doc --open"
-alias ccc='cargo clippy --all-targets --all-features -- -D warnings -D clippy::pedantic -A clippy::must-use-candidate -D clippy::unwrap_used -A clippy::uninlined_format_args -A clippy::module_name_repetitions'
+alias ccc='cargo clippy --all-targets --all-features -- -D warnings -D clippy::pedantic -A clippy::must-use-candidate -D clippy::unwrap_used -A clippy::uninlined_format_args -A clippy::module_name_repetitions -A clippy::wildcard_imports -A clippy::too-many-lines'

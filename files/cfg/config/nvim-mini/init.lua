@@ -1,5 +1,6 @@
 require("options")
 require("keymaps")
+require("autocmds")
 
 local path_package = vim.fn.stdpath("data") .. "/site/"
 local mini_path = path_package .. "pack/deps/start/mini.nvim"
@@ -37,7 +38,7 @@ end)
 
 now(function()
   require("mini.files").setup()
-  vim.keymap.set("n", "<leader>e", function()
+  vim.keymap.set("n", "-", function()
     require("mini.files").open(vim.api.nvim_buf_get_name(0))
   end)
   vim.keymap.set("n", "<leader>E", function()
@@ -53,6 +54,7 @@ later(function()
   vim.keymap.set("n", "<leader>sg", function() require("mini.pick").builtin.grep_live({}) end)
 end)
 
+-- stylua: ignore
 later(function()
   -------------------------------------------------------------------
   add({
@@ -82,4 +84,49 @@ later(function()
   vim.keymap.set({ "x", "o" }, "x", "<Plug>(leap-forward-till)", { desc = "leap forward till" })
   vim.keymap.set({ "x", "o" }, "X", "<Plug>(leap-backward-till)", { desc = "leap backward till" })
   vim.keymap.set({ "n", "x", "o" }, "gs", "<Plug>(leap-from-window)", { desc = "leap from window" })
+  --------------------------------------------------------------------
+  add({
+    source = "mrjones2014/smart-splits.nvim",
+  })
+  local s = require("smart-splits")
+  s.setup({
+    ignored_filetypes = { "nofile", "quickfix", "qf", "prompt" },
+    ignored_buftypes = { "nofile" },
+  })
+
+  vim.keymap.set({ "n" }, "<C-h>", function() require("smart-splits").move_cursor_left() end)
+  vim.keymap.set({ "n" }, "<C-k>", function() require("smart-splits").move_cursor_up() end)
+  vim.keymap.set({ "n" }, "<C-j>", function() require("smart-splits").move_cursor_down() end)
+  vim.keymap.set({ "n" }, "<C-l>", function() require("smart-splits").move_cursor_right() end)
+  --------------------------------------------------------------------
+  add({
+    source = "otavioschwanck/arrow.nvim",
+  })
+  require("arrow").setup({
+    show_icons = true,
+    leader_key = ";",
+    buffer_leader_key = "m",
+  })
+  vim.keymap.set("n", "H", require("arrow.persist").previous)
+  vim.keymap.set("n", "L", require("arrow.persist").next)
+  vim.keymap.set("n", "<M-1>", function() require("arrow.persist").go_to(1) end)
+  vim.keymap.set("n", "<M-2>", function() require("arrow.persist").go_to(2) end)
+  vim.keymap.set("n", "<M-3>", function() require("arrow.persist").go_to(3) end)
+  vim.keymap.set("n", "<leader>1", function() require("arrow.persist").go_to(1) end)
+  vim.keymap.set("n", "<leader>2", function() require("arrow.persist").go_to(2) end)
+  vim.keymap.set("n", "<leader>3", function() require("arrow.persist").go_to(3) end)
+  vim.keymap.set("n", "<leader>4", function() require("arrow.persist").go_to(4) end)
+  --------------------------------------------------------------------
+  add({ source = "tisorlawan/vim-asterisk" })
+  vim.cmd([[
+      map *   <Plug>(asterisk-z*)
+      map #   <Plug>(asterisk-z#)
+      map g*  <Plug>(asterisk-gz*)
+      map g#  <Plug>(asterisk-gz#)
+      map z*  <Plug>(asterisk-*)
+      map gz* <Plug>(asterisk-z*)
+      map z#  <Plug>(asterisk-#)
+      map gz# <Plug>(asterisk-z#)
+      let g:asterisk#keeppos = 1
+    ]])
 end)

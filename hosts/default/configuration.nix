@@ -227,6 +227,7 @@ in
     inputs.zotimer.packages.${pkgs.system}.default
     # inputs.television.packages.${pkgs.system}.default
     rlwrap
+    slides
 
     #### @DEVELOPMENT TOOLS ####
     pkgs-unstable.devenv

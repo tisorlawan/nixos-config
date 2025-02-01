@@ -23,7 +23,9 @@ vim.api.nvim_create_autocmd("FileType", {
 
 return {
   "mrcjkb/rustaceanvim",
-  version = "^5", -- Recommended
-  lazy = false, -- This plugin is already lazy
-  enabled = true,
+  version = "^5",
+  ft = { "rust", "toml" },
+  dependencies = {
+    "folke/noice.nvim",
+  },
 }

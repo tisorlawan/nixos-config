@@ -3,13 +3,13 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/9d3ae807";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/799ba5bf";
     home-manager.url = "github:nix-community/home-manager/release-24.11";
 
     # iwmenu.url = "github:e-tho/iwmenu";
     zotimer.url = "github:tisorlawan/zotimer";
     # television.url = "github:alexpasmantier/television";
-    ghostty.url = "github:ghostty-org/ghostty";
+    ghostty.url = "github:ghostty-org/ghostty/v1.1.0";
     helix.url = "github:helix-editor/helix/25.01";
   };
 

@@ -243,6 +243,8 @@ in
     pkg-config
     gitFull
     git-lfs
+    protobuf
+    lldb
 
     #### @PYTHON DEVELOPMENT ####
     # rye

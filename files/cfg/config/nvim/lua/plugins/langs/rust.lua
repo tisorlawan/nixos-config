@@ -3,7 +3,7 @@ vim.g.rustaceanvim = {
   server = {
     default_settings = {
       ["rust-analyzer"] = {
-        checkOnSave = true,
+        checkOnSave = false,
         ["check.command"] = "check",
         ["cargo.extraEnv"] = {
           ["RUSTFLAGS"] = "-C linker=clang -C link-arg=-fuse-ld=/run/current-system/sw/bin/mold",

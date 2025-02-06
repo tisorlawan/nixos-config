@@ -57,12 +57,12 @@ return {
       enabled = true,
       preset = {
         header = [[
-        ██╗      █████╗ ███████╗██╗   ██╗██╗   ██╗██╗███╗   ███╗          Z
-        ██║     ██╔══██╗╚══███╔╝╚██╗ ██╔╝██║   ██║██║████╗ ████║      Z    
-        ██║     ███████║  ███╔╝  ╚████╔╝ ██║   ██║██║██╔████╔██║   z       
-        ██║     ██╔══██║ ███╔╝    ╚██╔╝  ╚██╗ ██╔╝██║██║╚██╔╝██║ z         
-        ███████╗██║  ██║███████╗   ██║    ╚████╔╝ ██║██║ ╚═╝ ██║           
-        ╚══════╝╚═╝  ╚═╝╚══════╝   ╚═╝     ╚═══╝  ╚═╝╚═╝     ╚═╝           
+███╗   ██╗███████╗ ██████╗ ██╗   ██╗██╗███╗   ███╗
+████╗  ██║██╔════╝██╔═══██╗██║   ██║██║████╗ ████║
+██╔██╗ ██║█████╗  ██║   ██║██║   ██║██║██╔████╔██║
+██║╚██╗██║██╔══╝  ██║   ██║╚██╗ ██╔╝██║██║╚██╔╝██║
+██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║
+╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝
  ]],
         -- stylua: ignore
         ---@type snacks.dashboard.Item[]
@@ -99,7 +99,29 @@ return {
     { "[[", function() Snacks.words.jump(-vim.v.count1) end, desc = "Prev Reference", mode = { "n", "t" } },
 
     -- Pickers
-    { "<c-n>", function () Snacks.picker.buffers() end, desc = "Buffers"},
+    -- { "<c-n>", function () Snacks.picker.buffers() end, desc = "Buffers"},
+    {
+      "<c-n>",
+      function()
+        Snacks.picker.buffers({
+          format = "buffer",
+          hidden = false,
+          unloaded = true,
+          current = false,
+          sort_lastused = true,
+          win = {
+            input = {
+              keys = {
+                ["dd"] = "bufdelete",
+                ["<c-d>"] = { "bufdelete", mode = { "n", "i" } },
+              },
+            },
+            list = { keys = { ["dd"] = "bufdelete" } },
+          },
+        })
+      end,
+      desc = "Buffers"
+    },
     { "<c-p>", function () Snacks.picker.files() end, desc = "Files" },
     { "<leader>fg", function () Snacks.picker.git_files() end, desc = "Git Files" },
     { "<leader>fr", function () Snacks.picker.recent() end, desc = "Recent" },
@@ -112,8 +134,8 @@ return {
     { "gr", function() Snacks.picker.lsp_references() end, nowait = true, desc = "References" },
     { "gI", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
     { "gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
-    { "<leader>ss", function() Snacks.picker.lsp_symbols() end, desc = "LSP Symbols" },
-    { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Symbols" },
+    { "<leader>ss", function() Snacks.picker.lsp_symbols({layout = {preset = "vscode", preview = "main"}}) end, desc = "LSP Symbols" },
+    { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Symbols Workspace" },
 
     { "<leader>e", function() Snacks.picker.explorer({
       win = {

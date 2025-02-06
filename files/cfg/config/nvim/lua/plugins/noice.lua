@@ -107,6 +107,7 @@ return {
             { find = "No more references" },
             { find = "LSP: no handler for" },
             { find = "Toggling hidden files" },
+            { find = "No results found for" },
           },
         },
         view = "mini",

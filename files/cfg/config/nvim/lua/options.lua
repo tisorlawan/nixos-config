@@ -41,12 +41,12 @@ vim.opt.virtualedit = "block" -- Allow cursor to move where there is no text in 
 vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 
 vim.opt.foldlevel = 99
-if vim.fn.has("nvim-0.10") == 1 then
-  vim.opt.smoothscroll = true
-  vim.opt.foldexpr = "v:lua.require'lazyvim.util'.ui.foldexpr()"
-  vim.opt.foldmethod = "expr"
-  vim.opt.foldtext = ""
-else
-  vim.opt.foldmethod = "indent"
-  vim.opt.foldtext = "v:lua.require'lazyvim.util'.ui.foldtext()"
-end
+-- if vim.fn.has("nvim-0.10") == 1 then
+--   vim.opt.smoothscroll = true
+--   vim.opt.foldexpr = "v:lua.require'lazyvim.util'.ui.foldexpr()"
+--   vim.opt.foldmethod = "expr"
+--   vim.opt.foldtext = ""
+-- else
+--   vim.opt.foldmethod = "indent"
+--   vim.opt.foldtext = "v:lua.require'lazyvim.util'.ui.foldtext()"
+-- end

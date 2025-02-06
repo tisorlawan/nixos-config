@@ -147,11 +147,10 @@ in
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     #### @TERMINAL EMULATORS ####
-    # alacritty
     starship
     atuin
     alacritty
-    inputs.ghostty.packages.${pkgs.system}.default
+    pkgs-unstable.ghostty
 
     #### @DESKTOP ENVIRONMENT ####
     dunst
@@ -225,7 +224,6 @@ in
     openssl
     jless
     inputs.zotimer.packages.${pkgs.system}.default
-    # inputs.television.packages.${pkgs.system}.default
     rlwrap
     slides
 

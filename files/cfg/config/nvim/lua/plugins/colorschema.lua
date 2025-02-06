@@ -39,7 +39,7 @@ return {
     "ramojus/mellifluous.nvim",
     config = function()
       require("mellifluous").setup({
-        colorset = "mountain", -- mellifluous, alduin, mountain, tender, kanagawa_dragon
+        colorset = "kanagawa_dragon", -- mellifluous, alduin, mountain, tender, kanagawa_dragon
         transparent_background = {
           enabled = vim.g.colorscheme,
         },

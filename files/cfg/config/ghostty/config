@@ -10,7 +10,7 @@ adjust-underline-position = 1
 window-decoration = false
 
 background = 181818
-background-opacity = 0.93
+background-opacity = 0.89
 
 cursor-invert-fg-bg = true
 

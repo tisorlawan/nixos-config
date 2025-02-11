@@ -83,7 +83,7 @@ return {
         if term.direction == "horizontal" then
           return 17
         elseif term.direction == "vertical" then
-          return vim.o.columns * 0.4
+          return vim.o.columns * 0.41
         end
       end,
       auto_scroll = true,
@@ -157,6 +157,21 @@ return {
 
           -- Run bacon in vertical split
           local cmd = string.format("TermExec cmd='bacon' direction=vertical")
+          vim.cmd(cmd)
+
+          -- Return focus to original window
+          vim.api.nvim_set_current_win(current_win)
+        end, {
+          buffer = true,
+          desc = "Run 'bacon'",
+        })
+        vim.keymap.set("n", "<leader><cr>", function()
+          -- Store current window and buffer
+          local current_win = vim.api.nvim_get_current_win()
+          local current_buf = vim.api.nvim_get_current_buf()
+
+          -- Run bacon in vertical split
+          local cmd = string.format("TermExec cmd='cargo test' direction=vertical")
           vim.cmd(cmd)
 
           -- Return focus to original window

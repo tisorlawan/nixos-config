@@ -2,9 +2,9 @@ theme = "Kanagawa Wave"
 # theme = "tokyonight"
 # font-family = "JetBrainsMono Nerd Font"
 font-family = "BlexMono Nerd Font Propo SemiBold"
-font-size = 14
+font-size = 13
 adjust-font-baseline = 1
-adjust-cell-height = 4
+adjust-cell-height = 2
 adjust-underline-position = 1
 
 window-decoration = false

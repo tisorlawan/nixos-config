@@ -261,7 +261,7 @@ local plugins = {
             },
           },
         },
-        enabled = false,
+        enabled = true,
         ft = { "rust", "python", "lua", "go" },
       },
     },
@@ -328,7 +328,7 @@ local plugins = {
         accept = { auto_brackets = { enabled = true } },
         menu = {
           border = "single",
-          auto_show = true,
+          auto_show = false,
         },
         documentation = {
           auto_show = true,

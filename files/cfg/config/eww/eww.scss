@@ -4,13 +4,12 @@ $shadow: rgba(#000000,0.3);
 $border_col: rgba(#cccccc,0.18);
 $best_so_far: rgba(255,255,255,0.1); 
 $padding: 0px 15px 0px 15px;
-$font_size: 14px;
+$font_size: 12px;
 $border_radius: 1px;
 
 .bar {
-  background-color: rgba(#181818, 0.35);
+  background-color: rgba(#181818, 0.58);
   font-family: "JetBrainsMono Nerd Font";
-  // background-color: transparent;
 }
 
 .main-container {
@@ -26,29 +25,29 @@ $border_radius: 1px;
   padding-left:  6px;
   padding-right: 6px;
   padding-top: 3px;
-  font-size: 13px;
+  font-size: $font_size;
   box-shadow: 2px 2px 2px $shadow;
-  min-height: 25px;	
+  min-height: 19px;
 }
 .workspaces label {
-  margin: 0 1px;  /* Add spacing between workspace numbers */
+  margin: 0 1px;
 }
 .workspace-active {
   background-color: #89b4fa;  // Active workspace (bright blue)
   color: #1e1e2e;  // Dark text
-  padding: 2px 6px;
-  border-radius: 12px;
+  padding: 0px 4px;
+  border-radius: 10px;
 }
 .workspace-visible {
   background-color: #313244;  // Empty workspace (darker gray)
   color: #cdd6f4;  // Light text
-  padding: 2px 6px;
+  padding: 0px 4px;
   border-radius: 12px;
 }
 .workspace-empty {
   background-color: #313244;  // Empty workspace (darker gray)
   color: #cdd6f4;  // Light text
-  padding: 2px 6px;
+  padding: 0px 4px;
   border-radius: 12px;
 }
 
@@ -63,6 +62,7 @@ $border_radius: 1px;
   border: 1px solid $border_col;
   box-shadow: 2px 2px 2px $shadow;
   text-shadow: none;
+  min-height: 19px;
 }
 
 .label {
@@ -71,11 +71,12 @@ $border_radius: 1px;
   color: $fg;
   font-size: $font_size;
   padding: $padding;
-  padding-top: 4px;
+  padding-top: 2px;
   // margin-bottom: 10px;
   border: 1px solid $border_col;
   box-shadow: 2px 2px 2px $shadow;
   text-shadow: none;
+  min-height: 19px;
 }
 
 .systrays {
@@ -83,11 +84,11 @@ $border_radius: 1px;
   border-radius: $border_radius;
   color: $fg;
   font-size: $font_size;
-  padding: 5px 15px 5px 14px; 
-  // margin-bottom: 10px;
+  padding: $padding;
   border: 1px solid $border_col;
   box-shadow: 2px 2px 2px $shadow;
   text-shadow: none;
+  min-height: 19px;
 }
 
 .system {
@@ -113,13 +114,13 @@ $border_radius: 1px;
   color: $fg;
   font-size: $font_size;
   padding: $padding;
-  padding-top: 4px;
+  padding-top: 2px;
   padding-bottom: 0px;
   border: 1px solid $border_col;
   box-shadow: 2px 2px 2px $shadow;
   text-shadow: none;
-  min-width: 250px;	
-  font-size: $font_size;
+  min-width: 220px;
+  min-height: 20px;
 }
 
 .wifi-container {

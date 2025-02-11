@@ -64,6 +64,14 @@ return {
 ██║ ╚████║███████╗╚██████╔╝ ╚████╔╝ ██║██║ ╚═╝ ██║
 ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝
  ]],
+--         header = [[
+-- ████████╗██╗███████╗ ██████╗
+--  ╚══██╔══╝██║██╔════╝██╔═══██╗
+--     ██║   ██║███████╗██║   ██║
+--     ██║   ██║╚════██║██║   ██║
+--     ██║   ██║███████║╚██████╔╝
+--     ╚═╝   ╚═╝╚══════╝ ╚═════╝
+--  ]],
         -- stylua: ignore
         ---@type snacks.dashboard.Item[]
         keys = {
@@ -122,7 +130,7 @@ return {
       end,
       desc = "Buffers"
     },
-    { "<c-p>", function () Snacks.picker.files() end, desc = "Files" },
+    { "<c-p>", function () Snacks.picker.files({ layout = { preview = false } }) end, desc = "Files" },
     { "<leader>fg", function () Snacks.picker.git_files() end, desc = "Git Files" },
     { "<leader>fr", function () Snacks.picker.recent() end, desc = "Recent" },
     { "<leader>sb", function() Snacks.picker.lines() end, desc = "Buffer Lines" },

@@ -30,18 +30,18 @@
       (button :class "mybox" 
         :onclick "pavucontrol"
         "${volume}")
-      (system)
-      (button :class "label" (literal :content "${battery}"))
-      (button :class "network" 
-        :valign "center" 
-        :onclick "toggle-ew wifi_selector" 
-        (literal :content "${wifi}"))
-      (systray :icon-size 16 
-        :class "systrays"
-        :orientation "h"
-        :spacing 16)
-      (button :class "mybox" :onclick "${home_dir}/toggle_clipboard_manager.py" 
-        "${time}")
+    (system)
+    (button :class "label" (literal :content "${battery}"))
+     (button :class "network" 
+       :valign "center" 
+       :onclick "toggle-ew wifi_selector" 
+       (literal :content "${wifi}"))
+    (systray :icon-size 15
+      :class "systrays"
+      :orientation "h"
+      :spacing 16)
+     (button :class "mybox" :onclick "${home_dir}/toggle_clipboard_manager.py" 
+       "${time}")
     )
   )
 )

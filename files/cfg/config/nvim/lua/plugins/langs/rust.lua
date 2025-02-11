@@ -1,5 +1,7 @@
 vim.g.rustaceanvim = {
-  tools = {},
+  tools = {
+    enable_clippy = false,
+  },
   server = {
     default_settings = {
       ["rust-analyzer"] = {

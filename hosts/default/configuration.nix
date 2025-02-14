@@ -151,6 +151,7 @@ in
     atuin
     alacritty
     pkgs-unstable.ghostty
+    nushell
 
     #### @DESKTOP ENVIRONMENT ####
     dunst

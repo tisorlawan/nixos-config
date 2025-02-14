@@ -83,6 +83,9 @@ local config = {
     servers = { "bashls" },
     formatters = { "shfmt" },
   },
+  tailwindcss = {
+    servers = { "tailwindcss" },
+  },
   templ = {
     formatters = { "templ" },
     servers = { "templ" },

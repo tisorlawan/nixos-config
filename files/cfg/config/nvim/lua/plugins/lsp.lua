@@ -316,6 +316,7 @@ local plugins = {
     version = "*",
     dependencies = {
       { "rafamadriz/friendly-snippets" },
+      { "js-everts/cmp-tailwind-colors" },
     },
     opts = {
       completion = {
@@ -328,7 +329,19 @@ local plugins = {
         accept = { auto_brackets = { enabled = true } },
         menu = {
           border = "single",
-          auto_show = false,
+          auto_show = true,
+          -- components = {
+          --   kind_icon = {
+          --     ellipsis = false,
+          --     text = function(ctx)
+          --       return ctx.kind_icon
+          --     end,
+          --     highlight = function(ctx)
+          --       return (require("blink.cmp.completion.windows.render.tailwind").get_hl(ctx) or "BlinkCmpKind")
+          --         .. ctx.kind
+          --     end,
+          --   },
+          -- },
         },
         documentation = {
           auto_show = true,

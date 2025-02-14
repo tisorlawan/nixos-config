@@ -2,12 +2,14 @@ return {
   "folke/snacks.nvim",
   lazy = false,
   opts = {
-    styles = {},
+    styles = { zen = { minimal = true } },
     bigfile = { enabled = true },
     notifier = { enabled = true },
     quickfile = { enabled = true },
     statuscolumn = { enabled = true },
     words = { enabled = false },
+    -- explorer = { enabled = false },
+    scope = { enabled = true },
     terminal = {
       enabled = true,
       keys = {
@@ -145,7 +147,7 @@ return {
     { "<leader>ss", function() Snacks.picker.lsp_symbols({layout = {preset = "vscode", preview = "main"}}) end, desc = "LSP Symbols" },
     { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Symbols Workspace" },
 
-    { "<leader>e", function() Snacks.picker.explorer({
+    { "<leader>e", function() Snacks.explorer({
       win = {
         list = {
           keys = {
@@ -159,7 +161,8 @@ return {
             ["c"] = "explorer_copy",
             ["m"] = "explorer_move",
             ["y"] = "explorer_yank",
-            ["<c-c>"] = "explorer_cd",
+            ["<c-c>"] = "tcd",
+            ["<leader>/"] = "picker_grep",
             ["."] = "explorer_focus",
           },
         },
@@ -182,6 +185,8 @@ return {
     { "<leader>uC", function() Snacks.picker.colorschemes() end, desc = "Colorschemes" },
     { "<leader>sM", function() Snacks.picker.man() end, desc = "Man Pages" },
     { "<leader>sm", function() Snacks.picker.marks() end, desc = "Marks" },
+
+    -- { "<leader>zz", function() Snacks.zen.zoom() end, desc = "Zoom Toggle" },
   },
   init = function()
     vim.api.nvim_create_autocmd("User", {

@@ -35,7 +35,7 @@ return {
         map("n", "<leader>hS", gs.stage_buffer, "Stage Buffer")
         map("n", "<leader>hu", gs.undo_stage_hunk, "Undo Stage Hunk")
         map("n", "<leader>hR", gs.reset_buffer, "Reset Buffer")
-        map("n", "<leader>hp", gs.preview_hunk_inline, "Preview Hunk Inline")
+        map("n", "<leader>hp", gs.preview_hunk, "Preview Hunk Inline")
         map("n", "<c-q>", gs.preview_hunk_inline, "Preview Hunk Inline")
         map("n", "<leader>hb", function() gs.blame_line({ full = true }) end, "Blame Line")
         map("n", "<leader>hB", function() gs.blame() end, "Blame Buffer")

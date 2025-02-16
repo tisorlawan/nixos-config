@@ -40,11 +40,20 @@ map(
   ':let @+ = expand("%:p")<cr>:lua print("Copied path to: " .. vim.fn.expand("%:p"))<cr>',
   { desc = "Copy current file name and path", silent = true }
 )
+map("n", "<leader>pF", function()
+  print(vim.fn.expand("%:p"))
+end, { desc = "Print current file path", silent = true })
 map(
   "n",
   "<leader>pn",
   ':let @+ = expand("%:.")<cr>:lua print("Copied relative path: " .. vim.fn.expand("%:."))<cr>',
   { desc = "Copy current file path relative to cwd", silent = true }
+)
+map(
+  "n",
+  "<leader>pN",
+  ':let @+ = expand("%:t")<cr>:lua print("Copied file name: " .. vim.fn.expand("%:t"))<cr>',
+  { desc = "Copy file name", silent = true }
 )
 
 map("i", "<c-s>", "<esc>:update<cr>", { silent = true })

@@ -2,3 +2,4 @@ files/cfg/config/fish/lib/__secret.fish
 files/cfg/config/fish/lib/temporary.fish
 files/firefox-profiles
 *.backup
+history.txt

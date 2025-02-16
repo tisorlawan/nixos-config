@@ -98,7 +98,8 @@ in
     fish.enable = true;
     ssh.askPassword = "";
     nix-ld = { enable = true; libraries = [ ]; };
-    hyprland = { enable = true; xwayland.enable = true; };
+    # hyprland = { enable = true; xwayland.enable = true; package = pkgs-unstable.hyprland; };
+    hyprland = { enable = true; xwayland.enable = true; package = pkgs.hyprland; };
     steam = {
       enable = false;
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
@@ -140,7 +141,8 @@ in
     description = "Agung Baptiso Sorlawan";
     extraGroups = [ "networkmanager" "wheel" "audio" "video" ];
     packages = [ ];
-    shell = pkgs.fish;
+    shell = pkgs-unstable.nushell;
+    # shell = pkgs.fish;
   };
 
   # List packages installed in system profile. To search, run:
@@ -151,7 +153,7 @@ in
     atuin
     alacritty
     pkgs-unstable.ghostty
-    nushell
+    pkgs-unstable.nushell
 
     #### @DESKTOP ENVIRONMENT ####
     dunst
@@ -186,6 +188,7 @@ in
     socat
     clipse
     rofi-wayland
+    cliphist
 
     #### @CLI UTILITIES ####
     bat
@@ -209,6 +212,8 @@ in
     file
     pkgs-unstable.neovim
     vim
+    emacs
+    clisp
     inputs.helix.packages.${pkgs.system}.default
     killall
     unrar
@@ -227,6 +232,7 @@ in
     inputs.zotimer.packages.${pkgs.system}.default
     rlwrap
     slides
+    carapace # completion
 
     #### @DEVELOPMENT TOOLS ####
     pkgs-unstable.devenv
@@ -244,6 +250,7 @@ in
     git-lfs
     protobuf
     lldb
+    pkgs-unstable.typst
 
     #### @PYTHON DEVELOPMENT ####
     # rye
@@ -271,8 +278,7 @@ in
     lua5_1
     lua-language-server
     luarocks
-    guile # scheme
-    chicken # sheme
+    racket
     marksman
     clang
     clang-tools
@@ -304,7 +310,7 @@ in
     qpdf
     wkhtmltopdf
     antiword
-    poppler_utils
+    # poppler_utils
     xsv
     jupyter-all
     ghostscript
@@ -343,6 +349,7 @@ in
     (callPackage ./../../pkgs/toptracker.nix { })
     neovide
     evince
+    sioyek
     yacreader
     foliate
     nautilus

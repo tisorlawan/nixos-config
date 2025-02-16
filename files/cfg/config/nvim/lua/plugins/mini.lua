@@ -12,7 +12,7 @@ return {
   end,
   config = function()
     ----------------------
-    require("mini.ai").setup()
+    -- require("mini.ai").setup()
 
     ----------------------
     require("mini.operators").setup({

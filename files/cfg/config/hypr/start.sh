@@ -3,5 +3,6 @@
 ~/.config/hypr/dynamic-borders.sh &
 # waybar &
 nm-applet &
-clipse -listen &
+# clipse -listen &
 redshift-gtk &
+wl-paste --watch cliphist store &

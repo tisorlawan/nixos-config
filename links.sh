@@ -36,6 +36,9 @@ ln -srf ./files/cfg/config/redshift ~/.config/redshift
 rm -rf ~/.config/wezterm
 ln -srf ./files/cfg/config/wezterm ~/.config/wezterm
 
+rm -rf ~/.config/nushell
+ln -srf ./files/cfg/config/nushell ~/.config/nushell
+
 rm -rf ~/.config/yazi
 ln -srf ./files/cfg/config/yazi ~/.config/yazi
 

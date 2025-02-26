@@ -16,8 +16,8 @@ return {
         delete_debug_prints = "g?d",
       },
       insert = {
-        plain = "<C-G>p",
-        variable = "<C-G>v",
+        plain = "<M-G>p",
+        variable = "<M-G>v",
       },
       visual = {
         variable_below = "g?v",

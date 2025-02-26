@@ -16,7 +16,9 @@ bspc desktop 3 -l monocle
 bspc desktop 4 -l monocle
 bspc desktop 5 -l monocle
 bspc desktop 6 -l monocle
+bspc desktop 7 -l monocle
 bspc desktop 8 -l monocle
+bspc desktop 9 -l monocle
 
 bspc config border_width 1
 bspc config window_gap 2
@@ -33,8 +35,13 @@ bspc rule -a Pavucontrol state=floating
 bspc rule -a mpv desktop='^6' focus=on follow=on
 bspc rule -a Nm-connection-editor state=floating focus=on follow=on
 
+# bspc config top_padding 25
+
 # bspc config external_rules_command "$(which bspwm-external-rules)"
 bspc config external_rules_command "$HOME/.scripts/bspwm-external-rules"
+
+# ~/.config/polybar/launch.sh bspwm gruvbox &
+eww open bar &
 
 # Autostart
 pkill -9 sxhkd 2>/dev/null | true
@@ -42,26 +49,18 @@ pkill -9 dunst 2>/dev/null | true
 pkill -9 greenclip 2>/dev/null | true
 pkill -9 picom 2>/dev/null | true
 
-~/.config/polybar/launch.sh bspwm gruvbox &
-
-# # Launch notification daemon
 dunst &
-#
-# # polkit agent
-# # if [[ ! $(pidof polkit-gnome-authentication-agent-1) ]]; then
-# # 	/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-# # fi
-
 sxhkd &
+
 if [[ -z $(pgrep nm-applet) ]]; then
-    nm-applet &
+	nm-applet --indicator &
 fi
 if [[ -z $(pgrep redshift) ]]; then
-    redshift-gtk &
+	redshift-gtk &
 fi
 
 greenclip daemon &
-# picom &
+picom &
 
 xset b off
 xset r rate 350 130

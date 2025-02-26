@@ -1,6 +1,6 @@
 $env.config.buffer_editor = "nvim"
 $env.config.show_banner = false
-$env.config.edit_mode = "vi"
+$env.config.edit_mode = "emacs"
 
 $env.config.history = {
     max_size: 500000
@@ -14,6 +14,23 @@ $env.config.completions.external = {
     max_results: 200
     completer: {|spans| carapace $spans.0 nushell ...$spans | from json }
 }
+
+$env.config = ($env.config | upsert keybindings [
+  {
+    name: move_to_line_start
+    modifier: control
+    keycode: left
+    mode: [emacs, vi_insert, vi_normal]
+    event: { edit: MoveToLineStart }
+  }
+  {
+    name: cut_to_end
+    modifier: control
+    keycode: char_v
+    mode: [emacs, vi_insert, vi_normal]
+    event: { edit: CutToEnd }
+  }
+])
 
 source ($nu.default-config-dir | path join "env.nu")
 source ($nu.default-config-dir | path join "paths.nu")

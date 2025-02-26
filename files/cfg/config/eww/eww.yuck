@@ -5,9 +5,8 @@
 (deflisten system `/home/$USER/.config/eww/scripts/system.py`)
 (deflisten volume `/home/$USER/.config/eww/scripts/volume.py`)
 (deflisten wifi `/home/$USER/.config/eww/scripts/wifi.py`)
-(deflisten workspaces `/home/$USER/.config/eww/scripts/workspaces.py`)
+(deflisten workspaces `/home/$USER/.config/eww/scripts/workspaces.sh`)
 (defpoll wifi_networks :interval "2s" `/home/$USER/.config/eww/scripts/wifi_selector.py`)
-
 
 (defwindow bar
   :monitor 0
@@ -17,7 +16,9 @@
     :height "8"
     :anchor "top center"
   )
-  :exclusive true	
+  :exclusive true
+  :wm-ignore false
+  :reserve (struts :distance "25px" :side "top")
   (box :class "main-container"
     (box 
       :class "workspaces" 
@@ -39,7 +40,7 @@
     (systray :icon-size 15
       :class "systrays"
       :orientation "h"
-      :spacing 16)
+      :spacing 15)
      (button :class "mybox" :onclick "${home_dir}/toggle_clipboard_manager.py" 
        "${time}")
     )
@@ -68,9 +69,8 @@
           (label :text "${system.mem_value}")))
       (box)
     )
-  ))
-
-
+  )
+)
 
 (defwindow wifi_selector
   :monitor 0

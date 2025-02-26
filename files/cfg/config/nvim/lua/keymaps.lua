@@ -1,6 +1,8 @@
 local utils = require("utils")
 local map = vim.keymap.set
 
+map({ "i" }, "<C-g>", "<ESC>")
+
 -- better up/down
 map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
 map({ "n", "x" }, "<Down>", "v:count == 0 ? 'gj' : 'j'", { desc = "Down", expr = true, silent = true })
@@ -56,9 +58,11 @@ map(
   { desc = "Copy file name", silent = true }
 )
 
-map("i", "<c-s>", "<esc>:update<cr>", { silent = true })
-map("n", "<c-s>", ":update<cr>", { silent = true })
-map("n", "<leader>w", ":update<cr>", { silent = true })
+map("i", "<c-x><c-s>", "<esc>:update<cr>", { silent = true })
+map("n", "<c-x><c-s>", ":update<cr>", { silent = true })
+
+map("n", "<leader>ww", ":update<cr>", { silent = true })
+map("n", "<leader>wq", ":wq<cr>", { silent = true })
 
 -- buffers
 map("n", "<leader>bD", "<cmd>:bd<cr>", { desc = "Delete Buffer and Window" })
@@ -101,3 +105,8 @@ map("i", "<m-h>", "<esc>I")
 map("i", "<m-l>", "<end>")
 
 map("v", "g<c-b>", "g<c-a>") -- create sequence of numbers
+
+vim.cmd([[
+inoremap kj <Esc>
+inoremap jk <Esc>
+]])

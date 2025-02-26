@@ -67,6 +67,19 @@ in
 
   nix.settings.trusted-users = [ "root" "tiso" ];
 
+  services.keyd = {
+    enable = true;
+    keyboards.default = {
+      settings = {
+        main = {
+          capslock = "leftcontrol";
+          escape = "capslock";
+          leftcontrol = "escape";
+        };
+      };
+    };
+  };
+
   services = {
     gvfs.enable = true;
     udisks2.enable = true;
@@ -86,20 +99,21 @@ in
     xserver = {
       enable = true;
       # desktopManager.gnome.enable = true;
-      # desktopManager.xfce.enable = true;
+      desktopManager.xfce.enable = true;
       windowManager.bspwm.enable = true;
-      xkb = { layout = "us"; variant = ""; options = "caps:swapescape"; };
+      # xkb = { layout = "us"; variant = ""; options = "caps:swapescape"; };
     };
     displayManager.sddm.enable = true;
     locate = { enable = true; package = pkgs.mlocate; localuser = null; };
   };
 
   programs = {
+    direnv.enable = true;
     fish.enable = true;
     ssh.askPassword = "";
     nix-ld = { enable = true; libraries = [ ]; };
     # hyprland = { enable = true; xwayland.enable = true; package = pkgs-unstable.hyprland; };
-    hyprland = { enable = true; xwayland.enable = true; package = pkgs.hyprland; };
+    # hyprland = { enable = false; xwayland.enable = true; package = pkgs.hyprland; };
     steam = {
       enable = false;
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
@@ -129,7 +143,7 @@ in
     BAT_THEME = "base16";
 
     WLR_NO_HARDWARE_CURSORS = "1"; # If your cursor becomes invisible
-    NIXOS_OZONE_WL = "1"; # Hint electron apps to use wayland
+    # NIXOS_OZONE_WL = "1"; # Hint electron apps to use wayland
 
     WLAN_IFACE = "wlp0s20f3";
     SXHKD_SHELL = "/bin/sh";
@@ -141,8 +155,8 @@ in
     description = "Agung Baptiso Sorlawan";
     extraGroups = [ "networkmanager" "wheel" "audio" "video" ];
     packages = [ ];
-    shell = pkgs-unstable.nushell;
-    # shell = pkgs.fish;
+    # shell = pkgs-unstable.nushell;
+    shell = pkgs.fish;
   };
 
   # List packages installed in system profile. To search, run:
@@ -160,8 +174,8 @@ in
     libinput
     libnotify
     picom
-    polybar
-    polybar-pulseaudio-control
+    # polybar
+    # polybar-pulseaudio-control
     xdotool
     xclip
     xdg-user-dirs
@@ -177,18 +191,18 @@ in
     (flameshot.override { enableWlrSupport = true; })
     adwaita-icon-theme
     file-roller
+    eww
+    rofi-wayland
 
     #### @WAYLAND SPECIFIC ####
-    grim
-    hyprpaper
-    slurp
-    eww
-    wofi
-    wl-clipboard
-    socat
-    clipse
-    rofi-wayland
-    cliphist
+    # grim
+    # slurp
+    # hyprpaper
+    # wofi
+    # wl-clipboard
+    # socat
+    # clipse
+    # cliphist
 
     #### @CLI UTILITIES ####
     bat
@@ -201,8 +215,8 @@ in
     ripgrep
     lazygit
     fzf
-    skim
-    htop
+    # skim
+    # htop
     btop
     tmux
     zellij
@@ -212,7 +226,7 @@ in
     file
     pkgs-unstable.neovim
     vim
-    emacs
+    emacs-gtk
     clisp
     inputs.helix.packages.${pkgs.system}.default
     killall
@@ -233,6 +247,7 @@ in
     rlwrap
     slides
     carapace # completion
+    keyd
 
     #### @DEVELOPMENT TOOLS ####
     pkgs-unstable.devenv
@@ -267,13 +282,13 @@ in
     nodejs_22
     pkgs-unstable.bun
     rustup
-    sccache
-    leptosfmt
+    # sccache
+    # leptosfmt
     pkgs-unstable.zig
     pkgs-unstable.zls
     pkgs-unstable.beam.packages.erlang_27.elixir_1_17
     pkgs-unstable.elixir-ls
-    livebook
+    # livebook
     stylua
     lua5_1
     lua-language-server
@@ -302,8 +317,8 @@ in
     sqlite
     litecli
     docker
-    kubectl
-    k9s
+    # kubectl
+    # k9s
 
     #### @DOCUMENT AND PDF TOOLS ####
     pdftk
@@ -314,11 +329,21 @@ in
     xsv
     jupyter-all
     ghostscript
-    texliveSmall
+    (texlive.combine {
+      inherit (texlive)
+        scheme-medium# Base TeX Live scheme
+        wrapfig# For text wrapping around figures
+        capt-of# For captions outside floats
+        # rotating         # For rotating text and figures
+        hyperref# For hyperlinks
+        ulem# For underlining
+        # amsmath amssymb  # For mathematical formulas
+        ;
+    })
 
     #### @SYSTEM UTILITIES ####
     trashy
-    trunk
+    # trunk
     cocogitto
     mold
     google-cloud-sdk
@@ -327,8 +352,8 @@ in
     rsync
     inotify-tools
     sbcl
-    php
-    php82Packages.composer
+    # php
+    # php82Packages.composer
     ngrok
 
     #### @MEDIA TOOLS ####
@@ -343,7 +368,7 @@ in
     poppler
     imagemagick
     mediainfo
-    wf-recorder
+    # wf-recorder
 
     #### @GUI APPLICATIONS ####
     (callPackage ./../../pkgs/toptracker.nix { })
@@ -351,7 +376,7 @@ in
     evince
     sioyek
     yacreader
-    foliate
+    # foliate
     nautilus
     pcmanfm
     pkgs-unstable.google-chrome

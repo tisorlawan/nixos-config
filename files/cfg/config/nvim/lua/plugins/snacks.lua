@@ -132,10 +132,35 @@ return {
       end,
       desc = "Buffers"
     },
+
+    {
+      "<leader>fb",
+      function()
+        Snacks.picker.buffers({
+          format = "buffer",
+          hidden = false,
+          unloaded = true,
+          current = false,
+          sort_lastused = true,
+          win = {
+            input = {
+              keys = {
+                ["dd"] = "bufdelete",
+                ["<c-d>"] = { "bufdelete", mode = { "n", "i" } },
+              },
+            },
+            list = { keys = { ["dd"] = "bufdelete" } },
+          },
+        })
+      end,
+      desc = "Buffers"
+    },
     { "<c-p>", function () Snacks.picker.files({ layout = { preview = false } }) end, desc = "Files" },
+    { "<leader>ff", function () Snacks.picker.files({ layout = { preview = false } }) end, desc = "Files" },
     { "<leader>fg", function () Snacks.picker.git_files() end, desc = "Git Files" },
     { "<leader>fr", function () Snacks.picker.recent() end, desc = "Recent" },
     { "<leader>sb", function() Snacks.picker.lines() end, desc = "Buffer Lines" },
+    { "<c-s>", function() Snacks.picker.lines() end, desc = "Buffer Lines" },
     { "<leader>sB", function() Snacks.picker.grep_buffers() end, desc = "Grep Open Buffers" },
     { "<leader>sg", function() Snacks.picker.grep() end, desc = "Grep" },
     { "<leader>sw", function() Snacks.picker.grep_word() end, desc = "Visual selection or word", mode = { "n", "x" } },

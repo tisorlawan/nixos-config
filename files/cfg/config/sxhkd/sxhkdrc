@@ -1,17 +1,13 @@
-# Sxhkd
-super + Escape
-	pkill -USR1 -x sxhkd && notify-send "Reload sxhkd success"
-
 # Menu
 {alt, super} + space
 	rofi -show {run, drun} -matching fuzzy
 
 # Terminal
 super + Return
-	alacritty
+	ghostty
 
 super + shift + Return
-	wezterm-gui
+	alacritty
 
 # Lock
 super + shift + 9
@@ -23,7 +19,7 @@ XF86Audio{Lower,Raise}Volume
 XF86AudioMute
 	/home/tiso/.scripts/alsa-toggle-mute
 XF86AudioMicMute
-	amixer set Capture toggle && amixer get Capture | grep '\[off\]' && notify-send "MIC switched OFF" || notify-send "MIC switched ON"
+	amixer set Capture toggle
 
 XF86MonBrightness{Up,Down}
 	brightnessctl set 5%{+,-}
@@ -40,7 +36,7 @@ super + control + {p, o}
 	/home/tiso/.scripts/touchpad-{enable,disable}
 
 # Greenclip
-super + backslash
+super + 8
 	rofi -modi "clipboard:greenclip print" -show clipboard -run-command '{cmd}'
 
 # Redshift
@@ -91,12 +87,12 @@ super + m
 	bspc desktop -l next
 
 # send the newest marked node to the newest preselected node
-super + y
-	bspc node newest.marked.local -n newest.!automatic.local
+# super + y
+# 	bspc node newest.marked.local -n newest.!automatic.local
 
 # swap the current node and the biggest node
-super + g
-	bspc node -s biggest
+# super + g
+# 	bspc node -s biggest
 
 #
 # state/flags
@@ -162,25 +158,12 @@ super + ctrl + space
 super + ctrl + shift + space
 	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
 
-#
-# move/resize
-#
-
-# expand a window by moving one of its side outward
-super + alt + {h,j,k,l}
-	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
-
-# contract a window by moving one of its side inward
-super + alt + shift + {h,j,k,l}
-	bspc node -z {right -20 0,top 0 20,bottom 0 -20,left 20 0}
-
-# move a floating window
+# move float
 super + {Left,Down,Up,Right}
 	bspc node -v {-20 0,0 20,0 -20,20 0}
 
 # resize float
-super + n : {h,j,k,l}
+super + shift + {Left,Down,Up,Right}
     bspwm-resize-float expand {west,south,north,east} 50
-
-super + shift + n : {h,j,k,l}
+super + alt + {Left,Down,Up,Right}
     bspwm-resize-float contract {east,north,south,west} 50

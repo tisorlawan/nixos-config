@@ -83,7 +83,7 @@ def main():
     while True:
         try:
             sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            server_address = f'{os.environ.get("XDG_RUNTIME_DIR", "/tmp")}/hypr/{os.environ.get("HYPRLAND_INSTANCE_SIGNATURE", "")}/.socket2.sock'
+            server_address = f"{os.environ.get('XDG_RUNTIME_DIR', '/tmp')}/hypr/{os.environ.get('HYPRLAND_INSTANCE_SIGNATURE', '')}/.socket2.sock"
             sock.connect(server_address)
 
             while True:

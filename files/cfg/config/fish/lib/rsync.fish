@@ -1,1 +1,0 @@
-alias r="rsync -avzP"

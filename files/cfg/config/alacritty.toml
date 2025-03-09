@@ -19,7 +19,7 @@ family = "BlexMono Nerd Font Propo SemiBold" # IBM Plex Mono
 # family = "Liberation Mono" # Liberation Mono
 
 [font]
-size = 14
+size = 12
 
 [font.glyph_offset]
 x = 0

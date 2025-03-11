@@ -227,7 +227,7 @@ in
     pkgs-unstable.neovim
     vim
     emacs-gtk
-    clisp
+    sbcl
     inputs.helix.packages.${pkgs.system}.default
     killall
     unrar
@@ -351,7 +351,6 @@ in
     neofetch
     rsync
     inotify-tools
-    sbcl
     # php
     # php82Packages.composer
     ngrok

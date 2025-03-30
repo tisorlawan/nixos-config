@@ -8,6 +8,7 @@ alias rgu="rg -uuu -g '!static' -g '!.venv' -g '!node_modules'"
 alias r="rsync -avzP"
 alias kvpn="sudo python ~/Prosa/projects/kominfo/vm/connect-vpn.py"
 alias zbr="zig build run"
+alias y="yazi"
 
 
 ##-- DOCKER --##

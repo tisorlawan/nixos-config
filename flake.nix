@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/e3e32b64";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/6607cf78";
     home-manager.url = "github:nix-community/home-manager/release-24.11";
 
     # iwmenu.url = "github:e-tho/iwmenu";

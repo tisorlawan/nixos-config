@@ -108,14 +108,14 @@ in
   };
 
   programs = {
-    direnv.enable = true;
+    direnv.enable = false;
     fish.enable = true;
     ssh.askPassword = "";
     nix-ld = { enable = true; libraries = [ ]; };
     # hyprland = { enable = true; xwayland.enable = true; package = pkgs-unstable.hyprland; };
     # hyprland = { enable = false; xwayland.enable = true; package = pkgs.hyprland; };
     steam = {
-      enable = false;
+      enable = true;
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
       dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
       localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
@@ -205,6 +205,7 @@ in
     # cliphist
 
     #### @CLI UTILITIES ####
+    pkgs-unstable.uutils-coreutils-noprefix
     bat
     delta
     difftastic
@@ -379,6 +380,7 @@ in
     nautilus
     pcmanfm
     pkgs-unstable.google-chrome
+    brave
     libreoffice
     postman
     firefox

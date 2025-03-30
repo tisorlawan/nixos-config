@@ -48,7 +48,9 @@ pkill -9 sxhkd 2>/dev/null | true
 pkill -9 dunst 2>/dev/null | true
 pkill -9 greenclip 2>/dev/null | true
 pkill -9 picom 2>/dev/null | true
+pkill -9 blueman-applet 2>/dev/null | true
 
+blueman-applet &
 dunst &
 sxhkd &
 

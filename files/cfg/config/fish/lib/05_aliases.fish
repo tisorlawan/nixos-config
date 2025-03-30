@@ -8,6 +8,7 @@ alias rgu="rg -uuu -g '!static' -g '!.venv' -g '!node_modules'"
 alias r="rsync -avzP"
 alias kvpn="sudo python ~/Prosa/projects/kominfo/vm/connect-vpn.py"
 alias zbr="zig build run"
+alias y="yazi"
 
 
 ##-- DOCKER --##
@@ -66,5 +67,7 @@ alias ccc='cargo clippy --all-targets --all-features -- -D warnings -D clippy::p
 ##-- YT-DLP --##
 alias yd="yt-dlp"
 alias ydv="yt-dlp -f 'bv*[height<=1080][ext=mp4]+ba/b' --no-playlist"
+alias ydv720="yt-dlp -f 'bv*[height<=720][ext=mp4]+ba/b' --no-playlist"
+alias ydv720compat="yt-dlp -f '230+233' --no-playlist --no-playlist"
 alias ydp="yt-dlp -f 'bv*[height<=1080][ext=mp4]+ba/b' -o '%(playlist_index)s [%(playlist_id)s]  - %(title)s.%(ext)s'"
 alias yda="yt-dlp -f '[ext=mp4]+ba/b' --extract-audio --no-playlist"

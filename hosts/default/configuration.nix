@@ -35,6 +35,10 @@ in
       ];
     };
     pulseaudio.enable = false;
+    bluetooth = {
+      enable = true;
+      powerOnBoot = true;
+    };
   };
 
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -67,20 +71,11 @@ in
 
   nix.settings.trusted-users = [ "root" "tiso" ];
 
-  services.keyd = {
-    enable = true;
-    keyboards.default = {
-      settings = {
-        main = {
-          capslock = "leftcontrol";
-          escape = "capslock";
-          leftcontrol = "escape";
-        };
-      };
-    };
-  };
 
   services = {
+    blueman = {
+      enable = true;
+    };
     gvfs.enable = true;
     udisks2.enable = true;
     libinput = { enable = true; touchpad.tappingDragLock = false; };
@@ -104,18 +99,30 @@ in
       # xkb = { layout = "us"; variant = ""; options = "caps:swapescape"; };
     };
     displayManager.sddm.enable = true;
+    keyd = {
+      enable = true;
+      keyboards.default = {
+        settings = {
+          main = {
+            capslock = "leftcontrol";
+            escape = "capslock";
+            leftcontrol = "escape";
+          };
+        };
+      };
+    };
     locate = { enable = true; package = pkgs.mlocate; localuser = null; };
   };
 
   programs = {
-    direnv.enable = true;
+    direnv.enable = false;
     fish.enable = true;
     ssh.askPassword = "";
     nix-ld = { enable = true; libraries = [ ]; };
     # hyprland = { enable = true; xwayland.enable = true; package = pkgs-unstable.hyprland; };
     # hyprland = { enable = false; xwayland.enable = true; package = pkgs.hyprland; };
     steam = {
-      enable = false;
+      enable = true;
       remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
       dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
       localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
@@ -205,6 +212,7 @@ in
     # cliphist
 
     #### @CLI UTILITIES ####
+    pkgs-unstable.uutils-coreutils-noprefix
     bat
     delta
     difftastic
@@ -354,6 +362,7 @@ in
     # php
     # php82Packages.composer
     ngrok
+    jmtpfs
 
     #### @MEDIA TOOLS ####
     mpv
@@ -379,6 +388,7 @@ in
     nautilus
     pcmanfm
     pkgs-unstable.google-chrome
+    brave
     libreoffice
     postman
     firefox

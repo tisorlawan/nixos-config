@@ -232,7 +232,8 @@ in
     atool
     curl
     file
-    pkgs-unstable.neovim
+    # pkgs-unstable.neovim
+    neovim
     vim
     emacs-gtk
     sbcl
@@ -318,6 +319,7 @@ in
     nil
     nixpkgs-fmt
     biome
+    wabt
 
     #### @DATABASES AND SERVICES ####
     redis
@@ -393,7 +395,7 @@ in
     postman
     firefox
     zoom-us
-    xournalpp
+    pkgs-unstable.xournalpp
     transmission_4-gtk
     telegram-desktop
     inlyne

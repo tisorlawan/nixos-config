@@ -365,6 +365,7 @@ in
     # php82Packages.composer
     ngrok
     jmtpfs
+    gnome-disk-utility
 
     #### @MEDIA TOOLS ####
     mpv
@@ -399,6 +400,7 @@ in
     transmission_4-gtk
     telegram-desktop
     inlyne
+    obsidian
 
     #### @HARDWARE AND GRAPHICS ####
     glxinfo

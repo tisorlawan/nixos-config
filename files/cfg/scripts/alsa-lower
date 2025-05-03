@@ -1,3 +1,3 @@
 #!/bin/sh
 
-amixer -q sset Master 1%- && pkill -1 dwm-bar
+amixer -q sset Master 1%-

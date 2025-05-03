@@ -44,11 +44,24 @@ alias nnvim="NVIM_APPNAME=nvim2 nvim"
 alias p="python"
 alias a="source .venv/bin/activate.fish"
 alias d="deactivate"
+alias cdd="conda deactivate"
 function py_prefix
     python -c "import sys; print(sys.prefix)"
 end
 if type -q uv
     uv generate-shell-completion fish | source
+end
+function ci --argument-names env_name
+    # Source conda.fish to make conda commands available
+    if test -f "/home/agung-b-sorlawan/.miniconda3/etc/fish/conf.d/conda.fish"
+        source "/home/agung-b-sorlawan/.miniconda3/etc/fish/conf.d/conda.fish"
+    end
+
+    if test -n "$env_name"
+        conda activate $env_name
+    else
+        conda activate base
+    end
 end
 
 ##-- RUST --##

@@ -14,12 +14,15 @@ super + shift + 9
 	$HOME/.scripts/lock
 
 # Volume
-XF86Audio{Lower,Raise}Volume
-	$HOME/.scripts/alsa-{lower,raise}
+XF86AudioRaiseVolume
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+
+XF86AudioLowerVolume
+    wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-
 XF86AudioMute
-	$HOME/.scripts/alsa-toggle-mute
+    wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
+# Microphone mute for default audio source
 XF86AudioMicMute
-	amixer set Capture toggle
+    wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle
 
 XF86MonBrightness{Up,Down}
 	brightnessctl set 5%{+,-}

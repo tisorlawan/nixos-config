@@ -376,6 +376,7 @@ in
     pavucontrol
     pulseaudio
     alsa-utils
+    wireplumber
     poppler
     imagemagick
     mediainfo

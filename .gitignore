@@ -3,3 +3,4 @@ files/cfg/config/fish/lib/temporary.fish
 files/firefox-profiles
 *.backup
 history.txt
+repomix*

@@ -17,13 +17,13 @@ in
   # release notes.
   home.stateVersion = "24.11"; # Please read the comment before changing.
 
- nixpkgs.config.allowUnfreePredicate = pkg:
-   builtins.elem (pkgs.lib.getName pkg) [
-     # "zoom"
-     # "postman"
-     # "unrar"
+  nixpkgs.config.allowUnfreePredicate = pkg:
+    builtins.elem (pkgs.lib.getName pkg) [
+      # "zoom"
+      # "postman"
+      # "unrar"
       "symbola"
-   ];
+    ];
 
   home.packages = with pkgs; [
     starship
@@ -45,6 +45,7 @@ in
     xorg.xkill
     xorg.xdpyinfo
     xorg.xwininfo
+    xorg.xmodmap
     networkmanagerapplet
     sxhkd
     pkgs-unstable.haskellPackages.greenclip
@@ -55,6 +56,7 @@ in
     file-roller
     eww
     rofi
+    util-linux
 
     #### @CLI UTILITIES ####
     bat
@@ -76,7 +78,7 @@ in
     atool
     curl
     file
-    neovim
+    pkgs-unstable.neovim
     vim
     # emacs-gtk
     sbcl
@@ -101,7 +103,7 @@ in
     man-pages
     man-pages-posix
     tldr
-    # gcc
+    gcc
     gnumake
     cmake
     just
@@ -206,6 +208,7 @@ in
     ffmpegthumbnailer
     pavucontrol
     pulseaudio
+    wireplumber
     alsa-utils
     poppler
     imagemagick
@@ -318,7 +321,7 @@ in
   # or
   #
   #  /etc/profiles/per-user/agung-b-sorlawan/etc/profile.d/hm-session-vars.sh
-  #
+
   home.sessionVariables = {
     EDITOR = "nvim";
     WLAN_IFACE = "wlp0s20f3";

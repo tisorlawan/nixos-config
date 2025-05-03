@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/sh
 
 [ -f ~/.nix-profile/etc/profile.d/hm-session-vars.sh ] && . ~/.nix-profile/etc/profile.d/hm-session-vars.sh
 
@@ -45,23 +45,15 @@ bspc config external_rules_command "$HOME/.scripts/bspwm-external-rules"
 # ~/.config/polybar/launch.sh bspwm gruvbox &
 
 # Autostart
-pkill -9 sxhkd
 pkill -9 dunst 2>/dev/null | true
 pkill -9 greenclip 2>/dev/null | true
 pkill -9 picom 2>/dev/null | true
 # pkill -9 blueman-applet 2>/dev/null | true
 
 # blueman-applet &
-export SXHKD_SHELL=/bin/sh
-sleep 1 && sxhkd &
 dunst &
-
-if [[ -z $(pgrep nm-applet) ]]; then
-	nm-applet --indicator &
-fi
-if [[ -z $(pgrep redshift) ]]; then
-	redshift-gtk &
-fi
+nm-applet --indicator &
+redshift-gtk &
 
 greenclip daemon &
 picom 2>/dev/null &
@@ -76,3 +68,6 @@ for TOUCHPAD_ID in $(xinput list | grep -i Touchpad | grep -o 'id=[0-9]*' | cut 
 done
 
 eww open bar &
+
+export SXHKD_SHELL=/bin/sh
+(sleep 1 && ~/.config/bspwm/start_sxhkd.sh) &

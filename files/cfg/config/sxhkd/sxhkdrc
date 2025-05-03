@@ -11,13 +11,13 @@ super + shift + Return
 
 # Lock
 super + shift + 9
-	/home/tiso/.scripts/lock
+	$HOME/.scripts/lock
 
 # Volume
 XF86Audio{Lower,Raise}Volume
-	/home/tiso/.scripts/alsa-{lower,raise}
+	$HOME/.scripts/alsa-{lower,raise}
 XF86AudioMute
-	/home/tiso/.scripts/alsa-toggle-mute
+	$HOME/.scripts/alsa-toggle-mute
 XF86AudioMicMute
 	amixer set Capture toggle
 
@@ -26,14 +26,14 @@ XF86MonBrightness{Up,Down}
 
 # MPD / MPC
 XF86Audio{Play,Next,Prev}
-	/home/tiso/.scripts/mpc-{toggle,next,prev}
+	$HOME/.scripts/mpc-{toggle,next,prev}
 
 super + control + {Up, Right, Left, Down}
-	/home/tiso/.scripts/mpc-{toggle,next,prev,stop}
+	$HOME/.scripts/mpc-{toggle,next,prev,stop}
 
 # Touchpad
 super + control + {p, o}
-	/home/tiso/.scripts/touchpad-{enable,disable}
+	$HOME/.scripts/touchpad-{enable,disable}
 
 # Greenclip
 super + 8
@@ -41,35 +41,35 @@ super + 8
 
 # Redshift
 super + 5
-	/home/tiso/.scripts/toggle-redshift
+	$HOME/.scripts/toggle-redshift
 
 # Song and Playlist
 super + {semicolon, apostrophe}
-	/home/tiso/.scripts/{song,playlist}-switcher
+	$HOME/.scripts/{song,playlist}-switcher
 
 # Wallpaper
 super + {bracketleft, bracketright}
-	/home/tiso/.scripts/wallpaper-switcher {prev, next}
+	$HOME/.scripts/wallpaper-switcher {prev, next}
 
 # Notification
 super + y
-    /home/tiso/.scripts/close-notifications
+    $HOME/.scripts/close-notifications
 
 # Scratchbar
 super + u
-	tdrop -ma -w 700 -x 600 -h 500 -y 290 urxvt -e sh -c 'ncmpcpp -c /home/tiso/.config/ncmpcpp/config-albumart'
+	tdrop -ma -w 700 -x 600 -h 500 -y 290 urxvt -e sh -c 'ncmpcpp -c $HOME/.config/ncmpcpp/config-albumart'
 
 # Kill recording
 super + 7
-	/home/tiso/.scripts/killrecording
+	$HOME/.scripts/killrecording
 
 # Printscreen full
 Print
-	/home/tiso/.scripts/screenshot area
+	$HOME/.scripts/screenshot area
 
 # Printscreen full
 shift + Print
-	/home/tiso/.scripts/screenshot full
+	$HOME/.scripts/screenshot full
 
 
 #############################################

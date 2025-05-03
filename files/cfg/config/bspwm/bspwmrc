@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+[ -f ~/.nix-profile/etc/profile.d/hm-session-vars.sh ] && . ~/.nix-profile/etc/profile.d/hm-session-vars.sh
+
 feh --bg-scale ~/.images/background.jpg &
 
 xsetroot -cursor_name left_ptr
@@ -41,18 +43,18 @@ bspc rule -a Nm-connection-editor state=floating focus=on follow=on
 bspc config external_rules_command "$HOME/.scripts/bspwm-external-rules"
 
 # ~/.config/polybar/launch.sh bspwm gruvbox &
-eww open bar &
 
 # Autostart
-pkill -9 sxhkd 2>/dev/null | true
+pkill -9 sxhkd
 pkill -9 dunst 2>/dev/null | true
 pkill -9 greenclip 2>/dev/null | true
 pkill -9 picom 2>/dev/null | true
-pkill -9 blueman-applet 2>/dev/null | true
+# pkill -9 blueman-applet 2>/dev/null | true
 
-blueman-applet &
+# blueman-applet &
+export SXHKD_SHELL=/bin/sh
+sleep 1 && sxhkd &
 dunst &
-sxhkd &
 
 if [[ -z $(pgrep nm-applet) ]]; then
 	nm-applet --indicator &
@@ -62,7 +64,15 @@ if [[ -z $(pgrep redshift) ]]; then
 fi
 
 greenclip daemon &
-picom &
+picom 2>/dev/null &
 
 xset b off
 xset r rate 350 130
+
+# Enable tap-to-click for all touchpads
+for TOUCHPAD_ID in $(xinput list | grep -i Touchpad | grep -o 'id=[0-9]*' | cut -d= -f2); do
+    xinput set-prop "$TOUCHPAD_ID" "libinput Tapping Enabled" 1
+    xinput set-prop "$TOUCHPAD_ID" "libinput Natural Scrolling Enabled" 0
+done
+
+eww open bar &

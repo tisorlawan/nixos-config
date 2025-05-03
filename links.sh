@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+rm -rf ~/.config/nvim
+ln -srf files/cfg/config/nvim ~/.config/nvim
+
+rm -rf ~/.config/fish
+ln -srf files/cfg/config/fish ~/.config/fish
+
 rm -rf ~/.config/rofi
 ln -srf files/cfg/config/rofi ~/.config/rofi
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 function get_workspaces() {
 	# Read desktops into an array to handle names with spaces

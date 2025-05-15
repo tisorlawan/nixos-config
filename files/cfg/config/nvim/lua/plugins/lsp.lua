@@ -361,10 +361,20 @@ local plugins = {
       },
       signature = { enabled = false },
       sources = {
+        -- default = { "avante", "lsp", "path", "snippets", "buffer" },
         default = { "lsp", "path", "snippets", "buffer" },
         -- default = { "lsp", "path", "buffer" },
         -- default = { "buffer" },
       },
+      -- providers = {
+      --   avante = {
+      --     module = "blink-cmp-avante",
+      --     name = "Avante",
+      --     opts = {
+      --       -- options for blink-cmp-avante
+      --     },
+      --   },
+      -- },
       appearance = {
         highlight_ns = vim.api.nvim_create_namespace("blink_cmp"),
         kind_icons = {

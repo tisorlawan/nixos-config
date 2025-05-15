@@ -25,7 +25,6 @@ vim.api.nvim_create_autocmd("FileType", {
 
 return {
   "mrcjkb/rustaceanvim",
-  version = "^5",
   ft = { "rust", "toml" },
   dependencies = {
     "folke/noice.nvim",

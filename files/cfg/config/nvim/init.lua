@@ -12,6 +12,7 @@ require("options")
 require("lazy").setup({
   spec = {
     {
+      require("plugins.avante"),
       require("plugins.arrow"),
       require("plugins.asterisks"),
       require("plugins.autopairs"),
@@ -33,7 +34,7 @@ require("lazy").setup({
       require("plugins.lsp"),
       require("plugins.lualine"),
       require("plugins.mini"),
-      require("plugins.multicursor"),
+      -- require("plugins.multicursor"),
       require("plugins.neotree"),
       require("plugins.noice"),
       require("plugins.nvim-lint"),

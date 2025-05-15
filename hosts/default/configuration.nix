@@ -233,7 +233,7 @@ in
     curl
     file
     # pkgs-unstable.neovim
-    neovim
+    pkgs-unstable.neovim
     vim
     emacs-gtk
     sbcl

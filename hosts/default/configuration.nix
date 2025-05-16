@@ -275,6 +275,7 @@ in
     protobuf
     lldb
     pkgs-unstable.typst
+    fasm
 
     #### @PYTHON DEVELOPMENT ####
     # rye

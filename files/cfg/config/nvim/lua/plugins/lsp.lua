@@ -297,6 +297,12 @@ local plugins = {
       handlers["textDocument/hover"] = vim.lsp.with(handlers.hover, { border = "single" })
       handlers["textDocument/signatureHelp"] = vim.lsp.with(handlers.signature_help, { border = "single" })
 
+      -- vim.api.nvim_create_autocmd("CursorHold", {
+      --   callback = function()
+      --     vim.diagnostic.open_float(nil, { focusable = false, source = "if_many" })
+      --   end,
+      -- })
+
       for _, sn in pairs(mason_lspserver) do
         if not utils.contains(servers_config_skip, sn) then
           local c = config[sn]

@@ -1,18 +1,30 @@
 theme = "Kanagawa Wave"
-# theme = "tokyonight"
-# font-family = "JetBrainsMono Nerd Font"
+# # font-family = "JetBrainsMono Nerd Font"
 font-family = "BlexMono Nerd Font Propo SemiBold"
 font-size = 13
 adjust-font-baseline = 1
 adjust-cell-height = 2
 adjust-underline-position = 1
 
-window-decoration = false
+window-decoration = none
+window-padding-balance = true
+window-padding-x = 0
+window-padding-y = 0
+maximize = true
 
-background = 181818
-background-opacity = 0.89
+class = com.ghostty.tiso
+x11-instance-name = ghost
+window-padding-color = background
+gtk-single-instance = true
+adw-toolbar-style = flat
 
-cursor-invert-fg-bg = true
+
+gtk-titlebar-hide-when-maximized = true
+
+# background = 181818
+# background-opacity = 0.89
+#
+# cursor-invert-fg-bg = true
 
 clipboard-paste-protection = false
 confirm-close-surface = false

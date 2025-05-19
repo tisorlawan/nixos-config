@@ -1,7 +1,7 @@
 { config, pkgs, nixpkgs-unstable, ... }:
 
 let
-  pkgs-unstable = nixpkgs-unstable.legacyPackages.${pkgs.system};
+  pkgs-unstable = nixpkgs-unstable;
 in
 {
   home.username = "agung-b-sorlawan";
@@ -17,15 +17,9 @@ in
   # release notes.
   home.stateVersion = "24.11"; # Please read the comment before changing.
 
-  nixpkgs.config.allowUnfreePredicate = pkg:
-    builtins.elem (pkgs.lib.getName pkg) [
-      # "zoom"
-      # "postman"
-      # "unrar"
-      "symbola"
-    ];
 
   home.packages = with pkgs; [
+    pkgs-unstable.windsurf
     starship
     atuin
     (pkgs.callPackage ./alacritty { })
@@ -252,6 +246,8 @@ in
     cascadia-code
     inconsolata
     liberation_ttf
+
+    ngrok
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage

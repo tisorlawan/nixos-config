@@ -29,7 +29,7 @@ in
     dunst
     libinput
     libnotify
-    picom
+    (pkgs.callPackage ./picom { })
     # polybar
     # polybar-pulseaudio-control
     xdotool

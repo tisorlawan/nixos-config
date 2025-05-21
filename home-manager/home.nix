@@ -115,10 +115,15 @@ in
     # python313
     # ruff
     # ruff-lsp
-    pyright
+    # pyright
     virtualenv
     black
     isort
+    python312Packages.pytest
+    python312Packages.coverage
+    pre-commit
+    sonarlint-ls
+    poetry
 
     #### @LANGUAGES AND LSP ####
     go

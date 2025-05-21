@@ -21,10 +21,10 @@ adw-toolbar-style = flat
 
 gtk-titlebar-hide-when-maximized = true
 
-# background = 181818
-# background-opacity = 0.89
-#
-# cursor-invert-fg-bg = true
+background = 181818
+background-opacity = 0.89
+
+cursor-invert-fg-bg = true
 
 clipboard-paste-protection = false
 confirm-close-surface = false

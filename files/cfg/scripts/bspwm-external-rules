@@ -164,6 +164,16 @@ case "$class" in
 	exit
 	;;
 
+"Slack")
+	echo "desktop=7 follow=on"
+	exit
+	;;
+
+"slack")
+	echo "desktop=7 follow=on"
+	exit
+	;;
+
 "deadcells")
 	echo "desktop=9 state=floating"
 	exit 0

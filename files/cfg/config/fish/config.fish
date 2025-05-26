@@ -20,3 +20,5 @@ zoxide init fish | source
 starship init fish | source
 
 atuin init fish --disable-up-arrow | source
+
+set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME ; set -gx PATH $HOME/.cabal/bin $PATH /home/agung-b-sorlawan/.ghcup/bin # ghcup-env

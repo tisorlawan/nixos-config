@@ -135,15 +135,24 @@ local function setup_diagnostic()
   vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "next diagnostic" })
   vim.keymap.set("n", "<leader>cd", vim.diagnostic.open_float, { desc = "Line Diagnostics" })
 
-  local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
-  for type, icon in pairs(signs) do
-    local hl = "DiagnosticSign" .. type
-    vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
-  end
+  -- local signs = { Error = "󰅚 ", Warn = "󰀪 ", Hint = "󰌶 ", Info = " " }
+  -- for type, icon in pairs(signs) do
+  --   local hl = "DiagnosticSign" .. type
+  --   vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+  -- end
 
   vim.diagnostic.config({
     virtual_text = false,
-    signs = true,
+    signs = { 
+        active = true,
+        text = {
+          [vim.diagnostic.severity.ERROR] = "󰅚 ",
+          [vim.diagnostic.severity.WARN]  = "󰀪 ",
+          [vim.diagnostic.severity.HINT]  = "󰌶 ",
+          [vim.diagnostic.severity.INFO]  = " ",
+        },
+    },
+
     underline = false,
     update_in_insert = false,
     severity_sort = true,

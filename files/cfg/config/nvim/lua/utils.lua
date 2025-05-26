@@ -101,13 +101,14 @@ function M.buf_set_keymap_add_colon()
 end
 
 function M.is_nixos()
-  if M.os_exec("uname") == "Linux" then
-    local release_name = M.os_exec("cat /etc/os-release | grep '^NAME=' | cut -d'=' -f2")
-    if release_name == "NixOS" then
-      return true
-    end
-    return false
-  end
+  return true
+  -- if M.os_exec("uname") == "Linux" then
+  --   local release_name = M.os_exec("cat /etc/os-release | grep '^NAME=' | cut -d'=' -f2")
+  --   if release_name == "NixOS" then
+  --     return true
+  --   end
+  --   return false
+  -- end
 end
 
 function M.remove_item_from_array(table, item)

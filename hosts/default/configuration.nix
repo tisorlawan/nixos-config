@@ -403,6 +403,7 @@ in
     telegram-desktop
     inlyne
     obsidian
+    slack
 
     #### @HARDWARE AND GRAPHICS ####
     glxinfo

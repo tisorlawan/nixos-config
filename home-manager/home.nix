@@ -113,9 +113,9 @@ in
     #### @PYTHON DEVELOPMENT ####
     # rye
     # python313
-    # ruff
-    # ruff-lsp
-    # pyright
+    ruff
+    ruff-lsp
+    pyright
     virtualenv
     black
     isort

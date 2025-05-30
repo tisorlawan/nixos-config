@@ -39,7 +39,6 @@ end
 return {
   "nvim-neo-tree/neo-tree.nvim",
   branch = "v3.x",
-  enabled = false,
   keys = {
     {
       "<Leader>e",
@@ -83,21 +82,21 @@ return {
           highlight = "NeoTreeFileIcon",
         },
 
-        git_status = {
-          symbols = {
-            -- Change type
-            added = "",
-            modified = "",
-            deleted = "",
-            renamed = "",
-            -- Status type
-            untracked = "",
-            ignored = "",
-            unstaged = "",
-            staged = "",
-            conflict = "",
-          },
-        },
+        -- git_status = {
+        --   symbols = {
+        --     -- Change type
+        --     added = "",
+        --     modified = "",
+        --     deleted = "",
+        --     renamed = "",
+        --     -- Status type
+        --     untracked = "",
+        --     ignored = "",
+        --     unstaged = "",
+        --     staged = "",
+        --     conflict = "",
+        --   },
+        -- },
       },
     }
 

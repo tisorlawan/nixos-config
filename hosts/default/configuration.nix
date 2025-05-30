@@ -16,7 +16,7 @@ in
 {
   imports = [ ./hardware-configuration.nix ];
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nixpkgs.config.allowUnfree = true;
+  # nixpkgs.config.allowUnfree = true;
   home-manager.backupFileExtension = "backup";
 
   # Bootloader.
@@ -111,7 +111,7 @@ in
         };
       };
     };
-    locate = { enable = true; package = pkgs.mlocate; localuser = null; };
+    locate = { enable = true; package = pkgs.mlocate; };
   };
 
   programs = {
@@ -281,7 +281,6 @@ in
     # rye
     python313
     pkgs-unstable.ruff
-    pkgs-unstable.ruff-lsp
     pyright
     virtualenv
     black
@@ -337,7 +336,7 @@ in
     wkhtmltopdf
     antiword
     # poppler_utils
-    xsv
+    xan
     jupyter-all
     ghostscript
     (texlive.combine {
@@ -450,7 +449,8 @@ in
       typestarFont
 
       # Popular monospace/programming fonts
-      (nerdfonts.override { fonts = [ "JetBrainsMono" "IBMPlexMono" "CascadiaCode" ]; })
+      nerd-fonts.jetbrains-mono
+      nerd-fonts.blex-mono
       fira-code # Fira Code (with ligatures)
       hack-font # Hack
       source-code-pro # Adobe Source Code Pro

@@ -4,7 +4,13 @@ return {
   opts = {
     styles = { zen = { minimal = true } },
     bigfile = { enabled = true },
-    notifier = { enabled = true },
+    notifier = {
+      enabled = true,
+      folds = {
+        open = true, -- show open fold icons
+        git_hl = false, -- use Git Signs hl for fold icons
+      },
+    },
     quickfile = { enabled = true },
     statuscolumn = { enabled = true },
     words = { enabled = false },
@@ -172,27 +178,27 @@ return {
     { "<leader>ss", function() Snacks.picker.lsp_symbols({layout = {preset = "vscode", preview = "main"}}) end, desc = "LSP Symbols" },
     { "<leader>sS", function() Snacks.picker.lsp_workspace_symbols() end, desc = "LSP Symbols Workspace" },
 
-    { "<leader>e", function() Snacks.explorer({
-      win = {
-        list = {
-          keys = {
-            ["<BS>"] = "explorer_up",
-            ["a"] = "explorer_add",
-            ["d"] = "explorer_del",
-            ["f"] = "focus_input",
-            ["i"] = "toggle_ignored",
-            ["h"] = "toggle_hidden",
-            ["r"] = "explorer_rename",
-            ["c"] = "explorer_copy",
-            ["m"] = "explorer_move",
-            ["y"] = "explorer_yank",
-            ["<c-c>"] = "tcd",
-            ["<leader>/"] = "picker_grep",
-            ["."] = "explorer_focus",
-          },
-        },
-      },
-    }) end, desc = "Explorer" },
+    -- { "<leader>e", function() Snacks.explorer({
+    --   win = {
+    --     list = {
+    --       keys = {
+    --         ["<BS>"] = "explorer_up",
+    --         ["a"] = "explorer_add",
+    --         ["d"] = "explorer_del",
+    --         ["f"] = "focus_input",
+    --         ["i"] = "toggle_ignored",
+    --         ["h"] = "toggle_hidden",
+    --         ["r"] = "explorer_rename",
+    --         ["c"] = "explorer_copy",
+    --         ["m"] = "explorer_move",
+    --         ["y"] = "explorer_yank",
+    --         ["<c-c>"] = "tcd",
+    --         ["<leader>/"] = "picker_grep",
+    --         ["."] = "explorer_focus",
+    --       },
+    --     },
+    --   },
+    -- }) end, desc = "Explorer" },
     { "<leader>gc", function() Snacks.picker.git_log() end, desc = "Git Log" },
     { "<leader>gs", function() Snacks.picker.git_status() end, desc = "Git Status" },
     { '<leader>s"', function() Snacks.picker.registers() end, desc = "Registers" },

@@ -61,8 +61,8 @@ map(
 map("i", "<c-x><c-s>", "<esc>:update<cr>", { silent = true })
 map("n", "<c-x><c-s>", ":update<cr>", { silent = true })
 
-map("n", "<leader>ww", ":update<cr>", { silent = true })
-map("n", "<leader>wq", ":wq<cr>", { silent = true })
+map("n", "<leader>w", ":update<cr>", { silent = true })
+map("n", "<leader>Q", ":wq<cr>", { silent = true })
 
 -- buffers
 map("n", "<leader>bD", "<cmd>:bd<cr>", { desc = "Delete Buffer and Window" })

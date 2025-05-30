@@ -22,11 +22,15 @@ adw-toolbar-style = flat
 gtk-titlebar-hide-when-maximized = true
 
 background = 181818
-background-opacity = 0.89
+# background-opacity = 0.89
 
 cursor-invert-fg-bg = true
 
 clipboard-paste-protection = false
 confirm-close-surface = false
 
+keybind = all:alt+one=unbind
+keybind = all:alt+two=unbind
+keybind = all:alt+three=unbind
+keybind = all:alt+four=unbind
 # vim: ft=config

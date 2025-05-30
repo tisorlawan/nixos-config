@@ -15,6 +15,8 @@ function M.close_diagnostics()
         vim.cmd("bdelete")
       elseif vim.bo.filetype == "toggleterm" then
         vim.cmd("close")
+      elseif vim.bo.filetype == "neo-tree-popup" then
+        vim.cmd("close")
       end
     end)
   end

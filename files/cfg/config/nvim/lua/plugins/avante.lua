@@ -9,6 +9,9 @@ return {
     aihubmix = {
       model = "gemini-2.5-flash-preview-04-17-nothink",
     },
+    hints = {
+      enabled = false,
+    },
   },
   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
   build = "make",

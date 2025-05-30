@@ -114,7 +114,6 @@ in
     # rye
     # python313
     ruff
-    ruff-lsp
     pyright
     virtualenv
     black
@@ -243,8 +242,9 @@ in
     material-icons
     symbola
     # typestarFont # Note: Ensure this package exists in your nixpkgs; it may be custom or from a specific source
-    nerd-fonts.jetbrains-mono
-    nerd-fonts.blex-mono
+    # nerd-fonts.jetbrains-mono
+    # nerd-fonts.blex-mono
+    (nerdfonts.override { fonts = [ "JetBrainsMono" "IBMPlexMono" "CascadiaCode" ]; })
     fira-code
     hack-font
     source-code-pro

@@ -1,4 +1,4 @@
-{ config, pkgs, nixpkgs-unstable, ... }:
+{ pkgs, nixpkgs-unstable, ... }:
 
 let
   pkgs-unstable = nixpkgs-unstable;
@@ -222,10 +222,11 @@ in
     pcmanfm
     # pkgs-unstable.google-chrome
     brave
-    libreoffice
+    # libreoffice
     # postman
     # firefox
-    # zoom-us
+    # (pkgs.callPackage ./zoom-us { })
+    (pkgs.callPackage ./zoom-us { nixpkgs-unstable = nixpkgs-unstable; })
     pkgs-unstable.xournalpp
     # transmission_4-gtk
     telegram-desktop
@@ -244,6 +245,7 @@ in
     # typestarFont # Note: Ensure this package exists in your nixpkgs; it may be custom or from a specific source
     # nerd-fonts.jetbrains-mono
     # nerd-fonts.blex-mono
+    # cascadia-code
     (nerdfonts.override { fonts = [ "JetBrainsMono" "IBMPlexMono" "CascadiaCode" ]; })
     fira-code
     hack-font

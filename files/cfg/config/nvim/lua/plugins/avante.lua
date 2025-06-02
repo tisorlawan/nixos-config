@@ -6,8 +6,10 @@ return {
     -- add any opts here
     -- for example
     provider = "aihubmix",
-    aihubmix = {
-      model = "gemini-2.5-flash-preview-04-17-nothink",
+    providers = {
+      aihubmix = {
+        model = "gemini-2.5-flash-preview-04-17-nothink",
+      },
     },
     hints = {
       enabled = false,

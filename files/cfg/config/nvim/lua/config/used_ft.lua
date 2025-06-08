@@ -72,7 +72,7 @@ local config = {
   },
   python = {
     formatters = { "ruff_format", "ruff_organize_imports" },
-    servers = { "pyright" },
+    servers = { "pyright", "ruff" },
   },
   rust = {
     servers = { "rust_analyzer" },

@@ -1,7 +1,7 @@
 theme = "Kanagawa Wave"
 # # font-family = "JetBrainsMono Nerd Font"
 font-family = "BlexMono Nerd Font Propo SemiBold"
-font-size = 13
+font-size = 14
 adjust-font-baseline = 1
 adjust-cell-height = 2
 adjust-underline-position = 1

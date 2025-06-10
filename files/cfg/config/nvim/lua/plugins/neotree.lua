@@ -42,7 +42,7 @@ return {
   keys = {
     {
       "<Leader>e",
-      ":Neotree source=filesystem reveal=true position=left toggle<Cr>",
+      ":Neotree source=filesystem reveal=true position=right toggle<Cr>",
       desc = "Neotree toggle",
       silent = true,
     },

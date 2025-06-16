@@ -226,8 +226,9 @@ in
     # postman
     # firefox
     # (pkgs.callPackage ./zoom-us { })
-    (pkgs.callPackage ./zoom-us { nixpkgs-unstable = nixpkgs-unstable; })
+    # (pkgs.callPackage ./zoom-us { nixpkgs-unstable = nixpkgs-unstable; }) # use snap install
     pkgs-unstable.xournalpp
+    wkhtmltopdf
     # transmission_4-gtk
     telegram-desktop
     inlyne

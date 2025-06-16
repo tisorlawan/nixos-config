@@ -105,8 +105,3 @@ map("i", "<m-h>", "<esc>I")
 map("i", "<m-l>", "<end>")
 
 map("v", "g<c-b>", "g<c-a>") -- create sequence of numbers
-
-vim.cmd([[
-inoremap kj <Esc>
-inoremap jk <Esc>
-]])

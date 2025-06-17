@@ -42,6 +42,7 @@ alias nnvim="NVIM_APPNAME=nvim2 nvim"
 
 ##-- PYTHON --##
 alias p="python"
+alias pss="poetry shell"
 # alias ap="eval $(poetry env activate)"
 alias a="source .venv/bin/activate.fish"
 alias d="deactivate"
@@ -85,3 +86,7 @@ alias ydv720="yt-dlp -f 'bv*[height<=720][ext=mp4]+ba/b' --no-playlist"
 alias ydv720compat="yt-dlp -f '230+233' --no-playlist --no-playlist"
 alias ydp="yt-dlp -f 'bv*[height<=1080][ext=mp4]+ba/b' -o '%(playlist_index)s [%(playlist_id)s]  - %(title)s.%(ext)s'"
 alias yda="yt-dlp -f '[ext=mp4]+ba/b' --extract-audio --no-playlist"
+
+##-- Claude Code --##
+alias c="npx @anthropic-ai/claude-code"
+alias co="npx @anthropic-ai/claude-code --continue"

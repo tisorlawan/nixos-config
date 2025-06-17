@@ -48,12 +48,30 @@ return {
       },
     },
     {
-      -- Make sure to set this up properly if you have lazy=true
       "MeanderingProgrammer/render-markdown.nvim",
+      ft = { "markdown", "Avante" },
       opts = {
         file_types = { "markdown", "Avante" },
       },
-      ft = { "markdown", "Avante" },
-    },
+      keys = {
+        {
+          "<cr>",
+          "<cmd>RenderMarkdown buf_toggle<CR>",
+          desc = "Toggle Render Markdown for buffer",
+        },
+      },
+      config = function(_, opts)
+        require("render-markdown").setup(opts)
+        local renderMarkdownGroup =
+          vim.api.nvim_create_augroup("RenderMarkdownDefaults", { clear = true })
+
+        vim.api.nvim_create_autocmd("FileType", {
+          group = renderMarkdownGroup,
+          pattern = { "markdown" },
+          desc = "Disable render-markdown by default for specified filetypes",
+          command = "RenderMarkdown buf_disable",
+        })
+      end,
+    }
   },
 }

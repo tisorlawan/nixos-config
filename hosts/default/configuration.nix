@@ -400,6 +400,7 @@ in
     pkgs-unstable.xournalpp
     transmission_4-gtk
     telegram-desktop
+    exodus
     inlyne
     obsidian
     slack

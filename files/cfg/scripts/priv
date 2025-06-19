@@ -20,7 +20,7 @@ fi
 
 BUCKET="tisorlawan"
 S3_PATH="s3://$BUCKET/$FILENAME"
-PUBLIC_URL="https://$BUCKET.s3.amazonaws.com/$FILENAME"
+PUBLIC_URL="https://$BUCKET.s3.ap-southeast-1.amazonaws.com/$FILENAME"
 
 TEMP_DIR="/tmp/priv-$$"
 ENCRYPTED_FILE="$TEMP_DIR/$(basename "$FILENAME")"

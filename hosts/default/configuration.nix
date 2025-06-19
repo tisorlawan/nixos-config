@@ -404,6 +404,7 @@ in
     inlyne
     obsidian
     slack
+    rclone
 
     #### @HARDWARE AND GRAPHICS ####
     glxinfo

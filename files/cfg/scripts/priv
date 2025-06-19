@@ -1,0 +1,237 @@
+#!/usr/bin/env bash
+
+# priv.sh - Access encrypted files from tisorlawan bucket
+# Usage: ./priv.sh <filename>
+
+set -e
+
+if [ $# -eq 0 ]; then
+	echo "Usage: $0 <filename>"
+	echo "Example: $0 passwords.txt"
+	echo "         $0 notes/diary.txt"
+	exit 1
+fi
+
+FILENAME="$1"
+# Add .enc extension if not present
+if [[ "$FILENAME" != *.enc ]]; then
+	FILENAME="${FILENAME}.enc"
+fi
+
+BUCKET="tisorlawan"
+S3_PATH="s3://$BUCKET/$FILENAME"
+PUBLIC_URL="https://$BUCKET.s3.amazonaws.com/$FILENAME"
+
+TEMP_DIR="/tmp/priv-$$"
+ENCRYPTED_FILE="$TEMP_DIR/$(basename "$FILENAME")"
+DECRYPTED_FILE="$TEMP_DIR/$(basename "$FILENAME" .enc)"
+
+mkdir -p "$TEMP_DIR"
+
+cleanup() {
+	echo "Cleaning up temporary files..."
+	rm -rf "$TEMP_DIR"
+}
+trap cleanup EXIT
+
+# Check if rclone is available and configured
+HAS_RCLONE=false
+RCLONE_REMOTE=""
+if command -v rclone >/dev/null 2>&1; then
+	# Check if we have a configured remote for this bucket
+	# Try common remote names
+	for remote_name in "aws" "s3" "$BUCKET" "tisorlawan"; do
+		if rclone listremotes | grep -q "^${remote_name}:$"; then
+			# Test if this remote can access our bucket
+			if rclone lsd "${remote_name}:" 2>/dev/null | grep -q "$BUCKET\|tisorlawan" 2>/dev/null; then
+				RCLONE_REMOTE="${remote_name}:"
+				HAS_RCLONE=true
+				echo "Found rclone remote: $RCLONE_REMOTE"
+				break
+			fi
+		fi
+	done
+
+	# If still no remote found, try to find any S3 remote
+	if [ "$HAS_RCLONE" = false ]; then
+		for remote in $(rclone listremotes); do
+			# Try to list this remote to see if it's S3-like
+			if rclone lsd "${remote}" 2>/dev/null | grep -q "tisorlawan\|$BUCKET" 2>/dev/null; then
+				RCLONE_REMOTE="$remote"
+				HAS_RCLONE=true
+				echo "Found rclone remote: $RCLONE_REMOTE"
+				break
+			fi
+		done
+	fi
+fi
+
+if [ "$HAS_RCLONE" = true ]; then
+	echo "=== WRITE MODE (rclone detected) ==="
+	MODE="write"
+else
+	echo "=== READ-ONLY MODE (no rclone access) ==="
+	MODE="read"
+fi
+
+# Download file
+echo "Downloading $FILENAME..."
+if [ "$MODE" = "write" ]; then
+	# Try to download with rclone
+	if rclone copy "${RCLONE_REMOTE}$BUCKET/$FILENAME" "$TEMP_DIR/" 2>/dev/null; then
+		# Check if file actually exists and has content
+		if [ -f "$ENCRYPTED_FILE" ] && [ -s "$ENCRYPTED_FILE" ]; then
+			echo "File downloaded successfully"
+			NEW_FILE=false
+		else
+			echo "File doesn't exist. Will create new file."
+			NEW_FILE=true
+		fi
+	else
+		echo "File doesn't exist. Will create new file."
+		NEW_FILE=true
+	fi
+else
+	# Try to download from public URL
+	if ! curl -f -s -o "$ENCRYPTED_FILE" "$PUBLIC_URL"; then
+		echo "Error: File not found or not publicly accessible"
+		echo "File: $PUBLIC_URL"
+		echo "Make sure the file exists and the bucket has public read policy"
+		exit 1
+	else
+		echo "File downloaded from public URL"
+		NEW_FILE=false
+	fi
+fi
+
+# Get encryption password
+echo -n "Enter encryption password: "
+read -s PASSWORD
+echo
+
+# Decrypt file
+if [ "$NEW_FILE" = true ]; then
+	echo "Creating new empty file..."
+	touch "$DECRYPTED_FILE"
+else
+	echo "Decrypting file..."
+	if ! openssl aes-256-cbc -d -salt -in "$ENCRYPTED_FILE" -out "$DECRYPTED_FILE" -pass pass:"$PASSWORD" 2>/dev/null; then
+		echo "Error: Failed to decrypt file"
+		echo "This could be due to:"
+		echo "  - Wrong password"
+		echo "  - File corruption"
+		echo "  - File is not encrypted with AES-256-CBC"
+		exit 1
+	fi
+fi
+
+# Show file info
+if [ "$NEW_FILE" = false ]; then
+	FILE_SIZE=$(wc -c <"$DECRYPTED_FILE")
+	LINE_COUNT=$(wc -l <"$DECRYPTED_FILE")
+	echo "File info: $FILE_SIZE bytes, $LINE_COUNT lines"
+fi
+
+if [ "$MODE" = "write" ]; then
+	# WRITE MODE - Full edit capability
+
+	# Get hash of original content for change detection
+	ORIGINAL_HASH=$(sha256sum "$DECRYPTED_FILE" | cut -d' ' -f1)
+
+	# Open in editor
+	echo "Opening file in nvim for editing..."
+	echo "File will be auto-saved and uploaded when you exit nvim"
+
+	# Open nvim
+	nvim "$DECRYPTED_FILE"
+
+	# Check if file was modified
+	NEW_HASH=$(sha256sum "$DECRYPTED_FILE" | cut -d' ' -f1)
+
+	if [ "$ORIGINAL_HASH" = "$NEW_HASH" ] && [ "$NEW_FILE" = false ]; then
+		echo "No changes detected. File not uploaded."
+		exit 0
+	fi
+
+	# Skip upload check for new empty files that remain empty
+	if [ "$NEW_FILE" = true ]; then
+		FILE_SIZE=$(wc -c <"$DECRYPTED_FILE")
+		if [ "$FILE_SIZE" -eq 0 ]; then
+			echo "New file is empty. Not uploading."
+			exit 0
+		fi
+	fi
+
+	echo "Changes detected. Re-encrypting and uploading..."
+
+	# Re-encrypt
+	if ! openssl aes-256-cbc -salt -in "$DECRYPTED_FILE" -out "$ENCRYPTED_FILE" -pass pass:"$PASSWORD"; then
+		echo "Error: Failed to re-encrypt file"
+		exit 1
+	fi
+
+	# Upload back to S3
+	echo "Uploading to ${S3_PATH}..."
+
+	# Create the exact target path for rclone
+	if [[ "$FILENAME" == */* ]]; then
+		# File is in a subdirectory
+		TARGET_DIR="${RCLONE_REMOTE}$BUCKET/$(dirname "$FILENAME")/"
+	else
+		# File is in root
+		TARGET_DIR="${RCLONE_REMOTE}$BUCKET/"
+	fi
+
+	if ! rclone copy "$ENCRYPTED_FILE" "$TARGET_DIR" 2>/dev/null; then
+		echo "Error: Failed to upload file"
+		echo "Encrypted file saved locally at: $ENCRYPTED_FILE"
+		echo "You may need to upload manually"
+		trap - EXIT # Don't cleanup so file remains
+		exit 1
+	fi
+
+	echo "✓ File successfully updated in bucket!"
+
+	# Show final stats
+	NEW_SIZE=$(wc -c <"$DECRYPTED_FILE")
+	NEW_LINES=$(wc -l <"$DECRYPTED_FILE")
+	echo "Final size: $NEW_SIZE bytes, $NEW_LINES lines"
+
+else
+	# READ-ONLY MODE
+
+	# Make file read-only to prevent accidental edits
+	chmod 444 "$DECRYPTED_FILE"
+
+	echo "Opening file in read-only mode..."
+	echo "Note: You are in read-only mode. Install and configure rclone for write access."
+	echo "Press Enter to continue..."
+	read
+
+	# Open in read-only viewer
+	if command -v nvim >/dev/null 2>&1; then
+		# Use nvim in read-only mode
+		nvim -R "$DECRYPTED_FILE"
+	elif command -v vim >/dev/null 2>&1; then
+		# Use vim in read-only mode
+		vim -R "$DECRYPTED_FILE"
+	elif command -v less >/dev/null 2>&1; then
+		# Use less as fallback
+		less "$DECRYPTED_FILE"
+	elif command -v more >/dev/null 2>&1; then
+		# Use more as fallback
+		more "$DECRYPTED_FILE"
+	else
+		# Last resort - just cat the file
+		echo "=== FILE CONTENTS ==="
+		cat "$DECRYPTED_FILE"
+		echo ""
+		echo "=== END OF FILE ==="
+		echo "Press Enter to exit..."
+		read
+	fi
+
+	echo "Read-only viewing completed."
+fi
+
+echo "Session completed. Temporary files cleaned up."

@@ -4,14 +4,14 @@ WINIT_X11_SCALE_FACTOR = "1.0"
 
 
 [font.normal]
-family = "JetBrainsMono Nerd Font"
+# family = "JetBrainsMono Nerd Font"
 # family = "Fira Code" # Fira Code (with ligatures)
 # family = "Hack" # Hack
 # family = "Typestar OCR" # Custom Typestar OCR font
 # family = "Courier Prime" # Courier Prime
 # family = "Source Code Pro" # Adobe Source Code Pro
 # family = "BlexMono Nerd Font Propo" # IBM Plex Mono
-# family = "BlexMono Nerd Font Propo SemiBold" # IBM Plex Mono
+family = "BlexMono Nerd Font Propo SemiBold" # IBM Plex Mono
 # family = "CaskaydiaCove Nerd Font Mono" # Cascadia Code
 # family = "Inconsolata" # Inconsolata
 # family = "Ubuntu Mono" # Ubuntu Mono
@@ -19,7 +19,7 @@ family = "JetBrainsMono Nerd Font"
 # family = "Liberation Mono" # Liberation Mono
 
 [font]
-size = 12
+size = 13
 
 [font.glyph_offset]
 x = 0
@@ -27,7 +27,7 @@ y = 2
 
 [font.offset]
 x = 0
-y = 3
+y = 4
 
 
 [window]
@@ -39,7 +39,7 @@ x = 0
 y = 0
 
 [colors.primary]
-background = '#171717'
+background = '#202020'
 foreground = '#dcd7ba'
 
 [colors.normal]

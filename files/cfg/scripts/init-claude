@@ -1,0 +1,8 @@
+#/usr/bin/env bash
+
+rm -rf /tmp/agent-guides
+git clone https://github.com/tokenbender/agent-guides /tmp/agent-guides
+mkdir -p .claude/commands
+cp /tmp/agent-guides/claude-commands/*.md .claude/commands/
+rm -rf .claude/scripts
+cp -r /tmp/agent-guides/scripts .claude/scripts/

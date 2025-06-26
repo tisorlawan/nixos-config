@@ -55,8 +55,12 @@ if type -q uv
 end
 function ci --argument-names env_name
     # Source conda.fish to make conda commands available
-    if test -f "/home/agung-b-sorlawan/.miniconda3/etc/fish/conf.d/conda.fish"
-        source "/home/agung-b-sorlawan/.miniconda3/etc/fish/conf.d/conda.fish"
+    if test -f "$HOME/.miniconda3/etc/fish/conf.d/conda.fish"
+        source "$HOME/.miniconda3/etc/fish/conf.d/conda.fish"
+    else
+        if test -f "$HOME/miniconda3/etc/fish/conf.d/conda.fish"
+            source "$HOME/miniconda3/etc/fish/conf.d/conda.fish"
+        end
     end
 
     if test -n "$env_name"

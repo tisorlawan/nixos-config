@@ -211,6 +211,8 @@ in
     # clipse
     # cliphist
 
+    bitcoin
+
     #### @CLI UTILITIES ####
     pkgs-unstable.uutils-coreutils-noprefix
     bat

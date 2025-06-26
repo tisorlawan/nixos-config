@@ -28,7 +28,7 @@ require("lazy").setup({
       -- require("plugins.fzf"),
       require("plugins.gitignore"),
       require("plugins.gitsigns"),
-      require("plugins.hardtime"),
+      -- require("plugins.hardtime"),
       require("plugins.helpview"),
       require("plugins.leap"),
       require("plugins.live-rename"),

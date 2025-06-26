@@ -51,6 +51,8 @@ in
     eww
     rofi
     util-linux
+    awscli2
+    postman
 
     #### @CLI UTILITIES ####
     bat

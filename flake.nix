@@ -27,10 +27,6 @@
           inherit system;
           specialArgs = {
             inherit inputs;
-            pkgs = import nixpkgs {
-              inherit system;
-              config.allowUnfree = true;
-            };
             pkgs-unstable = import nixpkgs-unstable {
               inherit system;
               config.allowUnfree = true;
@@ -41,6 +37,7 @@
             ./hosts/default/configuration.nix
             home-manager.nixosModules.home-manager
             {
+              nixpkgs.config.allowUnfree = true;
               home-manager.useGlobalPkgs = true;
               home-manager.useUserPackages = true;
               home-manager.users.tiso = import ./hosts/default/home.nix;

@@ -25,7 +25,7 @@ require("lazy").setup({
       require("plugins.dressing"),
       require("plugins.flit"),
       require("plugins.focus"),
-      -- require("plugins.fzf"),
+      require("plugins.fzf"),
       require("plugins.gitignore"),
       require("plugins.gitsigns"),
       -- require("plugins.hardtime"),

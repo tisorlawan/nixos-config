@@ -1,6 +1,7 @@
 return {
   "folke/snacks.nvim",
   lazy = false,
+  enabled = true,
   opts = {
     styles = { zen = { minimal = true } },
     bigfile = { enabled = true },
@@ -50,7 +51,7 @@ return {
       },
     },
     picker = {
-      enabled = true,
+      enabled = false,
       win = {
         input = {
           keys = {

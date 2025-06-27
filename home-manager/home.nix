@@ -246,10 +246,9 @@ in
     material-icons
     symbola
     # typestarFont # Note: Ensure this package exists in your nixpkgs; it may be custom or from a specific source
-    # nerd-fonts.jetbrains-mono
-    # nerd-fonts.blex-mono
-    # cascadia-code
-    (nerdfonts.override { fonts = [ "JetBrainsMono" "IBMPlexMono" "CascadiaCode" ]; })
+    nerd-fonts.jetbrains-mono
+    nerd-fonts.ibm-plex-mono
+    nerd-fonts.cascadia-code
     fira-code
     hack-font
     source-code-pro

@@ -34,12 +34,13 @@ in
         libvdpau-va-gl
       ];
     };
-    pulseaudio.enable = false;
     bluetooth = {
       enable = true;
       powerOnBoot = true;
     };
   };
+
+  services.pulseaudio.enable = false;
 
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 

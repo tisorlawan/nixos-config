@@ -33,4 +33,6 @@ keybind = all:alt+one=unbind
 keybind = all:alt+two=unbind
 keybind = all:alt+three=unbind
 keybind = all:alt+four=unbind
+
+app-notifications = no-clipboard-copy
 # vim: ft=config

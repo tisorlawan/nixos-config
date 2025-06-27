@@ -75,15 +75,15 @@ return {
       require("fzf-lua").setup({
         winopts = {
           preview = {
-            default = "bat",
+            -- default = "bat",
             delay = 0,
           },
         },
         manpages = { previewer = "man_native" },
         helptags = { previewer = "help_native" },
         lsp = { code_actions = { previewer = "codeaction_native" } },
-        tags = { previewer = "bat" },
-        btags = { previewer = "bat" },
+        -- tags = { previewer = "bat" },
+        -- btags = { previewer = "bat" },
         files = {
           -- fzf_opts = { ["--ansi"] = false },
           fd_opts = [[--color never --type f --hidden --follow --strip-cwd-prefix -E .git -E node_modules -E .venv -E .sqlx -E resource_snapshots ]],

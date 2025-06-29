@@ -275,7 +275,7 @@ in
     pkg-config
     gitFull
     git-lfs
-    jj
+    jujutsu
     protobuf
     lldb
     pkgs-unstable.typst

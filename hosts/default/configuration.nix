@@ -391,7 +391,6 @@ in
     neovide
     evince
     sioyek
-    yacreader
     # foliate
     nautilus
     pcmanfm

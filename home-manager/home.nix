@@ -64,6 +64,7 @@ in
     jq
     ripgrep
     lazygit
+    pkgs-unstable.jujutsu
     fzf
     # skim
     # htop
@@ -225,7 +226,6 @@ in
     # pkgs-unstable.google-chrome
     brave
     # libreoffice
-    # postman
     # firefox
     # (pkgs.callPackage ./zoom-us { })
     # (pkgs.callPackage ./zoom-us { nixpkgs-unstable = nixpkgs-unstable; }) # use snap install
@@ -240,22 +240,22 @@ in
     # intel-gpu-tools
     # mesa-demos
 
-    noto-fonts
-    noto-fonts-emoji
-    noto-fonts-cjk-sans
-    material-icons
-    symbola
+    nixpkgs-unstable.noto-fonts
+    nixpkgs-unstable.noto-fonts-emoji
+    nixpkgs-unstable.noto-fonts-cjk-sans-static
+    nixpkgs-unstable.noto-fonts-cjk-serif-static
+    nixpkgs-unstable.material-icons
+    nixpkgs-unstable.symbola
     # typestarFont # Note: Ensure this package exists in your nixpkgs; it may be custom or from a specific source
-    nerd-fonts.jetbrains-mono
-    nerd-fonts.ibm-plex-mono
-    nerd-fonts.cascadia-code
-    fira-code
-    hack-font
-    source-code-pro
-    ibm-plex
-    cascadia-code
-    inconsolata
-    liberation_ttf
+    nixpkgs-unstable.nerd-fonts.jetbrains-mono
+    nixpkgs-unstable.nerd-fonts.blex-mono
+    nixpkgs-unstable.cascadia-code
+    nixpkgs-unstable.fira-code
+    nixpkgs-unstable.hack-font
+    nixpkgs-unstable.source-code-pro
+    nixpkgs-unstable.ibm-plex
+    nixpkgs-unstable.inconsolata
+    nixpkgs-unstable.liberation_ttf
 
     ngrok
   ];
@@ -275,42 +275,42 @@ in
     # '';
   };
 
-  fonts.fontconfig.enable = true;
+  # fonts.fontconfig.enable = true;
 
   # Optional: Define default fonts for fontconfig
-  home.file.".config/fontconfig/fonts.conf".text = ''
-    <?xml version="1.0"?>
-    <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
-    <fontconfig>
-      <!-- Default fonts -->
-      <alias>
-        <family>monospace</family>
-        <prefer>
-          <family>JetBrainsMono Nerd Font</family>
-        </prefer>
-      </alias>
-      <alias>
-        <family>sans-serif</family>
-        <prefer>
-          <family>Noto Sans</family>
-          <family>Symbola</family>
-        </prefer>
-      </alias>
-      <alias>
-        <family>serif</family>
-        <prefer>
-          <family>Noto Serif</family>
-          <family>Symbola</family>
-        </prefer>
-      </alias>
-      <alias>
-        <family>emoji</family>
-        <prefer>
-          <family>Noto Color Emoji</family>
-        </prefer>
-      </alias>
-    </fontconfig>
-  '';
+  # home.file.".config/fontconfig/fonts.conf".text = ''
+  #   <?xml version="1.0"?>
+  #   <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+  #   <fontconfig>
+  #     <!-- Default fonts -->
+  #     <alias>
+  #       <family>monospace</family>
+  #       <prefer>
+  #         <family>JetBrainsMono Nerd Font</family>
+  #       </prefer>
+  #     </alias>
+  #     <alias>
+  #       <family>sans-serif</family>
+  #       <prefer>
+  #         <family>Noto Sans</family>
+  #         <family>Symbola</family>
+  #       </prefer>
+  #     </alias>
+  #     <alias>
+  #       <family>serif</family>
+  #       <prefer>
+  #         <family>Noto Serif</family>
+  #         <family>Symbola</family>
+  #       </prefer>
+  #     </alias>
+  #     <alias>
+  #       <family>emoji</family>
+  #       <prefer>
+  #         <family>Noto Color Emoji</family>
+  #       </prefer>
+  #     </alias>
+  #   </fontconfig>
+  # '';
 
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. These will be explicitly sourced when using a

@@ -42,8 +42,10 @@ alias nnvim="NVIM_APPNAME=nvim2 nvim"
 
 ##-- PYTHON --##
 alias p="python"
-alias pss="poetry shell"
 # alias ap="eval $(poetry env activate)"
+function pss
+    eval $(poetry env activate)
+end
 alias a="source .venv/bin/activate.fish"
 alias d="deactivate"
 alias cdd="conda deactivate"

@@ -126,6 +126,7 @@ in
     pre-commit
     sonarlint-ls
     poetry
+	poetryPlugins.poetry-plugin-shell
 
     #### @LANGUAGES AND LSP ####
     go

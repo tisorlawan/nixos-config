@@ -62,11 +62,6 @@ require("lazy").setup({
     enabled = false,
     notify = false,
   },
-  dev = {
-    path = "/home/tiso/software/tisorlawan",
-    patterns = {},
-    fallback = false,
-  },
 })
 require("keymaps")
 require("autocmds")

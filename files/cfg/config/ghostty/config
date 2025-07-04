@@ -1,5 +1,8 @@
 theme = "Kanagawa Wave"
-# # font-family = "JetBrainsMono Nerd Font"
+window-decoration = "none"
+background-opacity = 0.93
+background = 181818
+
 font-family = "BlexMono Nerd Font Propo SemiBold"
 font-size = 14
 adjust-font-baseline = 1
@@ -21,8 +24,6 @@ adw-toolbar-style = flat
 
 gtk-titlebar-hide-when-maximized = true
 
-background = 181818
-# background-opacity = 0.89
 
 cursor-invert-fg-bg = true
 
@@ -35,4 +36,5 @@ keybind = all:alt+three=unbind
 keybind = all:alt+four=unbind
 
 app-notifications = no-clipboard-copy
+
 # vim: ft=config

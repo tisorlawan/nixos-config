@@ -86,7 +86,7 @@ return {
         -- btags = { previewer = "bat" },
         files = {
           -- fzf_opts = { ["--ansi"] = false },
-          fd_opts = [[--color never --type f --hidden --follow --strip-cwd-prefix -E .git -E node_modules -E .venv -E .sqlx -E resource_snapshots ]],
+          fd_opts = [[--color never --type f --hidden --follow --strip-cwd-prefix -E .git -E .jj -E node_modules -E .venv -E .sqlx -E resource_snapshots ]],
           -- fd_opts = [[--color=never --type f --follow]],
         },
         grep = {

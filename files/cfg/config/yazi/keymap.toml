@@ -1,9 +1,9 @@
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["g", "d"]
 run = "cd ~/dotfiles"
 desc = "To dotfiles"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["g", "D"]
 run = "cd ~/Downloads"
 desc = "To downloads"
@@ -35,7 +35,7 @@ desc = "Cancel input"
 # on  = [ "J" ]
 # run = "plugin --sync parent-arrow --args=1"
 
-[[manager.prepend_keymap]]
+[[mgr.prepend_keymap]]
 on = ["<C-s>"]
 run = 'shell "$SHELL" --block --confirm'
 desc = "Open shell here"

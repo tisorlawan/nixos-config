@@ -270,7 +270,7 @@ local plugins = {
             },
           },
         },
-        enabled = true,
+        enabled = false,
         ft = { "rust", "python", "lua", "go" },
       },
     },

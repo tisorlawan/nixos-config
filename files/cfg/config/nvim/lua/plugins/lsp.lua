@@ -80,19 +80,19 @@ local function setup_lsp_keymaps(buf)
   end
 
   -- using snacks.nvim
-  -- map("gd", vim.lsp.buf.definition, "Goto Definition")
-  -- map("gi", vim.lsp.buf.implementation, "Goto Implementation")
-  -- map("gy", vim.lsp.buf.type_definition, "Goto Type Definition")
-  -- map("gr", vim.lsp.buf.references, "Goto References")
+  map("gd", vim.lsp.buf.definition, "Goto Definition")
+  map("gi", vim.lsp.buf.implementation, "Goto Implementation")
+  map("gy", vim.lsp.buf.type_definition, "Goto Type Definition")
+  map("gr", vim.lsp.buf.references, "Goto References")
 
   map("gD", vim.lsp.buf.declaration, "Goto Declaration")
   map("gm", ":vsplit | lua vim.lsp.buf.definition()<cr>", "Goto Definition Vsplit")
   map("K", vim.lsp.buf.hover, "Hover")
   map("<leader>k", vim.lsp.buf.signature_help, "Signature Help")
-  -- map("<leader>rn", vim.lsp.buf.rename, "Rename")
+  map("<leader>cr", vim.lsp.buf.rename, "Rename")
 
-  -- map('<leader>lw', require('telescope.builtin').lsp_dynamic_workspace_symbols, 'Workspace Symbols')
-  -- map('<leader>ld', require('telescope.builtin').lsp_document_symbols, 'Document Symbols')
+  -- map("<leader>lw", require("telescope.builtin").lsp_dynamic_workspace_symbols, "Workspace Symbols")
+  -- map("<leader>ld", require("telescope.builtin").lsp_document_symbols, "Document Symbols")
 
   local ok_fzf, _ = pcall(require, "fzf-lua")
   if ok_fzf then
@@ -143,14 +143,14 @@ local function setup_diagnostic()
 
   vim.diagnostic.config({
     virtual_text = false,
-    signs = { 
-        active = true,
-        text = {
-          [vim.diagnostic.severity.ERROR] = "󰅚 ",
-          [vim.diagnostic.severity.WARN]  = "󰀪 ",
-          [vim.diagnostic.severity.HINT]  = "󰌶 ",
-          [vim.diagnostic.severity.INFO]  = " ",
-        },
+    signs = {
+      active = true,
+      text = {
+        [vim.diagnostic.severity.ERROR] = "󰅚 ",
+        [vim.diagnostic.severity.WARN] = "󰀪 ",
+        [vim.diagnostic.severity.HINT] = "󰌶 ",
+        [vim.diagnostic.severity.INFO] = " ",
+      },
     },
 
     underline = false,

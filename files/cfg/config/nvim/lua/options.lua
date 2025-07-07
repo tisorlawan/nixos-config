@@ -25,7 +25,7 @@ vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.signcolumn = "yes"
 vim.opt.updatetime = 250
-vim.opt.timeoutlen = 300
+vim.opt.timeoutlen = 500
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.opt.list = true
@@ -40,8 +40,10 @@ vim.opt.updatetime = 200 -- Save swap file and trigger CursorHold
 vim.opt.virtualedit = "block" -- Allow cursor to move where there is no text in visual block mode
 vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 
-vim.opt.laststatus = 0
-vim.opt.cmdheight = 0
+vim.o.winborder = 'rounded'
+
+vim.opt.laststatus = 2
+vim.opt.cmdheight = 1
 vim.opt.foldlevel = 99
 -- if vim.fn.has("nvim-0.10") == 1 then
 --   vim.opt.smoothscroll = true

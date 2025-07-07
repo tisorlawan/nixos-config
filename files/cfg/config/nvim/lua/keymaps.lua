@@ -194,3 +194,73 @@ vim.keymap.set("v", "<cr>s", function()
     end
   end
 end)
+
+
+-- Open hover documentation in vertical scratch buffer
+map("n", "<leader>K", function()
+  -- Get hover information
+  local params = vim.lsp.util.make_position_params()
+  vim.lsp.buf_request(0, 'textDocument/hover', params, function(err, result, ctx, config)
+    if err or not result or not result.contents then
+      print("No hover information available")
+      return
+    end
+
+    -- Create vertical scratch buffer
+    vim.cmd("noswapfile vnew")
+    vim.bo.buftype = "nofile"
+    vim.bo.bufhidden = "wipe"
+    vim.bo.filetype = "markdown" -- Set filetype for syntax highlighting
+
+    -- Function to clean HTML entities
+    local function clean_html_entities(text)
+      text = text:gsub("&nbsp;", " ")
+      text = text:gsub("&lt;", "<")
+      text = text:gsub("&gt;", ">")
+      text = text:gsub("&amp;", "&")
+      text = text:gsub("&quot;", '"')
+      text = text:gsub("&#39;", "'")
+      text = text:gsub("\\_", "_")
+      return text
+    end
+
+    -- Extract content from hover result
+    local content = {}
+    if type(result.contents) == "string" then
+      -- Simple string content
+      local cleaned = clean_html_entities(result.contents)
+      for line in cleaned:gmatch("[^\n]+") do
+        table.insert(content, line)
+      end
+    elseif result.contents.value then
+      -- MarkupContent format
+      local cleaned = clean_html_entities(result.contents.value)
+      for line in cleaned:gmatch("[^\n]+") do
+        table.insert(content, line)
+      end
+    elseif type(result.contents) == "table" then
+      -- Array of MarkedString or MarkupContent
+      for _, item in ipairs(result.contents) do
+        if type(item) == "string" then
+          local cleaned = clean_html_entities(item)
+          for line in cleaned:gmatch("[^\n]+") do
+            table.insert(content, line)
+          end
+        elseif item.value then
+          local cleaned = clean_html_entities(item.value)
+          for line in cleaned:gmatch("[^\n]+") do
+            table.insert(content, line)
+          end
+        end
+        table.insert(content, "") -- Add empty line between items
+      end
+    end
+
+    -- Set buffer content
+    vim.api.nvim_buf_set_lines(0, 0, -1, false, content)
+
+    -- Make buffer read-only
+    vim.bo.readonly = true
+    vim.bo.modifiable = false
+  end)
+end, { desc = "Open hover info in vertical scratch buffer" })

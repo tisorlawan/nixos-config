@@ -28,10 +28,7 @@ require("lazy").setup({
       require("plugins.fzf"),
       require("plugins.gitignore"),
       require("plugins.gitsigns"),
-      -- require("plugins.hardtime"),
-      -- require("plugins.helpview"),
       require("plugins.leap"),
-      require("plugins.live-rename"),
       require("plugins.lsp"),
       -- require("plugins.lualine"),
       require("plugins.mini"),
@@ -49,7 +46,7 @@ require("lazy").setup({
       -- require("plugins.todo-comments"),
       -- require("plugins.toggleterm"),
       require("plugins.treesitter"),
-      -- require("plugins.trouble"),
+      require("plugins.trouble"),
       -- require("plugins.ufo"),
       -- require("plugins.undotree"),
       -- require("plugins.unified"),
@@ -65,6 +62,11 @@ require("lazy").setup({
 })
 require("keymaps")
 require("autocmds")
+
+vim.api.nvim_set_hl(0, "FloatBorder", {
+  fg = "#a0a0a0",
+  bg = "NONE",
+})
 
 vim.filetype.add({
   extension = {

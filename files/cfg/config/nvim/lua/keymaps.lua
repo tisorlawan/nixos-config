@@ -105,3 +105,9 @@ map("i", "<m-h>", "<esc>I")
 map("i", "<m-l>", "<end>")
 
 map("v", "g<c-b>", "g<c-a>") -- create sequence of numbers
+
+vim.cmd("syntax off | colorscheme retrobox | highlight Normal guifg=#f0f0f0 guibg=#282828")
+vim.keymap.set('n', '<space>y', function() vim.fn.setreg('+', vim.fn.expand('%:p')) end)
+vim.keymap.set("n", "<space>c", function() vim.ui.input({}, function(c) if c and c~="" then 
+  vim.cmd("noswapfile vnew") vim.bo.buftype = "nofile" vim.bo.bufhidden = "wipe"
+  vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.fn.systemlist(c)) end end) end)

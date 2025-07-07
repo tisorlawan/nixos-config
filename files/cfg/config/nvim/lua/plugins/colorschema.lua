@@ -2,7 +2,7 @@ vim.cmd([[ set background=dark ]])
 vim.g.transparent = true
 
 -- mellifluous kanagawa hybrid kanagawabones zenwritten
-vim.g.colorscheme = "kanagawa"
+vim.g.colorscheme = "mellifluous"
 
 return {
   {

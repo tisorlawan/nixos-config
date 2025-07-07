@@ -106,8 +106,91 @@ map("i", "<m-l>", "<end>")
 
 map("v", "g<c-b>", "g<c-a>") -- create sequence of numbers
 
-vim.cmd("syntax off | colorscheme retrobox | highlight Normal guifg=#f0f0f0 guibg=#282828")
+-- vim.cmd("syntax off | colorscheme retrobox | highlight Normal guifg=#f0f0f0 guibg=#282828")
 vim.keymap.set('n', '<space>y', function() vim.fn.setreg('+', vim.fn.expand('%:p')) end)
-vim.keymap.set("n", "<space>c", function() vim.ui.input({}, function(c) if c and c~="" then 
+vim.keymap.set("n", "<cr><cr>", function() vim.ui.input({}, function(c) if c and c~="" then 
   vim.cmd("noswapfile vnew") vim.bo.buftype = "nofile" vim.bo.bufhidden = "wipe"
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.fn.systemlist(c)) end end) end)
+
+-- Function to add ripgrep results to quickfix
+local function add_rg_result_to_quickfix(output)
+  vim.fn.setqflist({}, "r") -- Clear existing quickfix
+  for _, line in ipairs(output) do
+    -- Parse ripgrep --vimgrep format: file:line:col:text
+    local file, lnum, col, text = line:match("([^:]+):(%d+):(%d+):(.*)")
+    if file and lnum and col and text then
+      vim.fn.setqflist({{
+        filename = file,
+        lnum = tonumber(lnum),
+        col = tonumber(col),
+        text = text
+      }}, "a") -- Append to quickfix
+    end
+  end
+  vim.cmd("copen")
+end
+
+-- <cr>s - quickfix only
+vim.keymap.set("n", "<cr>s", function() 
+  vim.ui.input({ prompt = "Search: ", default = "rg --vimgrep " }, function(c) 
+    if c and c ~= "" then 
+      local output = vim.fn.systemlist(c)
+      add_rg_result_to_quickfix(output)
+    end 
+  end) 
+end)
+
+-- <cr>S - buffer + quickfix
+vim.keymap.set("n", "<cr>S", function() 
+  vim.ui.input({ prompt = "Search: ", default = "rg --vimgrep " }, function(c) 
+    if c and c ~= "" then 
+      -- Create new buffer
+      vim.cmd("noswapfile vnew") 
+      vim.bo.buftype = "nofile" 
+      vim.bo.bufhidden = "wipe"
+      
+      -- Get command output
+      local output = vim.fn.systemlist(c)
+      
+      -- Add to buffer
+      vim.api.nvim_buf_set_lines(0, 0, -1, false, output)
+      
+      -- Add to quickfix
+      add_rg_result_to_quickfix(output)
+    end 
+  end) 
+end)
+
+-- Visual mode <cr>s - search selected text
+vim.keymap.set("v", "<cr>s", function()
+  -- Use a more reliable method to get the selected text
+  local mode = vim.fn.mode()
+  if mode == "v" or mode == "V" or mode == "\22" then -- \22 is visual block mode
+    -- Store current register
+    local old_reg = vim.fn.getreg("z")
+    local old_regtype = vim.fn.getregtype("z")
+
+    -- Yank selection to register z
+    vim.cmd('silent normal! "zy')
+
+    -- Get the yanked text
+    local selected_text = vim.fn.getreg("z")
+
+    -- Restore the register
+    vim.fn.setreg("z", old_reg, old_regtype)
+
+    -- Clean up the text
+    selected_text = string.gsub(selected_text, "\n", " ")
+    selected_text = string.gsub(selected_text, "%s+", " ")
+    selected_text = string.gsub(selected_text, "^%s*(.-)%s*$", "%1")
+
+    if selected_text ~= "" then
+      -- Escape for shell
+      selected_text = vim.fn.shellescape(selected_text)
+
+      local cmd = "rg --vimgrep " .. selected_text
+      local output = vim.fn.systemlist(cmd)
+      add_rg_result_to_quickfix(output)
+    end
+  end
+end)

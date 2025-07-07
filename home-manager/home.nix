@@ -53,6 +53,8 @@ in
     util-linux
     awscli2
     postman
+    rclone
+    devenv
 
     #### @CLI UTILITIES ####
     bat

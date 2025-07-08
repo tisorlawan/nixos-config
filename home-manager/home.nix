@@ -54,7 +54,6 @@ in
     awscli2
     postman
     rclone
-    devenv
 
     #### @CLI UTILITIES ####
     bat
@@ -128,7 +127,7 @@ in
     pre-commit
     sonarlint-ls
     poetry
-	poetryPlugins.poetry-plugin-shell
+    poetryPlugins.poetry-plugin-shell
 
     #### @LANGUAGES AND LSP ####
     go

@@ -81,4 +81,4 @@ while ! xwininfo -root >/dev/null 2>&1; do sleep 0.1; done
 # (picom > /home/agung-b-sorlawan/x.log 2>&1) &
 # (env > /home/agung-b-sorlawan/picom_env.log; picom > /home/agung-b-sorlawan/x.log 2>&1) &
 eww open bar &
-picom &
+# picom &

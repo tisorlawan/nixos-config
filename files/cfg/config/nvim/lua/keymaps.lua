@@ -29,8 +29,8 @@ map("n", "<C-M-j>", ":m .+1<CR>==", { desc = "Move line down", silent = true })
 map("n", "<C-M-k>", ":m .-2<CR>==", { desc = "Move line up", silent = true })
 map("v", "<C-M-j>", ":m '>+1<CR>gv=gv", { desc = "Move Line Down in Visual Mode", silent = true })
 map("v", "<C-M-k>", ":m '<-2<CR>gv=gv", { desc = "Move Line Up in Visual Mode", silent = true })
-map("v", "<leader>ss", ":s/\\%V", { desc = "Search only in visual selection using %V atom" })
-map("v", "<leader>r", '"hy:%s/\\v<C-r>h//g<left><left>', { desc = "change selection" })
+map("v", "<leader>ss", ":s/\\C\\%V", { desc = "Search only in visual selection using %V atom" })
+map("v", "<leader>r", '"hy:%s/\\C\\v<C-r>h//g<left><left>', { desc = "change selection" })
 map("i", "<c-p>", function()
   require("fzf-lua").registers()
 end, { remap = true, silent = false, desc = " and paste register in insert mode" })
@@ -107,10 +107,19 @@ map("i", "<m-l>", "<end>")
 map("v", "g<c-b>", "g<c-a>") -- create sequence of numbers
 
 -- vim.cmd("syntax off | colorscheme retrobox | highlight Normal guifg=#f0f0f0 guibg=#282828")
-vim.keymap.set('n', '<space>y', function() vim.fn.setreg('+', vim.fn.expand('%:p')) end)
-vim.keymap.set("n", "<cr><cr>", function() vim.ui.input({}, function(c) if c and c~="" then 
-  vim.cmd("noswapfile vnew") vim.bo.buftype = "nofile" vim.bo.bufhidden = "wipe"
-  vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.fn.systemlist(c)) end end) end)
+vim.keymap.set("n", "<space>y", function()
+  vim.fn.setreg("+", vim.fn.expand("%:p"))
+end)
+vim.keymap.set("n", "<space><space>", function()
+  vim.ui.input({}, function(c)
+    if c and c ~= "" then
+      vim.cmd("noswapfile vnew")
+      vim.bo.buftype = "nofile"
+      vim.bo.bufhidden = "wipe"
+      vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.fn.systemlist(c))
+    end
+  end)
+end)
 
 -- Function to add ripgrep results to quickfix
 local function add_rg_result_to_quickfix(output)
@@ -119,50 +128,52 @@ local function add_rg_result_to_quickfix(output)
     -- Parse ripgrep --vimgrep format: file:line:col:text
     local file, lnum, col, text = line:match("([^:]+):(%d+):(%d+):(.*)")
     if file and lnum and col and text then
-      vim.fn.setqflist({{
-        filename = file,
-        lnum = tonumber(lnum),
-        col = tonumber(col),
-        text = text
-      }}, "a") -- Append to quickfix
+      vim.fn.setqflist({
+        {
+          filename = file,
+          lnum = tonumber(lnum),
+          col = tonumber(col),
+          text = text,
+        },
+      }, "a") -- Append to quickfix
     end
   end
   vim.cmd("copen")
 end
 
 -- <cr>s - quickfix only
-vim.keymap.set("n", "<cr>s", function() 
-  vim.ui.input({ prompt = "Search: ", default = "rg --vimgrep " }, function(c) 
-    if c and c ~= "" then 
+vim.keymap.set("n", "<leader>l", function()
+  vim.ui.input({ prompt = "Search: ", default = "rg --vimgrep " }, function(c)
+    if c and c ~= "" then
       local output = vim.fn.systemlist(c)
       add_rg_result_to_quickfix(output)
-    end 
-  end) 
+    end
+  end)
 end)
 
 -- <cr>S - buffer + quickfix
-vim.keymap.set("n", "<cr>S", function() 
-  vim.ui.input({ prompt = "Search: ", default = "rg --vimgrep " }, function(c) 
-    if c and c ~= "" then 
+vim.keymap.set("n", "<leader>L", function()
+  vim.ui.input({ prompt = "Search: ", default = "rg --vimgrep " }, function(c)
+    if c and c ~= "" then
       -- Create new buffer
-      vim.cmd("noswapfile vnew") 
-      vim.bo.buftype = "nofile" 
+      vim.cmd("noswapfile vnew")
+      vim.bo.buftype = "nofile"
       vim.bo.bufhidden = "wipe"
-      
+
       -- Get command output
       local output = vim.fn.systemlist(c)
-      
+
       -- Add to buffer
       vim.api.nvim_buf_set_lines(0, 0, -1, false, output)
-      
+
       -- Add to quickfix
       add_rg_result_to_quickfix(output)
-    end 
-  end) 
+    end
+  end)
 end)
 
 -- Visual mode <cr>s - search selected text
-vim.keymap.set("v", "<cr>s", function()
+vim.keymap.set("v", "<leader>l", function()
   -- Use a more reliable method to get the selected text
   local mode = vim.fn.mode()
   if mode == "v" or mode == "V" or mode == "\22" then -- \22 is visual block mode
@@ -195,12 +206,11 @@ vim.keymap.set("v", "<cr>s", function()
   end
 end)
 
-
 -- Open hover documentation in vertical scratch buffer
 map("n", "<leader>K", function()
   -- Get hover information
   local params = vim.lsp.util.make_position_params()
-  vim.lsp.buf_request(0, 'textDocument/hover', params, function(err, result, ctx, config)
+  vim.lsp.buf_request(0, "textDocument/hover", params, function(err, result, ctx, config)
     if err or not result or not result.contents then
       print("No hover information available")
       return

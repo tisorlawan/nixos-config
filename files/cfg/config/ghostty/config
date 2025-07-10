@@ -1,6 +1,6 @@
 theme = "Kanagawa Wave"
 window-decoration = "none"
-background-opacity = 0.93
+background-opacity = 1.0
 background = 181818
 
 font-family = "BlexMono Nerd Font Propo SemiBold"

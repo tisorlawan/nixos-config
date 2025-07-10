@@ -252,6 +252,7 @@ in
     nixpkgs-unstable.nerd-fonts.jetbrains-mono
     nixpkgs-unstable.nerd-fonts.blex-mono
     nixpkgs-unstable.cascadia-code
+    nixpkgs-unstable.nerd-fonts.jetbrains-mono
     nixpkgs-unstable.fira-code
     nixpkgs-unstable.hack-font
     nixpkgs-unstable.source-code-pro

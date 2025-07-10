@@ -2,24 +2,11 @@
 TERM = "xterm-256color"
 WINIT_X11_SCALE_FACTOR = "1.0"
 
-
 [font.normal]
-# family = "JetBrainsMono Nerd Font"
-# family = "Fira Code" # Fira Code (with ligatures)
-# family = "Hack" # Hack
-# family = "Typestar OCR" # Custom Typestar OCR font
-# family = "Courier Prime" # Courier Prime
-# family = "Source Code Pro" # Adobe Source Code Pro
-# family = "BlexMono Nerd Font Propo" # IBM Plex Mono
-family = "BlexMono Nerd Font Propo SemiBold" # IBM Plex Mono
-# family = "CaskaydiaCove Nerd Font Mono" # Cascadia Code
-# family = "Inconsolata" # Inconsolata
-# family = "Ubuntu Mono" # Ubuntu Mono
-# family = "DejaVu Sans Mono" # DejaVu Sans Mono
-# family = "Liberation Mono" # Liberation Mono
+family = "BlexMono Nerd Font Propo SemiBold"
 
 [font]
-size = 13
+size = 12
 
 [font.glyph_offset]
 x = 0
@@ -27,8 +14,7 @@ y = 2
 
 [font.offset]
 x = 0
-y = 4
-
+y = 3
 
 [window]
 decorations = "none"
@@ -37,39 +23,3 @@ opacity = 1.0
 [window.padding]
 x = 0
 y = 0
-
-[colors.primary]
-background = '#202020'
-foreground = '#dcd7ba'
-
-[colors.normal]
-black = '#090618'
-red = '#c34043'
-green = '#76946a'
-yellow = '#c0a36e'
-blue = '#7e9cd8'
-magenta = '#957fb8'
-cyan = '#6a9589'
-white = '#c8c093'
-
-[colors.bright]
-black = '#727169'
-red = '#e82424'
-green = '#98bb6c'
-yellow = '#e6c384'
-blue = '#7fb4ca'
-magenta = '#938aa9'
-cyan = '#7aa89f'
-white = '#dcd7ba'
-
-[colors.selection]
-background = '#2d4f67'
-foreground = '#c8c093'
-
-[[colors.indexed_colors]]
-index = 16
-color = '#ffa066'
-
-[[colors.indexed_colors]]
-index = 17
-color = '#ff5d62'

@@ -2,17 +2,41 @@
 
 # priv.sh - Access encrypted files from tisorlawan bucket
 # Usage: ./priv.sh <filename>
+#        ./priv.sh --password <filename>
 
 set -e
 
-if [ $# -eq 0 ]; then
+# Parse command line arguments
+CHANGE_PASSWORD=false
+FILENAME=""
+
+while [[ $# -gt 0 ]]; do
+	case $1 in
+		--password)
+			CHANGE_PASSWORD=true
+			shift
+			;;
+		*)
+			if [ -z "$FILENAME" ]; then
+				FILENAME="$1"
+			else
+				echo "Error: Too many arguments"
+				exit 1
+			fi
+			shift
+			;;
+	esac
+done
+
+if [ -z "$FILENAME" ]; then
 	echo "Usage: $0 <filename>"
+	echo "       $0 --password <filename>  # Change password"
 	echo "Example: $0 passwords.txt"
 	echo "         $0 notes/diary.txt"
+	echo "         $0 --password passwords.txt"
 	exit 1
 fi
 
-FILENAME="$1"
 # Add .enc extension if not present
 if [[ "$FILENAME" != *.enc ]]; then
 	FILENAME="${FILENAME}.enc"
@@ -74,6 +98,12 @@ else
 	MODE="read"
 fi
 
+# Password change mode requires write access
+if [ "$CHANGE_PASSWORD" = true ] && [ "$MODE" = "read" ]; then
+	echo "Error: Password change requires write access (rclone configuration needed)"
+	exit 1
+fi
+
 # Download file
 echo "Downloading $FILENAME..."
 if [ "$MODE" = "write" ]; then
@@ -104,7 +134,95 @@ else
 	fi
 fi
 
-# Get encryption password
+# Handle password change mode
+if [ "$CHANGE_PASSWORD" = true ]; then
+	if [ "$NEW_FILE" = true ]; then
+		echo "Error: Cannot change password for a file that doesn't exist"
+		exit 1
+	fi
+
+	echo "=== PASSWORD CHANGE MODE ==="
+	
+	# Get old password
+	echo -n "Enter current password: "
+	read -s OLD_PASSWORD
+	echo
+	
+	# Try to decrypt with old password
+	echo "Verifying current password..."
+	if ! openssl aes-256-cbc -d -salt -in "$ENCRYPTED_FILE" -out "$DECRYPTED_FILE" -pass pass:"$OLD_PASSWORD" 2>/dev/null; then
+		echo "Error: Invalid current password"
+		exit 1
+	fi
+	echo "Current password verified successfully"
+	
+	# Get new password
+	echo -n "Enter new password: "
+	read -s NEW_PASSWORD
+	echo
+	
+	# Confirm new password
+	echo -n "Confirm new password: "
+	read -s NEW_PASSWORD_CONFIRM
+	echo
+	
+	# Check if passwords match
+	if [ "$NEW_PASSWORD" != "$NEW_PASSWORD_CONFIRM" ]; then
+		echo "Error: New passwords do not match"
+		exit 1
+	fi
+	
+	# Check if new password is different from old
+	if [ "$NEW_PASSWORD" = "$OLD_PASSWORD" ]; then
+		echo "Error: New password must be different from current password"
+		exit 1
+	fi
+	
+	# Check password strength (optional)
+	if [ ${#NEW_PASSWORD} -lt 8 ]; then
+		echo "Warning: Password is less than 8 characters"
+		echo -n "Continue anyway? (y/N): "
+		read -r CONTINUE
+		if [[ ! "$CONTINUE" =~ ^[Yy]$ ]]; then
+			echo "Password change cancelled"
+			exit 0
+		fi
+	fi
+	
+	echo "Re-encrypting file with new password..."
+	
+	# Re-encrypt with new password
+	if ! openssl aes-256-cbc -salt -in "$DECRYPTED_FILE" -out "$ENCRYPTED_FILE" -pass pass:"$NEW_PASSWORD"; then
+		echo "Error: Failed to re-encrypt file with new password"
+		exit 1
+	fi
+	
+	# Upload back to S3
+	echo "Uploading file with new password..."
+	
+	# Create the exact target path for rclone
+	if [[ "$FILENAME" == */* ]]; then
+		# File is in a subdirectory
+		TARGET_DIR="${RCLONE_REMOTE}$BUCKET/$(dirname "$FILENAME")/"
+	else
+		# File is in root
+		TARGET_DIR="${RCLONE_REMOTE}$BUCKET/"
+	fi
+
+	if ! rclone copy "$ENCRYPTED_FILE" "$TARGET_DIR" 2>/dev/null; then
+		echo "Error: Failed to upload file with new password"
+		echo "Encrypted file saved locally at: $ENCRYPTED_FILE"
+		echo "You may need to upload manually"
+		trap - EXIT # Don't cleanup so file remains
+		exit 1
+	fi
+	
+	echo "✓ Password successfully changed!"
+	echo "File has been re-encrypted and uploaded with the new password"
+	exit 0
+fi
+
+# Get encryption password (normal mode)
 echo -n "Enter encryption password: "
 read -s PASSWORD
 echo

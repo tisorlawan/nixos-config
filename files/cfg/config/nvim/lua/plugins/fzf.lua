@@ -23,7 +23,7 @@ return {
       { "<leader>sd", function() require("fzf-lua").diagnostics_document() end, desc = "Document Diagnostics", },
       { "<leader>sD", function() require("fzf-lua").diagnostics_workspace() end, desc = "Workspace Diagnostics", },
       { "<leader>sg", function() require("fzf-lua").grep_project() end, desc = "Grep (Root Dir)", },
-      { "<leader>sG", function() require("fzf-lua").grep_project({ cwd = vim.fn.getcwd() }) end, desc = "Grep (cwd)", },
+      -- { "<leader>sG", function() require("fzf-lua").grep_project({ cwd = vim.fn.getcwd() }) end, desc = "Grep (cwd)", },
       { "<leader>sh", function() require("fzf-lua").help_tags() end, desc = "Help Pages", },
       { "<leader>sH", function() require("fzf-lua").highlights() end, desc = "Search Highlight Groups", },
       { "<leader>sj", function() require("fzf-lua").jumps() end, desc = "Jumplist", },
@@ -36,15 +36,15 @@ return {
       { "<leader>sR", function() require("fzf-lua").resume() end, desc = "Resume", },
       { "<leader>ss", function() require("fzf-lua").lsp_document_symbols() end, desc = "Goto Symbol", },
       { "<leader>sS", function() require("fzf-lua").lsp_workspace_symbols() end, desc = "Goto Symbol (Workspace)", },
-      { "<leader>sw", function() require("fzf-lua").grep_cword() end, desc = "Word (Root Dir)", },
-      { "<leader>sW", function() require("fzf-lua").grep_cword({ cwd = vim.fn.getcwd() }) end, desc = "Word (cwd)", },
+      -- { "<leader>sw", function() require("fzf-lua").grep_cword() end, desc = "Word (Root Dir)", },
+      -- { "<leader>sW", function() require("fzf-lua").grep_cword({ cwd = vim.fn.getcwd() }) end, desc = "Word (cwd)", },
       { "<leader>uC", function() require("fzf-lua").colorschemes() end, desc = "Colorscheme with Preview", },
       --
       { "<leader>cs", function() require("fzf-lua").lsp_document_symbols() end, desc = "Document symbols", },
       { "<leader>cw", function() require("fzf-lua").lsp_live_workspace_symbols() end, desc = "Document symbols", },
       -- Visual mode mappings
-      { "<leader>sw", function() require("fzf-lua").grep_visual() end, mode = "v", desc = "Selection (Root Dir)", },
-      { "<leader>sW", function() require("fzf-lua").grep_visual({ cwd = vim.fn.getcwd() }) end, mode = "v", desc = "Selection (cwd)", },
+      -- { "<leader>sw", function() require("fzf-lua").grep_visual() end, mode = "v", desc = "Selection (Root Dir)", },
+      -- { "<leader>sW", function() require("fzf-lua").grep_visual({ cwd = vim.fn.getcwd() }) end, mode = "v", desc = "Selection (cwd)", },
     },
     -- opts = {
     -- -- Global fzf-lua configuration options

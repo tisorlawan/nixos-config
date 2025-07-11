@@ -122,7 +122,7 @@ vim.keymap.set("n", "<space><space>", function()
 end)
 
 -- Function to add ripgrep results to quickfix
-local function add_rg_result_to_quickfix(output)
+local function add_rg_result_to_quickfix(output, search_term)
   vim.fn.setqflist({}, "r") -- Clear existing quickfix
   for _, line in ipairs(output) do
     -- Parse ripgrep --vimgrep format: file:line:col:text
@@ -138,17 +138,177 @@ local function add_rg_result_to_quickfix(output)
       }, "a") -- Append to quickfix
     end
   end
+  -- Set custom title if search term is provided
+  if search_term then
+    vim.fn.setqflist({}, "a", { title = "rg: '" .. search_term .. "'" })
+  end
   vim.cmd("copen")
 end
 
--- <cr>s - quickfix only
+-- Make function available globally for VimScript
+_G.handle_rg_result = add_rg_result_to_quickfix
+
+-- Define global VimScript function for parsing and searching
+vim.cmd([[
+  function! ParseAndSearch(text)
+    let result = a:text
+    
+    " Check if result contains -g delimiter
+    let parts = split(result, ' -g ', 1)
+    if len(parts) > 1
+      " Has -g flags
+      let search_term = parts[0]
+      let additional_flags = ''
+      for i in range(1, len(parts) - 1)
+        let additional_flags .= ' -g ' . parts[i]
+      endfor
+      
+      " Check for mode flags (r: for regex, i: for case-insensitive)
+      let mode_flags = ''
+      let actual_term = search_term
+      
+      if search_term =~ '^[ri]*:'
+        let flags = matchstr(search_term, '^[ri]*')
+        let actual_term = substitute(search_term, '^[ri]*:', '', '')
+        
+        if flags =~ 'i'
+          let mode_flags .= ' --ignore-case'
+        endif
+        
+        if flags =~ 'r'
+          " Regex mode - don't add --fixed-strings
+        else
+          let mode_flags .= ' --fixed-strings'
+        endif
+      else
+        let mode_flags = ' --fixed-strings'
+      endif
+      
+      let escaped_term = shellescape(actual_term)
+      let cmd = "rg --vimgrep" . mode_flags . additional_flags . " -- " . escaped_term
+      let search_term = actual_term
+    else
+      " No -g flags, check for mode flags
+      let mode_flags = ''
+      let actual_term = result
+      
+      if result =~ '^[ri]*:'
+        let flags = matchstr(result, '^[ri]*')
+        let actual_term = substitute(result, '^[ri]*:', '', '')
+        
+        if flags =~ 'i'
+          let mode_flags .= ' --ignore-case'
+        endif
+        
+        if flags =~ 'r'
+          " Regex mode - don't add --fixed-strings
+        else
+          let mode_flags .= ' --fixed-strings'
+        endif
+      else
+        let mode_flags = ' --fixed-strings'
+      endif
+      
+      let escaped_term = shellescape(actual_term)
+      let cmd = "rg --vimgrep" . mode_flags . " -- " . escaped_term
+      let search_term = actual_term
+    endif
+    
+    let output = systemlist(cmd)
+    lua handle_rg_result(vim.fn.eval('output'), vim.fn.eval('search_term'))
+  endfunction
+]])
+
+-- Function to perform ripgrep search with text
+local function do_ripgrep_search(text)
+  if text == "" then return end
+  vim.cmd('call ParseAndSearch(' .. vim.fn.string(text) .. ')')
+end
+
+-- <leader>ll - Search prompt with C-n toggle
+vim.keymap.set("n", "<leader>ll", function()
+  vim.cmd([[
+    function! RipgrepSearch()
+      " Set up temporary C-n mapping for command line
+      cnoremap <C-n> <C-c>:call RipgrepRawMode()<CR>
+      
+      let result = input('Search: ', '')
+      
+      " Clean up mapping
+      cunmap <C-n>
+      
+      if result != ''
+        call ParseAndSearch(result)
+      endif
+    endfunction
+    
+    function! RipgrepRawMode()
+      let cmd = input('', 'rg --vimgrep --fixed-strings ')
+      if cmd != ''
+        let output = systemlist(cmd)
+        let search_term = matchstr(cmd, "'\\zs[^']*\\ze'")
+        if search_term == ''
+          let search_term = 'raw_search'
+        endif
+        lua handle_rg_result(vim.fn.eval('output'), vim.fn.eval('search_term'))
+      endif
+    endfunction
+  ]])
+  
+  vim.cmd('call RipgrepSearch()')
+end)
+
+-- <leader>l + motion - search text object
 vim.keymap.set("n", "<leader>l", function()
-  vim.ui.input({ prompt = "Search: ", default = "rg --vimgrep " }, function(c)
-    if c and c ~= "" then
-      local output = vim.fn.systemlist(c)
-      add_rg_result_to_quickfix(output)
-    end
-  end)
+  vim.o.operatorfunc = "v:lua.ripgrep_operator"
+  return "g@"
+end, { expr = true })
+
+-- Operator function for <leader>l + motion
+_G.ripgrep_operator = function(type)
+  local saved_reg = vim.fn.getreg('"')
+  local saved_regtype = vim.fn.getregtype('"')
+  
+  if type == 'char' then
+    vim.cmd('silent normal! `[v`]y')
+  elseif type == 'line' then
+    vim.cmd('silent normal! `[V`]y')
+  elseif type == 'block' then
+    vim.cmd('silent normal! `[<C-v>`]y')
+  else
+    return
+  end
+  
+  local text = vim.fn.getreg('"')
+  vim.fn.setreg('"', saved_reg, saved_regtype)
+  
+  -- Clean up the text
+  text = string.gsub(text, "\n", " ")
+  text = string.gsub(text, "%s+", " ")
+  text = string.gsub(text, "^%s*(.-)%s*$", "%1")
+  
+  if text ~= "" then
+    local escaped_text = vim.fn.shellescape(text)
+    local cmd = "rg --vimgrep --fixed-strings -- " .. escaped_text
+    local output = vim.fn.systemlist(cmd)
+    add_rg_result_to_quickfix(output, text)
+  end
+end
+
+-- <leader>lw - search current word
+vim.keymap.set("n", "<leader>lw", function()
+  local current_word = vim.fn.expand("<cword>")
+  if current_word ~= "" then
+    do_ripgrep_search(current_word)
+  end
+end)
+
+-- <leader>lW - search current WORD
+vim.keymap.set("n", "<leader>lW", function()
+  local current_word = vim.fn.expand("<cWORD>")
+  if current_word ~= "" then
+    do_ripgrep_search(current_word)
+  end
 end)
 
 -- <cr>S - buffer + quickfix
@@ -166,8 +326,10 @@ vim.keymap.set("n", "<leader>L", function()
       -- Add to buffer
       vim.api.nvim_buf_set_lines(0, 0, -1, false, output)
 
+      -- Extract search term from command
+      local search_term = c:match("'([^']*)'") or c:match("%S+$") or "unknown"
       -- Add to quickfix
-      add_rg_result_to_quickfix(output)
+      add_rg_result_to_quickfix(output, search_term)
     end
   end)
 end)
@@ -196,13 +358,34 @@ vim.keymap.set("v", "<leader>l", function()
     selected_text = string.gsub(selected_text, "^%s*(.-)%s*$", "%1")
 
     if selected_text ~= "" then
-      -- Escape for shell
-      selected_text = vim.fn.shellescape(selected_text)
-
-      local cmd = "rg --vimgrep " .. selected_text
+      -- Store original text for title
+      local original_text = selected_text
+      
+      -- Use proper shell escaping
+      local escaped_text = vim.fn.shellescape(selected_text)
+      local cmd = "rg --vimgrep --fixed-strings -- " .. escaped_text
       local output = vim.fn.systemlist(cmd)
-      add_rg_result_to_quickfix(output)
+      add_rg_result_to_quickfix(output, original_text)
     end
+  end
+end)
+
+-- <leader>* - search current word in current file
+vim.keymap.set("n", "<leader>*", function()
+  local current_word = vim.fn.expand("<cword>")
+  if current_word ~= "" then
+    local current_file = vim.fn.expand("%:p")
+    if current_file ~= "" then
+      local escaped_word = vim.fn.shellescape(current_word)
+      local escaped_file = vim.fn.shellescape(current_file)
+      local cmd = "rg --vimgrep --fixed-strings -- " .. escaped_word .. " " .. escaped_file
+      local output = vim.fn.systemlist(cmd)
+      add_rg_result_to_quickfix(output, current_word)
+    else
+      print("No file to search in")
+    end
+  else
+    print("No word under cursor")
   end
 end)
 

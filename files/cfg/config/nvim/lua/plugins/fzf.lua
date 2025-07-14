@@ -45,6 +45,7 @@ return {
       -- Visual mode mappings
       -- { "<leader>sw", function() require("fzf-lua").grep_visual() end, mode = "v", desc = "Selection (Root Dir)", },
       -- { "<leader>sW", function() require("fzf-lua").grep_visual({ cwd = vim.fn.getcwd() }) end, mode = "v", desc = "Selection (cwd)", },
+      { "<leader>ca", function() require("fzf-lua").lsp_code_actions() end, desc = "Document symbols", },
     },
     -- opts = {
     -- -- Global fzf-lua configuration options
@@ -71,6 +72,8 @@ return {
     -- },
     config = function()
       local actions = require("fzf-lua.actions")
+
+	  vim.cmd[[FzfLua register_ui_select]]
 
       require("fzf-lua").setup({
         winopts = {

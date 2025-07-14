@@ -77,3 +77,7 @@ ln -srf ./files/cfg/scripts ~/.scripts
 
 rm -rf ~/.doom.d/
 ln -srf files/cfg/doom.d/ ~/.doom.d
+
+mkdir -p ~/.claude
+rm -rf ~/.claude/commands
+ln -srf cc/commands/ ~/.claude/commands

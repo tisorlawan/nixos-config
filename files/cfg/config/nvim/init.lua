@@ -23,7 +23,7 @@ require("lazy").setup({
       -- require("plugins.debugprint"),
       require("plugins.dirvish"),
       -- require("plugins.dressing"),
-      -- require("plugins.flit"),
+      require("plugins.flit"),
       require("plugins.focus"),
       require("plugins.fzf"),
       require("plugins.gitignore"),
@@ -44,11 +44,11 @@ require("lazy").setup({
       -- require("plugins.snacks"),
       -- require("plugins.suda"),
       -- require("plugins.todo-comments"),
-      -- require("plugins.toggleterm"),
+      require("plugins.toggleterm"),
       -- require("plugins.treesitter"),
       require("plugins.trouble"),
       -- require("plugins.ufo"),
-      -- require("plugins.undotree"),
+      require("plugins.undotree"),
       -- require("plugins.unified"),
       require("plugins.vim-cool"),
       -- require("plugins.whichkey"),
@@ -64,7 +64,7 @@ require("keymaps")
 require("autocmds")
 
 vim.api.nvim_set_hl(0, "FloatBorder", {
-  fg = "#a0a0a0",
+  fg = "#aaaaaa",
   bg = "NONE",
 })
 

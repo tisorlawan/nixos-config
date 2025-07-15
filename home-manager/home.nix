@@ -19,7 +19,7 @@ in
 
 
   home.packages = with pkgs; [
-    pkgs-unstable.windsurf
+    # pkgs-unstable.windsurf
     starship
     atuin
     (pkgs.callPackage ./alacritty { })

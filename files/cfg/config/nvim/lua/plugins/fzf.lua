@@ -73,7 +73,7 @@ return {
     config = function()
       local actions = require("fzf-lua.actions")
 
-	  vim.cmd[[FzfLua register_ui_select]]
+      vim.cmd([[FzfLua register_ui_select]])
 
       require("fzf-lua").setup({
         winopts = {

@@ -136,4 +136,3 @@ vim.api.nvim_create_autocmd({ "BufWritePost" }, {
   end,
   desc = "Auto-run shell script when saved if scratch buffer exists",
 })
-

@@ -62,8 +62,7 @@ return {
       },
       config = function(_, opts)
         require("render-markdown").setup(opts)
-        local renderMarkdownGroup =
-          vim.api.nvim_create_augroup("RenderMarkdownDefaults", { clear = true })
+        local renderMarkdownGroup = vim.api.nvim_create_augroup("RenderMarkdownDefaults", { clear = true })
 
         vim.api.nvim_create_autocmd("FileType", {
           group = renderMarkdownGroup,
@@ -72,6 +71,6 @@ return {
           command = "RenderMarkdown buf_disable",
         })
       end,
-    }
+    },
   },
 }

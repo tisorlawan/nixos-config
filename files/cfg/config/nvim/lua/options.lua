@@ -40,7 +40,7 @@ vim.opt.updatetime = 200 -- Save swap file and trigger CursorHold
 vim.opt.virtualedit = "block" -- Allow cursor to move where there is no text in visual block mode
 vim.opt.sessionoptions = { "buffers", "curdir", "tabpages", "winsize", "help", "globals", "skiprtp", "folds" }
 
-vim.o.winborder = 'rounded'
+vim.o.winborder = "rounded"
 
 vim.opt.laststatus = 2
 vim.opt.cmdheight = 1

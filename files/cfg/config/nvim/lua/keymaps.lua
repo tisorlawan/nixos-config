@@ -152,7 +152,7 @@ _G.handle_rg_result = add_rg_result_to_quickfix
 vim.cmd([[
   function! ParseAndSearch(text)
     let result = a:text
-    
+
     " Check if result contains -g delimiter
     let parts = split(result, ' -g ', 1)
     if len(parts) > 1
@@ -162,19 +162,19 @@ vim.cmd([[
       for i in range(1, len(parts) - 1)
         let additional_flags .= ' -g ' . parts[i]
       endfor
-      
+
       " Check for mode flags (r: for regex, i: for case-insensitive)
       let mode_flags = ''
       let actual_term = search_term
-      
+
       if search_term =~ '^[ri]*:'
         let flags = matchstr(search_term, '^[ri]*')
         let actual_term = substitute(search_term, '^[ri]*:', '', '')
-        
+
         if flags =~ 'i'
           let mode_flags .= ' --ignore-case'
         endif
-        
+
         if flags =~ 'r'
           " Regex mode - don't add --fixed-strings
         else
@@ -183,7 +183,7 @@ vim.cmd([[
       else
         let mode_flags = ' --fixed-strings'
       endif
-      
+
       let escaped_term = shellescape(actual_term)
       let cmd = "rg --vimgrep" . mode_flags . additional_flags . " -- " . escaped_term
       let search_term = actual_term
@@ -191,15 +191,15 @@ vim.cmd([[
       " No -g flags, check for mode flags
       let mode_flags = ''
       let actual_term = result
-      
+
       if result =~ '^[ri]*:'
         let flags = matchstr(result, '^[ri]*')
         let actual_term = substitute(result, '^[ri]*:', '', '')
-        
+
         if flags =~ 'i'
           let mode_flags .= ' --ignore-case'
         endif
-        
+
         if flags =~ 'r'
           " Regex mode - don't add --fixed-strings
         else
@@ -208,12 +208,12 @@ vim.cmd([[
       else
         let mode_flags = ' --fixed-strings'
       endif
-      
+
       let escaped_term = shellescape(actual_term)
       let cmd = "rg --vimgrep" . mode_flags . " -- " . escaped_term
       let search_term = actual_term
     endif
-    
+
     let output = systemlist(cmd)
     lua handle_rg_result(vim.fn.eval('output'), vim.fn.eval('search_term'))
   endfunction
@@ -221,8 +221,10 @@ vim.cmd([[
 
 -- Function to perform ripgrep search with text
 local function do_ripgrep_search(text)
-  if text == "" then return end
-  vim.cmd('call ParseAndSearch(' .. vim.fn.string(text) .. ')')
+  if text == "" then
+    return
+  end
+  vim.cmd("call ParseAndSearch(" .. vim.fn.string(text) .. ")")
 end
 
 -- <leader>ll - Search prompt with C-n toggle
@@ -231,17 +233,17 @@ vim.keymap.set("n", "<leader>ll", function()
     function! RipgrepSearch()
       " Set up temporary C-n mapping for command line
       cnoremap <C-n> <C-c>:call RipgrepRawMode()<CR>
-      
+
       let result = input('Search: ', '')
-      
+
       " Clean up mapping
       cunmap <C-n>
-      
+
       if result != ''
         call ParseAndSearch(result)
       endif
     endfunction
-    
+
     function! RipgrepRawMode()
       let cmd = input('', 'rg --vimgrep --fixed-strings ')
       if cmd != ''
@@ -254,8 +256,8 @@ vim.keymap.set("n", "<leader>ll", function()
       endif
     endfunction
   ]])
-  
-  vim.cmd('call RipgrepSearch()')
+
+  vim.cmd("call RipgrepSearch()")
 end)
 
 -- <leader>l + motion - search text object
@@ -268,25 +270,25 @@ end, { expr = true })
 _G.ripgrep_operator = function(type)
   local saved_reg = vim.fn.getreg('"')
   local saved_regtype = vim.fn.getregtype('"')
-  
-  if type == 'char' then
-    vim.cmd('silent normal! `[v`]y')
-  elseif type == 'line' then
-    vim.cmd('silent normal! `[V`]y')
-  elseif type == 'block' then
-    vim.cmd('silent normal! `[<C-v>`]y')
+
+  if type == "char" then
+    vim.cmd("silent normal! `[v`]y")
+  elseif type == "line" then
+    vim.cmd("silent normal! `[V`]y")
+  elseif type == "block" then
+    vim.cmd("silent normal! `[<C-v>`]y")
   else
     return
   end
-  
+
   local text = vim.fn.getreg('"')
   vim.fn.setreg('"', saved_reg, saved_regtype)
-  
+
   -- Clean up the text
   text = string.gsub(text, "\n", " ")
   text = string.gsub(text, "%s+", " ")
   text = string.gsub(text, "^%s*(.-)%s*$", "%1")
-  
+
   if text ~= "" then
     local escaped_text = vim.fn.shellescape(text)
     local cmd = "rg --vimgrep --fixed-strings -- " .. escaped_text
@@ -360,7 +362,7 @@ vim.keymap.set("v", "<leader>l", function()
     if selected_text ~= "" then
       -- Store original text for title
       local original_text = selected_text
-      
+
       -- Use proper shell escaping
       local escaped_text = vim.fn.shellescape(selected_text)
       local cmd = "rg --vimgrep --fixed-strings -- " .. escaped_text

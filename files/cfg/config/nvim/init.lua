@@ -9,50 +9,30 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 require("options")
+
+local function load_enabled_plugins()
+  local plugins_file = vim.fn.stdpath("config") .. "/plugins"
+  local plugins = {}
+
+  local file = io.open(plugins_file, "r")
+  if not file then
+    return {}
+  end
+
+  for line in file:lines() do
+    line = line:match("^%s*(.-)%s*$")
+    if line ~= "" and not line:match("^#") then
+      table.insert(plugins, require("plugins." .. line))
+    end
+  end
+
+  file:close()
+  return plugins
+end
+
 require("lazy").setup({
   spec = {
-    {
-      -- require("plugins.avante"),
-      require("plugins.arrow"),
-      require("plugins.asterisks"),
-      require("plugins.autopairs"),
-      -- require("plugins.bqf"),
-      -- require("plugins.colorizer"),
-      require("plugins.colorschema"),
-      require("plugins.conform"),
-      -- require("plugins.debugprint"),
-      require("plugins.dirvish"),
-      -- require("plugins.dressing"),
-      -- require("plugins.flit"),
-      require("plugins.focus"),
-      require("plugins.fzf"),
-      require("plugins.gitignore"),
-      require("plugins.gitsigns"),
-      require("plugins.leap"),
-      require("plugins.lsp"),
-      -- require("plugins.lualine"),
-      require("plugins.mini"),
-      require("plugins.multicursor"),
-      require("plugins.neotree"),
-      -- require("plugins.noice"),
-      require("plugins.nvim-lint"),
-      -- require("plugins.outline"),
-      -- require("plugins.persistence"),
-      -- require("plugins.richclip"),
-      -- require("plugins.scrolleof"),
-      require("plugins.smartsplit"),
-      -- require("plugins.snacks"),
-      -- require("plugins.suda"),
-      require("plugins.todo-comments"),
-      require("plugins.toggleterm"),
-      require("plugins.treesitter"),
-      require("plugins.trouble"),
-      -- require("plugins.ufo"),
-      require("plugins.undotree"),
-      require("plugins.vim-cool"),
-      -- require("plugins.whichkey"),
-      -- require("plugins.yazi"),
-    },
+    load_enabled_plugins(),
   },
   change_detection = {
     enabled = false,
@@ -62,7 +42,9 @@ require("lazy").setup({
 require("keymaps")
 require("autocmds")
 
-vim.cmd([[Zen]])
+if pcall(require, "focus") then
+  vim.cmd([[Zen]])
+end
 
 vim.api.nvim_set_hl(0, "FloatBorder", {
   fg = "#aaaaaa",
@@ -77,6 +59,8 @@ vim.filetype.add({
   },
   filename = {
     [".env"] = "bash",
+    ["plugins"] = "conf",
+    ["plugins.example"] = "conf",
     ["uv.lock"] = "toml",
     [".env.template"] = "bash",
     [".env.example"] = "bash",

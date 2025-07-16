@@ -14,7 +14,7 @@ require("lazy").setup({
     {
       -- require("plugins.avante"),
       require("plugins.arrow"),
-      -- require("plugins.asterisks"),
+      require("plugins.asterisks"),
       require("plugins.autopairs"),
       -- require("plugins.bqf"),
       -- require("plugins.colorizer"),
@@ -23,7 +23,7 @@ require("lazy").setup({
       -- require("plugins.debugprint"),
       require("plugins.dirvish"),
       -- require("plugins.dressing"),
-      require("plugins.flit"),
+      -- require("plugins.flit"),
       require("plugins.focus"),
       require("plugins.fzf"),
       require("plugins.gitignore"),
@@ -32,7 +32,7 @@ require("lazy").setup({
       require("plugins.lsp"),
       -- require("plugins.lualine"),
       require("plugins.mini"),
-      -- require("plugins.multicursor"),
+      require("plugins.multicursor"),
       require("plugins.neotree"),
       -- require("plugins.noice"),
       require("plugins.nvim-lint"),
@@ -43,13 +43,12 @@ require("lazy").setup({
       require("plugins.smartsplit"),
       -- require("plugins.snacks"),
       -- require("plugins.suda"),
-      -- require("plugins.todo-comments"),
+      require("plugins.todo-comments"),
       require("plugins.toggleterm"),
       require("plugins.treesitter"),
       require("plugins.trouble"),
       -- require("plugins.ufo"),
       require("plugins.undotree"),
-      -- require("plugins.unified"),
       require("plugins.vim-cool"),
       -- require("plugins.whichkey"),
       -- require("plugins.yazi"),
@@ -62,6 +61,8 @@ require("lazy").setup({
 })
 require("keymaps")
 require("autocmds")
+
+vim.cmd([[Zen]])
 
 vim.api.nvim_set_hl(0, "FloatBorder", {
   fg = "#aaaaaa",

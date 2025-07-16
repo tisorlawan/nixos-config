@@ -2,7 +2,7 @@ vim.cmd([[ set background=dark ]])
 vim.g.transparent = true
 
 -- mellifluous kanagawa hybrid zenwritten
-vim.g.colorscheme = "kanso"
+vim.g.colorscheme = "mellifluous"
 
 return {
   {
@@ -11,7 +11,7 @@ return {
     priority = 1000,
     config = function()
       if vim.g.colorscheme == "kanso" then
-        vim.cmd("colorscheme kanso-zen")
+        vim.cmd("colorscheme kanso")
       end
     end,
   },

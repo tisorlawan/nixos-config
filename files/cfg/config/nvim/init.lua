@@ -45,7 +45,7 @@ require("lazy").setup({
       -- require("plugins.suda"),
       -- require("plugins.todo-comments"),
       require("plugins.toggleterm"),
-      -- require("plugins.treesitter"),
+      require("plugins.treesitter"),
       require("plugins.trouble"),
       -- require("plugins.ufo"),
       require("plugins.undotree"),

@@ -4,7 +4,6 @@ vim.g.transparent = true
 -- mellifluous kanagawa hybrid zenwritten
 vim.g.colorscheme = "kanso"
 
-
 return {
   {
     "webhooked/kanso.nvim",
@@ -12,7 +11,7 @@ return {
     priority = 1000,
     config = function()
       if vim.g.colorscheme == "kanso" then
-        vim.cmd("colorscheme kanso")
+        vim.cmd("colorscheme kanso-zen")
       end
     end,
   },
@@ -35,7 +34,7 @@ return {
     "rebelot/kanagawa.nvim",
     config = function()
       if vim.g.colorscheme == "kanagawa" then
-        vim.cmd("colorscheme kanagawa-dragon")
+        vim.cmd("colorscheme kanagawa-wave")
       end
     end,
   },

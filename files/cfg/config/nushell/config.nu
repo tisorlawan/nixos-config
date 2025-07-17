@@ -47,6 +47,3 @@ source ($nu.default-config-dir | path join ".uv.nu")
 mkdir ($nu.data-dir | path join "vendor/autoload")
 starship init nu | save -f ($nu.data-dir | path join "vendor/autoload/starship.nu")
 #------------------------------------------------------------------------------
-
-# Source Yazelix Nushell configuration (added by Yazelix)
-source "/home/tiso/.config/yazelix/nushell/config/config.nu"

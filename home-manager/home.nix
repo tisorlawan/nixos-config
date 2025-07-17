@@ -54,6 +54,7 @@ in
     awscli2
     postman
     rclone
+    nushell
 
     #### @CLI UTILITIES ####
     bat

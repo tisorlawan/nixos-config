@@ -174,7 +174,7 @@ in
     starship
     atuin
     alacritty
-    pkgs-unstable.ghostty
+    inputs.ghostty.packages.${pkgs.system}.default
     pkgs-unstable.nushell
 
     #### @DESKTOP ENVIRONMENT ####

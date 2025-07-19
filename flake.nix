@@ -9,7 +9,7 @@
     # iwmenu.url = "github:e-tho/iwmenu";
     zotimer.url = "github:tisorlawan/zotimer";
     # television.url = "github:alexpasmantier/television";
-    # ghostty.url = "github:ghostty-org/ghostty/v1.1.0";
+    ghostty.url = "github:ghostty-org/ghostty/39f4cf3d19d49eecdb03cf963ec5818fd83d2fe7";
     helix.url = "github:helix-editor/helix/25.01";
   };
 

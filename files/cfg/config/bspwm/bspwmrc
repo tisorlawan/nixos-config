@@ -69,8 +69,8 @@ xset r rate 350 130
 
 # Enable tap-to-click for all touchpads
 for TOUCHPAD_ID in $(xinput list | grep -i Touchpad | grep -o 'id=[0-9]*' | cut -d= -f2); do
-	xinput set-prop "$TOUCHPAD_ID" "libinput Tapping Enabled" 1
-	xinput set-prop "$TOUCHPAD_ID" "libinput Natural Scrolling Enabled" 0
+  xinput set-prop "$TOUCHPAD_ID" "libinput Tapping Enabled" 1
+  xinput set-prop "$TOUCHPAD_ID" "libinput Natural Scrolling Enabled" 0
 done
 
 (sleep 1 && ~/.config/bspwm/start_sxhkd.sh) &
@@ -81,4 +81,4 @@ while ! xwininfo -root >/dev/null 2>&1; do sleep 0.1; done
 # (picom > /home/agung-b-sorlawan/x.log 2>&1) &
 # (env > /home/agung-b-sorlawan/picom_env.log; picom > /home/agung-b-sorlawan/x.log 2>&1) &
 eww open bar &
-# picom &
+picom -b --config "$HOME/.config/picom/picom.conf"

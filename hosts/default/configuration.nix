@@ -213,6 +213,7 @@ in
     # cliphist
 
     bitcoin
+    yacreader
 
     #### @CLI UTILITIES ####
     pkgs-unstable.uutils-coreutils-noprefix

@@ -46,10 +46,10 @@ if pcall(require, "focus") then
   vim.cmd([[Zen]])
 end
 
-vim.api.nvim_set_hl(0, "FloatBorder", {
-  fg = "#aaaaaa",
-  bg = "NONE",
-})
+-- vim.api.nvim_set_hl(0, "FloatBorder", {
+--   fg = "#999999",
+--   bg = "NONE",
+-- })
 
 vim.filetype.add({
   extension = {

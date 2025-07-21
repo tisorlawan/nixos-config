@@ -1,4 +1,4 @@
-{ pkgs, nixpkgs-unstable, ... }:
+{ pkgs, nixpkgs-unstable, inputs, ... }:
 
 let
   pkgs-unstable = nixpkgs-unstable;
@@ -23,7 +23,7 @@ in
     starship
     atuin
     (pkgs.callPackage ./alacritty { })
-    (pkgs.callPackage ./ghostty { nixpkgs-unstable = nixpkgs-unstable; })
+    (pkgs.callPackage ./ghostty { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
 
     #### @DESKTOP ENVIRONMENT ####
     dunst

@@ -6,6 +6,7 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    ghostty.url = "github:ghostty-org/ghostty/39f4cf3d19d49eecdb03cf963ec5818fd83d2fe7";
     # nixpkgs.url = "github:nixos/nixpkgs/release-25.05";
     # nixpkgs-unstable.url = "github:nixos/nixpkgs/62b852f6";
     # home-manager = {
@@ -15,7 +16,7 @@
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, flake-utils, home-manager, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, flake-utils, home-manager, ghostty, ... }:
     flake-utils.lib.eachDefaultSystem
       (system:
         let

@@ -39,8 +39,17 @@ require("lazy").setup({
     notify = false,
   },
 })
-require("keymaps")
-require("autocmds")
+
+-- vim.api.nvim_create_autocmd("User", {
+--   pattern = "VeryLazy",
+--   callback = function()
+--     if package.loaded["lualine"] and pcall(require, "focus") then
+--       vim.cmd([[Zen]])
+--     elseif pcall(require, "focus") then
+--       vim.cmd([[Zen]])
+--     end
+--   end,
+-- })
 
 if pcall(require, "focus") then
   vim.cmd([[Zen]])

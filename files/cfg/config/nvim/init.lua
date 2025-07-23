@@ -53,9 +53,9 @@ require("lazy").setup({
 --   end,
 -- })
 
-if pcall(require, "focus") then
-  vim.cmd([[Zen]])
-end
+-- if pcall(require, "focus") then
+--   vim.cmd([[Zen]])
+-- end
 
 -- vim.api.nvim_set_hl(0, "FloatBorder", {
 --   fg = "#999999",

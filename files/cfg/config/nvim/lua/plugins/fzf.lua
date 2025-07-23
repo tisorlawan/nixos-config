@@ -1,7 +1,26 @@
+vim.keymap.set({ "n" }, "<leader>fd", function()
+  require("fzf-lua").fzf_exec(
+    "fd -u --type d -E .cache -E snap -E cache -E go -E .git -E .npm -E .miniconda3 -E .conda -E __pycache__ -E .docker -E .cargo -E .cert -E .windsurf -E .minikube -E .ghcup -E .claude -E .stack -E .cabal -E .aws -E tmp -E .rustup -E uv -E .local/share -E .codeium -E .cargo_build_artifacts -E .ipython -E .ruff_cache -E .venv -E Slack -E node_modules -E .jupyter -E nltk_data -E .local/state -E .zoom",
+    {
+      prompt = "~/",
+      cwd = "~",
+      actions = {
+        ["default"] = function(selected)
+          if selected and #selected > 0 then
+            local root = vim.fn.expand("~") .. "/"
+            vim.cmd("cd " .. root .. selected[1])
+            require("fzf-lua").files()
+          end
+        end,
+      },
+    }
+  )
+end, { silent = true, desc = "Fuzzy cd to dir under ~" })
+
 return {
   {
     "ibhagwan/fzf-lua",
-    event = { "BufReadPre", "BufNewFile" },
+    event = { "BufReadPre", "BufNewFile", "VimEnter" },
     dependencies = {
       { "nvim-tree/nvim-web-devicons" },
     },

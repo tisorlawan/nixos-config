@@ -9,6 +9,8 @@ end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
 
 require("options")
+require("autocmds")
+require("keymaps")
 
 local function load_enabled_plugins()
   local plugins_file = vim.fn.stdpath("config") .. "/plugins"

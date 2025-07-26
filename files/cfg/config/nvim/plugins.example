@@ -4,6 +4,7 @@
 # colorschema
 # conform
 # dirvish
+# flit
 # focus
 # fzf
 # gitignore
@@ -28,7 +29,6 @@
 # colorizer
 # debugprint
 # dressing
-# flit
 # lualine
 # noice
 # outline

@@ -107,7 +107,7 @@ return {
           buffer = term.bufnr,
           callback = function()
             if first_enter then
-              vim.cmd("normal! gg")
+              -- vim.cmd("normal! gg")
               first_enter = false
               return true
             end
@@ -124,6 +124,14 @@ return {
       pattern = "zig",
       callback = function()
         vim.keymap.set("n", "<cr>", function()
+          local current_file = vim.fn.expand("%:t")
+          local cmd = string.format("TermExec cmd='zig build run' direction=vertical", current_file)
+          vim.cmd(cmd)
+        end, {
+          buffer = true,
+          desc = "Run Zig tests for current file",
+        })
+        vim.keymap.set("n", "t<cr>", function()
           local current_file = vim.fn.expand("%:t")
           local cmd = string.format("TermExec cmd='zig test %s' direction=vertical", current_file)
           vim.cmd(cmd)

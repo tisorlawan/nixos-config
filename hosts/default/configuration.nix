@@ -214,6 +214,7 @@ in
 
     bitcoin
     yacreader
+    keepassxc
 
     #### @CLI UTILITIES ####
     pkgs-unstable.uutils-coreutils-noprefix

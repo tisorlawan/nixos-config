@@ -42,6 +42,10 @@ case "$title" in
   echo "hidden=on"
   exit 0
   ;;
+"MangaReader")
+  echo "state=floating"
+  exit 0
+  ;;
 esac
 
 [ -n "$is_dialog" ] && {

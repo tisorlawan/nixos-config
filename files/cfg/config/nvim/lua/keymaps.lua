@@ -36,6 +36,13 @@ map("i", "<c-p>", function()
 end, { remap = true, silent = false, desc = " and paste register in insert mode" })
 map("n", "<leader>yf", ":%y<cr>", { desc = "yank current file to the clipboard buffer" })
 map("n", "<leader>xc", ":!chmod +x %<cr>", { desc = "make file executable" })
+map("n", "<leader>an", function()
+  local current_dir = vim.fn.expand("%:h")
+  if current_dir == "" then
+    current_dir = "."
+  end
+  vim.fn.feedkeys(":e " .. current_dir .. "/", "n")
+end, { desc = "Create new file in same directory" })
 map(
   "n",
   "<leader>pf",

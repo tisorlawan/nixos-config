@@ -55,6 +55,7 @@ in
     postman
     rclone
     nushell
+    foliate
 
     #### @CLI UTILITIES ####
     bat

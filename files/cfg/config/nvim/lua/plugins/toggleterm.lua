@@ -120,16 +120,30 @@ return {
       on_close = function(term) end,
     })
 
+    -- Helper function to check for ./cmd and fallback to default command
+    local function create_run_keymap(default_cmd, desc)
+      return function()
+        local cwd = vim.fn.getcwd()
+        local cmd_file = cwd .. "/cmd"
+
+        local final_cmd
+        if vim.fn.executable(cmd_file) == 1 then
+          final_cmd = "./cmd"
+        else
+          final_cmd = default_cmd
+        end
+
+        local term_cmd = string.format("TermExec cmd='%s' direction=vertical", final_cmd)
+        vim.cmd(term_cmd)
+      end
+    end
+
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "zig",
       callback = function()
-        vim.keymap.set("n", "<cr>", function()
-          local current_file = vim.fn.expand("%:t")
-          local cmd = string.format("TermExec cmd='zig build run' direction=vertical", current_file)
-          vim.cmd(cmd)
-        end, {
+        vim.keymap.set("n", "<leader>rr", create_run_keymap("zig build run", "Run Zig project"), {
           buffer = true,
-          desc = "Run Zig tests for current file",
+          desc = "Run Zig project or ./cmd",
         })
         vim.keymap.set("n", "t<cr>", function()
           local current_file = vim.fn.expand("%:t")
@@ -145,12 +159,9 @@ return {
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "haskell",
       callback = function()
-        vim.keymap.set("n", "<cr>", function()
-          local cmd = string.format("TermExec cmd='clear; cabal run --verbose=0' direction=vertical")
-          vim.cmd(cmd)
-        end, {
+        vim.keymap.set("n", "<leader>rr", create_run_keymap("clear; cabal run --verbose=0", "Run Haskell project"), {
           buffer = true,
-          desc = "Run 'cabal run'",
+          desc = "Run Haskell project or ./cmd",
         })
       end,
     })
@@ -158,20 +169,30 @@ return {
     vim.api.nvim_create_autocmd("FileType", {
       pattern = "rust",
       callback = function()
-        vim.keymap.set("n", "<cr>", function()
+        vim.keymap.set("n", "<leader>rr", function()
           -- Store current window and buffer
           local current_win = vim.api.nvim_get_current_win()
           local current_buf = vim.api.nvim_get_current_buf()
 
-          -- Run bacon in vertical split
-          local cmd = string.format("TermExec cmd='bacon' direction=vertical")
-          vim.cmd(cmd)
+          local cwd = vim.fn.getcwd()
+          local cmd_file = cwd .. "/cmd"
+
+          local final_cmd
+          if vim.fn.executable(cmd_file) == 1 then
+            final_cmd = "./cmd"
+          else
+            final_cmd = "bacon"
+          end
+
+          -- Run command in vertical split
+          local term_cmd = string.format("TermExec cmd='%s' direction=vertical", final_cmd)
+          vim.cmd(term_cmd)
 
           -- Return focus to original window
           vim.api.nvim_set_current_win(current_win)
         end, {
           buffer = true,
-          desc = "Run 'bacon'",
+          desc = "Run Rust project or ./cmd",
         })
         vim.keymap.set("n", "<leader><cr>", function()
           -- Store current window and buffer
@@ -186,9 +207,64 @@ return {
           vim.api.nvim_set_current_win(current_win)
         end, {
           buffer = true,
-          desc = "Run 'bacon'",
+          desc = "Run 'cargo test'",
         })
       end,
     })
+
+    -- C filetype handler with error parsing to quickfix
+    vim.api.nvim_create_autocmd("FileType", {
+      pattern = "c",
+      callback = function()
+        vim.keymap.set("n", "<leader>rr", function()
+          local cwd = vim.fn.getcwd()
+          local cmd_file = cwd .. "/cmd"
+
+          local final_cmd
+          if vim.fn.executable(cmd_file) == 1 then
+            final_cmd = "./cmd"
+          else
+            final_cmd = "make"
+          end
+
+          -- Clear previous quickfix list
+          vim.fn.setqflist({})
+
+          -- Run in terminal only
+          local term_cmd = string.format("TermExec cmd='%s' direction=vertical", final_cmd)
+          vim.cmd(term_cmd)
+        end, {
+          buffer = true,
+          desc = "Build C project or ./cmd",
+        })
+      end,
+    })
+
+    -- Generic handler for all other filetypes
+    -- vim.api.nvim_create_autocmd("FileType", {
+    --   pattern = "*",
+    --   callback = function()
+    --     local filetype = vim.bo.filetype
+    --     -- Skip if this filetype already has a specific handler
+    --     if filetype == "zig" or filetype == "haskell" or filetype == "rust" or filetype == "c" then
+    --       return
+    --     end
+    --
+    --     vim.keymap.set("n", "<leader>rr", function()
+    --       local cwd = vim.fn.getcwd()
+    --       local cmd_file = cwd .. "/cmd"
+    --
+    --       if vim.fn.executable(cmd_file) == 1 then
+    --         local term_cmd = string.format("TermExec cmd='./cmd' direction=vertical")
+    --         vim.cmd(term_cmd)
+    --       else
+    --         vim.notify("No ./cmd file found in current directory", vim.log.levels.WARN)
+    --       end
+    --     end, {
+    --       buffer = true,
+    --       desc = "Run ./cmd if it exists",
+    --     })
+    --   end,
+    -- })
   end,
 }

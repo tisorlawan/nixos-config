@@ -40,6 +40,11 @@ require("lazy").setup({
     enabled = false,
     notify = false,
   },
+  dev = {
+    path = "~/software/tisorlawan",
+    patterns = {},
+    fallback = false,
+  },
 })
 
 -- vim.api.nvim_create_autocmd("User", {

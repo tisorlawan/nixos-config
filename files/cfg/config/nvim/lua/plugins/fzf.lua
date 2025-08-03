@@ -27,7 +27,7 @@ return {
     -- stylua: ignore
     keys = {
       { "<c-n>", function() require("fzf-lua").buffers() end, desc = "Buffers", },
-      { "<c-p>", function() require("fzf-lua").files() end, desc = "Find Files (Root Dir)", },
+      -- { "<c-p>", function() require("fzf-lua").files() end, desc = "Find Files (Root Dir)", },
       { "<leader>fF", function() require("fzf-lua").files({ cwd = vim.fn.getcwd() }) end, desc = "Find Files (cwd)", },
       { "<leader>fg", function() require("fzf-lua").git_files() end, desc = "Find Files (git-files)", },
       { "<leader>fr", function() require("fzf-lua").oldfiles() end, desc = "Recent", },

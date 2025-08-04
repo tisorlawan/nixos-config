@@ -1,56 +1,124 @@
-At the end of this message, I will ask you to create a PR. Please create a PR.md file with the following format:
+At the end of this message, I will ask you to create a PR based on the commit hash provided.
+To see the diff, just run `git diff $commit_hash_provided HEAD`
 
-### Pull Request Title Format
+- Create a `PR.md` file (delete if it already exist/truncate it) with the following format:
 
-[Component] Type of PR: Short Description
+## Pull Request Title Format
 
-### Available Components
+Use Conventional Commits format for PR titles:
 
-- RAGO - RAGO related changes
-- FE - Frontend changes
-- DPO - DPO related changes
-- BE - Backend changes
-- API - API changes
-- DB - Database changes
-- CI - CI/CD changes
-- DOCS - Documentation changes
+```text
+<type>(<scope>): <description>
+```
 
-### Available Type of PR
+## Common Types
 
-- Feature – New feature
-- Fix – Bug fix
-- Docs – Documentation only changes
-- Refactor – Code style, refactoring
-- Test – Adding or fixing tests
-- Enhancement – Enhancement to existing feature
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, no logic changes)
+- `refactor`: Code refactoring
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks, dependency updates
 
-### Pull Request Description Format
+## Description Field
+
+Recommended to start a `<description>` with a verb (add, resolve, update, etc.)
+
+## Examples
+
+- `feat(auth): add OAuth2 login integration`
+- `fix(api): resolve null pointer exception in user service`
+- `docs(readme): update installation instructions`
+- `refactor(database): optimize query performance`
+- `feat(BE): add vector DB connection`
+- `fix(FE): login redirection`
+
+## Pull Request Description Format
 
 ```markdown
-# [Component] Type of PR: Short Description
+## Summary
 
-## Overview
-
-Briefly explain what this PR does and why
+<!-- Brief description of what this PR does and why it's needed -->
 
 ## How to Test
 
-Steps to manually test or verify functionality
+<!-- Provide clear steps for reviewers to test your changes -->
+
+1. Step 1
+2. Step 2
+3. Expected result
 
 ## Related Issues
 
-Link to relevant issues, e.g., Closes #123
+<!-- Link related issues using: Closes #123, Fixes #456, Related to #789 -->
 
-## Implementation Details
+## Author Checklist
 
-- Key changes made
-- Technical decisions and rationale
-- Any commands run during development
+- [ ] Code follows team coding standards and style guide
+- [ ] Self-reviewed the code changes
+- [ ] Added/updated tests for new functionality
+- [ ] All tests pass locally
+- [ ] Code is properly documented
+- [ ] Synced with latest `develop` branch
+- [ ] PR title follows conventional commit format
+- [ ] Meaningful commit messages used
 
-## Testing
+## Additional Notes
 
-- Tests added/modified
-- Test results summary
+1. [GDP Labs Coding and Code Review Best Practices](https://docs.google.com/document/d/1QCzqnxXPEN_fatbTaSt-LVL9vFKoEBrQ6zTCt3tbCWU/edit)
+<!-- Any additional context, screenshots, or information reviewers should know -->
 ```
 
-Note: Do not create PR with gh command - only create the PR.md file with the proper template.
+## Guidelines for Authors
+
+- **Keep PRs Small**: Aim for changes under 200-300 lines when possible
+- **Use Draft**: Use Draft when the PR is not ready for review to reduce reviewer overhead
+- **Write Clear Descriptions**: Explain the "what" and "why", not just the "how"
+- **Test Thoroughly**: Test locally and in development environment before requesting review
+- **Use Meaningful Commits**: Each commit should represent a logical unit of work
+- **Link Issues**: Always reference related issues or tickets
+- **Author Checklist**: Set items as strikethrough if they are not necessary
+  - Example: `- [ ] ~Synced with latest develop branch~`
+
+---
+
+- Create a `COMMIT.md` (truncate it if already exists) file with the squash merge commit message format:
+
+## Squash Commit Message Format
+
+```text
+<type>(<scope>): <description>
+
+- Major change 1
+- Major change 2
+- Important implementation note
+- Issue references
+```
+
+## Example Format
+
+```text
+feat(auth): implement OAuth2 login with Google integration
+
+- Add Google OAuth2 configuration
+- Implement login/logout endpoints
+- Add user session management
+- Include comprehensive tests
+```
+
+## Notes
+
+- Include key details in the squash message body:
+  - Major changes made
+  - Important implementation notes
+  - Issue references
+- Use the PR title as the squash commit title (if it follows conventional commits)
+- For tracking & tracing purpose ensure the Pull Request number is included, by default it should be:
+  `feat(auth): implement OAuth2 login with Google integration (#124)`
+
+**Note: Do not create PR with gh command - only create the PR.md and COMMIT.md files with the proper templates.**
+
+---
+
+**Now, please analyze the following commit diff and create the appropriate PR.md and COMMIT.md files:**

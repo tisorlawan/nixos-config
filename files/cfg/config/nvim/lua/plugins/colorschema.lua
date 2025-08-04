@@ -11,7 +11,7 @@ return {
     priority = 1000,
     config = function()
       if vim.g.colorscheme == "kanso" then
-        vim.cmd("colorscheme kanso")
+        vim.cmd("colorscheme kanso-ink")
       end
     end,
   },

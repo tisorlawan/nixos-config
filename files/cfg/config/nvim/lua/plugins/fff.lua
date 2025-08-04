@@ -1,5 +1,5 @@
 return {
-  "tisorlawan/fff.nvim",
+  "dmtrKovalenko/fff.nvim",
   -- build = "cargo build --release",
   -- or if you are using nixos
   -- name = "fff.nvim",

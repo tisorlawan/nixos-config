@@ -116,6 +116,8 @@ return {
         theme = "auto",
         globalstatus = vim.o.laststatus == 3,
         disabled_filetypes = { statusline = { "dashboard", "alpha", "ministarter", "snacks_dashboard" } },
+        section_separators = "",
+        component_separators = "",
       },
       sections = {
         lualine_a = {
@@ -141,7 +143,7 @@ return {
               hint = icons.diagnostics.Hint,
             },
           },
-          { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
+          -- { "filetype", icon_only = true, separator = "", padding = { left = 1, right = 0 } },
           { pretty_path() },
         },
         lualine_x = {

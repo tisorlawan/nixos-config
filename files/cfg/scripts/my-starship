@@ -1,0 +1,178 @@
+#!/bin/sh
+
+# Dynamic Starship config generator
+# This script reads COLOR env var or ~/.color file and generates appropriate config
+
+# Check COLOR environment variable first, then fall back to ~/.color file
+COLOR_MODE="$COLOR"
+
+if [ -z "$COLOR_MODE" ] && [ -f ~/.color ]; then
+    COLOR_MODE=$(cat ~/.color 2>/dev/null | tr -d '[:space:]')
+fi
+
+# Default to dark if no preference found
+if [ "$COLOR_MODE" != "light" ]; then
+    COLOR_MODE="dark"
+fi
+
+# Set colors based on mode
+if [ "$COLOR_MODE" = "light" ]; then
+    DIR_COLOR="bold fg:25"        # Dark blue for light mode
+    GIT_COLOR="fg:28"             # Dark green for light mode
+    ACCENT_COLOR="fg:88"          # Dark red for light mode
+else
+    DIR_COLOR="bold fg:69"        # Bright blue for dark mode
+    GIT_COLOR="fg:82"             # Bright green for dark mode  
+    ACCENT_COLOR="fg:196"         # Bright red for dark mode
+fi
+
+# Ensure config directory exists
+mkdir -p ~/.config
+
+# Generate and write config
+cat > ~/.config/starship.toml << EOF
+# colors: https://i.stack.imgur.com/KTSQa.png
+# New line at the start of the prompt
+add_newline = true
+
+format = """
+\$username\\
+\$hostname\\
+\$shlvl\\
+\$kubernetes\\
+\$directory\\
+\$git_branch\\
+\$git_commit\\
+\$git_state\\
+\$git_status\\
+\$hg_branch\\
+\$package\\
+\$cmake\\
+\$dart\\
+\$dotnet\\
+\$elixir\\
+\$elm\\
+\$erlang\\
+\$golang\\
+\$helm\\
+\$java\\
+\$julia\\
+\$nim\\
+\$nodejs\\
+\$ocaml\\
+\$perl\\
+\$php\\
+\$purescript\\
+\$ruby\\
+\$rust\\
+\$python\\
+\$swift\\
+\$terraform\\
+\$zig\\
+\$nix_shell\\
+\$conda\\
+\$memory_usage\\
+\$aws\\
+\$gcloud\\
+\$openstack\\
+\$env_var\\
+\$crystal\\
+\$cmd_duration\\
+\$custom\\
+\$line_break\\
+\$lua\\
+\$jobs\\
+\$battery\\
+\$time\\
+\$status\\
+\$character"""
+
+[aws]
+disabled = true
+
+[battery]
+disabled = true
+
+[cmd_duration]
+min_time = 10_000
+
+[conda]
+symbol = " "
+
+[dart]
+symbol = " "
+disabled = true
+
+[directory]
+read_only = " 🔒"
+read_only_style = "red"
+truncate_to_repo = true
+truncation_length = 20
+style = "$DIR_COLOR"
+format = "[\$path](\$style)"
+
+[elixir]
+symbol = " "
+
+[elm]
+symbol = " "
+
+[gcloud]
+disabled = true
+
+[git_branch]
+symbol = " "
+style = "$GIT_COLOR"
+format = "[\$symbol\$branch](\$style) "
+
+[git_status]
+style = "$ACCENT_COLOR"
+
+[golang]
+symbol = " "
+
+[hg_branch]
+symbol = " "
+
+[java]
+symbol = " "
+
+[julia]
+symbol = " "
+
+[memory_usage]
+symbol = " "
+
+[nim]
+symbol = " "
+
+[nix_shell]
+symbol = " "
+
+[nodejs]
+symbol = " "
+
+[package]
+symbol = " "
+disabled = true
+
+[perl]
+symbol = " "
+
+[php]
+symbol = " "
+
+[python]
+symbol = " "
+
+[ruby]
+symbol = " "
+
+[rust]
+symbol = " "
+
+[swift]
+symbol = "ﯣ "
+EOF
+
+echo "Starship config updated for $COLOR_MODE mode"

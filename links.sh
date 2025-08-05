@@ -12,9 +12,6 @@ ln -srf files/cfg/config/rofi ~/.config/rofi
 rm -rf ~/.config/alacritty.toml
 ln -srf ./files/cfg/config/alacritty.toml ~/.config/alacritty.toml
 
-rm -rf ~/.config/starship.toml
-ln -srf ./files/cfg/config/starship.toml ~/.config/starship.toml
-
 rm -rf ~/.config/greenclip.toml
 ln -srf ./files/cfg/config/greenclip.toml ~/.config/greenclip.toml
 
@@ -59,9 +56,6 @@ ln -srf files/cfg/config/eww ~/.config/eww
 
 rm -rf ~/.config/zellij
 ln -srf files/cfg/config/zellij ~/.config/zellij
-
-rm -rf ~/.config/ghostty
-ln -srf files/cfg/config/ghostty ~/.config/ghostty
 
 rm -rf ~/.images
 ln -srf ./files/cfg/images ~/.images

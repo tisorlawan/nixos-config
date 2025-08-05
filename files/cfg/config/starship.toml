@@ -2,18 +2,12 @@
 # New line at the start of the prompt
 add_newline = true
 
-# # Disable the package module, hiding it from the prompt completely
-# [package]
-# disabled = true
-
-
 format = """
 $username\
 $hostname\
 $shlvl\
 $kubernetes\
 $directory\
-[ ](fg:233 bg:#000000000)\
 $git_branch\
 $git_commit\
 $git_state\
@@ -60,35 +54,28 @@ $time\
 $status\
 $character"""
 
-# format = """
-# [┌─\\[ $directory\\] ](bold blue)$git_branch$git_status$nodejs$rust$lua$go$python$cmd_duration
-# [└─](bold blue)$character"""
-
 [aws]
-symbol = " "
 disabled = true
 
 [battery]
-full_symbol = ""
-charging_symbol = ""
-discharging_symbol = ""
 disabled = true
 
 [cmd_duration]
 min_time = 10_000
 
 [conda]
-symbol = " "
+symbol = " "
 
 [dart]
-symbol = " "
+symbol = " "
+disabled = true
 
 [directory]
 read_only = " 🔒"
 read_only_style = "red"
 truncate_to_repo = true
 truncation_length = 20
-style = "bold bg:233 fg:69"
+style = "bold fg:25"
 format = "[$path]($style)"
 
 [elixir]
@@ -102,7 +89,11 @@ disabled = true
 
 [git_branch]
 symbol = " "
+style = "fg:28"
 format = "[$symbol$branch]($style) "
+
+[git_status]
+style = "fg:88"
 
 [golang]
 symbol = " "

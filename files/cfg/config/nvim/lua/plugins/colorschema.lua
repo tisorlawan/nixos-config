@@ -11,7 +11,24 @@ return {
     priority = 1000,
     config = function()
       if vim.g.colorscheme == "kanso" then
-        vim.cmd("colorscheme kanso-ink")
+        local color_mode = vim.env.COLOR
+
+        if not color_mode then
+          local color_file = vim.fn.expand("~/.color")
+          if vim.fn.filereadable(color_file) == 1 then
+            local lines = vim.fn.readfile(color_file)
+            if #lines > 0 then
+              color_mode = vim.trim(lines[1])
+            end
+          end
+        end
+
+        print(color_mode)
+        if color_mode == "light" then
+          vim.cmd("colorscheme kanso-pearl")
+        else
+          vim.cmd("colorscheme kanso-ink")
+        end
       end
     end,
   },

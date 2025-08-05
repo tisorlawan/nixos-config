@@ -28,7 +28,8 @@ cat > $DIR/config << EOF
 $(if [ "$COLOR_MODE" = "light" ]; then
     echo 'theme = "BlulocoLight"'
 else
-    echo 'theme = "Kanagawa Dragon"'
+    echo 'theme = "catppuccin-mocha"'
+    echo 'background = 181820'
 fi)
 
 # background-opacity = 0.5

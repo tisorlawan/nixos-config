@@ -21,7 +21,7 @@ return {
         "vim",
         "vimdoc",
       },
-      auto_install = true,
+      auto_install = false,
       ignore_install = { "gitcommit" },
       highlight = {
         enable = true,

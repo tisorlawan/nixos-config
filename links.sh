@@ -15,6 +15,9 @@ ln -srf ./files/cfg/config/alacritty.toml ~/.config/alacritty.toml
 rm -rf ~/.config/greenclip.toml
 ln -srf ./files/cfg/config/greenclip.toml ~/.config/greenclip.toml
 
+rm -rf ~/.config/lazygit
+ln -srf ./files/cfg/config/lazygit ~/.config/lazygit
+
 rm -rf ~/.config/user-dirs.dirs
 ln -srf ./files/cfg/config/user-dirs.dirs ~/.config/user-dirs.dirs
 

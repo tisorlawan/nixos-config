@@ -121,4 +121,29 @@ feat(auth): implement OAuth2 login with Google integration
 
 ---
 
-**Now, please analyze the following commit diff and create the appropriate PR.md and COMMIT.md files:**
+Create document called 'AI-REVIEW.md' (delete if it already exist/truncate it).
+
+Contains these content.
+I want you to basically analyze this diff, and count the findings.
+Please list the findings and reason in `### Findings`
+
+```markdown
+### AI Review Feedback
+
+- High_TP: <Jumlah review dari AI yang levelnya high dan tepat setelah divalidasi>
+- High_FP: <Jumlah review dari AI yang levelnya high namun kurang tepat setelah divalidasi>
+- Medium_TP: <Jumlah review dari AI yang levelnya medium dan tepat setelah divalidasi>
+- Medium_FP: <Jumlah review dari AI yang levelnya medium namun kurang tepat setelah divalidasi>
+- Low_TP: <Jumlah review dari AI yang levelnya low dan tepat setelah divalidasi>
+- Low_FP: <Jumlah review dari AI yang levelnya low namun kurang tepat setelah divalidasi>
+- Notes: <Tambahan catatan optional>
+
+### Findings
+
+-
+-
+```
+
+---
+
+**Now, please analyze the following commit diff and create the appropriate PR.md, COMMIT.md and AI-REVIEW.md files:**

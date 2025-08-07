@@ -23,7 +23,6 @@ return {
           end
         end
 
-        print(color_mode)
         if color_mode == "light" then
           vim.cmd("colorscheme kanso-pearl")
         else

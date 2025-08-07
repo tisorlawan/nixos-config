@@ -84,7 +84,7 @@ in
     sbcl
     killall
     yazi
-    yt-dlp
+    pkgs-unstable.yt-dlp
     zoxide
     nethogs
     iw

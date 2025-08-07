@@ -4,3 +4,4 @@ files/firefox-profiles
 *.backup
 history.txt
 repomix*
+files/cfg/config/starship.toml

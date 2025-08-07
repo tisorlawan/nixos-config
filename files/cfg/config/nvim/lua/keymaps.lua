@@ -74,6 +74,8 @@ map("n", "<leader>Q", ":wq<cr>", { silent = true })
 -- buffers
 map("n", "<leader>bD", "<cmd>:bd<cr>", { desc = "Delete Buffer and Window" })
 map("n", "<leader><tab>", "<C-^>", { desc = "Alternative Buffer" })
+map("n", "<leader>q", ":q<CR>", { desc = ":q" })
+map("n", "<leader>Q", ":wq<CR>", { desc = ":wq" })
 
 map("n", "<leader>pp", ":Lazy<cr>", { desc = "Lazy", silent = true })
 map("n", "<Leader>pt", utils.get_linters, { desc = "lint progress", silent = true })
@@ -97,11 +99,6 @@ map("n", "cp", ":cprev<CR>", { silent = true })
 map("n", "co", ":copen<CR>", { silent = true })
 map("n", "cq", utils.close_diagnostics, { desc = "close diagnostics", silent = true })
 map("n", "cu", utils.jumps_to_qf, { desc = "jumps to qf", silent = true })
-
--- notifications
-map("n", "<leader>q", function()
-  require("noice").cmd("dismiss")
-end, { desc = "Dismiss" })
 
 -- movement in insert mode
 map("i", "<c-l>", "<right>")

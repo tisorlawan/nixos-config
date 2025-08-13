@@ -201,6 +201,7 @@ in
     file-roller
     eww
     rofi-wayland
+    typora
 
     #### @WAYLAND SPECIFIC ####
     # grim

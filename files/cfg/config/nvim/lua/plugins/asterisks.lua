@@ -2,7 +2,7 @@ return {
   "tisorlawan/vim-asterisk",
   config = function()
     vim.cmd([[
-      map *   <Plug>(asterisk-z*)
+      nmap *   <Plug>(asterisk-z*)
       map #   <Plug>(asterisk-z#)
       map g*  <Plug>(asterisk-gz*)
       map g#  <Plug>(asterisk-gz#)

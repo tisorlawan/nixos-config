@@ -17,7 +17,7 @@ local config = {
   },
   c = {
     formatters = { "clang_format" },
-    servers = { "clangd" },
+    servers = {},
   },
   cabal = {
     formatters = { "cabal_fmt" },

@@ -46,6 +46,10 @@ case "$title" in
   echo "state=floating"
   exit 0
   ;;
+"LearnOpenGL")
+  echo "state=floating"
+  exit 0
+  ;;
 esac
 
 [ -n "$is_dialog" ] && {

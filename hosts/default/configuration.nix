@@ -241,7 +241,7 @@ in
     file
     # pkgs-unstable.neovim
     pkgs-unstable.neovim
-    vim
+    vimHugeX
     emacs-gtk
     sbcl
     inputs.helix.packages.${pkgs.system}.default

@@ -5,19 +5,10 @@ return {
   -- name = "fff.nvim",
   build = "nix run .#release",
   opts = {
-    -- UI dimensions and appearance
-    width = 0.8, -- Window width as fraction of screen
-    height = 0.8, -- Window height as fraction of screen
-    prompt = "🪿 ", -- Input prompt symbol
-    preview = {
-      enabled = true,
-      width = 0.5,
-      max_lines = 100,
-      max_size = 1024 * 1024, -- 1MB
-    },
+    prompt = "> ", -- Input prompt symbol
     title = "FFF Files", -- Window title
     max_results = 60, -- Maximum search results to display
-    max_threads = 4, -- Maximum threads for fuzzy search
+    max_threads = 8, -- Maximum threads for fuzzy search
 
     keymaps = {
       close = "<Esc>",
@@ -43,11 +34,6 @@ return {
       active_file = "Visual",
       frecency = "Number",
       debug = "Comment",
-    },
-
-    -- Debug options
-    debug = {
-      show_scores = false, -- Toggle with F2 or :FFFDebug
     },
   },
   keys = {

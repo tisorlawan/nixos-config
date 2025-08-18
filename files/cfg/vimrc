@@ -1,0 +1,351 @@
+let mapleader = " "
+
+syntax on
+set number
+set relativenumber
+
+set laststatus=2
+
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set expandtab
+set autoindent
+set smartindent
+
+set completeopt=menuone,preview
+
+set incsearch
+set hlsearch "highlight search results
+set smartcase
+
+set nowrap
+set showmatch
+set nocursorline
+set ruler
+
+set splitright
+set splitbelow
+
+set cursorline
+
+set hidden " Allow hiding modified buffers with no errors
+
+set clipboard=unnamedplus
+
+nnoremap <C-H> :wincmd h<CR>
+nnoremap <C-L> :wincmd l<CR>
+nnoremap <C-J> :wincmd j<CR>
+nnoremap <C-K> :wincmd k<CR>
+nnoremap <C-n> :bnext<CR>
+nnoremap <C-p> :bprevious<CR>
+nnoremap <leader><tab> <C-^>
+
+
+set background=dark
+colorscheme habamax
+
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+
+noremap - :Explore<CR>
+
+let g:netrw_banner = 0
+let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+'
+let g:netrw_winsize = 20
+nnoremap <leader>e :Lexplore %:p:h<CR>
+
+augroup netrw_mapping
+  autocmd!
+  autocmd filetype netrw call NetrwMapping()
+augroup END
+
+
+function! NetrwMapping()
+  nmap <buffer> H u
+  nmap <buffer> h -^
+  nmap <buffer> l <CR>
+
+  nmap <buffer> . gh
+  nmap <buffer> P <C-w>z
+
+  nmap <buffer> L <CR>:Lexplore<CR>
+  nmap <buffer> <leader>e :Lexplore<CR>
+
+  " Marks
+  nmap <buffer> <TAB> mf
+  nmap <buffer> <S-TAB> mF
+  nmap <buffer> <leader><TAB> mu
+
+  " Bookmarks
+  " To create a bookmark
+  nmap <buffer> bb mb
+  " To remove the most recent bookmark
+  nmap <buffer> bd mB
+  " To jump to the most recent bookmark.
+  nmap <buffer> bl gb
+
+  " rename
+  nmap <buffer> fe R
+  " copy marked file
+  nmap <buffer> fc mc
+  " We will use this to "skip" a step. After you mark your files you can put the cursor in a directory and this will assign the target directory and copy in one step.
+  nmap <buffer> fC mtmc
+  " move marked files
+  nmap <buffer> fx mm
+  " Same thing as fC but for moving files.
+  nmap <buffer> fX mtmm
+  " Will be for running external commands on the marked files.
+  nmap <buffer> f; mx
+endfunction
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set expandtab
+set autoindent
+set smartindent
+
+set completeopt=menuone,preview
+
+set incsearch
+set hlsearch "highlight search results
+set smartcase
+
+set nowrap
+set showmatch
+set nocursorline
+set ruler
+
+set splitright
+set splitbelow
+
+set cursorline
+
+set hidden " Allow hiding modified buffers with no errors
+
+nnoremap <C-H> :wincmd h<CR>
+nnoremap <C-L> :wincmd l<CR>
+nnoremap <C-J> :wincmd j<CR>
+nnoremap <C-K> :wincmd k<CR>
+nnoremap <C-n> :bnext<CR>
+nnoremap <C-p> :bprevious<CR>
+nnoremap <leader><tab> <C-^>
+
+
+set background=dark
+colorscheme habamax
+
+if has("autocmd")
+  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
+endif
+
+noremap - :Explore<CR>
+
+let g:netrw_banner = 0
+let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+'
+let g:netrw_winsize = 20
+nnoremap <leader>e :Lexplore %:p:h<CR>
+
+augroup netrw_mapping
+  autocmd!
+  autocmd filetype netrw call NetrwMapping()
+augroup END
+
+
+function! NetrwMapping()
+  nmap <buffer> H u
+  nmap <buffer> h -^
+  nmap <buffer> l <CR>
+
+  nmap <buffer> . gh
+  nmap <buffer> P <C-w>z
+
+  nmap <buffer> L <CR>:Lexplore<CR>
+  nmap <buffer> <leader>e :Lexplore<CR>
+
+  " Marks
+  nmap <buffer> <TAB> mf
+  nmap <buffer> <S-TAB> mF
+  nmap <buffer> <leader><TAB> mu
+
+  " Bookmarks
+  " To create a bookmark
+  nmap <buffer> bb mb
+  " To remove the most recent bookmark
+  nmap <buffer> bd mB
+  " To jump to the most recent bookmark.
+  nmap <buffer> bl gb
+
+  " rename
+  nmap <buffer> fe R
+  " copy marked file
+  nmap <buffer> fc mc
+  " We will use this to "skip" a step. After you mark your files you can put the cursor in a directory and this will assign the target directory and copy in one step.
+  nmap <buffer> fC mtmc
+  " move marked files
+  nmap <buffer> fx mm
+  " Same thing as fC but for moving files.
+  nmap <buffer> fX mtmm
+  " Will be for running external commands on the marked files.
+  nmap <buffer> f; mx
+endfunction
+
+
+" --- FZF File Selector: The Definitive, Robust, and Fallback-Aware Version ---
+
+" Set the default shell to /bin/sh for all system/term calls
+set shell=/bin/sh
+
+" --- FZF File Selector: The Definitive, Robust, and Fallback-Aware Version ---
+
+" --- CONFIGURATION ---
+if !exists('g:default_file_generator')
+    let g:default_file_generator = 'fd' " Preferred: fd, fallback: git, final: find
+endif
+if !exists('g:default_file_selector')
+    let g:default_file_selector = 'fzf' " Preferred: fzf, fallback: Vim's input()
+endif
+
+" --- MAIN FUNCTION ---
+function! FzfOpenFile(show_hidden)
+    let l:start_dir = getcwd()
+    let l:generator_command = ''
+
+    " Get the full path of the current buffer to exclude it.
+    let l:current_buf_path = expand('%:p')
+
+    " --- 1. DETERMINE THE FILE GENERATOR (All output relative paths) ---
+    " fd: The fastest option.
+    if g:default_file_generator == 'fd' && executable('fd')
+        let l:hidden_flag = a:show_hidden ? '--hidden' : ''
+        
+        " Exclude common Vim swap/backup files and general dev directories.
+        " Ensure proper string concatenation with '\'.
+        let l:fd_excludes = "--exclude '*.swp'" .
+                           \ " --exclude '*.swo'" .
+                           \ " --exclude '*.swn'" .
+                           \ " --exclude '.git'" .
+                           \ " --exclude 'node_modules'" .
+                           \ " --exclude '__pycache__'"
+
+        " Exclude current buffer and its specific swap file if path is known.
+        if !empty(l:current_buf_path)
+            let l:relative_current_buf_path = fnamemodify(l:current_buf_path, ":.")
+            let l:fd_excludes .= " --exclude " . shellescape(l:relative_current_buf_path)
+            
+            " Explicitly exclude the hidden swap file for the current buffer (e.g., .main.c.swp)
+            let l:swapfile_basename = '.' . fnamemodify(l:current_buf_path, ':t') . '.swp'
+            let l:fd_excludes .= " --exclude " . shellescape(l:swapfile_basename)
+        endif
+
+        " 'cd && fd' pattern ensures fd runs from the project root and outputs relative paths.
+        let l:cd_command = "cd " . shellescape(l:start_dir)
+        let l:fd_command = "fd " . l:hidden_flag . " --follow --type file " . l:fd_excludes . " ."
+        let l:generator_command = l:cd_command . " && " . l:fd_command
+
+    " git: Fast fallback if in a Git repo.
+    elseif executable('git') && !empty(finddir('.git', ';'))
+        let l:git_flags = a:show_hidden ? '--cached --others --exclude-standard' : '--cached'
+        let l:generator_command = "git -C " . shellescape(l:start_dir) . " ls-files " . l:git_flags
+
+    " find: Universal fallback.
+    else
+        " 'cd && find' for relative paths and sed to remove leading './'.
+        let l:cd_command = "cd " . shellescape(l:start_dir)
+        
+        " Exclude common directories/files using -prune.
+        let l:find_excludes = "-path '*/.git*' -prune -o " .
+                             \ "-name '*.swp' -prune -o -name '.*.swp' -prune -o " .
+                             \ "-name '*.swo' -prune -o -name '*.swn' -prune -o " .
+                             \ "-path '*/node_modules*' -prune -o -path '*/__pycache__*' -prune -o "
+
+        " If current buffer is specified, add its relative path to find exclude.
+        if !empty(l:current_buf_path)
+            let l:relative_current_buf_path_for_find = substitute(fnamemodify(l:current_buf_path, ":."), '^\./', '', '')
+            let l:find_excludes .= "-wholename " . shellescape(l:relative_current_buf_path_for_find) . " -prune -o "
+        endif
+
+        let l:find_command = "find . " . l:find_excludes . "-type f -print | sed 's|^./||'"
+        let l:generator_command = l:cd_command . " && " . l:find_command
+    endif
+
+    " Handle case where no generator could be found/command generated.
+    if empty(l:generator_command)
+        echohl ErrorMsg | echom "No file generator found (fd, git, or find)." | echohl None
+        return
+    endif
+
+    " --- 2. DETERMINE THE SELECTOR (fzf -> Vim's input()) ---
+    if g:default_file_selector == 'fzf' && executable('fzf')
+        " --- INTERACTIVE FZF PATH (Popup-like) ---
+        " Crucial: '< /dev/tty' makes fzf interactive.
+        " Crucial: '> /dev/tty' for tput ensures control codes go to terminal, not captured.
+        let l:fzf_command = "fzf < /dev/tty"
+        let l:core_command = l:generator_command . " | " . l:fzf_command
+        let l:full_command = printf('tput smcup > /dev/tty; %s; tput rmcup > /dev/tty', l:core_command)
+        
+        " systemlist() runs the command and captures the clean output.
+        let l:selected_files = systemlist(l:full_command)
+        redraw! " Crucial: Forces Vim to redraw screen after external program.
+
+        if empty(l:selected_files)
+            echom "Selection cancelled."
+            return
+        endif
+        let l:selected_file = trim(l:selected_files[0])
+
+    else
+        " --- NON-INTERACTIVE VIM FALLBACK PATH ---
+        echom "fzf not found. Falling back to list selection."
+        let l:raw_file_list = systemlist(l:generator_command)
+        
+        " Manually filter swap files and current buffer for the fallback list.
+        let l:file_list = []
+        for file in l:raw_file_list
+            if file !~? '\.swp$' && file !~? '\.swo$' && file !~? '\.swn$' " Case-insensitive swap/backup check
+                if empty(l:current_buf_path) || file != fnamemodify(l:current_buf_path, ":.") " Exclude current buffer
+                    let l:file_list += [file]
+                endif
+            endif
+        endfor
+
+        if empty(l:file_list)
+            echom "No files found by generator or after filtering."
+            return
+        endif
+
+        echom "--- Select a file by number ---"
+        for [i, file] in items(l:file_list)
+            echom printf("%4d: %s", i + 1, file)
+        endfor
+
+        let l:choice = input('Enter number: ')
+        if l:choice =~ '^\d\+$'
+            let l:index = str2nr(l:choice) - 1
+            if l:index >= 0 && l:index < len(l:file_list)
+                let l:selected_file = l:file_list[l:index]
+            else
+                echom "Invalid number."
+                return
+            endif
+        else
+            echom "Invalid input. Selection cancelled."
+            return
+        endif
+    endif
+
+    " --- 3. OPEN THE SELECTED FILE ---
+    if !empty(l:selected_file)
+        " All generators produce relative paths, so prepend the start_dir.
+        let l:full_path = l:start_dir . '/' . l:selected_file
+        execute "edit " . fnameescape(l:full_path)
+    endif
+endfunction
+
+" --- MAPPINGS ---
+" <leader>ff -> Fuzzy find files (vanilla, no hidden files)
+nnoremap <leader>ff :call FzfOpenFile(0)<CR>
+
+" <leader>fF -> Fuzzy find Files (including hidden files)
+nnoremap <leader>fF :call FzfOpenFile(1)<CR>

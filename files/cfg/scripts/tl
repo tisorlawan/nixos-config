@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+set -x
+
+tsh login --user=agung-b-sorlawan --auth=github --proxy=enderman.gdplabs.net:443

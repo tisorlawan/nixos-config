@@ -45,6 +45,9 @@ require("lazy").setup({
     patterns = {},
     fallback = false,
   },
+  git = {
+    timeout = 1200,
+  },
 })
 
 -- vim.api.nvim_create_autocmd("User", {

@@ -1,12 +1,12 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/release-25.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/5b09dc45";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/20075955";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    ghostty.url = "github:ghostty-org/ghostty/39f4cf3d19d49eecdb03cf963ec5818fd83d2fe7";
+    ghostty.url = "github:ghostty-org/ghostty/298f11166d4762741dd84fb48c8f96a09d0fb326";
     # nixpkgs.url = "github:nixos/nixpkgs/release-25.05";
     # nixpkgs-unstable.url = "github:nixos/nixpkgs/62b852f6";
     # home-manager = {

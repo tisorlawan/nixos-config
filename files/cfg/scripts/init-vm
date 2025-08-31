@@ -1,0 +1,92 @@
+#!/bin/sh
+
+# How to add ssh-key to gcloud VM
+echo "tisorlawan:$(cat ~/.ssh/tisorlawan.pub)" >/tmp/key
+gcloud compute instances add-metadata privasimu-agent --metadata-from-file ssh-keys=/tmp/key
+
+# How to open ports
+gcloud compute instances add-tags privasimu-agent --tags=web-server
+gcloud compute firewall-rules create allow-web-ports \
+  --allow tcp:80,tcp:7777 \
+  --source-ranges 0.0.0.0/0 \
+  --target-tags web-server \
+  --description "Allow ports 80 and 7777 for web servers"
+
+# How to attach IP
+VM_NAME="privasimu-agent"
+STATIC_IP_NAME="privasimu-agent-static-ip"
+ZONE=$(gcloud compute instances describe $VM_NAME --format="value(zone)" | sed 's/.*\///')
+REGION=${ZONE%-*}
+
+echo "Reserving static IP..."
+gcloud compute addresses create $STATIC_IP_NAME --region=$REGION
+
+STATIC_IP=$(gcloud compute addresses describe $STATIC_IP_NAME \
+  --region=$REGION \
+  --format="value(address)")
+echo "Reserved IP: $STATIC_IP"
+
+STATIC_IP="34.101.39.138"
+echo "Attaching static IP..."
+echo "Removing current external IP..."
+gcloud compute instances delete-access-config $VM_NAME \
+  --access-config-name="External NAT" \
+  --zone=$ZONE
+
+# Add new access config with static IP
+echo "Adding static IP..."
+gcloud compute instances add-access-config $VM_NAME \
+  --access-config-name="External NAT" \
+  --address=$STATIC_IP \
+  --zone=$ZONE
+
+echo "Static IP $STATIC_IP successfully attached to $VM_NAME"
+
+# ------------------------------------------------------------ #
+curl -L https://nixos.org/nix/install | sh -s -- --daemon
+
+# RESTART
+
+nix-env -iA nixpkgs.neovim nixpkgs.tmux nixpkgs.fish nixpkgs.fzf nixpkgs.fd nixpkgs.git nixpkgs.ripgrep
+echo "export PATH=$HOME/.nix-profile/bin:/nix/var/nix/profiles/default/bin:\$PATH" >>~/.bashrc
+cat <<EOF >~/.tmux.conf
+set -sg escape-time 0
+set -g focus-events on
+setw -g aggressive-resize on
+
+set-option -g default-shell /bin/bash
+set-window-option -g mode-keys vi
+set-option -g history-limit 1111111111
+
+bind -n M-g new-window -c '#{pane_current_path}'
+bind -n M-n next-window
+bind -n M-p previous-window
+bind -n M-o split-window -h -c '#{pane_current_path}'
+bind -n M-i split-window -v -c '#{pane_current_path}'
+
+bind-key -n 'M-h' 'select-pane -L'
+bind-key -n 'M-j' 'select-pane -D'
+bind-key -n 'M-k' 'select-pane -U'
+bind-key -n 'M-l' 'select-pane -R'
+
+bind -n M-Left { swap-window -t -1; previous-window }
+bind -n M-Right { swap-window -t +1; next-window }
+EOF
+
+git config --global user.email "tisorlawan@gmail.com"
+git config --global user.name "Agung Baptiso Sorlawan"
+
+git clone https://$GITHUB_ACCESS_TOKEN@github.com/tisorlawan/nixos-config.git ~/.rice
+
+mkdir ~/.config
+rm -f ~/.config/nvim
+mv .rice/files/cfg/config/nvim ~/.config/nvim
+cp ~/.config/nvim/plugins.example ~/.config/nvim/plugins
+nvim ~/.config/nvim/plugins
+nvim ~/.config/nvim/lua/plugins/fzf.lua
+
+## --- Python --- ##
+curl -LsSf https://astral.sh/uv/install.sh | sh
+echo "source \$HOME/.local/bin/env" >>~/.bashrc
+echo "alias a=\"source .venv/bin/activate\"" >>~/.bashrc
+echo "alias p=\"python\"" >>~/.bashrc

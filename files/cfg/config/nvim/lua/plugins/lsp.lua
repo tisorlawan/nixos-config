@@ -347,7 +347,7 @@ local plugins = {
         accept = { auto_brackets = { enabled = true } },
         menu = {
           border = "single",
-          auto_show = false,
+          auto_show = true, -- false
           -- components = {
           --   kind_icon = {
           --     ellipsis = false,

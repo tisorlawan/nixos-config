@@ -55,14 +55,14 @@ return {
       { "<leader>f.", function() require("fzf-lua").resume() end, desc = "Resume", },
       { "<leader>ss", function() require("fzf-lua").lsp_document_symbols() end, desc = "Goto Symbol", },
       { "<leader>S", function() require("fzf-lua").lsp_workspace_symbols() end, desc = "Goto Symbol (Workspace)", },
-      -- { "<leader>sw", function() require("fzf-lua").grep_cword() end, desc = "Word (Root Dir)", },
-      -- { "<leader>sW", function() require("fzf-lua").grep_cword({ cwd = vim.fn.getcwd() }) end, desc = "Word (cwd)", },
+      { "<leader>lw", function() require("fzf-lua").grep_cword() end, desc = "Word (Root Dir)", },
+      { "<leader>lW", function() require("fzf-lua").grep_cword({ cwd = vim.fn.getcwd() }) end, desc = "Word (cwd)", },
       { "<leader>uC", function() require("fzf-lua").colorschemes() end, desc = "Colorscheme with Preview", },
       --
       { "<leader>cs", function() require("fzf-lua").lsp_document_symbols() end, desc = "Document symbols", },
       { "<leader>cw", function() require("fzf-lua").lsp_live_workspace_symbols() end, desc = "Document symbols", },
       -- Visual mode mappings
-      -- { "<leader>sw", function() require("fzf-lua").grep_visual() end, mode = "v", desc = "Selection (Root Dir)", },
+      { "<leader>l", function() require("fzf-lua").grep_visual() end, mode = "v", desc = "Selection (Root Dir)", },
       -- { "<leader>sW", function() require("fzf-lua").grep_visual({ cwd = vim.fn.getcwd() }) end, mode = "v", desc = "Selection (cwd)", },
       { "<leader>ca", function() require("fzf-lua").lsp_code_actions() end, desc = "Document symbols", },
     },

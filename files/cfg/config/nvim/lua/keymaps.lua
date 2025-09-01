@@ -230,150 +230,150 @@ local function do_ripgrep_search(text)
   vim.cmd("call ParseAndSearch(" .. vim.fn.string(text) .. ")")
 end
 
--- <leader>ll - Search prompt with C-n toggle
-vim.keymap.set("n", "<leader>ll", function()
-  vim.cmd([[
-    function! RipgrepSearch()
-      " Set up temporary C-n mapping for command line
-      cnoremap <C-n> <C-c>:call RipgrepRawMode()<CR>
-
-      let result = input('Search: ', '')
-
-      " Clean up mapping
-      cunmap <C-n>
-
-      if result != ''
-        call ParseAndSearch(result)
-      endif
-    endfunction
-
-    function! RipgrepRawMode()
-      let cmd = input('', 'rg --vimgrep --fixed-strings ')
-      if cmd != ''
-        let output = systemlist(cmd)
-        let search_term = matchstr(cmd, "'\\zs[^']*\\ze'")
-        if search_term == ''
-          let search_term = 'raw_search'
-        endif
-        lua handle_rg_result(vim.fn.eval('output'), vim.fn.eval('search_term'))
-      endif
-    endfunction
-  ]])
-
-  vim.cmd("call RipgrepSearch()")
-end)
-
--- <leader>l + motion - search text object
-vim.keymap.set("n", "<leader>l", function()
-  vim.o.operatorfunc = "v:lua.ripgrep_operator"
-  return "g@"
-end, { expr = true })
-
--- Operator function for <leader>l + motion
-_G.ripgrep_operator = function(type)
-  local saved_reg = vim.fn.getreg('"')
-  local saved_regtype = vim.fn.getregtype('"')
-
-  if type == "char" then
-    vim.cmd("silent normal! `[v`]y")
-  elseif type == "line" then
-    vim.cmd("silent normal! `[V`]y")
-  elseif type == "block" then
-    vim.cmd("silent normal! `[<C-v>`]y")
-  else
-    return
-  end
-
-  local text = vim.fn.getreg('"')
-  vim.fn.setreg('"', saved_reg, saved_regtype)
-
-  -- Clean up the text
-  text = string.gsub(text, "\n", " ")
-  text = string.gsub(text, "%s+", " ")
-  text = string.gsub(text, "^%s*(.-)%s*$", "%1")
-
-  if text ~= "" then
-    local escaped_text = vim.fn.shellescape(text)
-    local cmd = "rg --vimgrep --fixed-strings -- " .. escaped_text
-    local output = vim.fn.systemlist(cmd)
-    add_rg_result_to_quickfix(output, text)
-  end
-end
-
--- <leader>lw - search current word
-vim.keymap.set("n", "<leader>lw", function()
-  local current_word = vim.fn.expand("<cword>")
-  if current_word ~= "" then
-    do_ripgrep_search(current_word)
-  end
-end)
-
--- <leader>lW - search current WORD
-vim.keymap.set("n", "<leader>lW", function()
-  local current_word = vim.fn.expand("<cWORD>")
-  if current_word ~= "" then
-    do_ripgrep_search(current_word)
-  end
-end)
-
--- <cr>S - buffer + quickfix
-vim.keymap.set("n", "<leader>L", function()
-  vim.ui.input({ prompt = "Search: ", default = "rg --vimgrep " }, function(c)
-    if c and c ~= "" then
-      -- Create new buffer
-      vim.cmd("noswapfile vnew")
-      vim.bo.buftype = "nofile"
-      vim.bo.bufhidden = "wipe"
-
-      -- Get command output
-      local output = vim.fn.systemlist(c)
-
-      -- Add to buffer
-      vim.api.nvim_buf_set_lines(0, 0, -1, false, output)
-
-      -- Extract search term from command
-      local search_term = c:match("'([^']*)'") or c:match("%S+$") or "unknown"
-      -- Add to quickfix
-      add_rg_result_to_quickfix(output, search_term)
-    end
-  end)
-end)
-
--- Visual mode <cr>s - search selected text
-vim.keymap.set("v", "<leader>l", function()
-  -- Use a more reliable method to get the selected text
-  local mode = vim.fn.mode()
-  if mode == "v" or mode == "V" or mode == "\22" then -- \22 is visual block mode
-    -- Store current register
-    local old_reg = vim.fn.getreg("z")
-    local old_regtype = vim.fn.getregtype("z")
-
-    -- Yank selection to register z
-    vim.cmd('silent normal! "zy')
-
-    -- Get the yanked text
-    local selected_text = vim.fn.getreg("z")
-
-    -- Restore the register
-    vim.fn.setreg("z", old_reg, old_regtype)
-
-    -- Clean up the text
-    selected_text = string.gsub(selected_text, "\n", " ")
-    selected_text = string.gsub(selected_text, "%s+", " ")
-    selected_text = string.gsub(selected_text, "^%s*(.-)%s*$", "%1")
-
-    if selected_text ~= "" then
-      -- Store original text for title
-      local original_text = selected_text
-
-      -- Use proper shell escaping
-      local escaped_text = vim.fn.shellescape(selected_text)
-      local cmd = "rg --vimgrep --fixed-strings -- " .. escaped_text
-      local output = vim.fn.systemlist(cmd)
-      add_rg_result_to_quickfix(output, original_text)
-    end
-  end
-end)
+-- -- <leader>ll - Search prompt with C-n toggle
+-- vim.keymap.set("n", "<leader>ll", function()
+--   vim.cmd([[
+--     function! RipgrepSearch()
+--       " Set up temporary C-n mapping for command line
+--       cnoremap <C-n> <C-c>:call RipgrepRawMode()<CR>
+--
+--       let result = input('Search: ', '')
+--
+--       " Clean up mapping
+--       cunmap <C-n>
+--
+--       if result != ''
+--         call ParseAndSearch(result)
+--       endif
+--     endfunction
+--
+--     function! RipgrepRawMode()
+--       let cmd = input('', 'rg --vimgrep --fixed-strings ')
+--       if cmd != ''
+--         let output = systemlist(cmd)
+--         let search_term = matchstr(cmd, "'\\zs[^']*\\ze'")
+--         if search_term == ''
+--           let search_term = 'raw_search'
+--         endif
+--         lua handle_rg_result(vim.fn.eval('output'), vim.fn.eval('search_term'))
+--       endif
+--     endfunction
+--   ]])
+--
+--   vim.cmd("call RipgrepSearch()")
+-- end)
+--
+-- -- <leader>l + motion - search text object
+-- vim.keymap.set("n", "<leader>l", function()
+--   vim.o.operatorfunc = "v:lua.ripgrep_operator"
+--   return "g@"
+-- end, { expr = true })
+--
+-- -- Operator function for <leader>l + motion
+-- _G.ripgrep_operator = function(type)
+--   local saved_reg = vim.fn.getreg('"')
+--   local saved_regtype = vim.fn.getregtype('"')
+--
+--   if type == "char" then
+--     vim.cmd("silent normal! `[v`]y")
+--   elseif type == "line" then
+--     vim.cmd("silent normal! `[V`]y")
+--   elseif type == "block" then
+--     vim.cmd("silent normal! `[<C-v>`]y")
+--   else
+--     return
+--   end
+--
+--   local text = vim.fn.getreg('"')
+--   vim.fn.setreg('"', saved_reg, saved_regtype)
+--
+--   -- Clean up the text
+--   text = string.gsub(text, "\n", " ")
+--   text = string.gsub(text, "%s+", " ")
+--   text = string.gsub(text, "^%s*(.-)%s*$", "%1")
+--
+--   if text ~= "" then
+--     local escaped_text = vim.fn.shellescape(text)
+--     local cmd = "rg --vimgrep --fixed-strings -- " .. escaped_text
+--     local output = vim.fn.systemlist(cmd)
+--     add_rg_result_to_quickfix(output, text)
+--   end
+-- end
+--
+-- -- <leader>lw - search current word
+-- vim.keymap.set("n", "<leader>lw", function()
+--   local current_word = vim.fn.expand("<cword>")
+--   if current_word ~= "" then
+--     do_ripgrep_search(current_word)
+--   end
+-- end)
+--
+-- -- <leader>lW - search current WORD
+-- vim.keymap.set("n", "<leader>lW", function()
+--   local current_word = vim.fn.expand("<cWORD>")
+--   if current_word ~= "" then
+--     do_ripgrep_search(current_word)
+--   end
+-- end)
+--
+-- -- <cr>S - buffer + quickfix
+-- vim.keymap.set("n", "<leader>L", function()
+--   vim.ui.input({ prompt = "Search: ", default = "rg --vimgrep " }, function(c)
+--     if c and c ~= "" then
+--       -- Create new buffer
+--       vim.cmd("noswapfile vnew")
+--       vim.bo.buftype = "nofile"
+--       vim.bo.bufhidden = "wipe"
+--
+--       -- Get command output
+--       local output = vim.fn.systemlist(c)
+--
+--       -- Add to buffer
+--       vim.api.nvim_buf_set_lines(0, 0, -1, false, output)
+--
+--       -- Extract search term from command
+--       local search_term = c:match("'([^']*)'") or c:match("%S+$") or "unknown"
+--       -- Add to quickfix
+--       add_rg_result_to_quickfix(output, search_term)
+--     end
+--   end)
+-- end)
+--
+-- -- Visual mode <cr>s - search selected text
+-- vim.keymap.set("v", "<leader>l", function()
+--   -- Use a more reliable method to get the selected text
+--   local mode = vim.fn.mode()
+--   if mode == "v" or mode == "V" or mode == "\22" then -- \22 is visual block mode
+--     -- Store current register
+--     local old_reg = vim.fn.getreg("z")
+--     local old_regtype = vim.fn.getregtype("z")
+--
+--     -- Yank selection to register z
+--     vim.cmd('silent normal! "zy')
+--
+--     -- Get the yanked text
+--     local selected_text = vim.fn.getreg("z")
+--
+--     -- Restore the register
+--     vim.fn.setreg("z", old_reg, old_regtype)
+--
+--     -- Clean up the text
+--     selected_text = string.gsub(selected_text, "\n", " ")
+--     selected_text = string.gsub(selected_text, "%s+", " ")
+--     selected_text = string.gsub(selected_text, "^%s*(.-)%s*$", "%1")
+--
+--     if selected_text ~= "" then
+--       -- Store original text for title
+--       local original_text = selected_text
+--
+--       -- Use proper shell escaping
+--       local escaped_text = vim.fn.shellescape(selected_text)
+--       local cmd = "rg --vimgrep --fixed-strings -- " .. escaped_text
+--       local output = vim.fn.systemlist(cmd)
+--       add_rg_result_to_quickfix(output, original_text)
+--     end
+--   end
+-- end)
 
 -- <leader>* - search current word in current file
 vim.keymap.set("n", "<leader>*", function()

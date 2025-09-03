@@ -294,6 +294,11 @@ in
     black
     isort
 
+    ruby
+    rubyfmt
+
+    mise
+
     #### @LANGUAGES AND LSP ####
     go
     nodejs_22

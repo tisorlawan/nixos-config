@@ -99,6 +99,32 @@ map("n", "co", ":copen<CR>", { silent = true })
 map("n", "cq", utils.close_diagnostics, { desc = "close diagnostics", silent = true })
 map("n", "cu", utils.jumps_to_qf, { desc = "jumps to qf", silent = true })
 
+vim.keymap.set("n", "<C-x><C-n>", function()
+  local current_file = vim.fn.expand("%")
+  if current_file == "" then
+    print("No file is currently open")
+    return
+  end
+
+  local current_dir = vim.fn.fnamemodify(current_file, ":h")
+  local current_content = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+
+  -- Use vim.fn.input with completion instead of vim.ui.input
+  local filename = vim.fn.input("Open: ", current_dir .. "/", "file")
+
+  if filename and filename ~= "" then
+    -- Check if file already exists
+    if vim.fn.filereadable(filename) == 1 then
+      -- File exists, just open it (don't copy content)
+      vim.cmd("edit " .. vim.fn.fnameescape(filename))
+    else
+      -- File doesn't exist, create it with current buffer content
+      vim.cmd("edit " .. vim.fn.fnameescape(filename))
+      vim.api.nvim_buf_set_lines(0, 0, -1, false, current_content)
+    end
+  end
+end, { desc = "Create new file with current buffer content or open existing file" })
+
 -- movement in insert mode
 map("i", "<c-l>", "<right>")
 map("i", "<c-h>", "<left>")

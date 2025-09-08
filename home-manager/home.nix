@@ -57,6 +57,8 @@ in
     nushell
     foliate
 
+    ast-grep
+
     #### @CLI UTILITIES ####
     bat
     delta

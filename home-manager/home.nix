@@ -132,6 +132,7 @@ in
     sonarlint-ls
     poetry
     poetryPlugins.poetry-plugin-shell
+    ruby
 
     #### @LANGUAGES AND LSP ####
     go
@@ -151,10 +152,10 @@ in
     marksman
     # clang
     # clang-tools
-    gopls
-    golines
-    gofumpt
-    gotools
+    # gopls
+    # golines
+    # gofumpt
+    # gotools
     ghc
     cabal-install
     haskellPackages.cabal-fmt

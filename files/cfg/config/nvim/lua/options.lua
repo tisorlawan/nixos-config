@@ -21,6 +21,7 @@ end)
 vim.opt.breakindent = true
 vim.opt.undofile = true
 vim.opt.wrap = false
+vim.opt.showbreak = "↪"
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
 vim.opt.signcolumn = "yes"

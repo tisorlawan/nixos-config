@@ -2,7 +2,7 @@ vim.cmd([[ set background=dark ]])
 vim.g.transparent = true
 
 -- mellifluous kanagawa hybrid zenwritten
-vim.g.colorscheme = "kanso"
+vim.g.colorscheme = "kanagawa"
 
 return {
   {
@@ -46,14 +46,14 @@ return {
   --   end,
   -- },
   --
-  -- {
-  --   "rebelot/kanagawa.nvim",
-  --   config = function()
-  --     if vim.g.colorscheme == "kanagawa" then
-  --       vim.cmd("colorscheme kanagawa-dragon")
-  --     end
-  --   end,
-  -- },
+  {
+    "rebelot/kanagawa.nvim",
+    config = function()
+      if vim.g.colorscheme == "kanagawa" then
+        vim.cmd("colorscheme kanagawa-wave")
+      end
+    end,
+  },
   --
   -- {
   --   "HoNamDuong/hybrid.nvim",

@@ -207,6 +207,7 @@ in
     # php82Packages.composer
     jmtpfs
     fish
+    typora
 
     #### @MEDIA TOOLS ####
     mpv

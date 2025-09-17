@@ -28,7 +28,7 @@ cat > $DIR/config << EOF
 $(if [ "$COLOR_MODE" = "light" ]; then
     echo 'theme = "BlulocoLight"'
 else
-    echo 'theme = "catppuccin-mocha"'
+    echo 'theme = "Catppuccin Mocha"'
     echo 'background = 181820'
 fi)
 

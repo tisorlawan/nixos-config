@@ -16,258 +16,269 @@ in
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
   home.stateVersion = "24.11"; # Please read the comment before changing.
+  home.packages = with pkgs;
+    let
+      # Shell tooling and terminal emulators
+      terminalAndShells = [
+        starship
+        atuin
+        (callPackage ./alacritty { })
+        (callPackage ./ghostty { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
+        nushell
+        fish
+      ];
 
+      # Desktop session utilities and applets
+      desktopEnvironment = [
+        dunst
+        libinput
+        libnotify
+        (callPackage ./picom { })
+        xdotool
+        xclip
+        xdg-user-dirs
+        xorg.xbacklight
+        xorg.xkill
+        xorg.xdpyinfo
+        xorg.xwininfo
+        xorg.xmodmap
+        networkmanagerapplet
+        sxhkd
+        pkgs-unstable.haskellPackages.greenclip
+        redshift
+        maim
+        (flameshot.override { enableWlrSupport = true; })
+        adwaita-icon-theme
+        file-roller
+        eww
+        rofi
+      ];
 
-  home.packages = with pkgs; [
-    # pkgs-unstable.windsurf
-    starship
-    atuin
-    (pkgs.callPackage ./alacritty { })
-    (pkgs.callPackage ./ghostty { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
+      # Productivity, syncing, and day-to-day utilities
+      productivityAndOps = [
+        util-linux
+        awscli2
+        postman
+        rclone
+        foliate
+        typora
+      ];
 
-    #### @DESKTOP ENVIRONMENT ####
-    dunst
-    libinput
-    libnotify
-    (pkgs.callPackage ./picom { })
-    # polybar
-    # polybar-pulseaudio-control
-    xdotool
-    xclip
-    xdg-user-dirs
-    xorg.xbacklight
-    xorg.xkill
-    xorg.xdpyinfo
-    xorg.xwininfo
-    xorg.xmodmap
-    networkmanagerapplet
-    sxhkd
-    pkgs-unstable.haskellPackages.greenclip
-    redshift
-    maim
-    (flameshot.override { enableWlrSupport = true; })
-    adwaita-icon-theme
-    file-roller
-    eww
-    rofi
-    util-linux
-    awscli2
-    postman
-    rclone
-    nushell
-    foliate
+      # General CLI helpers and editors
+      cliUtilities = [
+        bat
+        delta
+        difftastic
+        dust
+        eza
+        fd
+        jq
+        ripgrep
+        lazygit
+        pkgs-unstable.jujutsu
+        fzf
+        btop
+        tmux
+        zellij
+        wget
+        atool
+        curl
+        file
+        pkgs-unstable.neovim
+        vim
+        sbcl
+        killall
+        yazi
+        pkgs-unstable.yt-dlp
+        zoxide
+        nethogs
+        iw
+        acpi
+        brightnessctl
+        unzip
+        p7zip
+        zip
+        openssl
+        jless
+        rlwrap
+        slides
+        carapace # completion helpers
+      ];
 
-    ast-grep
+      # Core development toolchain and documentation
+      devTooling = [
+        man-pages
+        man-pages-posix
+        tldr
+        gcc
+        gnumake
+        cmake
+        just
+        gdb
+        valgrind
+        pkg-config
+        gitFull
+        git-lfs
+        protobuf
+        lldb
+        typst
+        ast-grep
+      ];
 
-    #### @CLI UTILITIES ####
-    bat
-    delta
-    difftastic
-    dust
-    eza
-    fd
-    jq
-    ripgrep
-    lazygit
-    pkgs-unstable.jujutsu
-    fzf
-    # skim
-    # htop
-    btop
-    tmux
-    zellij
-    wget
-    atool
-    curl
-    file
-    pkgs-unstable.neovim
-    vim
-    # emacs-gtk
-    sbcl
-    killall
-    yazi
-    pkgs-unstable.yt-dlp
-    zoxide
-    nethogs
-    iw
-    acpi
-    brightnessctl
-    unzip
-    p7zip
-    zip
-    openssl
-    jless
-    rlwrap
-    slides
-    carapace # completion
+      # Python, Ruby, and related ecosystem tools
+      dynamicLanguages = [
+        ruff
+        pyright
+        virtualenv
+        black
+        isort
+        python312Packages.pytest
+        python312Packages.coverage
+        pre-commit
+        sonarlint-ls
+        poetry
+        poetryPlugins.poetry-plugin-shell
+        ruby
+      ];
 
-    #### @DEVELOPMENT TOOLS ####
-    man-pages
-    man-pages-posix
-    tldr
-    gcc
-    gnumake
-    cmake
-    just
-    gdb
-    valgrind
-    pkg-config
-    gitFull
-    git-lfs
-    protobuf
-    lldb
-    typst
+      # Compilers, language servers, and formatters
+      languageTooling = [
+        go
+        nodejs_22
+        bun
+        # rustup
+        # sccache
+        # leptosfmt
+        # zig
+        # zls
+        # livebook
+        stylua
+        lua5_1
+        lua-language-server
+        luarocks
+        # racket
+        marksman
+        # clang
+        # clang-tools
+        # gopls
+        # golines
+        # gofumpt
+        # gotools
+        # ghc
+        # cabal-install
+        # haskellPackages.cabal-fmt
+        # haskell-language-server
+        # stack
+        prettierd
+        nil
+        nixpkgs-fmt
+        biome
+        wabt
+      ];
 
-    #### @PYTHON DEVELOPMENT ####
-    # rye
-    # python313
-    ruff
-    pyright
-    virtualenv
-    black
-    isort
-    python312Packages.pytest
-    python312Packages.coverage
-    pre-commit
-    sonarlint-ls
-    poetry
-    poetryPlugins.poetry-plugin-shell
-    ruby
+      # Databases and developer services
+      dataServices = [
+        redis
+        postgresql
+        sqlite
+        litecli
+        docker
+      ];
 
-    #### @LANGUAGES AND LSP ####
-    go
-    nodejs_22
-    bun
-    # rustup
-    # sccache
-    # leptosfmt
-    zig
-    zls
-    # livebook
-    stylua
-    lua5_1
-    lua-language-server
-    luarocks
-    racket
-    marksman
-    # clang
-    # clang-tools
-    # gopls
-    # golines
-    # gofumpt
-    # gotools
-    ghc
-    cabal-install
-    haskellPackages.cabal-fmt
-    haskell-language-server
-    stack
-    prettierd
-    nil
-    nixpkgs-fmt
-    biome
-    wabt
+      # Document, PDF, and scientific tooling
+      documentTools = [
+        pdftk
+        # poppler_utils
+        jupyter-all
+        ghostscript
+        wkhtmltopdf
+      ];
 
-    #### @DATABASES AND SERVICES ####
-    redis
-    postgresql
-    sqlite
-    litecli
-    docker
-    # kubectl
-    # k9s
+      # System helpers and connectivity tools
+      systemUtilities = [
+        trashy
+        # trunk
+        cocogitto
+        mold
+        # google-cloud-sdk
+        openconnect
+        neofetch
+        rsync
+        inotify-tools
+        # php
+        # php82Packages.composer
+        jmtpfs
+        ngrok
+      ];
 
-    #### @DOCUMENT AND PDF TOOLS ####
-    pdftk
-    # poppler_utils
-    jupyter-all
-    ghostscript
-    # (texlive.combine {
-    #   inherit (texlive)
-    #     scheme-medium# Base TeX Live scheme
-    #     wrapfig# For text wrapping around figures
-    #     capt-of# For captions outside floats
-    #     # rotating         # For rotating text and figures
-    #     hyperref# For hyperlinks
-    #     ulem# For underlining
-    #     # amsmath amssymb  # For mathematical formulas
-    #     ;
-    # })
+      # Audio, video, and imaging utilities
+      mediaTools = [
+        mpv
+        exiftool
+        feh
+        ffmpeg-full
+        ffmpegthumbnailer
+        pavucontrol
+        pulseaudio
+        wireplumber
+        alsa-utils
+        poppler
+        imagemagick
+        mediainfo
+        # wf-recorder
+      ];
 
-    #### @SYSTEM UTILITIES ####
-    trashy
-    # trunk
-    cocogitto
-    mold
-    # google-cloud-sdk
-    openconnect
-    neofetch
-    rsync
-    inotify-tools
-    # php
-    # php82Packages.composer
-    jmtpfs
-    fish
-    typora
+      # Graphical applications
+      guiApplications = [
+        neovide
+        evince
+        sioyek
+        nautilus
+        pcmanfm
+        brave
+        pkgs-unstable.xournalpp
+        telegram-desktop
+        inlyne
+      ];
 
-    #### @MEDIA TOOLS ####
-    mpv
-    exiftool
-    feh
-    ffmpeg-full
-    ffmpegthumbnailer
-    pavucontrol
-    pulseaudio
-    wireplumber
-    alsa-utils
-    poppler
-    imagemagick
-    mediainfo
-    # wf-recorder
+      # Hardware diagnostics and graphics
+      hardwareDiagnostics = [
+        glxinfo
+      ];
 
-    #### @GUI APPLICATIONS ####
-    neovide
-    evince
-    sioyek
-    # foliate
-    nautilus
-    pcmanfm
-    # pkgs-unstable.google-chrome
-    brave
-    # libreoffice
-    # firefox
-    # (pkgs.callPackage ./zoom-us { })
-    # (pkgs.callPackage ./zoom-us { nixpkgs-unstable = nixpkgs-unstable; }) # use snap install
-    pkgs-unstable.xournalpp
-    wkhtmltopdf
-    # transmission_4-gtk
-    telegram-desktop
-    inlyne
-
-    # #### @HARDWARE AND GRAPHICS ####
-    glxinfo
-    # intel-gpu-tools
-    # mesa-demos
-
-    nixpkgs-unstable.noto-fonts
-    nixpkgs-unstable.noto-fonts-emoji
-    nixpkgs-unstable.noto-fonts-cjk-sans-static
-    nixpkgs-unstable.noto-fonts-cjk-serif-static
-    nixpkgs-unstable.material-icons
-    nixpkgs-unstable.symbola
-    # typestarFont # Note: Ensure this package exists in your nixpkgs; it may be custom or from a specific source
-    nixpkgs-unstable.nerd-fonts.jetbrains-mono
-    nixpkgs-unstable.nerd-fonts.blex-mono
-    nixpkgs-unstable.cascadia-code
-    nixpkgs-unstable.nerd-fonts.jetbrains-mono
-    nixpkgs-unstable.fira-code
-    nixpkgs-unstable.hack-font
-    nixpkgs-unstable.source-code-pro
-    nixpkgs-unstable.ibm-plex
-    nixpkgs-unstable.inconsolata
-    nixpkgs-unstable.liberation_ttf
-
-    ngrok
-  ];
+      # Font families sourced from nixpkgs-unstable
+      fontPackages = [
+        nixpkgs-unstable.noto-fonts
+        nixpkgs-unstable.noto-fonts-emoji
+        nixpkgs-unstable.noto-fonts-cjk-sans-static
+        nixpkgs-unstable.noto-fonts-cjk-serif-static
+        nixpkgs-unstable.material-icons
+        nixpkgs-unstable.symbola
+        nixpkgs-unstable.nerd-fonts.jetbrains-mono
+        nixpkgs-unstable.nerd-fonts.blex-mono
+        nixpkgs-unstable.cascadia-code
+        nixpkgs-unstable.fira-code
+        nixpkgs-unstable.hack-font
+        nixpkgs-unstable.source-code-pro
+        nixpkgs-unstable.ibm-plex
+        nixpkgs-unstable.inconsolata
+        nixpkgs-unstable.liberation_ttf
+      ];
+    in
+    terminalAndShells
+    ++ desktopEnvironment
+    ++ productivityAndOps
+    ++ cliUtilities
+    ++ devTooling
+    ++ dynamicLanguages
+    ++ languageTooling
+    ++ dataServices
+    ++ documentTools
+    ++ systemUtilities
+    ++ mediaTools
+    ++ guiApplications
+    ++ hardwareDiagnostics
+    ++ fontPackages;
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.

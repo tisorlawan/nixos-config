@@ -169,260 +169,269 @@ in
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    #### @TERMINAL EMULATORS ####
-    starship
-    atuin
-    alacritty
-    inputs.ghostty.packages.${pkgs.system}.default
-    pkgs-unstable.nushell
+  environment.systemPackages = with pkgs;
+    let
+      # Terminal emulators and shells
+      terminalAndShells = [
+        starship
+        atuin
+        alacritty
+        inputs.ghostty.packages.${pkgs.system}.default
+        pkgs-unstable.nushell
+      ];
 
-    #### @DESKTOP ENVIRONMENT ####
-    dunst
-    libinput
-    libnotify
-    picom
-    # polybar
-    # polybar-pulseaudio-control
-    xdotool
-    xclip
-    xdg-user-dirs
-    xorg.xbacklight
-    xorg.xkill
-    xorg.xdpyinfo
-    xorg.xwininfo
-    networkmanagerapplet
-    sxhkd
-    haskellPackages.greenclip
-    redshift
-    maim
-    (flameshot.override { enableWlrSupport = true; })
-    adwaita-icon-theme
-    file-roller
-    eww
-    rofi-wayland
-    typora
+      # Desktop environment helpers and applets
+      desktopEnvironment = [
+        dunst
+        libinput
+        libnotify
+        picom
+        xdotool
+        xclip
+        xdg-user-dirs
+        xorg.xbacklight
+        xorg.xkill
+        xorg.xdpyinfo
+        xorg.xwininfo
+        networkmanagerapplet
+        sxhkd
+        haskellPackages.greenclip
+        redshift
+        maim
+        (flameshot.override { enableWlrSupport = true; })
+        adwaita-icon-theme
+        file-roller
+        eww
+        rofi-wayland
+      ];
 
-    #### @WAYLAND SPECIFIC ####
-    # grim
-    # slurp
-    # hyprpaper
-    # wofi
-    # wl-clipboard
-    # socat
-    # clipse
-    # cliphist
+      # Personal productivity and reading tools
+      productivityApps = [
+        bitcoin
+        yacreader
+        keepassxc
+        foliate
+        typora
+        inputs.zotimer.packages.${pkgs.system}.default
+      ];
 
-    bitcoin
-    yacreader
-    keepassxc
-    foliate
+      # General purpose CLI utilities and editors
+      cliUtilities = [
+        pkgs-unstable.uutils-coreutils-noprefix
+        bat
+        delta
+        difftastic
+        dust
+        eza
+        fd
+        jq
+        ripgrep
+        lazygit
+        fzf
+        btop
+        tmux
+        zellij
+        wget
+        atool
+        curl
+        file
+        pkgs-unstable.neovim
+        vimHugeX
+        emacs-gtk
+        sbcl
+        inputs.helix.packages.${pkgs.system}.default
+        killall
+        unrar
+        pkgs-unstable.yazi
+        yt-dlp
+        zoxide
+        nethogs
+        iw
+        acpi
+        brightnessctl
+        unzip
+        p7zip
+        zip
+        openssl
+        jless
+        rlwrap
+        slides
+        carapace
+        keyd
+      ];
 
-    #### @CLI UTILITIES ####
-    pkgs-unstable.uutils-coreutils-noprefix
-    bat
-    delta
-    difftastic
-    dust
-    eza
-    fd
-    jq
-    ripgrep
-    lazygit
-    fzf
-    # skim
-    # htop
-    btop
-    tmux
-    zellij
-    wget
-    atool
-    curl
-    file
-    # pkgs-unstable.neovim
-    pkgs-unstable.neovim
-    vimHugeX
-    emacs-gtk
-    sbcl
-    inputs.helix.packages.${pkgs.system}.default
-    killall
-    unrar
-    pkgs-unstable.yazi
-    yt-dlp
-    zoxide
-    nethogs
-    iw
-    acpi
-    brightnessctl
-    unzip
-    p7zip
-    zip
-    openssl
-    jless
-    inputs.zotimer.packages.${pkgs.system}.default
-    rlwrap
-    slides
-    carapace # completion
-    keyd
+      # Core development toolchain and docs
+      devTooling = [
+        pkgs-unstable.devenv
+        man-pages
+        man-pages-posix
+        tldr
+        gcc
+        gnumake
+        cmake
+        just
+        gdb
+        valgrind
+        pkg-config
+        gitFull
+        git-lfs
+        pkgs-unstable.jujutsu
+        protobuf
+        lldb
+        pkgs-unstable.typst
+        fasm
+      ];
 
-    #### @DEVELOPMENT TOOLS ####
-    pkgs-unstable.devenv
-    man-pages
-    man-pages-posix
-    tldr
-    gcc
-    gnumake
-    cmake
-    just
-    gdb
-    valgrind
-    pkg-config
-    gitFull
-    git-lfs
-    pkgs-unstable.jujutsu
-    protobuf
-    lldb
-    pkgs-unstable.typst
-    fasm
+      # Language specific formatters and toolchains
+      languageTooling = [
+        go
+        nodejs_22
+        pkgs-unstable.bun
+        rustup
+        pkgs-unstable.zig
+        pkgs-unstable.zls
+        pkgs-unstable.beam.packages.erlang_27.elixir_1_17
+        pkgs-unstable.elixir-ls
+        stylua
+        lua5_1
+        lua-language-server
+        luarocks
+        racket
+        marksman
+        clang
+        clang-tools
+        gopls
+        golines
+        gofumpt
+        gotools
+        ghc
+        cabal-install
+        haskellPackages.cabal-fmt
+        haskell-language-server
+        stack
+        prettierd
+        nil
+        nixpkgs-fmt
+        biome
+        wabt
+      ];
 
-    #### @PYTHON DEVELOPMENT ####
-    # rye
-    python313
-    pkgs-unstable.ruff
-    pyright
-    virtualenv
-    black
-    isort
+      # Python, Ruby, and task runners
+      dynamicLanguages = [
+        python313
+        pkgs-unstable.ruff
+        pyright
+        virtualenv
+        black
+        isort
+        ruby
+        rubyfmt
+        mise
+      ];
 
-    ruby
-    rubyfmt
+      # Databases and developer services
+      dataServices = [
+        redis
+        postgresql
+        sqlite
+        litecli
+        docker
+      ];
 
-    mise
+      # Document processing and scientific tooling
+      documentTools = [
+        pdftk
+        qpdf
+        wkhtmltopdf
+        antiword
+        xan
+        jupyter-all
+        ghostscript
+        (texlive.combine {
+          inherit (texlive)
+            scheme-medium
+            wrapfig
+            capt-of
+            hyperref
+            ulem;
+        })
+      ];
 
-    #### @LANGUAGES AND LSP ####
-    go
-    nodejs_22
-    pkgs-unstable.bun
-    rustup
-    # sccache
-    # leptosfmt
-    pkgs-unstable.zig
-    pkgs-unstable.zls
-    pkgs-unstable.beam.packages.erlang_27.elixir_1_17
-    pkgs-unstable.elixir-ls
-    # livebook
-    stylua
-    lua5_1
-    lua-language-server
-    luarocks
-    racket
-    marksman
-    clang
-    clang-tools
-    gopls
-    golines
-    gofumpt
-    gotools
-    ghc
-    cabal-install
-    haskellPackages.cabal-fmt
-    haskell-language-server
-    stack
-    prettierd
-    nil
-    nixpkgs-fmt
-    biome
-    wabt
+      # System utilities and connectivity
+      systemUtilities = [
+        trashy
+        cocogitto
+        mold
+        google-cloud-sdk
+        openconnect
+        neofetch
+        rsync
+        inotify-tools
+        ngrok
+        jmtpfs
+        gnome-disk-utility
+      ];
 
-    #### @DATABASES AND SERVICES ####
-    redis
-    postgresql
-    sqlite
-    litecli
-    docker
-    # kubectl
-    # k9s
+      # Audio, video, and imaging tools
+      mediaTools = [
+        mpv
+        exiftool
+        feh
+        ffmpeg-full
+        ffmpegthumbnailer
+        pavucontrol
+        pulseaudio
+        alsa-utils
+        wireplumber
+        poppler
+        imagemagick
+        mediainfo
+      ];
 
-    #### @DOCUMENT AND PDF TOOLS ####
-    pdftk
-    qpdf
-    wkhtmltopdf
-    antiword
-    # poppler_utils
-    xan
-    jupyter-all
-    ghostscript
-    (texlive.combine {
-      inherit (texlive)
-        scheme-medium# Base TeX Live scheme
-        wrapfig# For text wrapping around figures
-        capt-of# For captions outside floats
-        # rotating         # For rotating text and figures
-        hyperref# For hyperlinks
-        ulem# For underlining
-        # amsmath amssymb  # For mathematical formulas
-        ;
-    })
+      # Desktop GUI applications
+      guiApplications = [
+        (callPackage ./../../pkgs/toptracker.nix { })
+        neovide
+        evince
+        sioyek
+        nautilus
+        pcmanfm
+        pkgs-unstable.google-chrome
+        brave
+        libreoffice
+        postman
+        firefox
+        zoom-us
+        pkgs-unstable.xournalpp
+        transmission_4-gtk
+        telegram-desktop
+        exodus
+        inlyne
+        obsidian
+        slack
+        rclone
+      ];
 
-    #### @SYSTEM UTILITIES ####
-    trashy
-    # trunk
-    cocogitto
-    mold
-    google-cloud-sdk
-    openconnect
-    neofetch
-    rsync
-    inotify-tools
-    # php
-    # php82Packages.composer
-    ngrok
-    jmtpfs
-    gnome-disk-utility
-
-    #### @MEDIA TOOLS ####
-    mpv
-    exiftool
-    feh
-    ffmpeg-full
-    ffmpegthumbnailer
-    pavucontrol
-    pulseaudio
-    alsa-utils
-    wireplumber
-    poppler
-    imagemagick
-    mediainfo
-    # wf-recorder
-
-    #### @GUI APPLICATIONS ####
-    (callPackage ./../../pkgs/toptracker.nix { })
-    neovide
-    evince
-    sioyek
-    # foliate
-    nautilus
-    pcmanfm
-    pkgs-unstable.google-chrome
-    brave
-    libreoffice
-    postman
-    firefox
-    zoom-us
-    pkgs-unstable.xournalpp
-    transmission_4-gtk
-    telegram-desktop
-    exodus
-    inlyne
-    obsidian
-    slack
-    rclone
-
-    #### @HARDWARE AND GRAPHICS ####
-    glxinfo
-    intel-gpu-tools
-    mesa-demos
-  ];
+      # Hardware diagnostics and graphics helpers
+      hardwareDiagnostics = [
+        glxinfo
+        intel-gpu-tools
+        mesa-demos
+      ];
+    in
+    terminalAndShells
+    ++ desktopEnvironment
+    ++ productivityApps
+    ++ cliUtilities
+    ++ devTooling
+    ++ languageTooling
+    ++ dynamicLanguages
+    ++ dataServices
+    ++ documentTools
+    ++ systemUtilities
+    ++ mediaTools
+    ++ guiApplications
+    ++ hardwareDiagnostics;
 
   virtualisation.docker.enable = true;
   virtualisation.docker.rootless = {

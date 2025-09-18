@@ -94,7 +94,6 @@ alias ydp="yt-dlp -f 'bv*[height<=1080][ext=mp4]+ba/b' -o '%(playlist_index)s [%
 alias yda="yt-dlp -f '[ext=mp4]+ba/b' --extract-audio --no-playlist"
 
 ##-- Claude Code --##
-alias c="npx @anthropic-ai/claude-code"
-alias co="npx @anthropic-ai/claude-code --continue"
-
+alias claude="npx @anthropic-ai/claude-code"
+alias codex="npx @openai/codex --search -s danger-full-access"
 alias gemini="npx https://github.com/google-gemini/gemini-cli"

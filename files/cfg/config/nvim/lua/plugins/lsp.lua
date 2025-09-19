@@ -301,7 +301,6 @@ local plugins = {
         ensure_installed = installed_servers,
       })
 
-      local lspconfig = require("lspconfig")
       local handlers = vim.lsp.handlers
       handlers["textDocument/hover"] = vim.lsp.with(handlers.hover, { border = "single" })
       handlers["textDocument/signatureHelp"] = vim.lsp.with(handlers.signature_help, { border = "single" })
@@ -319,7 +318,7 @@ local plugins = {
 
           merged_cfg.capabilities = require("blink.cmp").get_lsp_capabilities(merged_cfg.capabilities)
 
-          lspconfig[sn].setup(merged_cfg)
+          vim.lsp.config(sn, merged_cfg)
         end
       end
     end,

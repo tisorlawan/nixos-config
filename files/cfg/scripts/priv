@@ -8,12 +8,22 @@ set -e
 
 # Parse command line arguments
 CHANGE_PASSWORD=false
+LIST_FILES=false
+REMOVE_FILE=false
 FILENAME=""
 
 while [[ $# -gt 0 ]]; do
 	case $1 in
 		--password)
 			CHANGE_PASSWORD=true
+			shift
+			;;
+		--list)
+			LIST_FILES=true
+			shift
+			;;
+		--rm)
+			REMOVE_FILE=true
 			shift
 			;;
 		*)
@@ -28,13 +38,146 @@ while [[ $# -gt 0 ]]; do
 	esac
 done
 
-if [ -z "$FILENAME" ]; then
+if [ "$LIST_FILES" = false ] && [ "$REMOVE_FILE" = false ] && [ -z "$FILENAME" ]; then
 	echo "Usage: $0 <filename>"
 	echo "       $0 --password <filename>  # Change password"
+	echo "       $0 --list                 # List available files"
+	echo "       $0 --rm <filename>        # Remove file"
 	echo "Example: $0 passwords.txt"
 	echo "         $0 notes/diary.txt"
 	echo "         $0 --password passwords.txt"
+	echo "         $0 --list"
+	echo "         $0 --rm passwords.txt"
 	exit 1
+fi
+
+BUCKET="tisorlawan"
+
+# Handle --list mode
+if [ "$LIST_FILES" = true ]; then
+	echo "Listing files in bucket: $BUCKET"
+	echo ""
+
+	# Check if rclone is available
+	if ! command -v rclone >/dev/null 2>&1; then
+		echo "Error: rclone is required for listing files"
+		echo "Install rclone and configure it to access the bucket"
+		exit 1
+	fi
+
+	# Try to find a configured remote
+	RCLONE_REMOTE=""
+	for remote_name in "aws" "s3" "$BUCKET" "tisorlawan"; do
+		if rclone listremotes | grep -q "^${remote_name}:$"; then
+			if rclone lsd "${remote_name}:" 2>/dev/null | grep -q "$BUCKET\|tisorlawan" 2>/dev/null; then
+				RCLONE_REMOTE="${remote_name}:"
+				break
+			fi
+		fi
+	done
+
+	if [ -z "$RCLONE_REMOTE" ]; then
+		# Try to find any S3 remote
+		for remote in $(rclone listremotes); do
+			if rclone lsd "${remote}" 2>/dev/null | grep -q "tisorlawan\|$BUCKET" 2>/dev/null; then
+				RCLONE_REMOTE="$remote"
+				break
+			fi
+		done
+	fi
+
+	if [ -z "$RCLONE_REMOTE" ]; then
+		echo "Error: No configured rclone remote found for bucket: $BUCKET"
+		echo "Configure rclone with: rclone config"
+		exit 1
+	fi
+
+	echo "Using remote: $RCLONE_REMOTE"
+	echo ""
+
+	# List all files
+	if ! rclone ls "${RCLONE_REMOTE}$BUCKET/" 2>/dev/null; then
+		echo "Error: Failed to list files from bucket"
+		exit 1
+	fi
+
+	exit 0
+fi
+
+# Handle --rm mode
+if [ "$REMOVE_FILE" = true ]; then
+	if [ -z "$FILENAME" ]; then
+		echo "Error: Filename required for --rm"
+		exit 1
+	fi
+
+	# Add .enc extension if not present
+	if [[ "$FILENAME" != *.enc ]]; then
+		FILENAME="${FILENAME}.enc"
+	fi
+
+	echo "Removing file: $FILENAME from bucket: $BUCKET"
+	echo ""
+
+	# Check if rclone is available
+	if ! command -v rclone >/dev/null 2>&1; then
+		echo "Error: rclone is required for removing files"
+		echo "Install rclone and configure it to access the bucket"
+		exit 1
+	fi
+
+	# Try to find a configured remote
+	RCLONE_REMOTE=""
+	for remote_name in "aws" "s3" "$BUCKET" "tisorlawan"; do
+		if rclone listremotes | grep -q "^${remote_name}:$"; then
+			if rclone lsd "${remote_name}:" 2>/dev/null | grep -q "$BUCKET\|tisorlawan" 2>/dev/null; then
+				RCLONE_REMOTE="${remote_name}:"
+				break
+			fi
+		fi
+	done
+
+	if [ -z "$RCLONE_REMOTE" ]; then
+		# Try to find any S3 remote
+		for remote in $(rclone listremotes); do
+			if rclone lsd "${remote}" 2>/dev/null | grep -q "tisorlawan\|$BUCKET" 2>/dev/null; then
+				RCLONE_REMOTE="$remote"
+				break
+			fi
+		done
+	fi
+
+	if [ -z "$RCLONE_REMOTE" ]; then
+		echo "Error: No configured rclone remote found for bucket: $BUCKET"
+		echo "Configure rclone with: rclone config"
+		exit 1
+	fi
+
+	echo "Using remote: $RCLONE_REMOTE"
+
+	# Check if file exists
+	if ! rclone ls "${RCLONE_REMOTE}$BUCKET/$FILENAME" >/dev/null 2>&1; then
+		echo "Error: File not found: $FILENAME"
+		exit 1
+	fi
+
+	# Confirm deletion
+	echo -n "Are you sure you want to delete '$FILENAME'? (y/N): "
+	read -r CONFIRM
+
+	if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
+		echo "Deletion cancelled"
+		exit 0
+	fi
+
+	# Delete the file
+	if ! rclone delete "${RCLONE_REMOTE}$BUCKET/$FILENAME" 2>/dev/null; then
+		echo "Error: Failed to delete file"
+		exit 1
+	fi
+
+	echo "✓ File successfully deleted: $FILENAME"
+	exit 0
 fi
 
 # Add .enc extension if not present
@@ -42,7 +185,6 @@ if [[ "$FILENAME" != *.enc ]]; then
 	FILENAME="${FILENAME}.enc"
 fi
 
-BUCKET="tisorlawan"
 S3_PATH="s3://$BUCKET/$FILENAME"
 PUBLIC_URL="https://$BUCKET.s3.ap-southeast-1.amazonaws.com/$FILENAME"
 

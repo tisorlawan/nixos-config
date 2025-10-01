@@ -123,6 +123,7 @@ in
         lldb
         typst
         ast-grep
+        zed-editor
       ];
 
       # Python, Ruby, and related ecosystem tools

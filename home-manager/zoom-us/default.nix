@@ -10,28 +10,28 @@ let
 in
 
 pkgs.stdenv.mkDerivation {
-  pname = "zoom-us-no-glx-integration";
-  version = zoomPkg.version or "6.2.10"; # fallback if version attr missing
+  pname = "zoom-us-wrapped";
+  version = zoomPkg.version or "unspecified";
   src = zoomPkg;
 
-  # makeWrapper gives us the simple shell‐script wrapping tool
   nativeBuildInputs = [ pkgs.makeWrapper ];
 
-  # no other deps are modified
-  buildInputs = [ ];
+  # Include GL libs so the wrapper LD_LIBRARY_PATH can reference them.
+  buildInputs = with pkgs; [ libglvnd mesa ];
 
   installPhase = ''
     mkdir -p $out/bin
 
-    # Path to the real zoom binary inside the Nix store:
     real_zoom="${zoomPkg}/bin/zoom"
 
-    # Wrap it in $out/bin/zoom setting only that one env‐var
+    # Common stability tweaks:
+    # - QT_XCB_GL_INTEGRATION=none avoids black/blank windows on some GPUs
+    # - LD_LIBRARY_PATH ensures GL drivers resolve at runtime
     makeWrapper "$real_zoom" "$out/bin/zoom" \
-      --set QT_XCB_GL_INTEGRATION none
+      --set QT_XCB_GL_INTEGRATION none \
+      --set LD_LIBRARY_PATH "${pkgs.libglvnd}/lib:${pkgs.mesa}/lib"
   '';
 
-  # Don’t try to run any tests, docs, etc.
   dontConfigure = true;
   dontBuild = true;
   dontInstall = false;

@@ -7,7 +7,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     zed-editor = {
-      url = "github:zed-industries/zed";
+      url = "github:zed-industries/zed/v0.206.6";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # ghostty.url = "github:ghostty-org/ghostty/298f11166d4762741dd84fb48c8f96a09d0fb326";

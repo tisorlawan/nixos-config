@@ -25,6 +25,7 @@ in
         (callPackage ./alacritty { })
         (callPackage ./ghostty { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
         (callPackage ./zed-editor { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
+        (callPackage ./zoom-us { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
         nushell
         fish
       ];

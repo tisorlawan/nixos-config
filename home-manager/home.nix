@@ -24,6 +24,7 @@ in
         atuin
         (callPackage ./alacritty { })
         (callPackage ./ghostty { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
+        (callPackage ./zed-editor { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
         nushell
         fish
       ];
@@ -123,7 +124,6 @@ in
         lldb
         typst
         ast-grep
-        zed-editor
       ];
 
       # Python, Ruby, and related ecosystem tools

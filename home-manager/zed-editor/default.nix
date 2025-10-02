@@ -6,16 +6,16 @@ let
     then nixpkgs-unstable.legacyPackages.${pkgs.system}
     else pkgs;
 
-  ghostty-pkg = inputs.ghostty.packages.${pkgs.system}.default;
+  zed-editor-pkg = inputs.zed-editor.packages.${pkgs.system}.default;
 in
 
 pkgs.stdenv.mkDerivation {
-  name = "ghostty-wrapped";
+  name = "zed-editor-wrapped";
   dontUnpack = true;
-  buildInputs = with pkgs; [ ghostty-pkg libglvnd mesa ];
+  buildInputs = with pkgs; [ zed-editor-pkg libglvnd mesa ];
   installPhase = ''
     mkdir -p $out/bin
-    makeWrapper ${ghostty-pkg}/bin/ghostty $out/bin/ghostty \
+    makeWrapper ${zed-editor-pkg}/bin/zed-editor $out/bin/zed-editor \
       --set LD_LIBRARY_PATH "${pkgs.libglvnd}/lib:${pkgs.mesa}/lib"
   '';
   nativeBuildInputs = [ pkgs.makeWrapper ];

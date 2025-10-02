@@ -30,6 +30,30 @@ pkgs.stdenv.mkDerivation {
     makeWrapper "$real_zoom" "$out/bin/zoom" \
       --set QT_XCB_GL_INTEGRATION none \
       --set LD_LIBRARY_PATH "${pkgs.libglvnd}/lib:${pkgs.mesa}/lib"
+
+    # Desktop integration for xdg-open and browsers to handle zoommtg:// links
+    mkdir -p $out/share/applications $out/share/icons $out/share/pixmaps
+
+    # Reuse upstream icons if available
+    if [ -d "${zoomPkg}/share/icons" ]; then
+      ln -s "${zoomPkg}/share/icons" "$out/share/icons"
+    fi
+    if [ -d "${zoomPkg}/share/pixmaps" ]; then
+      ln -s "${zoomPkg}/share/pixmaps" "$out/share/pixmaps"
+    fi
+
+    cat > $out/share/applications/zoomus-wrapped.desktop <<EOF
+    [Desktop Entry]
+    Name=Zoom
+    Comment=Zoom Video Conference
+    Exec=$out/bin/zoom %U
+    Terminal=false
+    Type=Application
+    Icon=zoom
+    Categories=Network;Chat;VideoConference;
+    MimeType=x-scheme-handler/zoommtg;x-scheme-handler/zoomphonecall;
+    StartupWMClass=zoom
+    EOF
   '';
 
   dontConfigure = true;

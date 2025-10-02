@@ -24,7 +24,7 @@ in
         atuin
         (callPackage ./alacritty { })
         (callPackage ./ghostty { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
-        (callPackage ./zed-editor { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
+        # (callPackage ./zed-editor { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
         (callPackage ./zoom-us { nixpkgs-unstable = nixpkgs-unstable; })
         nushell
         fish
@@ -281,6 +281,14 @@ in
     ++ guiApplications
     ++ hardwareDiagnostics
     ++ fontPackages;
+
+  # Register Zoom as the handler for zoommtg:// links so xdg-open and
+  # browsers dispatch meeting URLs to it.
+  xdg.mimeApps.enable = true;
+  xdg.mimeApps.defaultApplications = {
+    "x-scheme-handler/zoommtg" = [ "zoomus-wrapped.desktop" ];
+    "x-scheme-handler/zoomphonecall" = [ "zoomus-wrapped.desktop" ];
+  };
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.

@@ -6,6 +6,10 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    zed-editor = {
+      url = "github:zed-industries/zed";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # ghostty.url = "github:ghostty-org/ghostty/298f11166d4762741dd84fb48c8f96a09d0fb326";
     ghostty.url = "github:ghostty-org/ghostty/v1.2.0";
     # nixpkgs.url = "github:nixos/nixpkgs/release-25.05";

@@ -5,7 +5,7 @@ let
     if nixpkgs-unstable != null
     then nixpkgs-unstable.legacyPackages.${pkgs.system}
     else pkgs;
-  
+
   ghostty-pkg = inputs.ghostty.packages.${pkgs.system}.default;
 in
 

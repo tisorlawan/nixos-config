@@ -32,6 +32,19 @@ if [[ $VERBOSE -eq 1 ]]; then
   HM_ARGS+=(--verbose --show-trace)
 fi
 
+# If user didn't provide a backup option, default to "-b backup" so
+# Home Manager backs up conflicting unmanaged files instead of failing.
+want_backup=1
+for a in "${ARGS[@]}"; do
+  if [[ "$a" == "-b" || "$a" == "--backup" ]]; then
+    want_backup=0
+    break
+  fi
+done
+if (( want_backup )); then
+  HM_ARGS+=( -b backup )
+fi
+
 if (( ${#ARGS[@]} > 0 )); then
   home-manager switch "${HM_ARGS[@]}" "${ARGS[@]}"
 else

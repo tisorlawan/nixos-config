@@ -321,6 +321,19 @@ local plugins = {
           vim.lsp.config(sn, merged_cfg)
         end
       end
+
+      local enabled_servers = {}
+      local enabled_lookup = {}
+      for _, sn in pairs(mason_lspserver) do
+        if not utils.contains(servers_config_skip, sn) and not enabled_lookup[sn] then
+          enabled_lookup[sn] = true
+          table.insert(enabled_servers, sn)
+        end
+      end
+
+      if #enabled_servers > 0 then
+        vim.lsp.enable(enabled_servers)
+      end
     end,
   },
   {

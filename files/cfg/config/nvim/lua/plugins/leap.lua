@@ -2,8 +2,8 @@ return {
   "ggandor/leap.nvim",
   -- commit = "5ae080b646021bbb6e1d8715b155b1e633e28166",
   keys = {
-    { "s", "<Plug>(leap-forward-to)", mode = { "n", "x", "o" }, desc = "leap forward to" },
-    { "S", "<Plug>(leap-backward-to)", mode = { "n", "x", "o" }, desc = "leap backward to" },
+    { "s", "<Plug>(leap-forward)", mode = { "n", "x", "o" }, desc = "leap forward to" },
+    { "S", "<Plug>(leap-backward)", mode = { "n", "x", "o" }, desc = "leap backward to" },
     { "x", "<Plug>(leap-forward-till)", mode = { "x", "o" }, desc = "leap forward till" },
     { "X", "<Plug>(leap-backward-till)", mode = { "x", "o" }, desc = "leap backward till" },
     { "gs", "<Plug>(leap-from-window)", mode = { "n", "x", "o" }, desc = "leap from window" },

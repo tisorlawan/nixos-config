@@ -1,17 +1,17 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/release-25.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/e9f00bd8";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/78e34d16";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     zed-editor = {
-      url = "github:zed-industries/zed/v0.206.6";
+      url = "github:zed-industries/zed/v0.209.6";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # ghostty.url = "github:ghostty-org/ghostty/298f11166d4762741dd84fb48c8f96a09d0fb326";
-    ghostty.url = "github:ghostty-org/ghostty/v1.2.0";
+    ghostty.url = "github:ghostty-org/ghostty/v1.2.3";
     # nixpkgs.url = "github:nixos/nixpkgs/release-25.05";
     # nixpkgs-unstable.url = "github:nixos/nixpkgs/62b852f6";
     # home-manager = {

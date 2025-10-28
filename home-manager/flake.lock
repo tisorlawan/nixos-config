@@ -91,16 +91,16 @@
         "zon2nix": "zon2nix"
       },
       "locked": {
-        "lastModified": 1757954031,
-        "narHash": "sha256-Z6lndpkEqBwgsjIeZhmVIQ5D7YdQSH/fG6NCY+YWEAo=",
+        "lastModified": 1761239688,
+        "narHash": "sha256-0tmLOJCrrEnVc/ZCp/e646DTddXjv249QcSwkaukL30=",
         "owner": "ghostty-org",
         "repo": "ghostty",
-        "rev": "3e38e284ca593b601fb70e877c3155fedf42e2e5",
+        "rev": "6d2dd585a5d87fa745d48188dd096ca6e63014d0",
         "type": "github"
       },
       "original": {
         "owner": "ghostty-org",
-        "ref": "v1.2.0",
+        "ref": "v1.2.3",
         "repo": "ghostty",
         "type": "github"
       }
@@ -141,16 +141,16 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1759036355,
-        "narHash": "sha256-0m27AKv6ka+q270dw48KflE0LwQYrO7Fm4/2//KCVWg=",
+        "lastModified": 1761468971,
+        "narHash": "sha256-vY2OLVg5ZTobdroQKQQSipSIkHlxOTrIF1fsMzPh8w8=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "e9f00bd893984bc8ce46c895c3bf7cac95331127",
+        "rev": "78e34d1667d32d8a0ffc3eba4591ff256e80576e",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
-        "ref": "e9f00bd8",
+        "ref": "78e34d16",
         "repo": "nixpkgs",
         "type": "github"
       }
@@ -255,16 +255,16 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1759332458,
-        "narHash": "sha256-FF4KHTvSHKlAybHszkv92rNVuUDHI9a3mUpFiA6tUVo=",
+        "lastModified": 1761327097,
+        "narHash": "sha256-KHOex6Noths886oE62BN4NE/DCMmU5VjiP+xN2YnVmc=",
         "owner": "zed-industries",
         "repo": "zed",
-        "rev": "f6695400b1463d0be8f2ed13589446da41541b90",
+        "rev": "3d61fb08a0bd3b22eb7a50ee3e126e891edf7f30",
         "type": "github"
       },
       "original": {
         "owner": "zed-industries",
-        "ref": "v0.206.6",
+        "ref": "v0.209.6",
         "repo": "zed",
         "type": "github"
       }

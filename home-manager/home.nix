@@ -252,8 +252,8 @@ in
       fontPackages = [
         nixpkgs-unstable.noto-fonts
         nixpkgs-unstable.noto-fonts-emoji
-        nixpkgs-unstable.noto-fonts-cjk-sans-static
-        nixpkgs-unstable.noto-fonts-cjk-serif-static
+        nixpkgs-unstable.noto-fonts-cjk-sans
+        nixpkgs-unstable.noto-fonts-cjk-serif
         nixpkgs-unstable.material-icons
         nixpkgs-unstable.symbola
         nixpkgs-unstable.nerd-fonts.jetbrains-mono

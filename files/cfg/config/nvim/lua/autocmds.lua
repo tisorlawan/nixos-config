@@ -148,6 +148,61 @@ vim.api.nvim_create_autocmd("VimLeave", {
   command = "silent !zellij action switch-mode normal",
 })
 
+local function disable_tsx_link_label_underline()
+  if not vim.api.nvim_get_hl then
+    return
+  end
+
+  local hl
+  for _, name in ipairs({ "@markup.link", "Underlined" }) do
+    local ok, value = pcall(vim.api.nvim_get_hl, 0, { name = name, link = false })
+    if ok and value then
+      hl = vim.deepcopy(value)
+      break
+    end
+  end
+
+  if not hl then
+    return
+  end
+
+  hl.underline = false
+  if type(hl.cterm) == "table" then
+    hl.cterm.underline = false
+  end
+  hl.undercurl = nil
+  hl.underdotted = nil
+  hl.underdashed = nil
+  hl.underdouble = nil
+  hl.underdrawn = nil
+  hl.link = nil
+  hl.default = nil
+
+  vim.api.nvim_set_hl(0, "@markup.link.label.tsx", hl)
+end
+
+local tsx_link_label_group = augroup("tsx_link_label")
+
+vim.api.nvim_create_autocmd("VimEnter", {
+  group = tsx_link_label_group,
+  callback = disable_tsx_link_label_underline,
+})
+
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = tsx_link_label_group,
+  callback = function()
+    vim.schedule(disable_tsx_link_label_underline)
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  group = tsx_link_label_group,
+  pattern = { "typescriptreact" },
+  callback = function()
+    vim.schedule(disable_tsx_link_label_underline)
+  end,
+})
+
 -- ------------------------------------------------- --
 -- Keep the cursor position when yanking
 local cursorPreYank

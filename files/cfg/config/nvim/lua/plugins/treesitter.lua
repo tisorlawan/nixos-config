@@ -9,6 +9,9 @@ return {
     },
     event = { "BufReadPost", "BufNewFile" },
     opts = {
+      autotag = {
+        enable = true,
+      },
       ensure_installed = {
         "bash",
         "c",
@@ -21,13 +24,12 @@ return {
         "vim",
         "vimdoc",
       },
-      auto_install = false,
+      auto_install = true,
       ignore_install = { "gitcommit" },
       highlight = {
         enable = true,
         additional_vim_regex_highlighting = { "ruby", "elixir" },
       },
-
       indent = {
         enable = true,
         disable = {

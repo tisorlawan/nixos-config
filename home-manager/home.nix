@@ -176,6 +176,8 @@ in
         nixpkgs-fmt
         biome
         wabt
+
+        pnpm
       ];
 
       # Databases and developer services

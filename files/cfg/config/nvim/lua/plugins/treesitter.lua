@@ -9,9 +9,6 @@ return {
     },
     event = { "BufReadPost", "BufNewFile" },
     opts = {
-      autotag = {
-        enable = true,
-      },
       ensure_installed = {
         "bash",
         "c",

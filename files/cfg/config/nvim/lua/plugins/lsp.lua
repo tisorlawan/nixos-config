@@ -18,6 +18,7 @@ local formatters_to_mason = {
   ruff_organize_imports = "ruff",
   nixpkgs_fmt = "nixpkgs-fmt",
   php_cs_fixer = "php-cs-fixer",
+  ["biome-check"] = "biome",
 }
 
 local mason_lspserver = {}

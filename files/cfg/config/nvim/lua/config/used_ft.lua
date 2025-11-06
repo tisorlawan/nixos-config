@@ -39,7 +39,7 @@ local config = {
   },
   html = {
     servers = { "html" },
-    formatters = { "prettierd" },
+    formatters = { "biome" },
     linters = { "htmlhint" },
   },
   javascript = {
@@ -94,11 +94,11 @@ local config = {
     formatters = { "taplo" },
   },
   typescript = {
-    formatters = { "prettierd" },
+    formatters = { "biome-check" },
     servers = { "ts_ls", "eslint" },
   },
   typescriptreact = {
-    formatters = { "prettierd" },
+    formatters = { "biome-check" },
     servers = { "ts_ls", "eslint" },
   },
   zig = {

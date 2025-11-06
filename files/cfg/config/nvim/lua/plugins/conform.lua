@@ -20,7 +20,7 @@ return {
     require("conform").formatters.biome = {
       args = {
         "format",
-        "--javascript-formatter-indent-width=4",
+        "--javascript-formatter-indent-width=2",
         "--indent-style=space",
         "--json-formatter-indent-style=space",
         "--json-formatter-indent-width=4",

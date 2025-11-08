@@ -174,7 +174,7 @@ in
         prettierd
         nil
         nixpkgs-fmt
-        biome
+        pkgs-unstable.biome
         wabt
 
         pnpm
@@ -253,7 +253,7 @@ in
       # Font families sourced from nixpkgs-unstable
       fontPackages = [
         nixpkgs-unstable.noto-fonts
-        nixpkgs-unstable.noto-fonts-emoji
+        nixpkgs-unstable.noto-fonts-color-emoji
         nixpkgs-unstable.noto-fonts-cjk-sans
         nixpkgs-unstable.noto-fonts-cjk-serif
         nixpkgs-unstable.material-icons

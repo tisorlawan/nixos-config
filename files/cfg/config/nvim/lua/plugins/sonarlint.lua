@@ -27,6 +27,8 @@ return {
       before_init = function(params, config)
         local project_root_and_ids = {
           ["/home/agung-b-sorlawan/Documents/services-llm-service"] = "nlp",
+          ["/home/agung-b-sorlawan/Documents/gen-ai-internal/libs/gllm-core"] = "gllm-core",
+          ["/home/agung-b-sorlawan/Documents/gen-ai-internal/libs/gllm-privacy"] = "gllm-core",
         }
 
         config.settings.sonarlint.connectedMode.project = {

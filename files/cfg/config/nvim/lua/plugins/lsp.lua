@@ -105,7 +105,7 @@ local function setup_lsp_keymaps(buf)
 end
 
 -- some lsp is setup by separate plugins
-local servers_config_skip = { "tsserver", "rust_analyzer" }
+local servers_config_skip = { "tsserver", "rust_analyzer", "ts_ls", "typescript-language-server" }
 -- local servers_config_skip = {}
 
 local servers_install_skip = { "clangd", "rust_analyzer" }
@@ -284,7 +284,7 @@ local plugins = {
         end,
       })
 
-      require("mason").setup()
+      -- require("mason").setup()
 
       require("mason-tool-installer").setup({
         ensure_installed = vim.list_extend(mason_linter_install, mason_formatter_install),
@@ -298,9 +298,9 @@ local plugins = {
       local capabilities = vim.lsp.protocol.make_client_capabilities()
       -- capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
 
-      require("mason-lspconfig").setup({
-        ensure_installed = installed_servers,
-      })
+      -- require("mason-lspconfig").setup({
+      --   ensure_installed = installed_servers,
+      -- })
 
       local handlers = vim.lsp.handlers
       handlers["textDocument/hover"] = vim.lsp.with(handlers.hover, { border = "single" })

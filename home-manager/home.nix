@@ -63,7 +63,6 @@ in
         postman
         rclone
         foliate
-        typora
       ];
 
       # General CLI helpers and editors

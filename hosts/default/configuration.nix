@@ -286,6 +286,7 @@ in
       languageTooling = [
         go
         nodejs_22
+        pnpm
         pkgs-unstable.bun
         rustup
         pkgs-unstable.zig

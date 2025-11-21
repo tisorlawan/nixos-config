@@ -1,44 +1,45 @@
-# arrow
-# asterisks
-# autopairs
-# colorschema
-# conform
-# dirvish
-# fff
-# flit
-# focus
-# fzf
-# gitignore
-# gitsigns
-# lazygit
-# leap
-# lsp
-# mini
-# multicursor
-# neotree
-# nvim-lint
-# smartsplit
-# tiny-inline-diagnostic
-# todo-comments
-# toggleterm
-# treesitter
-# trouble
-# undotree
-# vim-cool
-# lualine
-# sonarlint
-# avante
-# bqf
-# colorizer
-# debugprint
-# dressing
-# noice
-# outline
-# persistence
-# richclip
-# scrolleof
-# snacks
-# suda
-# ufo
-# whichkey
-# yazi
+arrow
+asterisks
+autopairs
+blink-indent
+colorschema
+conform
+dirvish
+fff
+flit
+focus
+fzf
+gitignore
+gitsigns
+lazygit
+leap
+lsp
+mini
+multicursor
+neotree
+nvim-lint
+smartsplit
+tiny-inline-diagnostic
+todo-comments
+toggleterm
+treesitter
+trouble
+undotree
+vim-cool
+lualine
+sonarlint
+avante
+bqf
+colorizer
+debugprint
+dressing
+noice
+outline
+persistence
+richclip
+scrolleof
+snacks
+suda
+ufo
+whichkey
+yazi

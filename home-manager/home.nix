@@ -24,7 +24,7 @@ in
         atuin
         (callPackage ./alacritty { })
         (callPackage ./ghostty { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
-        # (callPackage ./zed-editor { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
+        (callPackage ./zed-editor { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
         # (callPackage ./zoom-us { nixpkgs-unstable = nixpkgs-unstable; })
         nushell
         fish
@@ -54,6 +54,8 @@ in
         file-roller
         eww
         rofi
+        # inputs.antigravity-nix.packages.x86_64-linux.default
+        mesa
       ];
 
       # Productivity, syncing, and day-to-day utilities

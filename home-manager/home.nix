@@ -106,6 +106,7 @@ in
         rlwrap
         slides
         carapace # completion helpers
+        navi
       ];
 
       # Core development toolchain and documentation

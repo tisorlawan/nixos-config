@@ -93,7 +93,24 @@ alias ydv720compat="yt-dlp -f '230+233' --no-playlist --no-playlist"
 alias ydp="yt-dlp -f 'bv*[height<=1080][ext=mp4]+ba/b' -o '%(playlist_index)s [%(playlist_id)s]  - %(title)s.%(ext)s'"
 alias yda="yt-dlp -f '[ext=mp4]+ba/b' --extract-audio --no-playlist"
 
-##-- Claude Code --##
+##-- CLI AI Tools --##
 alias claude="npx @anthropic-ai/claude-code"
 alias codex="npx @openai/codex@latest --enable web_search_request -s danger-full-access"
 alias gemini="npx https://github.com/google-gemini/gemini-cli"
+
+function poetry-glsdk
+    set -gx POETRY_HTTP_BASIC_GEN_AI_INTERNAL_USERNAME "oauth2accesstoken"
+    set -gx POETRY_HTTP_BASIC_GEN_AI_INTERNAL_PASSWORD (gcloud auth print-access-token)
+
+    set -gx POETRY_HTTP_BASIC_GEN_AI_USERNAME "oauth2accesstoken"
+    set -gx POETRY_HTTP_BASIC_GEN_AI_PASSWORD (gcloud auth print-access-token)
+
+    echo "poetry auth configured (expires in ~1 hour)"
+end
+
+
+function uv-glsdk
+    set -gx UV_INDEX_GEN_AI_INTERNAL_USERNAME "oauth2accesstoken"
+    set -gx UV_INDEX_GEN_AI_INTERNAL_PASSWORD (gcloud auth print-access-token)
+    echo "uv auth configured (expires in ~1 hour)"
+end

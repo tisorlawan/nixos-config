@@ -11,6 +11,7 @@ focus
 fzf
 gitignore
 gitsigns
+git-blame
 lazygit
 leap
 lsp

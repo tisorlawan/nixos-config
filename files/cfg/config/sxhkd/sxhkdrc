@@ -3,8 +3,9 @@
 	rofi -show {run, drun} -matching fuzzy
 
 # Terminal
+# $HOME/.scripts/my-ghostty
 super + Return
-	$HOME/.scripts/my-ghostty
+	alacritty
 
 super + shift + Return
 	alacritty

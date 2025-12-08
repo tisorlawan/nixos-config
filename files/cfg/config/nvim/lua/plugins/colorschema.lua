@@ -21,10 +21,11 @@ return {
       if vim.g.colorscheme == "zen" then
         require("zen").setup({
           variant = "dark",
+          transparent = true,
           colors = {
             palette = {
-              bg0 = "#101018",
-              bg2 = "#121220",
+              bg0 = "#141419",
+              bg2 = "#202020",
             },
           },
         })

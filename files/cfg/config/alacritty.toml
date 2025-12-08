@@ -6,20 +6,20 @@ WINIT_X11_SCALE_FACTOR = "1.0"
 family = "BlexMono Nerd Font Propo SemiBold"
 
 [font]
-size = 12
+size = 14
 
 [font.glyph_offset]
 x = 0
-y = 2
+y = 0
 
 [font.offset]
 x = 0
-y = 3
+y = 0
 
 [window]
 decorations = "none"
-opacity = 1.0
+opacity = 0.85
 
 [window.padding]
 x = 0
-y = 0
+y = 2

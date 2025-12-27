@@ -1,0 +1,29 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# Keep typedef alignment
+AlignConsecutiveDeclarations: Consecutive
+AlignConsecutiveAssignments: None
+
+AllowShortIfStatementsOnASingleLine: WithoutElse
+
+AlignConsecutiveMacros: Consecutive
+
+# Don't break after typedef/struct keywords
+AlwaysBreakAfterDefinitionReturnType: None
+AlwaysBreakAfterReturnType: None
+
+# Column limit
+ColumnLimit: 110
+
+# Spacing
+SpaceAfterCStyleCast: true
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+
+# Braces
+BreakBeforeBraces: Attach
+
+IndentPPDirectives: BeforeHash

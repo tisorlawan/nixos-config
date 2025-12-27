@@ -5,13 +5,15 @@ let
 
   # SonarLint was first added on 2025-05-21 using nixpkgs rev 292fa7d4.
   # Pin to that revision to avoid current mvnHash mismatch from republished artifacts.
-  legacyPkgs = import (builtins.fetchTarball {
-    url = "https://github.com/NixOS/nixpkgs/archive/292fa7d4f6519c074f0a50394dbbe69859bb6043.tar.gz";
-    sha256 = "sha256-GaOZntlJ6gPPbbkTLjbd8BMWaDYafhuuYRNrxCGnPJw=";
-  }) {
-    system = "x86_64-linux";
-    config.allowUnfree = true;
-  };
+  legacyPkgs = import
+    (builtins.fetchTarball {
+      url = "https://github.com/NixOS/nixpkgs/archive/292fa7d4f6519c074f0a50394dbbe69859bb6043.tar.gz";
+      sha256 = "sha256-GaOZntlJ6gPPbbkTLjbd8BMWaDYafhuuYRNrxCGnPJw=";
+    })
+    {
+      system = "x86_64-linux";
+      config.allowUnfree = true;
+    };
 
   legacySonarLint = legacyPkgs.sonarlint-ls;
 in
@@ -119,6 +121,8 @@ in
         slides
         carapace # completion helpers
         navi
+        pkgs-unstable.ducker
+        inputs.opencode.packages.x86_64-linux.default
       ];
 
       # Core development toolchain and documentation
@@ -257,6 +261,7 @@ in
         pkgs-unstable.xournalpp
         telegram-desktop
         inlyne
+        transmission_4-gtk
       ];
 
       # Hardware diagnostics and graphics

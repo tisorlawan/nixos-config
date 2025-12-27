@@ -66,6 +66,10 @@ ln -srf ./files/cfg/images ~/.images
 rm -rf ~/.gitconfig
 ln -srf ./files/cfg/gitconfig ~/.gitconfig
 
+
+rm -rf ~/.clang-format
+ln -srf ./files/cfg/.clang-format ~/.clang-format
+
 rm -rf ~/.tmux.conf
 ln -srf ./files/cfg/tmux.conf ~/.tmux.conf
 
@@ -78,3 +82,6 @@ ln -srf files/cfg/doom.d/ ~/.doom.d
 mkdir -p ~/.claude
 rm -rf ~/.claude/commands
 ln -srf cc/commands/ ~/.claude/commands
+
+rm -rf ~/.config/opencode/config.json
+ln -srf ./files/cfg/config/opencode/config.json ~/.config/opencode/config.json

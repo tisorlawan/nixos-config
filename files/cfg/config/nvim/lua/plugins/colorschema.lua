@@ -2,14 +2,17 @@ vim.cmd([[ set background=dark ]])
 vim.g.transparent = true
 
 -- mellifluous kanagawa hybrid zenwritten
-vim.g.colorscheme = "zen"
+vim.g.colorscheme = "kanagawa"
 
 return {
   {
     "rebelot/kanagawa.nvim",
     config = function()
       if vim.g.colorscheme == "kanagawa" then
-        vim.cmd("colorscheme kanagawa-wave")
+        require("kanagawa").setup({
+          transparent = vim.g.transparent,
+        })
+        vim.cmd("colorscheme kanagawa-dragon")
       end
     end,
   },
@@ -21,7 +24,7 @@ return {
       if vim.g.colorscheme == "zen" then
         require("zen").setup({
           variant = "dark",
-          transparent = true,
+          transparent = vim.g.transparent,
           colors = {
             palette = {
               bg0 = "#141419",

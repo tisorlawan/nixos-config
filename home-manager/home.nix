@@ -68,6 +68,7 @@ in
         file-roller
         eww
         rofi
+        antigravity-fhs
         # inputs.antigravity-nix.packages.x86_64-linux.default
         mesa
       ];
@@ -121,8 +122,9 @@ in
         slides
         carapace # completion helpers
         navi
-        pkgs-unstable.ducker
-        inputs.opencode.packages.x86_64-linux.default
+        # pkgs-unstable.ducker
+        # inputs.opencode.packages.x86_64-linux.default
+        tokei
       ];
 
       # Core development toolchain and documentation
@@ -214,6 +216,7 @@ in
         jupyter-all
         ghostscript
         wkhtmltopdf
+        mermaid-cli
       ];
 
       # System helpers and connectivity tools

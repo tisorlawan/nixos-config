@@ -9,6 +9,7 @@ vim.opt.showmode = false
 vim.opt.sw = 4
 vim.opt.ts = 4
 vim.opt.sts = 4
+vim.opt.expandtab = true
 
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.

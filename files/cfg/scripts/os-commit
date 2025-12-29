@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# TODO: Replace XDG_DATA_HOME workaround with --ephemeral when merged
+# See: https://github.com/sst/opencode/issues/4489
+EPHEMERAL_DIR="${TMPDIR:-/tmp}/opencode-ephemeral-$$"
+mkdir -p "$EPHEMERAL_DIR/opencode"
+cp ~/.local/share/opencode/auth.json "$EPHEMERAL_DIR/opencode/" 2>/dev/null || true
+export XDG_DATA_HOME="$EPHEMERAL_DIR"
+trap 'rm -rf "$EPHEMERAL_DIR"' EXIT
+
+DIFF_TARGET="--cached"
+CONTEXT="the currently staged changes. IMPORTANT: Ignore any unstaged changes."
+MODEL="google/antigravity-gemini-3-pro-high"
+FORCE_SONNET=false
+
+# Handle flags and arguments
+ARGS=()
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --sonnet)
+            FORCE_SONNET=true
+            shift
+            ;;
+        *)
+            ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+if [ "${#ARGS[@]}" -ge 1 ]; then
+    # When a base commit is provided, we want to see changes from that commit up to what's staged.
+    # 'git diff <commit> --cached' shows the difference between the commit and the staging area.
+    DIFF_TARGET="${ARGS[0]} --cached"
+    CONTEXT="the changes from ${ARGS[0]} up to the current staged changes (squash commit target)."
+fi
+
+PROMPT=$(cat <<EOF
+Please generate a commit message for $CONTEXT
+
+Steps:
+1. Run \`git diff $DIFF_TARGET\` to inspect the changes.
+2. Run \`git log -n 20\` to analyze the project's commit message conventions (e.g. Conventional Commits, capitalization, lack of periods at end of subject, etc.).
+3. Draft a commit message that strictly follows the observed conventions.
+4. Output ONLY the commit message. No conversational text, no markdown code blocks around it. Just the raw commit message text.
+5. When appropriate, add explanations or description in the commit body.
+EOF
+)
+
+if [ "$FORCE_SONNET" = true ]; then
+    opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
+else
+    # Try Gemini first
+    OUTPUT=$(opencode run --model "$MODEL" "$PROMPT" || true)
+
+    if [[ -z "$OUTPUT" ]]; then
+        # Fallback to Claude if Gemini fails or produced no output
+        opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
+    else
+        echo "$OUTPUT"
+    fi
+fi

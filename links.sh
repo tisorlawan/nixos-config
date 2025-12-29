@@ -85,3 +85,15 @@ ln -srf cc/commands/ ~/.claude/commands
 
 rm -rf ~/.config/opencode/config.json
 ln -srf ./files/cfg/config/opencode/config.json ~/.config/opencode/config.json
+
+rm -rf ~/.config/opencode/AGENTS.md
+ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.config/opencode/AGENTS.md
+
+rm -rf ~/.config/opencode/oh-my-opencode.jsonc
+ln -srf ./files/cfg/config/opencode/oh-my-opencode.jsonc ~/.config/opencode/oh-my-opencode.jsonc
+
+rm -rf ~/.config/opencode/opencode.jsonc
+ln -srf ./files/cfg/config/opencode/opencode.jsonc ~/.config/opencode/opencode.jsonc
+
+rm -rf ~/.config/opencode/skill
+ln -srf ./files/cfg/config/opencode/skill ~/.config/opencode/skill

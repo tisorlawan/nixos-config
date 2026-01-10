@@ -103,7 +103,7 @@ in
         curl
         file
         pkgs-unstable.neovim
-        vim
+        vim-full
         sbcl
         killall
         yazi
@@ -216,7 +216,7 @@ in
         jupyter-all
         ghostscript
         wkhtmltopdf
-        mermaid-cli
+        # mermaid-cli
       ];
 
       # System helpers and connectivity tools

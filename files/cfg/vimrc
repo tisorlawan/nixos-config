@@ -1,351 +1,800 @@
-let mapleader = " "
-
 syntax on
+colorscheme habamax
+
+" Cursor shape: block in normal, line in insert
+let &t_SI = "\e[6 q"  " Insert mode: steady bar
+let &t_EI = "\e[2 q"  " Normal mode: steady block
+let &t_SR = "\e[4 q"  " Replace mode: steady underline
+
+" Transparent background (inherit terminal bg)
+highlight Normal guibg=NONE ctermbg=NONE
+highlight NonText guibg=NONE ctermbg=NONE
+highlight LineNr guibg=NONE ctermbg=NONE
+highlight SignColumn guibg=NONE ctermbg=NONE
+highlight EndOfBuffer guibg=NONE ctermbg=NONE
+
+set sw=4
+set ts=4
+set sts=4
+set expandtab
+
+set autoindent
 set number
 set relativenumber
 
-set laststatus=2
-
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
-set expandtab
-set autoindent
-set smartindent
-
-set completeopt=menuone,preview
-
-set incsearch
-set hlsearch "highlight search results
-set smartcase
-
 set nowrap
-set showmatch
-set nocursorline
-set ruler
 
-set splitright
-set splitbelow
+let mapleader = " "
 
-set cursorline
+" Search settings
+set incsearch                   " Incremental search (search as you type)
+set hlsearch                    " Highlight search results
+set ignorecase                  " Case insensitive search by default
+set smartcase                   " Case sensitive when uppercase is used
 
-set hidden " Allow hiding modified buffers with no errors
+" Usability improvements
+set mouse=a                     " Enable mouse support
+set clipboard=unnamedplus       " Use system clipboard
+set backspace=indent,eol,start  " Make backspace work as expected
+set wildmenu                    " Visual autocomplete for command menu
+set wildmode=longest:full,full  " Command completion mode
+set showcmd                     " Show partial commands in status line
+set nocursorline                " Cursorline
+set scrolloff=8                 " Keep 8 lines visible above/below cursor
+set sidescrolloff=8             " Keep 8 columns visible left/right
 
-set clipboard=unnamedplus
+" File handling
+set hidden                      " Allow switching buffers without saving
+set nobackup                    " Don't create backup files
+set noswapfile                  " Don't create swap files
+set undofile                    " Persistent undo across sessions
+set undodir=~/.vim/undodir      " Undo directory (create it first)
 
-nnoremap <C-H> :wincmd h<CR>
-nnoremap <C-L> :wincmd l<CR>
-nnoremap <C-J> :wincmd j<CR>
-nnoremap <C-K> :wincmd k<CR>
-nnoremap <C-n> :bnext<CR>
-nnoremap <C-p> :bprevious<CR>
-nnoremap <leader><tab> <C-^>
+" Performance
+set lazyredraw                  " Redraw only when needed
+set updatetime=300              " Faster completion (default 4000ms)
+set ttimeout
+set ttimeoutlen=0               " Instant Esc (no delay for key codes)
 
+" Split windows
+set splitbelow                  " Horizontal splits open below
+set splitright                  " Vertical splits open to the right
 
-set background=dark
-colorscheme habamax
+" Optional but popular
+set showmatch                   " Highlight matching brackets
+set ruler                       " Show cursor position
+set laststatus=2                " Always show status line
+set shortmess-=S                " Show search count [x/y]
+set encoding=utf-8              " Set encoding
+set smartindent                 " Smart autoindenting
+set title                       " Set window title
 
-if has("autocmd")
-  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-endif
+" Key mappings
+nnoremap <leader>w :update<CR>
+nnoremap <leader>h :nohlsearch<CR>
+nnoremap <leader>q :q<CR>
 
-noremap - :Explore<CR>
+" Navigate splits easier
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
 
-let g:netrw_banner = 0
-let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+'
-let g:netrw_winsize = 20
-nnoremap <leader>e :Lexplore %:p:h<CR>
+" Buffer navigation
+nnoremap <leader><Tab> <C-^>
+nnoremap <leader>j :bnext<CR>
+nnoremap <leader>k :bprev<CR>
 
-augroup netrw_mapping
-  autocmd!
-  autocmd filetype netrw call NetrwMapping()
+" Swap ` and ' for marks (` is more useful - goes to exact position)
+nnoremap ' `
+nnoremap ` '
+
+" Restore cursor position on file open
+augroup RestoreCursor
+    autocmd!
+    autocmd BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | execute "normal! g'\"" | endif
 augroup END
 
-
-function! NetrwMapping()
-  nmap <buffer> H u
-  nmap <buffer> h -^
-  nmap <buffer> l <CR>
-
-  nmap <buffer> . gh
-  nmap <buffer> P <C-w>z
-
-  nmap <buffer> L <CR>:Lexplore<CR>
-  nmap <buffer> <leader>e :Lexplore<CR>
-
-  " Marks
-  nmap <buffer> <TAB> mf
-  nmap <buffer> <S-TAB> mF
-  nmap <buffer> <leader><TAB> mu
-
-  " Bookmarks
-  " To create a bookmark
-  nmap <buffer> bb mb
-  " To remove the most recent bookmark
-  nmap <buffer> bd mB
-  " To jump to the most recent bookmark.
-  nmap <buffer> bl gb
-
-  " rename
-  nmap <buffer> fe R
-  " copy marked file
-  nmap <buffer> fc mc
-  " We will use this to "skip" a step. After you mark your files you can put the cursor in a directory and this will assign the target directory and copy in one step.
-  nmap <buffer> fC mtmc
-  " move marked files
-  nmap <buffer> fx mm
-  " Same thing as fC but for moving files.
-  nmap <buffer> fX mtmm
-  " Will be for running external commands on the marked files.
-  nmap <buffer> f; mx
-endfunction
-set tabstop=4
-set softtabstop=4
-set shiftwidth=4
-set expandtab
-set autoindent
-set smartindent
-
-set completeopt=menuone,preview
-
-set incsearch
-set hlsearch "highlight search results
-set smartcase
-
-set nowrap
-set showmatch
-set nocursorline
-set ruler
-
-set splitright
-set splitbelow
-
-set cursorline
-
-set hidden " Allow hiding modified buffers with no errors
-
-nnoremap <C-H> :wincmd h<CR>
-nnoremap <C-L> :wincmd l<CR>
-nnoremap <C-J> :wincmd j<CR>
-nnoremap <C-K> :wincmd k<CR>
-nnoremap <C-n> :bnext<CR>
-nnoremap <C-p> :bprevious<CR>
-nnoremap <leader><tab> <C-^>
+" Terminal mode: pass through readline keys
+set termwinkey=<C-_>
+tnoremap <C-w> <C-w>
+tnoremap <C-u> <C-u>
+tnoremap <C-a> <C-a>
+tnoremap <C-e> <C-e>
+tnoremap <C-k> <C-k>
 
 
-set background=dark
-colorscheme habamax
+" Insert mode navigation (stay in insert mode)
+inoremap <C-h> <Left>
+inoremap <C-j> <Down>
+inoremap <C-k> <Up>
+inoremap <C-l> <Right>
 
-if has("autocmd")
-  au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g'\"" | endif
-endif
+" Move lines up/down in visual mode
+vnoremap J :m '>+1<CR>gv=gv
+vnoremap K :m '<-2<CR>gv=gv
 
-noremap - :Explore<CR>
-
-let g:netrw_banner = 0
-let g:netrw_list_hide = '\(^\|\s\s\)\zs\.\S\+'
-let g:netrw_winsize = 20
-nnoremap <leader>e :Lexplore %:p:h<CR>
-
-augroup netrw_mapping
-  autocmd!
-  autocmd filetype netrw call NetrwMapping()
+" Clear search highlight on cursor move (with debounce)
+let g:search_hl_locked = 0
+augroup ClearSearchHL
+    autocmd!
+    autocmd CursorMoved * if g:search_hl_locked == 0 | set nohlsearch | endif
+    autocmd CursorMoved * let g:search_hl_locked = 0
 augroup END
 
+" Lock highlight when searching, unlock after first move
+nnoremap / :let g:search_hl_locked=1<CR>:set hlsearch<CR>/
+nnoremap ? :let g:search_hl_locked=1<CR>:set hlsearch<CR>?
+nnoremap n :let g:search_hl_locked=1<CR>:set hlsearch<CR>n
+nnoremap N :let g:search_hl_locked=1<CR>:set hlsearch<CR>N
+nnoremap * :let g:search_hl_locked=1<CR>:set hlsearch<CR>*
+nnoremap # :let g:search_hl_locked=1<CR>:set hlsearch<CR>#
 
-function! NetrwMapping()
-  nmap <buffer> H u
-  nmap <buffer> h -^
-  nmap <buffer> l <CR>
+" ============================================
+" File explorer with yazi (fallback netrw)
+" ============================================
+let g:netrw_banner = 0          " Hide banner
+let g:netrw_liststyle = 3       " Tree view
+let g:netrw_browse_split = 0    " Open in same window
+let g:netrw_winsize = 25        " Width when split
+let g:netrw_altv = 1            " Open splits to the right
 
-  nmap <buffer> . gh
-  nmap <buffer> P <C-w>z
+let g:yazi_tempfile = ''
+let g:yazi_prev_buf = 0
 
-  nmap <buffer> L <CR>:Lexplore<CR>
-  nmap <buffer> <leader>e :Lexplore<CR>
-
-  " Marks
-  nmap <buffer> <TAB> mf
-  nmap <buffer> <S-TAB> mF
-  nmap <buffer> <leader><TAB> mu
-
-  " Bookmarks
-  " To create a bookmark
-  nmap <buffer> bb mb
-  " To remove the most recent bookmark
-  nmap <buffer> bd mB
-  " To jump to the most recent bookmark.
-  nmap <buffer> bl gb
-
-  " rename
-  nmap <buffer> fe R
-  " copy marked file
-  nmap <buffer> fc mc
-  " We will use this to "skip" a step. After you mark your files you can put the cursor in a directory and this will assign the target directory and copy in one step.
-  nmap <buffer> fC mtmc
-  " move marked files
-  nmap <buffer> fx mm
-  " Same thing as fC but for moving files.
-  nmap <buffer> fX mtmm
-  " Will be for running external commands on the marked files.
-  nmap <buffer> f; mx
-endfunction
-
-
-" --- FZF File Selector: The Definitive, Robust, and Fallback-Aware Version ---
-
-" Set the default shell to /bin/sh for all system/term calls
-set shell=/bin/sh
-
-" --- FZF File Selector: The Definitive, Robust, and Fallback-Aware Version ---
-
-" --- CONFIGURATION ---
-if !exists('g:default_file_generator')
-    let g:default_file_generator = 'fd' " Preferred: fd, fallback: git, final: find
-endif
-if !exists('g:default_file_selector')
-    let g:default_file_selector = 'fzf' " Preferred: fzf, fallback: Vim's input()
-endif
-
-" --- MAIN FUNCTION ---
-function! FzfOpenFile(show_hidden)
-    let l:start_dir = getcwd()
-    let l:generator_command = ''
-
-    " Get the full path of the current buffer to exclude it.
-    let l:current_buf_path = expand('%:p')
-
-    " --- 1. DETERMINE THE FILE GENERATOR (All output relative paths) ---
-    " fd: The fastest option.
-    if g:default_file_generator == 'fd' && executable('fd')
-        let l:hidden_flag = a:show_hidden ? '--hidden' : ''
-        
-        " Exclude common Vim swap/backup files and general dev directories.
-        " Ensure proper string concatenation with '\'.
-        let l:fd_excludes = "--exclude '*.swp'" .
-                           \ " --exclude '*.swo'" .
-                           \ " --exclude '*.swn'" .
-                           \ " --exclude '.git'" .
-                           \ " --exclude 'node_modules'" .
-                           \ " --exclude '__pycache__'"
-
-        " Exclude current buffer and its specific swap file if path is known.
-        if !empty(l:current_buf_path)
-            let l:relative_current_buf_path = fnamemodify(l:current_buf_path, ":.")
-            let l:fd_excludes .= " --exclude " . shellescape(l:relative_current_buf_path)
-            
-            " Explicitly exclude the hidden swap file for the current buffer (e.g., .main.c.swp)
-            let l:swapfile_basename = '.' . fnamemodify(l:current_buf_path, ':t') . '.swp'
-            let l:fd_excludes .= " --exclude " . shellescape(l:swapfile_basename)
-        endif
-
-        " 'cd && fd' pattern ensures fd runs from the project root and outputs relative paths.
-        let l:cd_command = "cd " . shellescape(l:start_dir)
-        let l:fd_command = "fd " . l:hidden_flag . " --follow --type file " . l:fd_excludes . " ."
-        let l:generator_command = l:cd_command . " && " . l:fd_command
-
-    " git: Fast fallback if in a Git repo.
-    elseif executable('git') && !empty(finddir('.git', ';'))
-        let l:git_flags = a:show_hidden ? '--cached --others --exclude-standard' : '--cached'
-        let l:generator_command = "git -C " . shellescape(l:start_dir) . " ls-files " . l:git_flags
-
-    " find: Universal fallback.
-    else
-        " 'cd && find' for relative paths and sed to remove leading './'.
-        let l:cd_command = "cd " . shellescape(l:start_dir)
-        
-        " Exclude common directories/files using -prune.
-        let l:find_excludes = "-path '*/.git*' -prune -o " .
-                             \ "-name '*.swp' -prune -o -name '.*.swp' -prune -o " .
-                             \ "-name '*.swo' -prune -o -name '*.swn' -prune -o " .
-                             \ "-path '*/node_modules*' -prune -o -path '*/__pycache__*' -prune -o "
-
-        " If current buffer is specified, add its relative path to find exclude.
-        if !empty(l:current_buf_path)
-            let l:relative_current_buf_path_for_find = substitute(fnamemodify(l:current_buf_path, ":."), '^\./', '', '')
-            let l:find_excludes .= "-wholename " . shellescape(l:relative_current_buf_path_for_find) . " -prune -o "
-        endif
-
-        let l:find_command = "find . " . l:find_excludes . "-type f -print | sed 's|^./||'"
-        let l:generator_command = l:cd_command . " && " . l:find_command
-    endif
-
-    " Handle case where no generator could be found/command generated.
-    if empty(l:generator_command)
-        echohl ErrorMsg | echom "No file generator found (fd, git, or find)." | echohl None
+function! YaziExplorer()
+    if !executable('yazi')
+        " Fallback to netrw
+        execute 'Ex ' . expand('%:p:h')
+        call search('\<' . expand('#:t') . '\>')
         return
     endif
 
-    " --- 2. DETERMINE THE SELECTOR (fzf -> Vim's input()) ---
-    if g:default_file_selector == 'fzf' && executable('fzf')
-        " --- INTERACTIVE FZF PATH (Popup-like) ---
-        " Crucial: '< /dev/tty' makes fzf interactive.
-        " Crucial: '> /dev/tty' for tput ensures control codes go to terminal, not captured.
-        let l:fzf_command = "fzf < /dev/tty"
-        let l:core_command = l:generator_command . " | " . l:fzf_command
-        let l:full_command = printf('tput smcup > /dev/tty; %s; tput rmcup > /dev/tty', l:core_command)
-        
-        " systemlist() runs the command and captures the clean output.
-        let l:selected_files = systemlist(l:full_command)
-        redraw! " Crucial: Forces Vim to redraw screen after external program.
+    let g:yazi_prev_buf = bufnr('%')
+    let g:yazi_tempfile = tempname()
+    let l:dir = expand('%:p:h')
+    if l:dir == ''
+        let l:dir = getcwd()
+    endif
+    let l:cmd = 'yazi --chooser-file=' . g:yazi_tempfile . ' ' . shellescape(l:dir)
 
-        if empty(l:selected_files)
-            echom "Selection cancelled."
-            return
-        endif
-        let l:selected_file = trim(l:selected_files[0])
+    enew
+    call term_start(['/bin/sh', '-c', l:cmd], {
+        \ 'term_finish': 'close',
+        \ 'exit_cb': 'YaziExplorerCallback',
+        \ 'curwin': 1
+        \ })
+endfunction
 
-    else
-        " --- NON-INTERACTIVE VIM FALLBACK PATH ---
-        echom "fzf not found. Falling back to list selection."
-        let l:raw_file_list = systemlist(l:generator_command)
-        
-        " Manually filter swap files and current buffer for the fallback list.
-        let l:file_list = []
-        for file in l:raw_file_list
-            if file !~? '\.swp$' && file !~? '\.swo$' && file !~? '\.swn$' " Case-insensitive swap/backup check
-                if empty(l:current_buf_path) || file != fnamemodify(l:current_buf_path, ":.") " Exclude current buffer
-                    let l:file_list += [file]
-                endif
-            endif
-        endfor
-
-        if empty(l:file_list)
-            echom "No files found by generator or after filtering."
-            return
-        endif
-
-        echom "--- Select a file by number ---"
-        for [i, file] in items(l:file_list)
-            echom printf("%4d: %s", i + 1, file)
-        endfor
-
-        let l:choice = input('Enter number: ')
-        if l:choice =~ '^\d\+$'
-            let l:index = str2nr(l:choice) - 1
-            if l:index >= 0 && l:index < len(l:file_list)
-                let l:selected_file = l:file_list[l:index]
-            else
-                echom "Invalid number."
-                return
-            endif
-        else
-            echom "Invalid input. Selection cancelled."
-            return
+function! YaziExplorerCallback(job, status)
+    " Check if we have a file selected
+    let l:chosen_file = ''
+    if filereadable(g:yazi_tempfile)
+        let l:chosen = readfile(g:yazi_tempfile)
+        call delete(g:yazi_tempfile)
+        if len(l:chosen) > 0 && l:chosen[0] != ''
+            let l:chosen_file = l:chosen[0]
         endif
     endif
 
-    " --- 3. OPEN THE SELECTED FILE ---
-    if !empty(l:selected_file)
-        " All generators produce relative paths, so prepend the start_dir.
-        let l:full_path = l:start_dir . '/' . l:selected_file
-        execute "edit " . fnameescape(l:full_path)
+    " Always go back to previous buffer (or create empty if gone)
+    if bufexists(g:yazi_prev_buf) && g:yazi_prev_buf != bufnr('%')
+        execute 'buffer ' . g:yazi_prev_buf
+    elseif bufnr('%') == bufnr('$') && &buftype ==# 'terminal'
+        " Terminal is the only buffer, create new empty
+        enew
+    endif
+
+    " Open chosen file if any
+    if l:chosen_file != ''
+        execute 'edit ' . fnameescape(l:chosen_file)
     endif
 endfunction
 
-" --- MAPPINGS ---
-" <leader>ff -> Fuzzy find files (vanilla, no hidden files)
-nnoremap <leader>ff :call FzfOpenFile(0)<CR>
+nnoremap <silent> - :call YaziExplorer()<CR>
 
-" <leader>fF -> Fuzzy find Files (including hidden files)
-nnoremap <leader>fF :call FzfOpenFile(1)<CR>
+" ============================================
+" Run shell command, output in vertical split
+" ============================================
+let g:last_shell_cmd = ''
+
+function! RunShellCommand()
+    call inputsave()
+    let l:cmd = input('$ ', g:last_shell_cmd)
+    call inputrestore()
+    if l:cmd != ''
+        let g:last_shell_cmd = l:cmd
+        call s:RunShellInScratch(l:cmd)
+    endif
+endfunction
+
+function! RunLastShellCommand()
+    let l:cmd = g:last_shell_cmd
+    if l:cmd == ''
+        " Default commands by filetype
+        if &filetype == 'rust'
+            let l:cmd = 'cargo check'
+        else
+            echo "No previous command"
+            return
+        endif
+        let g:last_shell_cmd = l:cmd
+    endif
+    let l:cur_win = win_getid()
+    call s:RunShellInScratch(l:cmd)
+    call win_gotoid(l:cur_win)
+endfunction
+
+function! s:RunShellInScratch(cmd)
+    " Find existing scratch buffer by checking buftype and name pattern
+    let l:scratch_buf = -1
+    for b in range(1, bufnr('$'))
+        if bufexists(b) && bufname(b) =~# '\[Scratch\]' && getbufvar(b, '&buftype') ==# 'nofile'
+            let l:scratch_buf = b
+            break
+        endif
+    endfor
+    
+    if l:scratch_buf != -1
+        " Switch to window with scratch buffer if visible
+        let l:scratch_win = bufwinnr(l:scratch_buf)
+        if l:scratch_win != -1
+            execute l:scratch_win . 'wincmd w'
+        else
+            " Buffer exists but not visible, open in vsplit
+            vsplit
+            execute 'buffer ' . l:scratch_buf
+        endif
+        " Clear buffer content
+        silent %delete _
+    else
+        " Create new scratch buffer
+        vnew
+        setlocal buftype=nofile bufhidden=hide noswapfile nobuflisted
+        silent! file [Scratch]
+    endif
+    
+    " Record start time
+    let l:start_time = strftime('%Y-%m-%d %H:%M:%S')
+    
+    " Run command and capture output + exit code
+    let l:output = system(a:cmd . ' 2>&1')
+    let l:exit_code = v:shell_error
+    
+    " Record end time
+    let l:end_time = strftime('%Y-%m-%d %H:%M:%S')
+    
+    " Populate buffer
+    call setline(1, split(l:output, "\n"))
+    
+    " Add footer
+    call append('$', '')
+    call append('$', '------')
+    call append('$', 'Command     : ' . a:cmd)
+    call append('$', 'Run At      : ' . l:start_time)
+    call append('$', 'Finished At : ' . l:end_time)
+    call append('$', 'Status Code : ' . l:exit_code)
+    
+    " Go to top
+    normal! gg
+endfunction
+
+function! EditLastShellCommand()
+    call inputsave()
+    let l:cmd = input('$ ', g:last_shell_cmd)
+    call inputrestore()
+    if l:cmd != ''
+        let g:last_shell_cmd = l:cmd
+        let l:cur_win = win_getid()
+        call s:RunShellInScratch(l:cmd)
+        call win_gotoid(l:cur_win)
+    endif
+endfunction
+
+function! ClearLastShellCommand()
+    let g:last_shell_cmd = ''
+    " Set to default based on filetype
+    if &filetype == 'rust'
+        let g:last_shell_cmd = 'cargo check'
+        echo "Reset to default: cargo check"
+    else
+        echo "Cleared last command"
+    endif
+endfunction
+
+" Format commands by filetype
+let g:format_commands = {
+    \ 'rust': 'rustfmt',
+    \ 'python': 'black -q',
+    \ 'javascript': 'prettier --write',
+    \ 'typescript': 'prettier --write',
+    \ 'json': 'prettier --write',
+    \ 'go': 'gofmt -w',
+    \ 'c': 'clang-format -i',
+    \ 'cpp': 'clang-format -i',
+    \ }
+
+function! FormatCurrentFile()
+    if !has_key(g:format_commands, &filetype)
+        echo "No formatter configured for " . &filetype
+        return
+    endif
+    " Save file first
+    update
+    let l:cmd = g:format_commands[&filetype] . ' ' . shellescape(expand('%'))
+    let l:output = system(l:cmd)
+    if v:shell_error != 0
+        echo "Format failed: " . l:output
+    else
+        " Reload file
+        edit!
+    endif
+endfunction
+
+let g:terminal_buf = -1
+let g:terminal_cmd = ''
+let g:terminal_exit_status = 0
+
+function! s:TerminalExitCallback(job, status)
+    let g:terminal_exit_status = a:status
+    call timer_start(50, function('s:RenameTerminalBuffer'))
+endfunction
+
+function! s:RenameTerminalBuffer(timer)
+    if g:terminal_buf != -1 && bufexists(g:terminal_buf)
+        let l:cur_win = win_getid()
+        let l:term_win = bufwinnr(g:terminal_buf)
+        if l:term_win != -1
+            execute l:term_win . 'wincmd w'
+            let l:name = '!' . g:terminal_cmd . ' [exit: ' . g:terminal_exit_status . ']'
+            silent! setlocal modifiable
+            silent! execute 'file ' . fnameescape(l:name)
+            silent! setlocal nomodifiable
+            call win_gotoid(l:cur_win)
+        endif
+    endif
+endfunction
+
+function! s:OpenTerminalWithCmd(cmd)
+    " Find and close existing terminal buffer if exists
+    if g:terminal_buf != -1 && bufexists(g:terminal_buf)
+        let l:term_win = bufwinnr(g:terminal_buf)
+        if l:term_win != -1
+            execute l:term_win . 'wincmd w'
+            bwipeout!
+            vsplit
+        else
+            vsplit
+        endif
+        silent! execute 'bwipeout! ' . g:terminal_buf
+    else
+        vsplit
+    endif
+    " Store command for exit callback
+    let g:terminal_cmd = a:cmd
+    " Open new terminal with exit callback
+    call term_start(a:cmd, {
+        \ 'curwin': 1,
+        \ 'exit_cb': function('s:TerminalExitCallback')
+        \ })
+    let g:terminal_buf = bufnr('%')
+    " Enable <Esc><Esc> for runner terminals
+    tnoremap <buffer> <Esc><Esc> <C-\><C-n>
+endfunction
+
+function! RunInTerminal()
+    let l:cmd = g:last_shell_cmd
+    if l:cmd == ''
+        " Default commands by filetype
+        if &filetype == 'rust'
+            let l:cmd = 'cargo check'
+        else
+            echo "No previous command"
+            return
+        endif
+        let g:last_shell_cmd = l:cmd
+    endif
+    let l:cur_win = win_getid()
+    call s:OpenTerminalWithCmd(l:cmd)
+    call win_gotoid(l:cur_win)
+endfunction
+
+function! EditAndRunInTerminal()
+    call inputsave()
+    let l:cmd = input('$ ', g:last_shell_cmd)
+    call inputrestore()
+    if l:cmd != ''
+        let g:last_shell_cmd = l:cmd
+        call s:OpenTerminalWithCmd(l:cmd)
+    endif
+endfunction
+
+nnoremap <leader><leader> :call EditAndRunInTerminal()<CR>
+nnoremap <leader>rr :call RunInTerminal()<CR>
+nnoremap <leader>re :call EditAndRunInTerminal()<CR>
+nnoremap <leader>rx :call ClearLastShellCommand()<CR>
+nnoremap <leader>cff :call FormatCurrentFile()<CR>
+
+" ============================================
+" File finder (C-n) - yazi > fzf > wildmenu
+" ============================================
+set path=.,**                   " Only current dir + subdirs (not system paths)
+set wildignore+=**/node_modules/**,**/.git/**,**/dist/**,**/build/**,**/__pycache__/**,*.pyc,*.o,*.obj,*.h
+
+let g:fzf_tempfile = tempname()
+let g:fzf_source_win = 0
+let g:fzf_open_mode = 'edit'
+
+function! FzfCallback(job, status)
+    if filereadable(g:fzf_tempfile)
+        let l:chosen = readfile(g:fzf_tempfile)
+        call delete(g:fzf_tempfile)
+        if len(l:chosen) > 0 && l:chosen[0] != '' && filereadable(l:chosen[0])
+            " Go back to source window
+            if win_gotoid(g:fzf_source_win)
+                if g:fzf_open_mode ==# 'split'
+                    execute 'split ' . fnameescape(l:chosen[0])
+                elseif g:fzf_open_mode ==# 'vsplit'
+                    execute 'vsplit ' . fnameescape(l:chosen[0])
+                else
+                    execute 'edit ' . fnameescape(l:chosen[0])
+                endif
+            endif
+        endif
+    endif
+endfunction
+
+function! GetFuzzyFinder()
+    if executable('fzy')
+        return 'fzy'
+    elseif executable('fzf')
+        return 'fzf'
+    endif
+    return ''
+endfunction
+
+function! GetFileLister(exclude_file)
+    let l:exclude = ''
+    if a:exclude_file != ''
+        let l:exclude = ' | grep -vF ' . shellescape(a:exclude_file)
+    endif
+    let l:strip_dot = " | sed 's#^\\./##'"
+    if executable('fd')
+        return 'fd -t f --exec stat -c "%Y %n" {} \; | sort -rn | cut -d" " -f2-' . l:strip_dot . l:exclude
+    elseif isdirectory('.git')
+        return 'git ls-files | xargs stat -c "%Y %n" 2>/dev/null | sort -rn | cut -d" " -f2-' . l:strip_dot . l:exclude
+    else
+        return 'find . -type f -exec stat -c "%Y %n" {} \; | sort -rn | cut -d" " -f2-' . l:strip_dot . l:exclude
+    endif
+endfunction
+
+" Picker terminals use default fzf/fzy Esc handling (no vim override)
+
+function! FilePicker()
+    let g:fzf_source_win = win_getid()
+    let g:fzf_open_mode = 'edit'
+    let l:finder = GetFuzzyFinder()
+    if l:finder != ''
+        let g:fzf_tempfile = tempname()
+        let l:current_file = expand('%:.')
+        let l:lister = GetFileLister(l:current_file)
+        if l:finder ==# 'fzy'
+            " fzy (no --expect support, simple selection)
+            let l:cmd = l:lister . ' | ' . l:finder . ' > ' . g:fzf_tempfile
+            botright call term_start(['/bin/sh', '-c', l:cmd], {
+                \ 'term_finish': 'close',
+                \ 'exit_cb': 'FzfCallback',
+                \ 'term_rows': 15,
+                \ 'term_name': 'Files:'
+                \ })
+        else
+            " fzf with keybinds: enter=select, ctrl-s=split, ctrl-v=vsplit
+            let l:cmd = l:lister . ' | ' . l:finder . ' --expect=ctrl-s,ctrl-v > ' . g:fzf_tempfile
+            botright call term_start(['/bin/sh', '-c', l:cmd], {
+                \ 'term_finish': 'close',
+                \ 'exit_cb': 'FzfCallbackWithMode',
+                \ 'term_rows': 15,
+                \ 'term_name': 'Files:'
+                \ })
+        endif
+    elseif executable('yazi')
+        let g:fzf_tempfile = tempname()
+        let l:cmd = 'yazi --chooser-file=' . g:fzf_tempfile
+        botright call term_start(['/bin/sh', '-c', l:cmd], {
+            \ 'term_finish': 'close',
+            \ 'exit_cb': 'FzfCallback',
+            \ 'term_rows': 15
+            \ })
+        call s:SetupPickerTerminal()
+    else
+        call feedkeys(":find *", 'n')
+    endif
+endfunction
+
+function! FzfCallbackWithMode(job, status)
+    if filereadable(g:fzf_tempfile)
+        let l:lines = readfile(g:fzf_tempfile)
+        call delete(g:fzf_tempfile)
+        if len(l:lines) >= 2
+            let l:key = l:lines[0]
+            let l:file = l:lines[1]
+            if l:file != '' && filereadable(l:file)
+                " Go back to source window
+                if win_gotoid(g:fzf_source_win)
+                    if l:key ==# 'ctrl-s'
+                        execute 'split ' . fnameescape(l:file)
+                    elseif l:key ==# 'ctrl-v'
+                        execute 'vsplit ' . fnameescape(l:file)
+                    else
+                        execute 'edit ' . fnameescape(l:file)
+                    endif
+                endif
+            endif
+        elseif len(l:lines) == 1 && l:lines[0] != '' && filereadable(l:lines[0])
+            " No key pressed, just enter
+            if win_gotoid(g:fzf_source_win)
+                execute 'edit ' . fnameescape(l:lines[0])
+            endif
+        endif
+    endif
+endfunction
+
+function! YaziPicker()
+    let g:fzf_source_win = win_getid()
+    if executable('yazi')
+        let g:fzf_tempfile = tempname()
+        let l:cmd = 'yazi --chooser-file=' . g:fzf_tempfile
+        botright call term_start(['/bin/sh', '-c', l:cmd], {
+            \ 'term_finish': 'close',
+            \ 'exit_cb': 'FzfCallback',
+            \ 'term_rows': 15
+            \ })
+    else
+        echo "yazi not found"
+    endif
+endfunction
+
+" ============================================
+" Buffer picker (C-n) - fzf buffer selector
+" ============================================
+function! BufferPicker()
+    let g:fzf_source_win = win_getid()
+    let l:current_buf = bufnr('%')
+    let l:finder = GetFuzzyFinder()
+    if l:finder != ''
+        let g:fzf_tempfile = tempname()
+        " Get list of buffers excluding current, terminal, and unlisted
+        let l:bufs = []
+        for b in range(1, bufnr('$'))
+            if buflisted(b) && b != l:current_buf && getbufvar(b, '&buftype') !=# 'terminal'
+                let l:name = bufname(b)
+                if l:name != ''
+                    call add(l:bufs, l:name)
+                endif
+            endif
+        endfor
+        if len(l:bufs) == 0
+            echo "No other buffers"
+            return
+        endif
+        let l:buflist = join(l:bufs, "\n")
+        if l:finder ==# 'fzy'
+            let l:cmd = 'echo ' . shellescape(l:buflist) . ' | ' . l:finder . ' > ' . g:fzf_tempfile
+        else
+            let l:cmd = 'echo ' . shellescape(l:buflist) . ' | ' . l:finder . ' --expect=ctrl-s,ctrl-v > ' . g:fzf_tempfile
+        endif
+        if l:finder ==# 'fzy'
+            botright call term_start(['/bin/sh', '-c', l:cmd], {
+                \ 'term_finish': 'close',
+                \ 'exit_cb': 'FzfCallback',
+                \ 'term_rows': 15,
+                \ 'term_name': 'Buffers:'
+                \ })
+        else
+            botright call term_start(['/bin/sh', '-c', l:cmd], {
+                \ 'term_finish': 'close',
+                \ 'exit_cb': 'FzfCallbackWithMode',
+                \ 'term_rows': 15,
+                \ 'term_name': 'Buffers:'
+                \ })
+        endif
+    else
+        " Fallback to :ls + :buffer
+        ls
+        call feedkeys(":buffer ", 'n')
+    endif
+endfunction
+
+nnoremap <silent> <C-n> :call BufferPicker()<CR>
+nnoremap <silent> <C-p> :call FilePicker()<CR>
+nnoremap <silent> <M-p> :call YaziPicker()<CR>
+" Alt+p escape sequence fallback for terminals
+nnoremap <silent> <Esc>p :call YaziPicker()<CR>
+
+" ============================================
+" Harpoon-like file marks
+" ============================================
+let g:harpoon_files = []
+let g:harpoon_dir = expand('~/.vim/harpoon')
+
+function! HarpoonGetFile()
+    " Hash cwd to create per-project harpoon file
+    let l:cwd = getcwd()
+    let l:hash = sha256(l:cwd)[:15]
+    if !isdirectory(g:harpoon_dir)
+        silent! call mkdir(g:harpoon_dir, 'p', 0755)
+    endif
+    return g:harpoon_dir . '/' . l:hash
+endfunction
+
+function! HarpoonLoad()
+    let l:file = HarpoonGetFile()
+    if filereadable(l:file)
+        let g:harpoon_files = readfile(l:file)
+    else
+        let g:harpoon_files = []
+    endif
+endfunction
+
+function! HarpoonSave()
+    call writefile(g:harpoon_files, HarpoonGetFile())
+endfunction
+
+function! HarpoonAdd()
+    call HarpoonLoad()
+    let l:file = expand('%:.')
+    if l:file == '' | echo "No file" | return | endif
+    if index(g:harpoon_files, l:file) == -1
+        call add(g:harpoon_files, l:file)
+        call HarpoonSave()
+        echo "Harpooned: " . l:file
+    else
+        echo "Already harpooned"
+    endif
+endfunction
+
+function! HarpoonEdit()
+    call HarpoonLoad()
+    new
+    setlocal buftype=acwrite bufhidden=wipe noswapfile
+    file [Harpoon]
+    call setline(1, g:harpoon_files)
+    
+    augroup HarpoonEdit
+        autocmd! * <buffer>
+        autocmd BufWriteCmd <buffer> call HarpoonSaveBuffer()
+    augroup END
+endfunction
+
+function! HarpoonSaveBuffer()
+    let g:harpoon_files = filter(getline(1, '$'), 'v:val != ""')
+    call HarpoonSave()
+    setlocal nomodified
+    echo "Harpoon saved"
+endfunction
+
+function! HarpoonGo(idx)
+    call HarpoonLoad()
+    if a:idx <= len(g:harpoon_files) && a:idx > 0
+        let l:file = g:harpoon_files[a:idx - 1]
+        if filereadable(l:file)
+            execute 'edit ' . fnameescape(l:file)
+        else
+            echo "File not found: " . l:file
+        endif
+    else
+        echo "No harpoon at " . a:idx
+    endif
+endfunction
+
+function! HarpoonMenu()
+    call HarpoonLoad()
+    if len(g:harpoon_files) == 0
+        echo "No harpooned files"
+        return
+    endif
+    let g:fzf_source_win = win_getid()
+    let l:finder = GetFuzzyFinder()
+    if l:finder != ''
+        let g:fzf_tempfile = tempname()
+        let l:list = join(g:harpoon_files, "\n")
+        let l:cmd = 'echo ' . shellescape(l:list) . ' | ' . l:finder . ' > ' . g:fzf_tempfile
+        botright call term_start(['/bin/sh', '-c', l:cmd], {
+            \ 'term_finish': 'close',
+            \ 'exit_cb': 'FzfCallback',
+            \ 'term_rows': 15
+            \ })
+    else
+        " Fallback: show numbered list
+        for i in range(len(g:harpoon_files))
+            echo (i+1) . ': ' . g:harpoon_files[i]
+        endfor
+    endif
+endfunction
+
+" Keymaps
+nnoremap <leader>a :call HarpoonAdd()<CR>
+nnoremap <leader>e :call HarpoonEdit()<CR>
+nnoremap <leader>m :call HarpoonMenu()<CR>
+nnoremap <M-1> :call HarpoonGo(1)<CR>
+nnoremap <M-2> :call HarpoonGo(2)<CR>
+nnoremap <M-3> :call HarpoonGo(3)<CR>
+nnoremap <M-4> :call HarpoonGo(4)<CR>
+nnoremap <M-5> :call HarpoonGo(5)<CR>
+" Alt escape sequence fallback
+nnoremap <Esc>1 :call HarpoonGo(1)<CR>
+nnoremap <Esc>2 :call HarpoonGo(2)<CR>
+nnoremap <Esc>3 :call HarpoonGo(3)<CR>
+nnoremap <Esc>4 :call HarpoonGo(4)<CR>
+nnoremap <Esc>5 :call HarpoonGo(5)<CR>
+
+" ============================================
+" Simple autopairs
+" ============================================
+inoremap ( ()<Left>
+inoremap [ []<Left>
+inoremap { {}<Left>
+inoremap " ""<Left>
+inoremap ' ''<Left>
+inoremap ` ``<Left>
+
+" Enter between braces adds newline with indent
+function! s:ExpandPair()
+    let l:col = col('.') - 1
+    let l:line = getline('.')
+    let l:before = l:col > 0 ? l:line[l:col-1] : ''
+    let l:after = l:line[l:col]
+    let l:pairs = {'(': ')', '[': ']', '{': '}'}
+    if has_key(l:pairs, l:before) && l:pairs[l:before] == l:after
+        " After <CR>: cursor is before closing bracket on new line (with indent)
+        " We need: closing bracket at col 0, new indented line above, cursor there
+        if l:before == '{'
+            " For {}, vim autoindent handles it better
+            return "\<CR>\<Esc>\"_S" . l:after . "\<Esc>O"
+        else
+            " For () and [], need manual indent
+            let l:indent = repeat(' ', &shiftwidth)
+            return "\<CR>\<Esc>\"_S" . l:after . "\<Esc>O" . l:indent
+        endif
+    endif
+    return "\<CR>"
+endfunction
+inoremap <expr> <CR> <SID>ExpandPair()
+
+" Skip closing pair if already there
+inoremap <expr> ) getline('.')[col('.')-1] == ')' ? '<Right>' : ')'
+inoremap <expr> ] getline('.')[col('.')-1] == ']' ? '<Right>' : ']'
+inoremap <expr> } getline('.')[col('.')-1] == '}' ? '<Right>' : '}'
+inoremap <expr> " getline('.')[col('.')-1] == '"' ? '<Right>' : '""<Left>'
+inoremap <expr> ' getline('.')[col('.')-1] == "'" ? '<Right>' : "''<Left>"
+
+" Backspace deletes pair if empty
+inoremap <expr> <BS> <SID>DeletePair()
+function! s:DeletePair()
+    let l:col = col('.') - 1
+    let l:line = getline('.')
+    let l:before = l:col > 0 ? l:line[l:col-1] : ''
+    let l:after = l:line[l:col]
+    let l:pairs = {'(': ')', '[': ']', '{': '}', '"': '"', "'": "'", '`': '`'}
+    if has_key(l:pairs, l:before) && l:pairs[l:before] == l:after
+        return "\<Del>\<BS>"
+    endif
+    return "\<BS>"
+endfunction
+
+" ============================================
+" Semicolon insertion (C-d in insert mode)
+" ============================================
+let g:semicolon_filetypes = ['c', 'cpp', 'rust', 'java', 'javascript', 'typescript', 'css', 'php', 'go']
+
+function! s:InsertSemicolon()
+    if index(g:semicolon_filetypes, &filetype) == -1
+        return ""
+    endif
+    let l:line = getline('.')
+    if l:line[-1:] != ';'
+        return "\<End>;"
+    endif
+    return "\<End>"
+endfunction
+inoremap <expr> <C-d> <SID>InsertSemicolon()

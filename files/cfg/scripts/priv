@@ -2,7 +2,7 @@
 
 # priv.sh - Access encrypted files from tisorlawan bucket
 # Usage: ./priv.sh <filename>
-#        ./priv.sh --password <filename>
+#        ./priv.sh --passwd <filename>
 
 set -e
 
@@ -10,15 +10,18 @@ set -e
 CHANGE_PASSWORD=false
 LIST_FILES=false
 REMOVE_FILE=false
+RENAME_FILE=false
 FILENAME=""
+OLD_FILENAME=""
+NEW_FILENAME=""
 
 while [[ $# -gt 0 ]]; do
 	case $1 in
-		--password)
+		--passwd)
 			CHANGE_PASSWORD=true
 			shift
 			;;
-		--list)
+		--ls)
 			LIST_FILES=true
 			shift
 			;;
@@ -26,8 +29,21 @@ while [[ $# -gt 0 ]]; do
 			REMOVE_FILE=true
 			shift
 			;;
+		--mv)
+			RENAME_FILE=true
+			shift
+			;;
 		*)
-			if [ -z "$FILENAME" ]; then
+			if [ "$RENAME_FILE" = true ]; then
+				if [ -z "$OLD_FILENAME" ]; then
+					OLD_FILENAME="$1"
+				elif [ -z "$NEW_FILENAME" ]; then
+					NEW_FILENAME="$1"
+				else
+					echo "Error: Too many arguments"
+					exit 1
+				fi
+			elif [ -z "$FILENAME" ]; then
 				FILENAME="$1"
 			else
 				echo "Error: Too many arguments"
@@ -38,22 +54,24 @@ while [[ $# -gt 0 ]]; do
 	esac
 done
 
-if [ "$LIST_FILES" = false ] && [ "$REMOVE_FILE" = false ] && [ -z "$FILENAME" ]; then
+if [ "$LIST_FILES" = false ] && [ "$REMOVE_FILE" = false ] && [ "$RENAME_FILE" = false ] && [ -z "$FILENAME" ]; then
 	echo "Usage: $0 <filename>"
-	echo "       $0 --password <filename>  # Change password"
-	echo "       $0 --list                 # List available files"
-	echo "       $0 --rm <filename>        # Remove file"
+	echo "       $0 --passwd <filename>        # Change password"
+	echo "       $0 --ls                       # List available files"
+	echo "       $0 --rm <filename>            # Remove file"
+	echo "       $0 --mv <old_name> <new_name> # Rename file"
 	echo "Example: $0 passwords.txt"
 	echo "         $0 notes/diary.txt"
-	echo "         $0 --password passwords.txt"
-	echo "         $0 --list"
+	echo "         $0 --passwd passwords.txt"
+	echo "         $0 --ls"
 	echo "         $0 --rm passwords.txt"
+	echo "         $0 --mv passwords.txt secrets.txt"
 	exit 1
 fi
 
 BUCKET="tisorlawan"
 
-# Handle --list mode
+# Handle --ls mode
 if [ "$LIST_FILES" = true ]; then
 	echo "Listing files in bucket: $BUCKET"
 	echo ""
@@ -177,6 +195,129 @@ if [ "$REMOVE_FILE" = true ]; then
 	fi
 
 	echo "✓ File successfully deleted: $FILENAME"
+	exit 0
+fi
+
+# Handle --mv mode
+if [ "$RENAME_FILE" = true ]; then
+	if [ -z "$OLD_FILENAME" ] || [ -z "$NEW_FILENAME" ]; then
+		echo "Error: Both old and new filenames required for --mv"
+		echo "Usage: $0 --mv <old_filename> <new_filename>"
+		exit 1
+	fi
+
+	# Add .enc extension if not present
+	if [[ "$OLD_FILENAME" != *.enc ]]; then
+		OLD_FILENAME="${OLD_FILENAME}.enc"
+	fi
+	if [[ "$NEW_FILENAME" != *.enc ]]; then
+		NEW_FILENAME="${NEW_FILENAME}.enc"
+	fi
+
+	echo "Renaming file: $OLD_FILENAME -> $NEW_FILENAME"
+	echo ""
+
+	# Check if rclone is available
+	if ! command -v rclone >/dev/null 2>&1; then
+		echo "Error: rclone is required for renaming files"
+		echo "Install rclone and configure it to access the bucket"
+		exit 1
+	fi
+
+	# Try to find a configured remote
+	RCLONE_REMOTE=""
+	for remote_name in "aws" "s3" "$BUCKET" "tisorlawan"; do
+		if rclone listremotes | grep -q "^${remote_name}:$"; then
+			if rclone lsd "${remote_name}:" 2>/dev/null | grep -q "$BUCKET\|tisorlawan" 2>/dev/null; then
+				RCLONE_REMOTE="${remote_name}:"
+				break
+			fi
+		fi
+	done
+
+	if [ -z "$RCLONE_REMOTE" ]; then
+		# Try to find any S3 remote
+		for remote in $(rclone listremotes); do
+			if rclone lsd "${remote}" 2>/dev/null | grep -q "tisorlawan\|$BUCKET" 2>/dev/null; then
+				RCLONE_REMOTE="$remote"
+				break
+			fi
+		done
+	fi
+
+	if [ -z "$RCLONE_REMOTE" ]; then
+		echo "Error: No configured rclone remote found for bucket: $BUCKET"
+		echo "Configure rclone with: rclone config"
+		exit 1
+	fi
+
+	echo "Using remote: $RCLONE_REMOTE"
+
+	# Check if source file exists
+	SOURCE_CHECK=$(rclone ls "${RCLONE_REMOTE}$BUCKET/$OLD_FILENAME" 2>&1)
+	if [ -z "$SOURCE_CHECK" ]; then
+		echo "Error: Source file not found: $OLD_FILENAME"
+		exit 1
+	fi
+
+	# Check if destination file already exists
+	DEST_CHECK=$(rclone ls "${RCLONE_REMOTE}$BUCKET/$NEW_FILENAME" 2>&1)
+	if [ -n "$DEST_CHECK" ]; then
+		echo "Warning: Destination file already exists: $NEW_FILENAME"
+		echo -n "Overwrite existing file? (y/N): "
+		read -r CONFIRM
+		if [[ ! "$CONFIRM" =~ ^[Yy]$ ]]; then
+			echo "Rename cancelled"
+			exit 0
+		fi
+	fi
+
+	# Create temp directory for the operation
+	TEMP_DIR="/tmp/priv-mv-$$"
+	mkdir -p "$TEMP_DIR"
+	TEMP_FILE="$TEMP_DIR/$(basename "$OLD_FILENAME")"
+
+	cleanup_mv() {
+		rm -rf "$TEMP_DIR"
+	}
+	trap cleanup_mv EXIT
+
+	# Download the source file
+	echo "Downloading source file..."
+	if ! rclone copy "${RCLONE_REMOTE}$BUCKET/$OLD_FILENAME" "$TEMP_DIR/" 2>/dev/null; then
+		echo "Error: Failed to download source file"
+		exit 1
+	fi
+
+	# Upload to new location
+	echo "Uploading to new location..."
+	if [[ "$NEW_FILENAME" == */* ]]; then
+		# File is in a subdirectory
+		TARGET_DIR="${RCLONE_REMOTE}$BUCKET/$(dirname "$NEW_FILENAME")/"
+	else
+		# File is in root
+		TARGET_DIR="${RCLONE_REMOTE}$BUCKET/"
+	fi
+
+	# Rename the temp file to match the new name
+	NEW_TEMP_FILE="$TEMP_DIR/$(basename "$NEW_FILENAME")"
+	mv "$TEMP_FILE" "$NEW_TEMP_FILE"
+
+	if ! rclone copy "$NEW_TEMP_FILE" "$TARGET_DIR" 2>/dev/null; then
+		echo "Error: Failed to upload file to new location"
+		exit 1
+	fi
+
+	# Delete the old file
+	echo "Deleting old file..."
+	if ! rclone delete "${RCLONE_REMOTE}$BUCKET/$OLD_FILENAME" 2>/dev/null; then
+		echo "Warning: Failed to delete old file"
+		echo "New file has been created at: $NEW_FILENAME"
+		echo "You may need to manually delete: $OLD_FILENAME"
+		exit 1
+	fi
+
+	echo "✓ File successfully renamed: $OLD_FILENAME -> $NEW_FILENAME"
 	exit 0
 fi
 

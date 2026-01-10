@@ -11,7 +11,7 @@ trap 'rm -rf "$EPHEMERAL_DIR"' EXIT
 
 DIFF_TARGET="--cached"
 CONTEXT="the currently staged changes. IMPORTANT: Ignore any unstaged changes."
-MODEL="google/antigravity-gemini-3-pro-high"
+MODEL="google/gemini-3-pro-preview"
 FORCE_SONNET=false
 
 # Handle flags and arguments

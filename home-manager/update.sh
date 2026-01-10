@@ -20,17 +20,25 @@ while [[ $# -gt 0 ]]; do
       UPDATE_INPUTS+=("$2")
       shift 2
       ;;
+    --upgrade)
+      UPDATE_ALL=1
+      shift
+      ;;
     --update-all)
       UPDATE_ALL=1
       shift
       ;;
     -h|--help)
-      echo "Usage: $0 [-v|--verbose] [-u|--update-input <input>] [--update-all] [extra home-manager args...]"
-      echo "Example: $0 -v --no-substitute"
+      echo "Usage: $0 [-v|--verbose] [--upgrade] [-u|--update-input <input>] [--update-all] [extra home-manager args...]"
+      echo ""
+      echo "By default, only rebuilds the configuration without upgrading package versions."
+      echo "Use --upgrade to update all flake inputs before rebuilding."
+      echo ""
+      echo "Example: $0              # Rebuild only"
+      echo "Example: $0 --upgrade    # Update all inputs and rebuild"
+      echo "Example: $0 -v --upgrade --no-substitute"
       echo "Example: $0 --update-input opencode"
       echo "Example: $0 --update-all"
-      echo ""
-      echo "Note: If no update arguments are provided, --update-all is assumed."
       exit 0
       ;;
     *)
@@ -39,11 +47,6 @@ while [[ $# -gt 0 ]]; do
       ;;
   esac
 done
-
-# Default to updating all if no specific update instructions are given
-if [[ $UPDATE_ALL -eq 0 && ${#UPDATE_INPUTS[@]} -eq 0 ]]; then
-  UPDATE_ALL=1
-fi
 
 if [[ $UPDATE_ALL -eq 1 ]]; then
   echo "Updating all flake inputs..."

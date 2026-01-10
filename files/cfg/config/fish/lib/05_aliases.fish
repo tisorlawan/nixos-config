@@ -93,6 +93,8 @@ alias ydv720compat="yt-dlp -f '230+233' --no-playlist --no-playlist"
 alias ydp="yt-dlp -f 'bv*[height<=1080][ext=mp4]+ba/b' -o '%(playlist_index)s [%(playlist_id)s]  - %(title)s.%(ext)s'"
 alias yda="yt-dlp -f '[ext=mp4]+ba/b' --extract-audio --no-playlist"
 
+alias t="priv todo"
+
 ##-- CLI AI Tools --##
 alias claude="npx @anthropic-ai/claude-code"
 alias codex="npx @openai/codex@latest --enable web_search_request -s danger-full-access"
@@ -114,3 +116,5 @@ function uv-glsdk
     set -gx UV_INDEX_GEN_AI_INTERNAL_PASSWORD (gcloud auth print-access-token)
     echo "uv auth configured (expires in ~1 hour)"
 end
+
+alias cdls='cd $(zoxide query --list | fzf --header "Choose directory:")'

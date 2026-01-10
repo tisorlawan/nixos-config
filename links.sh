@@ -3,6 +3,9 @@
 rm -rf ~/.config/nvim
 ln -srf files/cfg/config/nvim ~/.config/nvim
 
+rm -rf ~/.vimrc
+ln -srf files/cfg/vimrc ~/.vimrc
+
 rm -rf ~/.config/fish
 ln -srf files/cfg/config/fish ~/.config/fish
 

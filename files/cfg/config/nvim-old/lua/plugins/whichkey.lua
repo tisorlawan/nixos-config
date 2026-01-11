@@ -1,8 +1,7 @@
 return {
   "folke/which-key.nvim",
-  event = "VimEnter", -- Sets the loading event to 'VimEnter'
+  event = "VimEnter",
   opts = {
-    -- Document existing key chains
     spec = {
       { "<leader>c", group = "[C]ode", mode = { "n", "x" } },
       { "<leader>d", group = "[D]ocument" },

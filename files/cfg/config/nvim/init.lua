@@ -1,7 +1,3 @@
--- ============================================================================
--- LAZY.NVIM BOOTSTRAP
--- ============================================================================
-
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 if not vim.uv.fs_stat(lazypath) then
   vim.fn.system { 'git', 'clone', '--filter=blob:none', 'https://github.com/folke/lazy.nvim.git', '--branch=stable', lazypath }
@@ -9,13 +5,13 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 -- ============================================================================
--- APPEARANCE
+-- @APPEARANCE
 -- ============================================================================
 
 vim.cmd 'syntax on'
 
 -- ============================================================================
--- OPTIONS
+-- @OPTIONS
 -- ============================================================================
 
 -- Indentation
@@ -52,6 +48,7 @@ vim.opt.showcmd = true
 vim.opt.cursorline = false
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 8
+vim.opt.winborder = 'rounded'
 
 -- Files
 vim.opt.hidden = true
@@ -83,11 +80,35 @@ vim.opt.path = '.,**'
 vim.opt.wildignore:append '**/node_modules/**,**/.git/**,**/dist/**,**/build/**,**/__pycache__/**,*.pyc,*.o,*.obj,*.h'
 
 -- ============================================================================
--- KEYMAPS - GENERAL
+-- @KEYMAPS - GENERAL
 -- ============================================================================
 
 local map = vim.keymap.set
 local opts = { noremap = true, silent = true }
+
+local function set_random_colorscheme(choices_str)
+  local choices = {}
+  for choice in choices_str:gmatch '([^,%s]+)' do
+    table.insert(choices, choice)
+  end
+  if #choices == 0 then
+    return
+  end
+  math.randomseed(os.time())
+  local choice = choices[math.random(#choices)]
+  vim.g.random_colorscheme = choice
+  vim.cmd('colorscheme ' .. choice)
+end
+
+local function buf_set_keymap_add_colon()
+  vim.keymap.set('i', '<C-d>', function()
+    local line = vim.fn.getline '.'
+    if line:sub(-1) ~= ';' then
+      return '<End>;'
+    end
+    return '<End>'
+  end, { buffer = true, expr = true, desc = 'Add semicolon at end of line' })
+end
 
 local terminal_buf = nil
 
@@ -96,7 +117,7 @@ map('n', '<leader>h', '<cmd>nohlsearch<CR>', opts)
 map('n', '<leader>q', '<cmd>q<CR>', opts)
 
 -- ============================================================================
--- BUFFER MANAGEMENT
+-- @BUFFER MANAGEMENT
 -- ============================================================================
 
 local function bufdelete(force)
@@ -125,7 +146,7 @@ map('n', '<leader>D', function()
 end, opts)
 
 -- ============================================================================
--- KEYMAPS - PATH/FILE UTILS
+-- @KEYMAPS - PATH/FILE UTILS
 -- ============================================================================
 
 map('n', '<leader>yp', function()
@@ -163,7 +184,7 @@ map('n', '<leader>xc', function()
 end, { desc = 'Chmod +x current file' })
 
 -- ============================================================================
--- KEYMAPS - NAVIGATION
+-- @KEYMAPS - NAVIGATION
 -- ============================================================================
 
 -- Buffer navigation
@@ -182,7 +203,7 @@ map('i', '<C-k>', '<Up>', opts)
 map('i', '<C-l>', '<Right>', opts)
 
 -- ============================================================================
--- KEYMAPS - TERMINAL
+-- @KEYMAPS - TERMINAL
 -- ============================================================================
 
 map('t', '<C-w>', '<C-w>', { noremap = true })
@@ -192,7 +213,7 @@ map('t', '<C-e>', '<C-e>', { noremap = true })
 map('t', '<C-k>', '<C-k>', { noremap = true })
 
 -- ============================================================================
--- AUTOCMDS
+-- @AUTOCMDS
 -- ============================================================================
 
 -- Restore cursor position
@@ -213,26 +234,113 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- Filetype specific settings
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'lua', 'javascript', 'typescript', 'typescriptreact', 'javascriptreact', 'html', 'css', 'haskell', 'sh', 'nix' },
+  callback = function()
+    vim.opt_local.expandtab = true
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'c', 'cpp', 'rust', 'java', 'javascript', 'typescript', 'css', 'php', 'go' },
+  callback = function()
+    buf_set_keymap_add_colon()
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'go',
+  callback = function()
+    vim.opt_local.expandtab = false
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'markdown',
+  callback = function()
+    vim.opt_local.spell = false
+  end,
+})
+
+local sh_scratch_buf = nil
+local sh_scratch_win = nil
+
+local function run_sh_scratch()
+  local file = vim.fn.expand '%:p'
+  if file == '' then
+    return
+  end
+  if not vim.fn.executable(file) then
+    vim.fn.system('chmod +x ' .. vim.fn.shellescape(file))
+  end
+
+  local output = vim.fn.systemlist(vim.fn.shellescape(file))
+  local exit_code = vim.v.shell_error
+  local cur_win = vim.api.nvim_get_current_win()
+
+  if not sh_scratch_buf or not vim.api.nvim_buf_is_valid(sh_scratch_buf) then
+    vim.cmd(vim.api.nvim_win_get_width(0) > vim.api.nvim_win_get_height(0) * 1.5 and 'vnew' or 'new')
+    sh_scratch_buf = vim.api.nvim_get_current_buf()
+    sh_scratch_win = vim.api.nvim_get_current_win()
+    vim.bo[sh_scratch_buf].buftype = 'nofile'
+    vim.bo[sh_scratch_buf].bufhidden = 'wipe'
+    vim.api.nvim_set_current_win(cur_win)
+  elseif not sh_scratch_win or not vim.api.nvim_win_is_valid(sh_scratch_win) then
+    vim.cmd(vim.api.nvim_win_get_width(0) > vim.api.nvim_win_get_height(0) * 1.5 and 'vsplit' or 'split')
+    vim.api.nvim_win_set_buf(0, sh_scratch_buf)
+    sh_scratch_win = vim.api.nvim_get_current_win()
+    vim.api.nvim_set_current_win(cur_win)
+  end
+
+  local content = {}
+  if exit_code ~= 0 then
+    table.insert(content, '[Exit: ' .. exit_code .. ']')
+    table.insert(content, '---')
+  end
+  vim.list_extend(content, #output > 0 and output or { '(no output)' })
+
+  vim.bo[sh_scratch_buf].modifiable = true
+  vim.api.nvim_buf_set_lines(sh_scratch_buf, 0, -1, false, content)
+  vim.bo[sh_scratch_buf].modifiable = false
+  vim.bo[sh_scratch_buf].readonly = true
+end
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = 'sh',
+  callback = function()
+    vim.keymap.set('n', '<CR>', run_sh_scratch, { buffer = true, desc = 'Run shell script in scratch' })
+    vim.api.nvim_create_autocmd('BufWritePost', {
+      buffer = vim.api.nvim_get_current_buf(),
+      callback = function()
+        if sh_scratch_buf and vim.api.nvim_buf_is_valid(sh_scratch_buf) then
+          run_sh_scratch()
+        end
+      end,
+    })
+  end,
+})
+
 -- ============================================================================
--- QUICKFIX
+-- @QUICKFIX
 -- ============================================================================
 
 map('n', 'cn', '<cmd>cnext<CR>', opts)
 map('n', 'cp', '<cmd>cprev<CR>', opts)
 map('n', 'co', '<cmd>copen<CR>', opts)
+map('n', 'cm', function()
+  local qflist = vim.fn.getqflist()
+  if #qflist == 0 then
+    print 'Quickfix is empty'
+    return
+  end
+  require('fzf-lua').quickfix()
+end, opts)
 
 -- ============================================================================
--- NETRW
--- ============================================================================
-
-vim.g.netrw_banner = 0
-vim.g.netrw_liststyle = 3
-vim.g.netrw_browse_split = 0
-vim.g.netrw_winsize = 25
-vim.g.netrw_altv = 1
-
--- ============================================================================
--- CLOSE DIAGNOSTICS/SPECIAL WINDOWS
+-- @CLOSE DIAGNOSTICS/SPECIAL WINDOWS
 -- ============================================================================
 
 local function close_diagnostics()
@@ -267,7 +375,7 @@ end
 map('n', 'cq', close_diagnostics, { desc = 'close diagnostics', silent = true })
 
 -- ============================================================================
--- TERMINAL RUNNER
+-- @TERMINAL RUNNER
 -- ============================================================================
 
 local last_shell_cmd = ''
@@ -303,7 +411,8 @@ local function open_terminal_with_cmd(cmd)
   end
 
   terminal_cmd = cmd
-  vim.fn.termopen(cmd, {
+  vim.fn.jobstart(cmd, {
+    term = true,
     on_exit = function(_, exit_code, _)
       vim.schedule(function()
         if terminal_buf and vim.api.nvim_buf_is_valid(terminal_buf) then
@@ -352,7 +461,7 @@ map('n', '<leader>re', edit_and_run_in_terminal, opts)
 map('n', '<leader>rx', clear_last_shell_command, opts)
 
 -- ============================================================================
--- FUZZY FINDER (fzf/fzy)
+-- @FUZZY FINDER (fzf/fzy)
 -- ============================================================================
 
 local fzf_tempfile = vim.fn.tempname()
@@ -365,20 +474,6 @@ local function get_fuzzy_finder()
     return 'fzy'
   end
   return ''
-end
-
-local function get_file_lister(exclude_file)
-  local exclude = ''
-  if exclude_file ~= '' then
-    exclude = ' | grep -vF ' .. vim.fn.shellescape(exclude_file)
-  end
-  if vim.fn.executable 'fd' == 1 then
-    return 'fd -t f' .. exclude
-  elseif vim.fn.isdirectory '.git' == 1 then
-    return 'git ls-files' .. exclude
-  else
-    return "find . -type f | sed 's#^\\./##'" .. exclude
-  end
 end
 
 local function open_picker_terminal(cmd, name, on_done, height)
@@ -412,7 +507,8 @@ local function open_picker_terminal(cmd, name, on_done, height)
   end
 
   vim.bo[term_buf].bufhidden = 'wipe'
-  vim.fn.termopen({ 'sh', '-c', cmd }, {
+  vim.fn.jobstart({ 'sh', '-c', cmd }, {
+    term = true,
     on_exit = function()
       vim.schedule(function()
         if vim.api.nvim_buf_is_valid(term_buf) then
@@ -479,37 +575,6 @@ local function fzf_callback(lines)
   end
 end
 
-local function file_picker()
-  fzf_source_win = vim.api.nvim_get_current_win()
-  local finder = get_fuzzy_finder()
-  if finder ~= '' then
-    fzf_tempfile = vim.fn.tempname()
-    local current_file = vim.fn.expand '%:.'
-    local lister = get_file_lister(current_file)
-
-    local cmd
-    if finder == 'fzy' then
-      cmd = lister .. ' | ' .. finder .. ' > ' .. fzf_tempfile
-    else
-      cmd = lister .. ' | ' .. finder .. ' --layout=reverse --multi --expect=ctrl-s,ctrl-v,ctrl-q > ' .. fzf_tempfile
-    end
-
-    open_picker_terminal(cmd, '[Files]', function()
-      if vim.fn.filereadable(fzf_tempfile) == 1 then
-        local lines = vim.fn.readfile(fzf_tempfile)
-        vim.fn.delete(fzf_tempfile)
-        if finder == 'fzy' then
-          fzf_callback(lines)
-        else
-          fzf_callback_with_mode(lines)
-        end
-      end
-    end)
-  else
-    vim.api.nvim_feedkeys(':find *', 'n', false)
-  end
-end
-
 local function buffer_picker()
   fzf_source_win = vim.api.nvim_get_current_win()
   local current_buf = vim.api.nvim_get_current_buf()
@@ -565,7 +630,7 @@ end
 map('n', '<C-n>', buffer_picker, opts)
 
 -- ============================================================================
--- GREP (ripgrep/grep)
+-- @GREP (ripgrep/grep)
 -- ============================================================================
 
 local function grep_picker(query)
@@ -648,24 +713,45 @@ map('v', '<leader>l', function()
   end
 end, opts)
 
-map('n', '<leader>l', function()
+map('n', '<leader>ll', function()
   local query = vim.fn.input 'Grep: '
   if query ~= '' then
     grep_picker(query)
   end
 end, opts)
 
-map('n', '<leader>sl', '<cmd>Lazy<cr>', { desc = 'Lazy' })
+function _G.grep_operator(type)
+  local save = vim.fn.getreg '"'
+  local save_type = vim.fn.getregtype '"'
+  if type == 'char' then
+    vim.cmd 'noau normal! `[v`]y'
+  elseif type == 'line' then
+    vim.cmd "noau normal! '[V']y"
+  else
+    return
+  end
+  local text = vim.fn.getreg('"'):gsub('\n', ' ')
+  vim.fn.setreg('"', save, save_type)
+  if text ~= '' then
+    grep_picker(text)
+  end
+end
+
+map('n', '<leader>l', function()
+  vim.o.operatorfunc = 'v:lua.grep_operator'
+  return 'g@'
+end, { noremap = true, silent = true, expr = true })
+
+map('n', '<leader>sp', '<cmd>Lazy<cr>', { desc = 'Lazy' })
 map('n', '<leader>sc', '<cmd>ConformInfo<cr>', { desc = 'Conform Info' })
-map('n', '<leader>si', '<cmd>LspInfo<cr>', { desc = 'LSP Info' })
-map('n', '<leader>sm', '<cmd>Mason<cr>', { desc = 'Mason' })
+map('n', '<leader>sl', '<cmd>LspInfo<cr>', { desc = 'LSP Info' })
 
 vim.api.nvim_create_user_command('Grep', function(cmd_opts)
   grep_picker(cmd_opts.args)
 end, { nargs = 1 })
 
 -- ============================================================================
--- HARPOON (file bookmarks)
+-- @HARPOON (file bookmarks)
 -- ============================================================================
 
 local harpoon_files = {}
@@ -675,6 +761,7 @@ local function harpoon_get_file()
   local cwd = vim.fn.getcwd()
   local hash = vim.fn.sha256(cwd):sub(1, 16)
   if vim.fn.isdirectory(harpoon_dir) == 0 then
+    ---@diagnostic disable-next-line: param-type-mismatch
     vim.fn.mkdir(harpoon_dir, 'p', tonumber('755', 8))
   end
   return harpoon_dir .. '/' .. hash
@@ -844,10 +931,10 @@ local function harpoon_menu()
   end
 end
 
-map('n', '<leader>ha', harpoon_add, opts)
-map('n', '<leader>hr', harpoon_remove, opts)
-map('n', '<leader>he', harpoon_edit, opts)
-map('n', '<leader>hm', harpoon_menu, opts)
+map('n', '<leader>oa', harpoon_add, opts)
+map('n', '<leader>or', harpoon_remove, opts)
+map('n', '<leader>oe', harpoon_edit, opts)
+map('n', '<leader>om', harpoon_menu, opts)
 map('n', '<M-1>', function()
   harpoon_go(1)
 end, opts)
@@ -880,7 +967,7 @@ map('n', '<Esc>5', function()
 end, opts)
 
 -- ============================================================================
--- SEMICOLON INSERT (C-d)
+-- @SEMICOLON INSERT (C-d)
 -- ============================================================================
 
 local semicolon_filetypes = { 'c', 'cpp', 'rust', 'java', 'javascript', 'typescript', 'css', 'php', 'go' }
@@ -905,7 +992,7 @@ map('i', '<C-d>', function()
 end, { expr = true })
 
 -- ============================================================================
--- UI & ICONS
+-- @UI & ICONS
 -- ============================================================================
 
 local ui = {
@@ -953,6 +1040,7 @@ local ui = {
 
 function ui.fg(name)
   local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+  ---@diagnostic disable-next-line: undefined-field
   local fg = hl and hl.fg or hl.foreground
   return fg and { fg = string.format('#%06x', fg) } or nil
 end
@@ -978,7 +1066,13 @@ local function apply_transparency()
     'BlinkCmpSource',
   }
   for _, group in ipairs(groups) do
-    vim.api.nvim_set_hl(0, group, { bg = 'none', ctermbg = 'none' })
+    local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
+    ---@diagnostic disable-next-line: assign-type-mismatch
+    hl.bg = 'none'
+    ---@diagnostic disable-next-line: assign-type-mismatch
+    hl.ctermbg = 'none'
+    ---@diagnostic disable-next-line: param-type-mismatch
+    vim.api.nvim_set_hl(0, group, hl)
   end
 
   -- vim.api.nvim_set_hl(0, 'PmenuSel', { bg = '#2D4F67', fg = 'none' })
@@ -990,7 +1084,7 @@ vim.api.nvim_create_autocmd('ColorScheme', {
 })
 
 -- ============================================================================
--- USED FILETYPES SYSTEM
+-- @USED FILETYPES SYSTEM
 -- ============================================================================
 
 local function get_used_ft()
@@ -1010,11 +1104,11 @@ local function get_used_ft()
   local config = {
     c = { formatters = { 'clang_format' }, servers = { 'clangd' } },
     go = { formatters = { 'gofumpt', 'goimports', 'golines' }, servers = { 'gopls' } },
-    html = { servers = { 'html' }, formatters = { 'biome' }, linters = { 'htmlhint' } },
+    html = { servers = { 'html' }, formatters = { 'biome' } },
     javascript = { formatters = { 'biome' } },
-    json = { formatters = { 'biome' }, linters = { 'jsonlint' } },
+    json = { formatters = { 'biome' } },
     lua = { formatters = { 'stylua' }, servers = { 'lua_ls' } },
-    markdown = { linters = { 'markdownlint' }, formatters = { 'prettierd' }, servers = { 'marksman' } },
+    markdown = { formatters = { 'prettierd' }, servers = { 'marksman' } },
     nix = { servers = { 'nil_ls' }, formatters = { 'nixpkgs_fmt' } },
     php = { formatters = { 'php_cs_fixer' }, servers = { 'phpactor', 'html' } },
     python = { formatters = { 'ruff_format', 'ruff_organize_imports' }, servers = { 'basedpyright', 'ruff' } },
@@ -1026,31 +1120,17 @@ local function get_used_ft()
   }
 
   local formatters_by_ft = {}
-  local linters_by_ft = {}
-  for _, ft in ipairs(fts) do
-    if config[ft] then
-      if config[ft].formatters then
-        formatters_by_ft[ft] = config[ft].formatters
-      end
-      if config[ft].linters then
-        linters_by_ft[ft] = config[ft].linters
-      end
-    end
-  end
 
-  return { used_ft = fts, config = config, formatters_by_ft = formatters_by_ft, linters_by_ft = linters_by_ft }
+  return { used_ft = fts, config = config, formatters_by_ft = formatters_by_ft }
 end
 
 local used_ft_sys = get_used_ft()
 
 -- ============================================================================
--- LSP
+-- @LSP
 -- ============================================================================
 
 vim.opt.signcolumn = 'yes:1'
-
-vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = 'rounded' })
-vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'rounded' })
 
 local function setup_lsp_keymaps(buf)
   local function lmap(key, fn, desc)
@@ -1069,10 +1149,10 @@ local function setup_lsp_keymaps(buf)
   end, 'Signature Help')
   lmap('<leader>cr', vim.lsp.buf.rename, 'Rename')
   lmap('[d', function()
-    vim.diagnostic.goto_prev { float = { border = 'rounded' } }
+    vim.diagnostic.jump { count = -1, float = { border = 'rounded' } }
   end, 'Prev Diagnostic')
   lmap(']d', function()
-    vim.diagnostic.goto_next { float = { border = 'rounded' } }
+    vim.diagnostic.jump { count = 1, float = { border = 'rounded' } }
   end, 'Next Diagnostic')
   lmap('<leader>cd', function()
     vim.diagnostic.open_float { border = 'rounded' }
@@ -1098,7 +1178,14 @@ local function setup_diagnostic()
     },
     float = {
       border = 'rounded',
+      ---@diagnostic disable-next-line: assign-type-mismatch
       source = 'always',
+      header = 'Diagnostics:',
+      prefix = function(diagnostic, i, _)
+        local severity = vim.diagnostic.severity[diagnostic.severity]
+        local level = severity:sub(1, 1) .. severity:sub(2):lower()
+        return string.format('%d. ', i), 'DiagnosticFloating' .. level
+      end,
     },
     underline = true,
     update_in_insert = false,
@@ -1107,6 +1194,199 @@ local function setup_diagnostic()
 end
 
 setup_diagnostic()
+
+vim.keymap.set('n', '<leader>ud', function()
+  vim.diagnostic.enable(not vim.diagnostic.is_enabled())
+end, { desc = 'Toggle diagnostics' })
+
+-- ============================================================================
+-- @LSP SERVERS (native vim.lsp)
+-- ============================================================================
+
+local lsp_servers = {
+  bashls = {
+    cmd = { 'bash-language-server', 'start' },
+    filetypes = { 'bash', 'sh' },
+    root_markers = { '.git' },
+  },
+  basedpyright = {
+    cmd = { 'basedpyright-langserver', '--stdio' },
+    filetypes = { 'python' },
+    root_markers = { 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', 'Pipfile', '.git' },
+    settings = {
+      basedpyright = {
+        analysis = {
+          autoImportCompletions = false,
+          autoSearchPaths = false,
+          useLibraryCodeForTypes = false,
+          diagnosticMode = 'openFilesOnly',
+        },
+      },
+    },
+  },
+  clangd = {
+    cmd = { 'clangd' },
+    filetypes = { 'c', 'cpp', 'objc', 'objcpp', 'cuda' },
+    root_markers = { '.clangd', '.clang-tidy', '.clang-format', 'compile_commands.json', 'compile_flags.txt', '.git' },
+  },
+  eslint = {
+    cmd = { 'vscode-eslint-language-server', '--stdio' },
+    filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'vue', 'svelte', 'astro' },
+    root_markers = { '.eslintrc', '.eslintrc.js', '.eslintrc.cjs', '.eslintrc.json', 'eslint.config.js', 'eslint.config.mjs', 'package.json' },
+  },
+  gopls = {
+    cmd = { 'gopls' },
+    filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
+    root_markers = { 'go.mod', 'go.work', '.git' },
+  },
+  html = {
+    cmd = { 'vscode-html-language-server', '--stdio' },
+    filetypes = { 'html', 'php' },
+    root_markers = { 'package.json', '.git' },
+    init_options = {
+      provideFormatter = true,
+      embeddedLanguages = { css = true, javascript = true },
+      configurationSection = { 'html', 'css', 'javascript' },
+    },
+  },
+  lua_ls = {
+    cmd = { 'lua-language-server' },
+    filetypes = { 'lua' },
+    root_markers = { '.luarc.json', '.luarc.jsonc', '.stylua.toml', 'stylua.toml', '.git' },
+    settings = {
+      Lua = {
+        diagnostics = { globals = { 'vim' } },
+        workspace = {
+          library = vim.api.nvim_get_runtime_file('', true),
+          checkThirdParty = false,
+        },
+        telemetry = { enable = false },
+      },
+    },
+  },
+  marksman = {
+    cmd = { 'marksman', 'server' },
+    filetypes = { 'markdown' },
+    root_markers = { '.marksman.toml', '.git' },
+  },
+  nil_ls = {
+    cmd = { 'nil' },
+    filetypes = { 'nix' },
+    root_markers = { 'flake.nix', '.git' },
+  },
+  phpactor = {
+    cmd = { 'phpactor', 'language-server' },
+    filetypes = { 'php' },
+    root_markers = { 'composer.json', '.git' },
+  },
+  ruff = {
+    cmd = { 'ruff', 'server' },
+    filetypes = { 'python' },
+    root_markers = { 'pyproject.toml', 'ruff.toml', '.ruff.toml', '.git' },
+  },
+  rust_analyzer = {
+    cmd = { 'rust-analyzer' },
+    filetypes = { 'rust' },
+    root_markers = { 'Cargo.toml', 'rust-project.json' },
+  },
+  ts_ls = {
+    cmd = { 'typescript-language-server', '--stdio' },
+    filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+    root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' },
+    init_options = { hostInfo = 'neovim' },
+  },
+  zls = {
+    cmd = { 'zls' },
+    filetypes = { 'zig' },
+    root_markers = { 'build.zig', 'zls.json', '.git' },
+  },
+}
+
+vim.api.nvim_create_autocmd('LspAttach', {
+  callback = function(event)
+    on_attach(vim.lsp.get_client_by_id(event.data.client_id), event.buf)
+  end,
+})
+
+local function setup_lsp()
+  local capabilities = vim.lsp.protocol.make_client_capabilities()
+  local ok, blink = pcall(require, 'blink.cmp')
+  if ok then
+    capabilities = blink.get_lsp_capabilities(capabilities)
+  end
+
+  vim.lsp.config('*', { capabilities = capabilities })
+
+  local servers_to_enable = {}
+  for _, ft in ipairs(used_ft_sys.used_ft) do
+    for _, server in ipairs((used_ft_sys.config[ft] or {}).servers or {}) do
+      if lsp_servers[server] and not vim.tbl_contains(servers_to_enable, server) then
+        table.insert(servers_to_enable, server)
+      end
+    end
+  end
+
+  for _, server in ipairs(servers_to_enable) do
+    vim.lsp.config(server, lsp_servers[server])
+  end
+  vim.lsp.enable(servers_to_enable)
+end
+
+setup_lsp()
+
+vim.api.nvim_create_user_command('LspInfo', function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local clients = vim.lsp.get_clients { bufnr = bufnr }
+  local enabled = vim.tbl_keys(lsp_servers)
+  table.sort(enabled)
+
+  local lines = {
+    string.rep('=', 60),
+    'vim.lsp',
+    '',
+    'Active Clients:',
+  }
+  if #clients == 0 then
+    table.insert(lines, '  (none)')
+  else
+    for _, c in ipairs(clients) do
+      table.insert(lines, string.format('  - %s (id=%d, root=%s)', c.name, c.id, c.root_dir or '?'))
+    end
+  end
+
+  table.insert(lines, '')
+  table.insert(lines, 'Configured Servers:')
+  for _, name in ipairs(enabled) do
+    local cfg = lsp_servers[name]
+    local exe = cfg.cmd and cfg.cmd[1] or '?'
+    local ok = vim.fn.executable(exe) == 1
+    table.insert(lines, string.format('  %s %s%s', ok and '+' or '-', name, ok and '' or ' (not installed)'))
+    table.insert(lines, string.format('      cmd: %s', table.concat(cfg.cmd or {}, ' ')))
+    table.insert(lines, string.format('      filetypes: %s', table.concat(cfg.filetypes or {}, ', ')))
+    table.insert(lines, string.format('      root_markers: %s', table.concat(cfg.root_markers or {}, ', ')))
+    if cfg.settings then
+      for _, line in ipairs(vim.split(vim.inspect(cfg.settings), '\n')) do
+        table.insert(lines, '      ' .. line)
+      end
+    end
+    if cfg.init_options then
+      table.insert(lines, '      init_options:')
+      for _, line in ipairs(vim.split(vim.inspect(cfg.init_options), '\n')) do
+        table.insert(lines, '        ' .. line)
+      end
+    end
+  end
+
+  vim.cmd 'tabnew'
+  local buf = vim.api.nvim_get_current_buf()
+  vim.bo[buf].buftype = 'nofile'
+  vim.bo[buf].bufhidden = 'wipe'
+  vim.bo[buf].swapfile = false
+  vim.api.nvim_buf_set_name(buf, '[LspInfo]')
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.bo[buf].modifiable = false
+  vim.keymap.set('n', 'q', '<cmd>tabclose<cr>', { buffer = buf, silent = true })
+end, {})
 
 -- ============================================================================
 -- @PLUGINS (lazy.nvim)
@@ -1119,7 +1399,23 @@ require('lazy').setup({
     priority = 1000,
     config = function()
       require('kanagawa').setup { transparent = true }
-      vim.cmd 'colorscheme kanagawa'
+    end,
+  },
+  {
+    'nendix/zen.nvim',
+    lazy = false,
+    priority = 1000,
+    config = function()
+      require('zen').setup {
+        variant = 'dark',
+        transparent = true,
+        colors = {
+          palette = {
+            bg0 = '#141419',
+            bg2 = '#202020',
+          },
+        },
+      }
     end,
   },
 
@@ -1144,86 +1440,7 @@ require('lazy').setup({
       yati = { enable = true, disable = { 'rust' }, default_lazy = true, default_fallback = 'auto' },
     },
   },
-  {
-    'neovim/nvim-lspconfig',
-    event = { 'BufReadPost', 'BufNewFile' },
-    dependencies = {
-      { 'williamboman/mason.nvim', config = true },
-      'williamboman/mason-lspconfig.nvim',
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
-    },
-    config = function()
-      vim.api.nvim_create_autocmd('LspAttach', {
-        callback = function(event)
-          on_attach(vim.lsp.get_client_by_id(event.data.client_id), event.buf)
-        end,
-      })
 
-      local mason_lsp = {}
-      for _, ft in ipairs(used_ft_sys.used_ft) do
-        for _, server in ipairs((used_ft_sys.config[ft] or {}).servers or {}) do
-          table.insert(mason_lsp, server)
-        end
-      end
-
-      local formatters_to_mason = {
-        clang_format = 'clang-format',
-        ruff_fix = 'ruff',
-        ruff_format = 'ruff',
-        ruff_organize_imports = 'ruff',
-        nixpkgs_fmt = 'nixpkgs-fmt',
-        php_cs_fixer = 'php-cs-fixer',
-        ['biome-check'] = 'biome',
-      }
-
-      local tools = {}
-      for _, names in pairs(used_ft_sys.formatters_by_ft) do
-        for _, name in ipairs(names) do
-          table.insert(tools, formatters_to_mason[name] or name)
-        end
-      end
-      for _, names in pairs(used_ft_sys.linters_by_ft) do
-        for _, name in ipairs(names) do
-          table.insert(tools, name)
-        end
-      end
-
-      require('mason-tool-installer').setup { ensure_installed = tools }
-
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
-      local handlers = {
-        ['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, { border = 'rounded' }),
-        ['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, { border = 'rounded' }),
-      }
-
-      local server_configs = {
-        pyright = {
-          settings = {
-            python = {
-              analysis = {
-                autoImportCompletions = false,
-                autoSearchPaths = false,
-                useLibraryCodeForTypes = false,
-                diagnosticMode = 'openFilesOnly',
-                stubPath = '~/.typings',
-              },
-            },
-          },
-        },
-        html = { filetypes = { 'html', 'php' } },
-      }
-
-      for _, server in ipairs(mason_lsp) do
-        local cfg = vim.tbl_deep_extend('force', { capabilities = capabilities, handlers = handlers }, server_configs[server] or {})
-        if vim.lsp.config then
-          vim.lsp.config(server, cfg)
-          vim.lsp.enable(server)
-        else
-          require('lspconfig')[server].setup(cfg)
-        end
-      end
-    end,
-  },
   {
     'stevearc/conform.nvim',
     opts = {
@@ -1249,8 +1466,8 @@ require('lazy').setup({
         return { timeout_ms = 500, lsp_fallback = true }
       end,
     },
-    config = function(_, opts)
-      require('conform').setup(opts)
+    config = function(_, conform_opts)
+      require('conform').setup(conform_opts)
       vim.api.nvim_create_user_command('ToggleAutoFormat', function()
         vim.b.disable_autoformat = not vim.b.disable_autoformat
         print((vim.b.disable_autoformat and '-disabled-' or '-enabled-') .. ' auto format')
@@ -1260,19 +1477,6 @@ require('lazy').setup({
         vim.g.disable_autocomplete = not vim.g.disable_autocomplete
         print((vim.g.disable_autocomplete and '-disabled-' or '-enabled-') .. ' autocomplete')
       end, { desc = 'toggle autocomplete' })
-    end,
-  },
-  {
-    'mfussenegger/nvim-lint',
-    event = 'VeryLazy',
-    config = function()
-      local lint = require 'lint'
-      lint.linters_by_ft = used_ft_sys.linters_by_ft
-      vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
-        callback = function()
-          lint.try_lint()
-        end,
-      })
     end,
   },
 
@@ -1320,7 +1524,7 @@ require('lazy').setup({
           prefetch_on_insert = true,
         },
         menu = {
-          auto_show = function(ctx)
+          auto_show = function(_)
             return not vim.g.disable_autocomplete
           end,
           border = 'rounded',
@@ -1739,14 +1943,32 @@ require('lazy').setup({
   },
 }, { ui = { border = 'rounded' } })
 
-vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
-  border = 'rounded',
-  max_width = 80,
-  max_height = 20,
-  stylize_markdown = true,
-})
+local orig_hover = vim.lsp.handlers['textDocument/hover']
+vim.lsp.handlers['textDocument/hover'] = function(err, result, ctx, config)
+  return orig_hover(
+    err,
+    result,
+    ctx,
+    vim.tbl_extend('force', config or {}, {
+      border = 'rounded',
+      max_width = 80,
+      max_height = 20,
+      stylize_markdown = true,
+    })
+  )
+end
 
-vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, {
-  border = 'rounded',
-  max_width = 80,
-})
+local orig_sig = vim.lsp.handlers['textDocument/signatureHelp']
+vim.lsp.handlers['textDocument/signatureHelp'] = function(err, result, ctx, config)
+  return orig_sig(
+    err,
+    result,
+    ctx,
+    vim.tbl_extend('force', config or {}, {
+      border = 'rounded',
+      max_width = 80,
+    })
+  )
+end
+
+set_random_colorscheme 'kanagawa-wave, kanagawa-dragon'

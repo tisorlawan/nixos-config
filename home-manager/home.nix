@@ -151,6 +151,7 @@ in
       dynamicLanguages = [
         ruff
         pyright
+        basedpyright
         virtualenv
         black
         isort

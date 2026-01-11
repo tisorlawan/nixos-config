@@ -215,9 +215,6 @@ return {
       format = "{kind_icon}{symbol.name:Normal}",
       hl_group = "lualine_c_normal",
     })
-    -- table.insert(opts.sections.lualine_c, {
-    --   symbols and symbols.get,
-    -- })
 
     return opts
   end,

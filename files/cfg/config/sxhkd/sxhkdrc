@@ -36,8 +36,11 @@ super + control + {Up, Right, Left, Down}
 	$HOME/.scripts/mpc-{toggle,next,prev,stop}
 
 # Touchpad
-super + control + {p, o}
-	$HOME/.scripts/touchpad-{enable,disable}
+# super + control + {p, o}
+# 	$HOME/.scripts/touchpad-{enable,disable}
+
+super + control + p
+    passlock
 
 # Greenclip
 super + 8

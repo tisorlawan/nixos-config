@@ -1,8 +1,7 @@
-{
-  pkgs,
-  nixpkgs-unstable,
-  inputs,
-  ...
+{ pkgs
+, nixpkgs-unstable
+, inputs
+, ...
 }:
 
 let
@@ -181,7 +180,7 @@ in
         # rustup
         # sccache
         # leptosfmt
-        # zig
+        zig
         # zls
         # livebook
         stylua

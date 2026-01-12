@@ -1,3 +1,7 @@
+vim.g.mapleader = ' '
+vim.g.enable_highlight = true
+math.randomseed(os.time())
+
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
 ---@diagnostic disable-next-line: undefined-field
 if not vim.uv.fs_stat(lazypath) then
@@ -22,9 +26,6 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.wrap = false
 
--- Leader
-vim.g.mapleader = ' '
-
 -- Search
 vim.opt.incsearch = true
 vim.opt.hlsearch = true
@@ -37,9 +38,7 @@ vim.g.disable_autocomplete = true
 vim.opt.mouse = 'a'
 vim.opt.clipboard = 'unnamedplus'
 vim.opt.backspace = { 'indent', 'eol', 'start' }
-vim.opt.wildmenu = true
 vim.opt.wildmode = 'longest:full,full'
-vim.opt.showcmd = true
 vim.opt.cursorline = false
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 8
@@ -50,29 +49,35 @@ vim.opt.hidden = true
 vim.opt.backup = false
 vim.opt.swapfile = false
 vim.opt.undofile = true
-vim.opt.undodir = vim.fn.expand '~/.vim/undodir'
+local undodir = vim.fn.expand '~/.vim/undodir'
+vim.fn.mkdir(undodir, 'p')
+vim.opt.undodir = undodir
 
 -- Performance
 vim.opt.lazyredraw = true
 vim.opt.updatetime = 300
-vim.opt.timeout = true
 vim.opt.ttimeoutlen = 0
 
 -- Splits
 vim.opt.splitbelow = true
 vim.opt.splitright = true
+vim.opt.inccommand = 'split'
 
 -- UI
 vim.opt.showmatch = true
 vim.opt.ruler = true
 vim.opt.laststatus = 2
 vim.opt.shortmess:remove 'S'
-vim.opt.encoding = 'utf-8'
 vim.opt.title = true
+vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+vim.opt.showbreak = '↪'
 
 -- Path & Wildignore
 vim.opt.path = '.,**'
 vim.opt.wildignore:append '**/node_modules/**,**/.git/**,**/dist/**,**/build/**,**/__pycache__/**,*.pyc,*.o,*.obj,*.h'
+
+vim.opt.grepprg = 'rg --vimgrep --smart-case'
+vim.opt.grepformat = '%f:%l:%c:%m'
 
 -- ============================================================================
 -- @KEYMAPS - GENERAL
@@ -95,21 +100,17 @@ local function set_random_colorscheme(choices_str)
   vim.cmd('colorscheme ' .. choice)
 end
 
-local function buf_set_keymap_add_colon()
-  vim.keymap.set('i', '<C-d>', function()
-    local line = vim.fn.getline '.'
-    if line:sub(-1) ~= ';' then
-      return '<End>;'
-    end
-    return '<End>'
-  end, { buffer = true, expr = true, desc = 'Add semicolon at end of line' })
-end
-
 local terminal_buf = nil
 
-map('n', '<leader>w', '<cmd>update<CR>', opts)
-map('n', '<leader>h', '<cmd>nohlsearch<CR>', opts)
-map('n', '<leader>q', '<cmd>q<CR>', opts)
+map('n', '<C-M-j>', ':m .+1<CR>==', { desc = 'Move line down', silent = true })
+map('n', '<C-M-k>', ':m .-2<CR>==', { desc = 'Move line up', silent = true })
+map('v', '<C-M-j>', ":m '>+1<CR>gv=gv", { desc = 'Move Line Down in Visual Mode', silent = true })
+map('v', '<C-M-k>', ":m '<-2<CR>gv=gv", { desc = 'Move Line Up in Visual Mode', silent = true })
+map('v', '<leader>ss', ':s/\\C\\%V', { desc = 'Search only in visual selection using %V atom' })
+map('n', '<leader>w', '<cmd>update<CR>', { desc = 'Save file' })
+map('n', '<leader>h', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
+map('n', '<leader>q', '<cmd>q<CR>', { desc = 'Quit' })
+map('v', '<leader>r', '"hy:%s/\\C\\v<C-r>h//g<left><left>', { desc = 'change selection' })
 
 -- ============================================================================
 -- @BUFFER MANAGEMENT
@@ -135,10 +136,10 @@ end
 
 map('n', '<leader>d', function()
   bufdelete(false)
-end, opts)
+end, { desc = 'Delete buffer' })
 map('n', '<leader>D', function()
   bufdelete(true)
-end, opts)
+end, { desc = 'Force delete buffer' })
 
 -- ============================================================================
 -- @KEYMAPS - PATH/FILE UTILS
@@ -148,13 +149,13 @@ map('n', '<leader>yp', function()
   local path = vim.fn.expand '%:.'
   vim.fn.setreg('+', path)
   print('Copied: ' .. path)
-end, opts)
+end, { desc = 'Copy relative path' })
 
 map('n', '<leader>yP', function()
   local path = vim.fn.expand '%:p'
   vim.fn.setreg('+', path)
   print('Copied: ' .. path)
-end, opts)
+end, { desc = 'Copy absolute path' })
 
 map('n', '<leader>xf', function()
   local dir = vim.fn.expand '%:.:h'
@@ -167,11 +168,11 @@ map('n', '<leader>xf', function()
   if filepath ~= '' and filepath ~= dir then
     vim.cmd('edit ' .. vim.fn.fnameescape(filepath))
   end
-end, opts)
+end, { desc = 'New file in current dir' })
 
 map('n', '<leader>xc', function()
   local file = vim.fn.expand '%:p'
-  if file == '' then
+  if file == '' or vim.fn.filereadable(file) ~= 1 then
     return
   end
   vim.fn.system('chmod +x ' .. vim.fn.shellescape(file))
@@ -183,42 +184,77 @@ end, { desc = 'Chmod +x current file' })
 -- ============================================================================
 
 -- Buffer navigation
-map('n', '<leader><Tab>', '<C-^>', opts)
-map('n', '<leader>j', '<cmd>bnext<CR>', opts)
-map('n', '<leader>k', '<cmd>bprev<CR>', opts)
+map('n', '<leader><Tab>', '<C-^>', { desc = 'Alternate buffer' })
+map('n', '<leader>j', '<cmd>bnext<CR>', { desc = 'Next buffer' })
+map('n', '<leader>k', '<cmd>bprev<CR>', { desc = 'Previous buffer' })
 
 -- Mark navigation (swap ' and `)
-map('n', "'", '`', opts)
-map('n', '`', "'", opts)
+map('n', "'", '`', { desc = 'Go to mark (exact)' })
+map('n', '`', "'", { desc = 'Go to mark (line)' })
 
 -- Insert mode navigation
-map('i', '<C-h>', '<Left>', opts)
-map('i', '<C-j>', '<Down>', opts)
-map('i', '<C-k>', '<Up>', opts)
-map('i', '<C-l>', '<Right>', opts)
+map('i', '<C-h>', '<Left>', { desc = 'Move left' })
+map('i', '<C-j>', '<Down>', { desc = 'Move down' })
+map('i', '<C-k>', '<Up>', { desc = 'Move up' })
+map('i', '<C-l>', '<Right>', { desc = 'Move right' })
 
 -- ============================================================================
 -- @KEYMAPS - TERMINAL
 -- ============================================================================
 
-map('t', '<C-w>', '<C-w>', { noremap = true })
-map('t', '<C-u>', '<C-u>', { noremap = true })
-map('t', '<C-a>', '<C-a>', { noremap = true })
-map('t', '<C-e>', '<C-e>', { noremap = true })
-map('t', '<C-k>', '<C-k>', { noremap = true })
+map('t', '<C-w>', '<C-w>', { noremap = true, desc = 'Window prefix' })
+map('t', '<C-u>', '<C-u>', { noremap = true, desc = 'Scroll up' })
+map('t', '<C-a>', '<C-a>', { noremap = true, desc = 'Begin of line' })
+map('t', '<C-e>', '<C-e>', { noremap = true, desc = 'End of line' })
+map('t', '<C-k>', '<C-k>', { noremap = true, desc = 'Kill to end' })
 
 -- ============================================================================
 -- @AUTOCMDS
 -- ============================================================================
 
--- Restore cursor position
+local augroup = vim.api.nvim_create_augroup('UserConfig', { clear = true })
+
 vim.api.nvim_create_autocmd('BufReadPost', {
+  group = augroup,
   callback = function()
     local mark = vim.api.nvim_buf_get_mark(0, '"')
     local line_count = vim.api.nvim_buf_line_count(0)
     if mark[1] > 1 and mark[1] <= line_count then
       vim.api.nvim_win_set_cursor(0, mark)
     end
+  end,
+})
+
+vim.api.nvim_create_autocmd('TextYankPost', {
+  group = augroup,
+  callback = function()
+    vim.highlight.on_yank { timeout = 150 }
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  group = augroup,
+  pattern = { 'lua', 'javascript', 'typescript', 'typescriptreact', 'javascriptreact', 'html', 'css', 'haskell', 'sh', 'nix' },
+  callback = function()
+    vim.opt_local.expandtab = true
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  group = augroup,
+  pattern = 'go',
+  callback = function()
+    vim.opt_local.expandtab = false
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  group = augroup,
+  pattern = 'markdown',
+  callback = function()
+    vim.opt_local.spell = false
   end,
 })
 
@@ -240,13 +276,6 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'c', 'cpp', 'rust', 'java', 'javascript', 'typescript', 'css', 'php', 'go' },
-  callback = function()
-    buf_set_keymap_add_colon()
-  end,
-})
-
-vim.api.nvim_create_autocmd('FileType', {
   pattern = 'go',
   callback = function()
     vim.opt_local.expandtab = false
@@ -257,6 +286,30 @@ vim.api.nvim_create_autocmd('FileType', {
   pattern = 'markdown',
   callback = function()
     vim.opt_local.spell = false
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  group = augroup,
+  pattern = 'qf',
+  callback = function()
+    vim.keymap.set('n', 'q', '<cmd>cclose<CR>', { buffer = true, desc = 'Close quickfix' })
+  end,
+})
+
+vim.api.nvim_create_autocmd('BufWinEnter', {
+  group = augroup,
+  callback = function()
+    if vim.bo.filetype ~= 'qf' then
+      return
+    end
+    local qf = vim.fn.getqflist { title = 1 }
+    local title = qf.title or ''
+    if title:match '^Grep:' then
+      return
+    end
+    local buf = vim.api.nvim_get_current_buf()
+    vim.api.nvim_buf_set_name(buf, '[Quickfix]')
   end,
 })
 
@@ -304,6 +357,7 @@ local function run_sh_scratch()
 end
 
 vim.api.nvim_create_autocmd('FileType', {
+  group = augroup,
   pattern = 'sh',
   callback = function()
     vim.keymap.set('n', '<CR>', run_sh_scratch, { buffer = true, desc = 'Run shell script in scratch' })
@@ -322,9 +376,9 @@ vim.api.nvim_create_autocmd('FileType', {
 -- @QUICKFIX
 -- ============================================================================
 
-map('n', 'cn', '<cmd>cnext<CR>', opts)
-map('n', 'cp', '<cmd>cprev<CR>', opts)
-map('n', 'co', '<cmd>copen<CR>', opts)
+map('n', 'cn', '<cmd>cnext<CR>', { desc = 'Quickfix next' })
+map('n', 'cp', '<cmd>cprev<CR>', { desc = 'Quickfix prev' })
+map('n', 'co', '<cmd>copen<CR>', { desc = 'Quickfix open' })
 map('n', 'cm', function()
   local qflist = vim.fn.getqflist()
   if #qflist == 0 then
@@ -332,7 +386,7 @@ map('n', 'cm', function()
     return
   end
   require('fzf-lua').quickfix()
-end, opts)
+end, { desc = 'Quickfix fzf' })
 
 -- ============================================================================
 -- @CLOSE DIAGNOSTICS/SPECIAL WINDOWS
@@ -450,10 +504,10 @@ local function edit_and_run_in_terminal()
   end
 end
 
-map('n', '<leader><leader>', edit_and_run_in_terminal, opts)
-map('n', '<leader>rr', run_in_terminal, opts)
-map('n', '<leader>re', edit_and_run_in_terminal, opts)
-map('n', '<leader>rx', clear_last_shell_command, opts)
+map('n', '<leader><leader>', edit_and_run_in_terminal, { desc = 'Run shell command' })
+map('n', '<leader>rr', run_in_terminal, { desc = 'Re-run last command' })
+map('n', '<leader>re', edit_and_run_in_terminal, { desc = 'Edit and run command' })
+map('n', '<leader>rx', clear_last_shell_command, { desc = 'Clear last command' })
 
 -- ============================================================================
 -- @FUZZY FINDER (fzf/fzy)
@@ -462,13 +516,19 @@ map('n', '<leader>rx', clear_last_shell_command, opts)
 local fzf_tempfile = vim.fn.tempname()
 local fzf_source_win = 0
 
+local fuzzy_finder_cache = nil
 local function get_fuzzy_finder()
-  if vim.fn.executable 'fzf' == 1 then
-    return 'fzf'
-  elseif vim.fn.executable 'fzy' == 1 then
-    return 'fzy'
+  if fuzzy_finder_cache ~= nil then
+    return fuzzy_finder_cache
   end
-  return ''
+  if vim.fn.executable 'fzf' == 1 then
+    fuzzy_finder_cache = 'fzf'
+  elseif vim.fn.executable 'fzy' == 1 then
+    fuzzy_finder_cache = 'fzy'
+  else
+    fuzzy_finder_cache = ''
+  end
+  return fuzzy_finder_cache
 end
 
 local function open_picker_terminal(cmd, name, on_done, height)
@@ -602,9 +662,7 @@ local function buffer_picker()
       cmd = 'echo ' .. vim.fn.shellescape(buflist) .. ' | ' .. finder .. ' > ' .. fzf_tempfile
     else
       local buflist = table.concat(bufs, '\n')
-      cmd = 'echo ' ..
-          vim.fn.shellescape(buflist) ..
-          ' | ' .. finder .. ' --layout=reverse --multi --expect=ctrl-s,ctrl-v,ctrl-q > ' .. fzf_tempfile
+      cmd = 'echo ' .. vim.fn.shellescape(buflist) .. ' | ' .. finder .. ' --layout=reverse --multi --expect=ctrl-s,ctrl-v,ctrl-q > ' .. fzf_tempfile
     end
 
     open_picker_terminal(cmd, '[Buffers]', function()
@@ -624,7 +682,7 @@ local function buffer_picker()
   end
 end
 
-map('n', '<C-n>', buffer_picker, opts)
+map('n', '<C-n>', buffer_picker, { desc = 'Buffer picker' })
 
 -- ============================================================================
 -- @GREP (ripgrep/grep)
@@ -676,10 +734,10 @@ local function grep_picker(query)
     end
 
     if file and line then
-      vim.cmd('edit ' .. vim.fn.fnameescape(file))
+      vim.cmd('drop ' .. vim.fn.fnameescape(file))
       vim.api.nvim_win_set_cursor(0, { tonumber(line), tonumber(col) - 1 })
       vim.cmd 'normal! zz'
-      print 'No other match'
+      vim.cmd('redraw | echo "No other match for: ' .. search_term:gsub('"', '\\"') .. '"')
     end
     return
   end
@@ -691,6 +749,8 @@ local function grep_picker(query)
   })
 
   vim.cmd 'copen'
+  vim.api.nvim_buf_set_name(0, ' ' .. actual_term .. ' [' .. #output .. ']')
+  vim.cmd 'echo ""'
 end
 
 local function get_visual_selection()
@@ -708,14 +768,14 @@ map('v', '<leader>l', function()
     text = text:gsub('\n', ' ')
     grep_picker(text)
   end
-end, opts)
+end, { desc = 'Grep selection' })
 
 map('n', '<leader>ll', function()
   local query = vim.fn.input 'Grep: '
   if query ~= '' then
     grep_picker(query)
   end
-end, opts)
+end, { desc = 'Grep prompt' })
 
 function _G.grep_operator(type)
   local save = vim.fn.getreg '"'
@@ -737,7 +797,12 @@ end
 map('n', '<leader>l', function()
   vim.o.operatorfunc = 'v:lua.grep_operator'
   return 'g@'
-end, { noremap = true, silent = true, expr = true })
+end, { noremap = true, silent = true, expr = true, desc = 'Grep operator' })
+
+map('n', '<leader>lw', function()
+  vim.o.operatorfunc = 'v:lua.grep_operator'
+  return 'g@iw'
+end, { noremap = true, silent = true, expr = true, desc = 'Grep word under cursor' })
 
 map('n', '<leader>sp', '<cmd>Lazy<cr>', { desc = 'Lazy' })
 map('n', '<leader>sc', '<cmd>ConformInfo<cr>', { desc = 'Conform Info' })
@@ -928,40 +993,17 @@ local function harpoon_menu()
   end
 end
 
-map('n', '<leader>oa', harpoon_add, opts)
-map('n', '<leader>or', harpoon_remove, opts)
-map('n', '<leader>oe', harpoon_edit, opts)
-map('n', '<leader>om', harpoon_menu, opts)
-map('n', '<M-1>', function()
-  harpoon_go(1)
-end, opts)
-map('n', '<M-2>', function()
-  harpoon_go(2)
-end, opts)
-map('n', '<M-3>', function()
-  harpoon_go(3)
-end, opts)
-map('n', '<M-4>', function()
-  harpoon_go(4)
-end, opts)
-map('n', '<M-5>', function()
-  harpoon_go(5)
-end, opts)
-map('n', '<Esc>1', function()
-  harpoon_go(1)
-end, opts)
-map('n', '<Esc>2', function()
-  harpoon_go(2)
-end, opts)
-map('n', '<Esc>3', function()
-  harpoon_go(3)
-end, opts)
-map('n', '<Esc>4', function()
-  harpoon_go(4)
-end, opts)
-map('n', '<Esc>5', function()
-  harpoon_go(5)
-end, opts)
+-- stylua: ignore start
+map('n', '<leader>oa', harpoon_add, { desc = 'Harpoon add' })
+map('n', '<leader>or', harpoon_remove, { desc = 'Harpoon remove' })
+map('n', '<leader>oe', harpoon_edit, { desc = 'Harpoon edit' })
+map('n', '<leader>om', harpoon_menu, { desc = 'Harpoon menu' })
+map('n', '<M-1>', function() harpoon_go(1) end, { desc = 'Harpoon 1' })
+map('n', '<M-2>', function() harpoon_go(2) end, { desc = 'Harpoon 2' })
+map('n', '<M-3>', function() harpoon_go(3) end, { desc = 'Harpoon 3' })
+map('n', '<M-4>', function() harpoon_go(4) end, { desc = 'Harpoon 4' })
+map('n', '<M-5>', function() harpoon_go(5) end, { desc = 'Harpoon 5' })
+-- stylua: ignore end
 
 -- ============================================================================
 -- @SEMICOLON INSERT (C-d)
@@ -986,7 +1028,7 @@ map('i', '<C-d>', function()
     return '<End>;'
   end
   return '<End>'
-end, { expr = true })
+end, { expr = true, desc = 'Append semicolon' })
 
 -- ============================================================================
 -- @UI & ICONS
@@ -1037,8 +1079,7 @@ local ui = {
 
 function ui.fg(name)
   local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
-  ---@diagnostic disable-next-line: undefined-field
-  local fg = hl and hl.fg or hl.foreground
+  local fg = hl and hl.fg
   return fg and { fg = string.format('#%06x', fg) } or nil
 end
 
@@ -1077,6 +1118,7 @@ local function apply_transparency()
 end
 
 vim.api.nvim_create_autocmd('ColorScheme', {
+  group = augroup,
   callback = apply_transparency,
 })
 
@@ -1117,6 +1159,11 @@ local function get_used_ft()
   }
 
   local formatters_by_ft = {}
+  for _, ft in ipairs(fts) do
+    if config[ft] and config[ft].formatters then
+      formatters_by_ft[ft] = config[ft].formatters
+    end
+  end
 
   return { used_ft = fts, config = config, formatters_by_ft = formatters_by_ft }
 end
@@ -1300,6 +1347,7 @@ local lsp_servers = {
 }
 
 vim.api.nvim_create_autocmd('LspAttach', {
+  group = augroup,
   callback = function(event)
     on_attach(vim.lsp.get_client_by_id(event.data.client_id), event.buf)
   end,
@@ -1406,7 +1454,7 @@ require('lazy').setup({
     branch = 'master',
     build = ':TSUpdate',
     dependencies = {
-      { 'yioneko/nvim-yati',         event = { 'BufReadPost', 'BufNewFile' } },
+      { 'yioneko/nvim-yati', event = { 'BufReadPost', 'BufNewFile' } },
       { 'nvim-treesitter/playground' },
       { 'windwp/nvim-ts-autotag' },
     },
@@ -1415,7 +1463,7 @@ require('lazy').setup({
       ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'python', 'vim', 'vimdoc' },
       auto_install = true,
       ignore_install = { 'gitcommit' },
-      highlight = { enable = true, additional_vim_regex_highlighting = { 'ruby', 'elixir' } },
+      highlight = { enable = vim.g.enable_highlight, additional_vim_regex_highlighting = vim.g.enable_highlight and { 'ruby', 'elixir' } or false },
       indent = { enable = true, disable = { 'python', 'css', 'rust', 'lua', 'javascript', 'tsx', 'typescript', 'toml', 'json', 'c', 'heex' } },
       yati = { enable = true, disable = { 'rust' }, default_lazy = true, default_fallback = 'auto' },
     },
@@ -1620,15 +1668,14 @@ require('lazy').setup({
         local filepath = node:get_id()
         local filename = node.name
         local modify = vim.fn.fnamemodify
-        local results = { filepath, modify(filepath, ':.'), modify(filepath, ':~'), filename, modify(filename, ':r'),
-          modify(filename, ':e') }
+        local results = { filepath, modify(filepath, ':.'), modify(filepath, ':~'), filename, modify(filename, ':r'), modify(filename, ':e') }
         local options = {
-          { label = 'Absolute path',              value = results[1] },
-          { label = 'Path relative to CWD',       value = results[2] },
-          { label = 'Path relative to HOME',      value = results[3] },
-          { label = 'Filename',                   value = results[4] },
+          { label = 'Absolute path', value = results[1] },
+          { label = 'Path relative to CWD', value = results[2] },
+          { label = 'Path relative to HOME', value = results[3] },
+          { label = 'Filename', value = results[4] },
           { label = 'Filename without extension', value = results[5] },
-          { label = 'Extension',                  value = results[6] },
+          { label = 'Extension', value = results[6] },
         }
         vim.ui.select(options, {
           prompt = 'Choose to copy to clipboard:',
@@ -1690,11 +1737,11 @@ require('lazy').setup({
   {
     'https://codeberg.org/andyg/leap.nvim',
     keys = {
-      { 's',  '<Plug>(leap-forward)',       mode = { 'n', 'x', 'o' }, desc = 'leap forward to' },
-      { 'S',  '<Plug>(leap-backward)',      mode = { 'n', 'x', 'o' }, desc = 'leap backward to' },
-      { 'x',  '<Plug>(leap-forward-till)',  mode = { 'x', 'o' },      desc = 'leap forward till' },
-      { 'X',  '<Plug>(leap-backward-till)', mode = { 'x', 'o' },      desc = 'leap backward till' },
-      { 'gs', '<Plug>(leap-from-window)',   mode = { 'n', 'x', 'o' }, desc = 'leap from window' },
+      { 's', '<Plug>(leap-forward)', mode = { 'n', 'x', 'o' }, desc = 'leap forward to' },
+      { 'S', '<Plug>(leap-backward)', mode = { 'n', 'x', 'o' }, desc = 'leap backward to' },
+      { 'x', '<Plug>(leap-forward-till)', mode = { 'x', 'o' }, desc = 'leap forward till' },
+      { 'X', '<Plug>(leap-backward-till)', mode = { 'x', 'o' }, desc = 'leap backward till' },
+      { 'gs', '<Plug>(leap-from-window)', mode = { 'n', 'x', 'o' }, desc = 'leap from window' },
     },
     opts = { safe_labels = 'tyuofghjklvbn', labels = 'sfnjklhowembuyvrgtqpcxz/SFNJKLHOWEIMBUYVRGTAQPCXZ' },
     dependencies = { 'tpope/vim-repeat' },
@@ -1717,6 +1764,7 @@ require('lazy').setup({
       local lualine_require = require 'lualine_require'
       lualine_require.require = require
       vim.o.laststatus = vim.g.lualine_laststatus
+
       return {
         options = {
           theme = 'auto',
@@ -1726,7 +1774,12 @@ require('lazy').setup({
           component_separators = '',
         },
         sections = {
-          lualine_a = { { 'mode', fmt = function(str) return str:sub(1, 1) end } },
+          lualine_a = { {
+            'mode',
+            fmt = function(str)
+              return str:sub(1, 1)
+            end,
+          } },
           lualine_b = { 'branch' },
           lualine_c = {
             { 'pretty_path' },
@@ -1740,7 +1793,9 @@ require('lazy').setup({
               },
             },
           },
-          lualine_x = { { 'diff', symbols = { added = ui.icons.git.added, modified = ui.icons.git.modified, removed = ui.icons.git.removed } } },
+          lualine_x = {
+            { 'diff', symbols = { added = ui.icons.git.added, modified = ui.icons.git.modified, removed = ui.icons.git.removed } },
+          },
           lualine_y = { { 'progress', separator = ' ', padding = { left = 1, right = 0 } }, { 'location', padding = { left = 0, right = 1 } } },
           lualine_z = {
             function()
@@ -1813,6 +1868,7 @@ require('lazy').setup({
         lmap("n", "<leader>hd", gs.diffthis, "Diff This")
         lmap("n", "<leader>hD", function() gs.diffthis("~") end, "Diff This ~")
         lmap({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", "GitSigns Select Hunk")
+        -- stylua: ignore end
       end,
     },
   },
@@ -1822,14 +1878,14 @@ require('lazy').setup({
     enabled = true,
     keys = {
       { '<leader>gbo', '<cmd>GitBlameOpenCommitURL<cr>', desc = 'Open blame commit URL' },
-      { '<leader>gbb', '<cmd>GitBlameToggle<cr>',        desc = 'Toggle git blame' },
-      { '<leader>gbe', '<cmd>GitBlameEnable<cr>',        desc = 'Enable git blame' },
-      { '<leader>gbd', '<cmd>GitBlameDisable<cr>',       desc = 'Disable git blame' },
-      { '<leader>gbs', '<cmd>GitBlameCopySHA<cr>',       desc = 'Copy blame SHA' },
+      { '<leader>gbb', '<cmd>GitBlameToggle<cr>', desc = 'Toggle git blame' },
+      { '<leader>gbe', '<cmd>GitBlameEnable<cr>', desc = 'Enable git blame' },
+      { '<leader>gbd', '<cmd>GitBlameDisable<cr>', desc = 'Disable git blame' },
+      { '<leader>gbs', '<cmd>GitBlameCopySHA<cr>', desc = 'Copy blame SHA' },
       { '<leader>gbc', '<cmd>GitBlameCopyCommitURL<cr>', desc = 'Copy blame commit URL' },
-      { '<leader>gbp', '<cmd>GitBlameCopyPRURL<cr>',     desc = 'Copy blame PR URL' },
-      { '<leader>gbf', '<cmd>GitBlameOpenFileURL<cr>',   desc = 'Open blame file URL' },
-      { '<leader>gby', '<cmd>GitBlameCopyFileURL<cr>',   desc = 'Copy blame file URL' },
+      { '<leader>gbp', '<cmd>GitBlameCopyPRURL<cr>', desc = 'Copy blame PR URL' },
+      { '<leader>gbf', '<cmd>GitBlameOpenFileURL<cr>', desc = 'Open blame file URL' },
+      { '<leader>gby', '<cmd>GitBlameCopyFileURL<cr>', desc = 'Copy blame file URL' },
     },
     opts = { enabled = false, message_template = ' <summary> • <date> • <author> • <<sha>>', date_format = '%d-%m-%Y %H:%M:%S', virtual_text_column = 1 },
   },
@@ -1872,6 +1928,32 @@ require('lazy').setup({
     end,
   },
   { 'romainl/vim-cool' },
+  {
+    'kevinhwang91/nvim-bqf',
+    ft = 'qf',
+    opts = { preview = { auto_preview = true } },
+  },
+  {
+    'folke/which-key.nvim',
+    event = 'VeryLazy',
+    opts = {
+      preset = 'helix',
+      delay = 300,
+      spec = {
+        { '<leader>c', group = 'code' },
+        { '<leader>f', group = 'file/find' },
+        { '<leader>g', group = 'git' },
+        { '<leader>h', group = 'hunk' },
+        { '<leader>o', group = 'harpoon/swap' },
+        { '<leader>r', group = 'run' },
+        { '<leader>s', group = 'search/symbol' },
+        { '<leader>u', group = 'toggle' },
+        { '<leader>x', group = 'file ops' },
+        { '<leader>y', group = 'yank path' },
+        { '<leader>z', group = 'zen' },
+      },
+    },
+  },
 
   -- 7. UTILITIES
   {
@@ -1888,9 +1970,9 @@ require('lazy').setup({
     event = 'VeryLazy',
     enabled = false,
     keys = {
-      { '<c-h>', '<cmd>ZellijNavigateLeftTab<cr>',  { silent = true, desc = 'navigate left or tab' } },
-      { '<c-j>', '<cmd>ZellijNavigateDown<cr>',     { silent = true, desc = 'navigate down' } },
-      { '<c-k>', '<cmd>ZellijNavigateUp<cr>',       { silent = true, desc = 'navigate up' } },
+      { '<c-h>', '<cmd>ZellijNavigateLeftTab<cr>', { silent = true, desc = 'navigate left or tab' } },
+      { '<c-j>', '<cmd>ZellijNavigateDown<cr>', { silent = true, desc = 'navigate down' } },
+      { '<c-k>', '<cmd>ZellijNavigateUp<cr>', { silent = true, desc = 'navigate up' } },
       { '<c-l>', '<cmd>ZellijNavigateRightTab<cr>', { silent = true, desc = 'navigate right or tab' } },
     },
     opts = {},
@@ -1943,26 +2025,59 @@ require('lazy').setup({
   },
 }, { ui = { border = 'rounded' } })
 
-local orig_hover = vim.lsp.handlers['textDocument/hover']
-vim.lsp.handlers['textDocument/hover'] = function(err, result, ctx, config)
-  return orig_hover(err, result, ctx,
-    vim.tbl_extend('force', config or {}, {
-      border = 'rounded',
-      max_width = 80,
-      max_height = 20,
-      stylize_markdown = true,
-    })
-  )
-end
+if vim.g.enable_highlight then
+  set_random_colorscheme 'kanagawa-wave, kanagawa-dragon'
+else
+  vim.cmd 'syntax on'
+  vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE', fg = '#ffffff' })
+  vim.api.nvim_set_hl(0, 'NonText', { bg = 'NONE', fg = '#555555' })
+  vim.api.nvim_set_hl(0, 'LineNr', { bg = 'NONE', fg = '#666666' })
+  vim.api.nvim_set_hl(0, 'SignColumn', { bg = 'NONE' })
+  vim.api.nvim_set_hl(0, 'EndOfBuffer', { bg = 'NONE', fg = '#555555' })
+  vim.api.nvim_set_hl(0, 'StatusLine', { bg = 'NONE', fg = '#ffffff' })
+  vim.api.nvim_set_hl(0, 'StatusLineNC', { bg = 'NONE', fg = '#666666' })
 
-local orig_sig = vim.lsp.handlers['textDocument/signatureHelp']
-vim.lsp.handlers['textDocument/signatureHelp'] = function(err, result, ctx, config)
-  return orig_sig(err, result, ctx,
-    vim.tbl_extend('force', config or {}, {
-      border = 'rounded',
-      max_width = 80,
-    })
-  )
-end
+  vim.api.nvim_set_hl(0, 'Comment', { fg = '#666666', italic = true })
+  vim.api.nvim_set_hl(0, 'Keyword', { fg = '#ffffff', bold = true })
+  vim.api.nvim_set_hl(0, 'Statement', { fg = '#ffffff', bold = true })
+  vim.api.nvim_set_hl(0, 'Conditional', { fg = '#ffffff', bold = true })
+  vim.api.nvim_set_hl(0, 'Repeat', { fg = '#ffffff', bold = true })
+  vim.api.nvim_set_hl(0, 'Function', { fg = '#88aaff', bold = true })
+  vim.api.nvim_set_hl(0, 'String', { fg = '#99cc99' })
+  vim.api.nvim_set_hl(0, 'Number', { fg = '#ffaa66' })
+  vim.api.nvim_set_hl(0, 'Boolean', { fg = '#ffaa66', bold = true })
+  vim.api.nvim_set_hl(0, 'Type', { fg = '#cccccc', bold = true })
+  vim.api.nvim_set_hl(0, 'Constant', { fg = '#ffaa66' })
+  vim.api.nvim_set_hl(0, 'Identifier', { fg = '#ffffff' })
+  vim.api.nvim_set_hl(0, 'Special', { fg = '#aaaaaa' })
+  vim.api.nvim_set_hl(0, 'Operator', { fg = '#ffffff' })
+  vim.api.nvim_set_hl(0, 'PreProc', { fg = '#cc99cc' })
+  vim.api.nvim_set_hl(0, 'Error', { fg = '#ff6666', bold = true })
+  vim.api.nvim_set_hl(0, 'Todo', { fg = '#ffcc00', bold = true })
 
-set_random_colorscheme 'kanagawa-wave, kanagawa-dragon'
+  vim.api.nvim_set_hl(0, 'Visual', { bg = '#444444' })
+  vim.api.nvim_set_hl(0, 'Search', { bg = '#555500', fg = '#ffffff' })
+  vim.api.nvim_set_hl(0, 'IncSearch', { bg = '#777700', fg = '#ffffff', bold = true })
+  vim.api.nvim_set_hl(0, 'CursorLine', { bg = '#222222' })
+  vim.api.nvim_set_hl(0, 'Pmenu', { bg = '#222222', fg = '#ffffff' })
+  vim.api.nvim_set_hl(0, 'PmenuSel', { bg = '#444444', fg = '#ffffff', bold = true })
+
+  vim.api.nvim_set_hl(0, 'DiagnosticError', { fg = '#ff6666' })
+  vim.api.nvim_set_hl(0, 'DiagnosticWarn', { fg = '#ffaa66' })
+  vim.api.nvim_set_hl(0, 'DiagnosticInfo', { fg = '#88aaff' })
+  vim.api.nvim_set_hl(0, 'DiagnosticHint', { fg = '#888888' })
+
+  vim.api.nvim_set_hl(0, 'DiffAdd', { bg = '#223322' })
+  vim.api.nvim_set_hl(0, 'DiffChange', { bg = '#333322' })
+  vim.api.nvim_set_hl(0, 'DiffDelete', { bg = '#332222' })
+  vim.api.nvim_set_hl(0, 'DiffText', { bg = '#444422', bold = true })
+
+  for _, mode in ipairs { 'normal', 'insert', 'visual', 'replace', 'command', 'inactive' } do
+    vim.api.nvim_set_hl(0, 'lualine_a_' .. mode, { bg = '#333333', fg = '#ffffff' })
+    vim.api.nvim_set_hl(0, 'lualine_b_' .. mode, { bg = 'NONE', fg = '#aaaaaa' })
+    vim.api.nvim_set_hl(0, 'lualine_c_' .. mode, { bg = 'NONE', fg = '#ffffff' })
+    vim.api.nvim_set_hl(0, 'lualine_x_' .. mode, { bg = 'NONE', fg = '#aaaaaa' })
+    vim.api.nvim_set_hl(0, 'lualine_y_' .. mode, { bg = 'NONE', fg = '#aaaaaa' })
+    vim.api.nvim_set_hl(0, 'lualine_z_' .. mode, { bg = '#333333', fg = '#ffffff' })
+  end
+end

@@ -69,9 +69,8 @@ ln -srf ./files/cfg/images ~/.images
 rm -rf ~/.gitconfig
 ln -srf ./files/cfg/gitconfig ~/.gitconfig
 
-
 rm -rf ~/.clang-format
-ln -srf ./files/cfg/.clang-format ~/.clang-format
+ln -srf ./files/cfg/clang-format ~/.clang-format
 
 rm -rf ~/.tmux.conf
 ln -srf ./files/cfg/tmux.conf ~/.tmux.conf

@@ -28,3 +28,5 @@ export XDG_VIDEOS_DIR="$HOME/videos"
 set -x DIRENV_LOG_FORMAT ""
 
 set -x UV_HTTP_TIMEOUT 300
+
+set -x PASSLOCK_FILE $HOME/.rice/passlock.enc

@@ -1,14 +1,9 @@
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+---@diagnostic disable-next-line: undefined-field
 if not vim.uv.fs_stat(lazypath) then
   vim.fn.system { 'git', 'clone', '--filter=blob:none', 'https://github.com/folke/lazy.nvim.git', '--branch=stable', lazypath }
 end
 vim.opt.rtp:prepend(lazypath)
-
--- ============================================================================
--- @APPEARANCE
--- ============================================================================
-
-vim.cmd 'syntax on'
 
 -- ============================================================================
 -- @OPTIONS
@@ -607,7 +602,9 @@ local function buffer_picker()
       cmd = 'echo ' .. vim.fn.shellescape(buflist) .. ' | ' .. finder .. ' > ' .. fzf_tempfile
     else
       local buflist = table.concat(bufs, '\n')
-      cmd = 'echo ' .. vim.fn.shellescape(buflist) .. ' | ' .. finder .. ' --layout=reverse --multi --expect=ctrl-s,ctrl-v,ctrl-q > ' .. fzf_tempfile
+      cmd = 'echo ' ..
+          vim.fn.shellescape(buflist) ..
+          ' | ' .. finder .. ' --layout=reverse --multi --expect=ctrl-s,ctrl-v,ctrl-q > ' .. fzf_tempfile
     end
 
     open_picker_terminal(cmd, '[Buffers]', function()
@@ -1401,23 +1398,6 @@ require('lazy').setup({
       require('kanagawa').setup { transparent = true }
     end,
   },
-  {
-    'nendix/zen.nvim',
-    lazy = false,
-    priority = 1000,
-    config = function()
-      require('zen').setup {
-        variant = 'dark',
-        transparent = true,
-        colors = {
-          palette = {
-            bg0 = '#141419',
-            bg2 = '#202020',
-          },
-        },
-      }
-    end,
-  },
 
   -- 2. CORE ENGINE
   {
@@ -1426,7 +1406,7 @@ require('lazy').setup({
     branch = 'master',
     build = ':TSUpdate',
     dependencies = {
-      { 'yioneko/nvim-yati', event = { 'BufReadPost', 'BufNewFile' } },
+      { 'yioneko/nvim-yati',         event = { 'BufReadPost', 'BufNewFile' } },
       { 'nvim-treesitter/playground' },
       { 'windwp/nvim-ts-autotag' },
     },
@@ -1546,25 +1526,45 @@ require('lazy').setup({
     event = { 'BufReadPre', 'BufNewFile', 'VimEnter' },
     -- stylua: ignore
     keys = {
-      { '<leader>fF', function() require('fzf-lua').files { cwd = vim.fn.getcwd() } end, desc = 'Find Files (cwd)' },
-      { '<leader>fg', function() require('fzf-lua').git_files() end, desc = 'Find Files (git-files)' },
-      { '<leader>fr', function() require('fzf-lua').oldfiles() end, desc = 'Recent' },
+      { '<leader>fF', function() require('fzf-lua').files { cwd = vim.fn.getcwd() } end,    desc = 'Find Files (cwd)' },
+      { '<leader>fg', function() require('fzf-lua').git_files() end,                        desc = 'Find Files (git-files)' },
+      { '<leader>fr', function() require('fzf-lua').oldfiles() end,                         desc = 'Recent' },
       { '<leader>fR', function() require('fzf-lua').oldfiles { cwd = vim.fn.getcwd() } end, desc = 'Recent (cwd)' },
-      { '<leader>gc', function() require('fzf-lua').git_commits() end, desc = 'Commits' },
-      { '<leader>gs', function() require('fzf-lua').git_status() end, desc = 'Status' },
-      { '<leader>fy', function() require('fzf-lua').registers() end, desc = 'Registers' },
-      { '<leader>fx', function() require('fzf-lua').diagnostics_document() end, desc = 'Document Diagnostics' },
-      { '<leader>fX', function() require('fzf-lua').diagnostics_workspace() end, desc = 'Workspace Diagnostics' },
-      { '<leader>sg', function() require('fzf-lua').grep_project() end, desc = 'Grep (Root Dir)' },
-      { '<leader>fM', function() require('fzf-lua').man_pages() end, desc = 'Man Pages' },
-      { '<leader>f.', function() require('fzf-lua').resume() end, desc = 'Resume' },
-      { '<leader>ss', function() require('fzf-lua').lsp_document_symbols() end, desc = 'Goto Symbol' },
-      { '<leader>S', function() require('fzf-lua').lsp_workspace_symbols() end, desc = 'Goto Symbol (Workspace)' },
-      { '<leader>uC', function() require('fzf-lua').colorschemes() end, desc = 'Colorscheme with Preview' },
-      { '<leader>cs', function() require('fzf-lua').lsp_document_symbols() end, desc = 'Document symbols' },
-      { '<leader>cw', function() require('fzf-lua').lsp_live_workspace_symbols() end, desc = 'Workspace symbols' },
-      { '<leader>ca', function() require('fzf-lua').lsp_code_actions() end, desc = 'Code actions' },
-      { '<leader>fd', function() require('fzf-lua').fzf_exec('fd -u --type d -E .cache -E snap -E cache -E go -E .git -E .npm -E .miniconda3 -E .conda -E __pycache__ -E .docker -E .cargo -E .cert -E .windsurf -E .minikube -E .ghcup -E .claude -E .stack -E .cabal -E .aws -E tmp -E .rustup -E uv -E .local/share -E .codeium -E .cargo_build_artifacts -E .ipython -E .ruff_cache -E .venv -E Slack -E node_modules -E .jupyter -E nltk_data -E .local/state -E .zoom', { prompt = '~/', cwd = '~', actions = { ['default'] = function(selected) if selected and #selected > 0 then local root = vim.fn.expand '~' .. '/' vim.cmd('cd ' .. root .. selected[1]) require('fzf-lua').files() end end } }) end, desc = 'Fuzzy cd to dir under ~' },
+      { '<leader>gc', function() require('fzf-lua').git_commits() end,                      desc = 'Commits' },
+      { '<leader>gs', function() require('fzf-lua').git_status() end,                       desc = 'Status' },
+      { '<leader>fy', function() require('fzf-lua').registers() end,                        desc = 'Registers' },
+      { '<leader>fx', function() require('fzf-lua').diagnostics_document() end,             desc = 'Document Diagnostics' },
+      { '<leader>fX', function() require('fzf-lua').diagnostics_workspace() end,            desc = 'Workspace Diagnostics' },
+      { '<leader>sg', function() require('fzf-lua').grep_project() end,                     desc = 'Grep (Root Dir)' },
+      { '<leader>fM', function() require('fzf-lua').man_pages() end,                        desc = 'Man Pages' },
+      { '<leader>f.', function() require('fzf-lua').resume() end,                           desc = 'Resume' },
+      { '<leader>ss', function() require('fzf-lua').lsp_document_symbols() end,             desc = 'Goto Symbol' },
+      { '<leader>S',  function() require('fzf-lua').lsp_workspace_symbols() end,            desc = 'Goto Symbol (Workspace)' },
+      { '<leader>uC', function() require('fzf-lua').colorschemes() end,                     desc = 'Colorscheme with Preview' },
+      { '<leader>cs', function() require('fzf-lua').lsp_document_symbols() end,             desc = 'Document symbols' },
+      { '<leader>cw', function() require('fzf-lua').lsp_live_workspace_symbols() end,       desc = 'Workspace symbols' },
+      { '<leader>ca', function() require('fzf-lua').lsp_code_actions() end,                 desc = 'Code actions' },
+      {
+        '<leader>fd',
+        function()
+          require('fzf-lua').fzf_exec(
+            'fd -u --type d -E .cache -E snap -E cache -E go -E .git -E .npm -E .miniconda3 -E .conda -E __pycache__ -E .docker -E .cargo -E .cert -E .windsurf -E .minikube -E .ghcup -E .claude -E .stack -E .cabal -E .aws -E tmp -E .rustup -E uv -E .local/share -E .codeium -E .cargo_build_artifacts -E .ipython -E .ruff_cache -E .venv -E Slack -E node_modules -E .jupyter -E nltk_data -E .local/state -E .zoom',
+            {
+              prompt = '~/',
+              cwd = '~',
+              actions = {
+                ['default'] = function(selected)
+                  if selected and #selected > 0 then
+                    local root = vim.fn.expand '~' .. '/'
+                    vim.cmd('cd ' .. root .. selected[1])
+                    require('fzf-lua').files()
+                  end
+                end
+              }
+            })
+        end,
+        desc = 'Fuzzy cd to dir under ~'
+      },
     },
     config = function()
       local actions = require 'fzf-lua.actions'
@@ -1620,14 +1620,15 @@ require('lazy').setup({
         local filepath = node:get_id()
         local filename = node.name
         local modify = vim.fn.fnamemodify
-        local results = { filepath, modify(filepath, ':.'), modify(filepath, ':~'), filename, modify(filename, ':r'), modify(filename, ':e') }
+        local results = { filepath, modify(filepath, ':.'), modify(filepath, ':~'), filename, modify(filename, ':r'),
+          modify(filename, ':e') }
         local options = {
-          { label = 'Absolute path', value = results[1] },
-          { label = 'Path relative to CWD', value = results[2] },
-          { label = 'Path relative to HOME', value = results[3] },
-          { label = 'Filename', value = results[4] },
+          { label = 'Absolute path',              value = results[1] },
+          { label = 'Path relative to CWD',       value = results[2] },
+          { label = 'Path relative to HOME',      value = results[3] },
+          { label = 'Filename',                   value = results[4] },
           { label = 'Filename without extension', value = results[5] },
-          { label = 'Extension', value = results[6] },
+          { label = 'Extension',                  value = results[6] },
         }
         vim.ui.select(options, {
           prompt = 'Choose to copy to clipboard:',
@@ -1669,18 +1670,18 @@ require('lazy').setup({
     lazy = true,
     -- stylua: ignore
     keys = {
-      { "<C-h>", function() require("smart-splits").move_cursor_left() end, { silent = true } },
-      { "<C-j>", function() require("smart-splits").move_cursor_down() end, { silent = true } },
-      { "<C-k>", function() require("smart-splits").move_cursor_up() end, { silent = true } },
-      { "<C-l>", function() require("smart-splits").move_cursor_right() end, { silent = true } },
-      { "<C-left>", function() require("smart-splits").resize_left() end, { silent = true } },
-      { "<C-right>", function() require("smart-splits").resize_right() end, { silent = true } },
-      { "<C-up>", function() require("smart-splits").resize_up() end, { silent = true } },
-      { "<C-down>", function() require("smart-splits").resize_down() end, { silent = true } },
-      { "<leader>oh", function() require("smart-splits").swap_buf_left() end, { silent = true }, desc = "Swap Left" },
-      { "<leader>oj", function() require("smart-splits").swap_buf_down() end, { silent = true }, desc = "Swap Down" },
-      { "<leader>ok", function() require("smart-splits").swap_buf_up() end, { silent = true }, desc = "Swap Up" },
-      { "<leader>ol", function() require("smart-splits").swap_buf_right() end, { silent = true }, desc = "Swap Right" },
+      { "<C-h>",      function() require("smart-splits").move_cursor_left() end,  { silent = true } },
+      { "<C-j>",      function() require("smart-splits").move_cursor_down() end,  { silent = true } },
+      { "<C-k>",      function() require("smart-splits").move_cursor_up() end,    { silent = true } },
+      { "<C-l>",      function() require("smart-splits").move_cursor_right() end, { silent = true } },
+      { "<C-left>",   function() require("smart-splits").resize_left() end,       { silent = true } },
+      { "<C-right>",  function() require("smart-splits").resize_right() end,      { silent = true } },
+      { "<C-up>",     function() require("smart-splits").resize_up() end,         { silent = true } },
+      { "<C-down>",   function() require("smart-splits").resize_down() end,       { silent = true } },
+      { "<leader>oh", function() require("smart-splits").swap_buf_left() end,     { silent = true }, desc = "Swap Left" },
+      { "<leader>oj", function() require("smart-splits").swap_buf_down() end,     { silent = true }, desc = "Swap Down" },
+      { "<leader>ok", function() require("smart-splits").swap_buf_up() end,       { silent = true }, desc = "Swap Up" },
+      { "<leader>ol", function() require("smart-splits").swap_buf_right() end,    { silent = true }, desc = "Swap Right" },
     },
     config = function()
       require('smart-splits').setup { ignored_filetypes = { 'nofile', 'quickfix', 'qf', 'prompt' }, ignored_buftypes = { 'nofile' } }
@@ -1689,11 +1690,11 @@ require('lazy').setup({
   {
     'https://codeberg.org/andyg/leap.nvim',
     keys = {
-      { 's', '<Plug>(leap-forward)', mode = { 'n', 'x', 'o' }, desc = 'leap forward to' },
-      { 'S', '<Plug>(leap-backward)', mode = { 'n', 'x', 'o' }, desc = 'leap backward to' },
-      { 'x', '<Plug>(leap-forward-till)', mode = { 'x', 'o' }, desc = 'leap forward till' },
-      { 'X', '<Plug>(leap-backward-till)', mode = { 'x', 'o' }, desc = 'leap backward till' },
-      { 'gs', '<Plug>(leap-from-window)', mode = { 'n', 'x', 'o' }, desc = 'leap from window' },
+      { 's',  '<Plug>(leap-forward)',       mode = { 'n', 'x', 'o' }, desc = 'leap forward to' },
+      { 'S',  '<Plug>(leap-backward)',      mode = { 'n', 'x', 'o' }, desc = 'leap backward to' },
+      { 'x',  '<Plug>(leap-forward-till)',  mode = { 'x', 'o' },      desc = 'leap forward till' },
+      { 'X',  '<Plug>(leap-backward-till)', mode = { 'x', 'o' },      desc = 'leap backward till' },
+      { 'gs', '<Plug>(leap-from-window)',   mode = { 'n', 'x', 'o' }, desc = 'leap from window' },
     },
     opts = { safe_labels = 'tyuofghjklvbn', labels = 'sfnjklhowembuyvrgtqpcxz/SFNJKLHOWEIMBUYVRGTAQPCXZ' },
     dependencies = { 'tpope/vim-repeat' },
@@ -1725,12 +1726,7 @@ require('lazy').setup({
           component_separators = '',
         },
         sections = {
-          lualine_a = { {
-            'mode',
-            fmt = function(str)
-              return str:sub(1, 1)
-            end,
-          } },
+          lualine_a = { { 'mode', fmt = function(str) return str:sub(1, 1) end } },
           lualine_b = { 'branch' },
           lualine_c = {
             { 'pretty_path' },
@@ -1797,8 +1793,12 @@ require('lazy').setup({
           vim.keymap.set(mode, l, r, { buffer = buffer, desc = desc, silent = true })
         end
         -- stylua: ignore start
-        lmap("n", "]h", function() if vim.wo.diff then vim.cmd.normal({ "]c", bang = true }) else gs.nav_hunk("next") end end, "Next Hunk")
-        lmap("n", "[h", function() if vim.wo.diff then vim.cmd.normal({ "[c", bang = true }) else gs.nav_hunk("prev") end end, "Prev Hunk")
+        lmap("n", "]h",
+          function() if vim.wo.diff then vim.cmd.normal({ "]c", bang = true }) else gs.nav_hunk("next") end end,
+          "Next Hunk")
+        lmap("n", "[h",
+          function() if vim.wo.diff then vim.cmd.normal({ "[c", bang = true }) else gs.nav_hunk("prev") end end,
+          "Prev Hunk")
         lmap("n", "]H", function() gs.nav_hunk("last") end, "Last Hunk")
         lmap("n", "[H", function() gs.nav_hunk("first") end, "First Hunk")
         lmap({ "n", "v" }, "<leader>hs", ":Gitsigns stage_hunk<CR>", "Stage Hunk")
@@ -1822,14 +1822,14 @@ require('lazy').setup({
     enabled = true,
     keys = {
       { '<leader>gbo', '<cmd>GitBlameOpenCommitURL<cr>', desc = 'Open blame commit URL' },
-      { '<leader>gbb', '<cmd>GitBlameToggle<cr>', desc = 'Toggle git blame' },
-      { '<leader>gbe', '<cmd>GitBlameEnable<cr>', desc = 'Enable git blame' },
-      { '<leader>gbd', '<cmd>GitBlameDisable<cr>', desc = 'Disable git blame' },
-      { '<leader>gbs', '<cmd>GitBlameCopySHA<cr>', desc = 'Copy blame SHA' },
+      { '<leader>gbb', '<cmd>GitBlameToggle<cr>',        desc = 'Toggle git blame' },
+      { '<leader>gbe', '<cmd>GitBlameEnable<cr>',        desc = 'Enable git blame' },
+      { '<leader>gbd', '<cmd>GitBlameDisable<cr>',       desc = 'Disable git blame' },
+      { '<leader>gbs', '<cmd>GitBlameCopySHA<cr>',       desc = 'Copy blame SHA' },
       { '<leader>gbc', '<cmd>GitBlameCopyCommitURL<cr>', desc = 'Copy blame commit URL' },
-      { '<leader>gbp', '<cmd>GitBlameCopyPRURL<cr>', desc = 'Copy blame PR URL' },
-      { '<leader>gbf', '<cmd>GitBlameOpenFileURL<cr>', desc = 'Open blame file URL' },
-      { '<leader>gby', '<cmd>GitBlameCopyFileURL<cr>', desc = 'Copy blame file URL' },
+      { '<leader>gbp', '<cmd>GitBlameCopyPRURL<cr>',     desc = 'Copy blame PR URL' },
+      { '<leader>gbf', '<cmd>GitBlameOpenFileURL<cr>',   desc = 'Open blame file URL' },
+      { '<leader>gby', '<cmd>GitBlameCopyFileURL<cr>',   desc = 'Copy blame file URL' },
     },
     opts = { enabled = false, message_template = ' <summary> • <date> • <author> • <<sha>>', date_format = '%d-%m-%Y %H:%M:%S', virtual_text_column = 1 },
   },
@@ -1888,9 +1888,9 @@ require('lazy').setup({
     event = 'VeryLazy',
     enabled = false,
     keys = {
-      { '<c-h>', '<cmd>ZellijNavigateLeftTab<cr>', { silent = true, desc = 'navigate left or tab' } },
-      { '<c-j>', '<cmd>ZellijNavigateDown<cr>', { silent = true, desc = 'navigate down' } },
-      { '<c-k>', '<cmd>ZellijNavigateUp<cr>', { silent = true, desc = 'navigate up' } },
+      { '<c-h>', '<cmd>ZellijNavigateLeftTab<cr>',  { silent = true, desc = 'navigate left or tab' } },
+      { '<c-j>', '<cmd>ZellijNavigateDown<cr>',     { silent = true, desc = 'navigate down' } },
+      { '<c-k>', '<cmd>ZellijNavigateUp<cr>',       { silent = true, desc = 'navigate up' } },
       { '<c-l>', '<cmd>ZellijNavigateRightTab<cr>', { silent = true, desc = 'navigate right or tab' } },
     },
     opts = {},
@@ -1945,10 +1945,7 @@ require('lazy').setup({
 
 local orig_hover = vim.lsp.handlers['textDocument/hover']
 vim.lsp.handlers['textDocument/hover'] = function(err, result, ctx, config)
-  return orig_hover(
-    err,
-    result,
-    ctx,
+  return orig_hover(err, result, ctx,
     vim.tbl_extend('force', config or {}, {
       border = 'rounded',
       max_width = 80,
@@ -1960,10 +1957,7 @@ end
 
 local orig_sig = vim.lsp.handlers['textDocument/signatureHelp']
 vim.lsp.handlers['textDocument/signatureHelp'] = function(err, result, ctx, config)
-  return orig_sig(
-    err,
-    result,
-    ctx,
+  return orig_sig(err, result, ctx,
     vim.tbl_extend('force', config or {}, {
       border = 'rounded',
       max_width = 80,

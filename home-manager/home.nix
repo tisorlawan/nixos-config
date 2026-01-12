@@ -1,26 +1,31 @@
-{ pkgs, nixpkgs-unstable, inputs, ... }:
+{
+  pkgs,
+  nixpkgs-unstable,
+  inputs,
+  ...
+}:
 
 let
   pkgs-unstable = nixpkgs-unstable;
 
   # SonarLint was first added on 2025-05-21 using nixpkgs rev 292fa7d4.
   # Pin to that revision to avoid current mvnHash mismatch from republished artifacts.
-  legacyPkgs = import
-    (builtins.fetchTarball {
-      url = "https://github.com/NixOS/nixpkgs/archive/292fa7d4f6519c074f0a50394dbbe69859bb6043.tar.gz";
-      sha256 = "sha256-GaOZntlJ6gPPbbkTLjbd8BMWaDYafhuuYRNrxCGnPJw=";
-    })
-    {
-      system = "x86_64-linux";
-      config.allowUnfree = true;
-    };
+  legacyPkgs =
+    import
+      (builtins.fetchTarball {
+        url = "https://github.com/NixOS/nixpkgs/archive/292fa7d4f6519c074f0a50394dbbe69859bb6043.tar.gz";
+        sha256 = "sha256-GaOZntlJ6gPPbbkTLjbd8BMWaDYafhuuYRNrxCGnPJw=";
+      })
+      {
+        system = "x86_64-linux";
+        config.allowUnfree = true;
+      };
 
   legacySonarLint = legacyPkgs.sonarlint-ls;
 in
 {
   home.username = "agung-b-sorlawan";
   home.homeDirectory = "/home/agung-b-sorlawan";
-
 
   # This value determines the Home Manager release that your configuration is
   # compatible with. This helps avoid breakage when a new Home Manager release
@@ -30,14 +35,18 @@ in
   # want to update the value, then make sure to first check the Home Manager
   # release notes.
   home.stateVersion = "24.11"; # Please read the comment before changing.
-  home.packages = with pkgs;
+  home.packages =
+    with pkgs;
     let
       # Shell tooling and terminal emulators
       terminalAndShells = [
         starship
         atuin
         (callPackage ./alacritty { })
-        (callPackage ./ghostty { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
+        (callPackage ./ghostty {
+          inherit inputs;
+          nixpkgs-unstable = nixpkgs-unstable;
+        })
         # (callPackage ./zed-editor { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
         # (callPackage ./zoom-us { nixpkgs-unstable = nixpkgs-unstable; })
         nushell
@@ -275,7 +284,6 @@ in
 
       # Font families sourced from nixpkgs-unstable
       fontPackages = [
-        nixpkgs-unstable.noto-fonts
         nixpkgs-unstable.noto-fonts-color-emoji
         nixpkgs-unstable.noto-fonts-cjk-sans
         nixpkgs-unstable.noto-fonts-cjk-serif

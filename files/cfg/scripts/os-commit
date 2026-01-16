@@ -11,7 +11,7 @@ trap 'rm -rf "$EPHEMERAL_DIR"' EXIT
 
 DIFF_TARGET="--cached"
 CONTEXT="the currently staged changes. IMPORTANT: Ignore any unstaged changes."
-MODEL="google/gemini-3-pro-preview"
+MODEL="openai/gpt-5.2"
 FORCE_SONNET=false
 
 # Handle flags and arguments

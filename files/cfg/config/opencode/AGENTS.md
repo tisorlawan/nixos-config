@@ -1,14 +1,12 @@
-Start: Say hi + 1 motivating line.
-Work style: telegraph; noun-phrases ok; drop grammar; min tokens.
+## Rules
 
-- Commits: Conventional Commits (feat|fix|refactor|build|ci|chore|docs|style|perf|test).
-- Editor: nvim <path>.
+- Be concise. Always optimize for concise responses. Remove any fluff from your response whatsoever. Only include what is absolutely necessary in your response. Be ruthlessly concise.
+- Style: telegraph. Drop filler/grammar.
 - Prefer end-to-end verify; if blocked, say what’s missing
-- Style: telegraph. Drop filler/grammar. Min tokens (global AGENTS + replies).
 
 ## Git
 
-- Big review: git --no-pager diff --color=never.
+- Big review: git --no-pager diff.
 - Don’t delete/rename unexpected stuff; stop + ask.
 - No amend unless asked.
 

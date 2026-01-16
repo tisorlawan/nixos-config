@@ -1,0 +1,41 @@
+theme = "Catppuccin Mocha"
+background = 181820
+
+background-opacity = 0.95
+# background = 181818
+# font-family = "BlexMono Nerd Font Propo SemiBold"
+font-family = "JetBrainsMono Nerd Font"
+font-size = 14
+
+adjust-font-baseline = 1
+adjust-cell-height = 0
+adjust-underline-position = 1
+
+window-decoration = "none"
+window-padding-balance = true
+window-padding-x = 0
+window-padding-y = 0
+maximize = true
+
+class = com.ghostty.tiso
+x11-instance-name = ghost
+window-padding-color = background
+gtk-single-instance = false
+adw-toolbar-style = flat
+gtk-titlebar-hide-when-maximized = true
+
+cursor-invert-fg-bg = true
+clipboard-paste-protection = false
+
+confirm-close-surface = false
+app-notifications = no-clipboard-copy
+
+keybind = all:alt+one=unbind
+keybind = all:alt+two=unbind
+keybind = all:alt+three=unbind
+keybind = all:alt+four=unbind
+keybind = ctrl+enter=unbind
+
+resize-overlay = never
+
+# vim: ft=config

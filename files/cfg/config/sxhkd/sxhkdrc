@@ -5,7 +5,7 @@
 # Terminal
 # $HOME/.scripts/my-ghostty
 super + Return
-	alacritty
+    ghostty
 
 super + shift + Return
 	alacritty

@@ -9,7 +9,7 @@ cp ~/.local/share/opencode/auth.json "$EPHEMERAL_DIR/opencode/" 2>/dev/null || t
 export XDG_DATA_HOME="$EPHEMERAL_DIR"
 trap 'rm -rf "$EPHEMERAL_DIR"' EXIT
 
-MODEL="google/antigravity-gemini-3-pro-high"
+MODEL="openai/gpt-5.1-codex-mini"
 FORCE_SONNET=false
 
 # Handle flags and arguments

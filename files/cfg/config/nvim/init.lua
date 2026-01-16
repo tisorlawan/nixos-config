@@ -1,5 +1,6 @@
+-- stylua: ignore start
 vim.g.mapleader = ' '
-vim.g.enable_highlight = true
+vim.g.enable_highlight = false
 math.randomseed(os.time())
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -25,6 +26,11 @@ vim.opt.smartindent = true
 vim.opt.number = true
 vim.opt.relativenumber = true
 vim.opt.wrap = false
+vim.opt.linebreak = true
+-- vim.opt.breakindent = true
+vim.opt.virtualedit = 'block'
+vim.opt.jumpoptions = 'stack'
+vim.opt.smoothscroll = true
 
 -- Search
 vim.opt.incsearch = true
@@ -49,7 +55,7 @@ vim.opt.hidden = true
 vim.opt.backup = false
 vim.opt.swapfile = false
 vim.opt.undofile = true
-local undodir = vim.fn.expand '~/.vim/undodir'
+local undodir = vim.fn.stdpath 'state' .. '/undo'
 vim.fn.mkdir(undodir, 'p')
 vim.opt.undodir = undodir
 
@@ -84,7 +90,6 @@ vim.opt.grepformat = '%f:%l:%c:%m'
 -- ============================================================================
 
 local map = vim.keymap.set
-local opts = { noremap = true, silent = true }
 
 local function set_random_colorscheme(choices_str)
   local choices = {}
@@ -111,15 +116,36 @@ map('n', '<leader>w', '<cmd>update<CR>', { desc = 'Save file' })
 map('n', '<leader>h', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
 map('n', '<leader>q', '<cmd>q<CR>', { desc = 'Quit' })
 map('v', '<leader>r', '"hy:%s/\\C\\v<C-r>h//g<left><left>', { desc = 'change selection' })
+map('n', '<leader>vc', '<cmd>edit $MYVIMRC<CR>', { desc = 'Edit vimrc' })
+map('v', '<', '<gv', { desc = 'Indent left' })
+map('v', '>', '>gv', { desc = 'Indent right' })
+map('x', 'p', '"_dP', { desc = 'Paste without yank' })
+map('n', '<C-d>', '<C-d>zz', { desc = 'Scroll down centered' })
+map('n', '<C-u>', '<C-u>zz', { desc = 'Scroll up centered' })
+map('n', 'n', 'nzzzv', { desc = 'Next search centered' })
+map('n', 'N', 'Nzzzv', { desc = 'Prev search centered' })
 
 -- ============================================================================
 -- @BUFFER MANAGEMENT
 -- ============================================================================
 
-local function bufdelete(force)
+local function bufhide()
   local buf = vim.api.nvim_get_current_buf()
-  if vim.bo[buf].modified and not force then
-    print 'Buffer has unsaved changes. Use <leader>D to force delete.'
+  local alt = vim.fn.bufnr '#'
+  if alt ~= -1 and alt ~= buf and vim.fn.buflisted(alt) == 1 then
+    vim.cmd('buffer ' .. alt)
+  else
+    vim.cmd 'bnext'
+  end
+  if vim.api.nvim_get_current_buf() == buf then
+    vim.cmd 'enew'
+  end
+end
+
+local function bufdelete()
+  local buf = vim.api.nvim_get_current_buf()
+  if vim.bo[buf].modified then
+    print 'Buffer has unsaved changes.'
     return
   end
   local alt = vim.fn.bufnr '#'
@@ -131,15 +157,13 @@ local function bufdelete(force)
   if vim.api.nvim_get_current_buf() == buf then
     vim.cmd 'enew'
   end
-  pcall(vim.api.nvim_buf_delete, buf, { force = force })
+  ---@diagnostic disable-next-line: param-type-mismatch
+  pcall(vim.cmd, 'bwipeout ' .. buf)
 end
 
-map('n', '<leader>d', function()
-  bufdelete(false)
-end, { desc = 'Delete buffer' })
-map('n', '<leader>D', function()
-  bufdelete(true)
-end, { desc = 'Force delete buffer' })
+map('n', '<leader>d', bufhide, { desc = 'Hide buffer' })
+map('n', '<leader>D', bufdelete, { desc = 'Delete buffer' })
+-- stylua: ignore end
 
 -- ============================================================================
 -- @KEYMAPS - PATH/FILE UTILS
@@ -193,10 +217,21 @@ map('n', "'", '`', { desc = 'Go to mark (exact)' })
 map('n', '`', "'", { desc = 'Go to mark (line)' })
 
 -- Insert mode navigation
+map('i', '<C-a>', '<C-o>^', { desc = 'Begin of line (non-blank)' })
+map('i', '<C-e>', '<End>', { desc = 'End of line' })
 map('i', '<C-h>', '<Left>', { desc = 'Move left' })
 map('i', '<C-j>', '<Down>', { desc = 'Move down' })
 map('i', '<C-k>', '<Up>', { desc = 'Move up' })
 map('i', '<C-l>', '<Right>', { desc = 'Move right' })
+
+map({ 'i', 's' }, '<C-y>', function()
+  if vim.snippet.active() then
+    vim.snippet.stop()
+  else
+    local key = vim.api.nvim_replace_termcodes('<C-y>', true, false, true)
+    vim.api.nvim_feedkeys(key, 'n', false)
+  end
+end, { desc = 'Stop snippet or default' })
 
 -- ============================================================================
 -- @KEYMAPS - TERMINAL
@@ -252,37 +287,6 @@ vim.api.nvim_create_autocmd('FileType', {
 
 vim.api.nvim_create_autocmd('FileType', {
   group = augroup,
-  pattern = 'markdown',
-  callback = function()
-    vim.opt_local.spell = false
-  end,
-})
-
--- Highlight on yank
-vim.api.nvim_create_autocmd('TextYankPost', {
-  callback = function()
-    vim.highlight.on_yank { timeout = 150 }
-  end,
-})
-
--- Filetype specific settings
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = { 'lua', 'javascript', 'typescript', 'typescriptreact', 'javascriptreact', 'html', 'css', 'haskell', 'sh', 'nix' },
-  callback = function()
-    vim.opt_local.expandtab = true
-    vim.opt_local.tabstop = 2
-    vim.opt_local.shiftwidth = 2
-  end,
-})
-
-vim.api.nvim_create_autocmd('FileType', {
-  pattern = 'go',
-  callback = function()
-    vim.opt_local.expandtab = false
-  end,
-})
-
-vim.api.nvim_create_autocmd('FileType', {
   pattern = 'markdown',
   callback = function()
     vim.opt_local.spell = false
@@ -369,6 +373,22 @@ vim.api.nvim_create_autocmd('FileType', {
         end
       end,
     })
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  group = augroup,
+  pattern = { 'help', 'man', 'lspinfo', 'checkhealth', 'notify', 'spectre_panel' },
+  callback = function(event)
+    vim.bo[event.buf].buflisted = false
+    vim.keymap.set('n', 'q', '<cmd>close<cr>', { buffer = event.buf, silent = true })
+  end,
+})
+
+vim.api.nvim_create_autocmd('VimResized', {
+  group = augroup,
+  callback = function()
+    vim.cmd 'tabdo wincmd ='
   end,
 })
 
@@ -1009,7 +1029,7 @@ map('n', '<M-5>', function() harpoon_go(5) end, { desc = 'Harpoon 5' })
 -- @SEMICOLON INSERT (C-d)
 -- ============================================================================
 
-local semicolon_filetypes = { 'c', 'cpp', 'rust', 'java', 'javascript', 'typescript', 'css', 'php', 'go' }
+local semicolon_filetypes = { 'c', 'cpp', 'rust', 'java', 'javascript', 'typescript', 'css', 'php', 'go', 'zig' }
 
 map('i', '<C-d>', function()
   local ft = vim.bo.filetype
@@ -1201,6 +1221,8 @@ local function setup_lsp_keymaps(buf)
   lmap('<leader>cd', function()
     vim.diagnostic.open_float { border = 'rounded' }
   end, 'Line Diagnostics')
+  lmap('<leader>ci', vim.lsp.buf.incoming_calls, 'Incoming calls')
+  lmap('<leader>co', vim.lsp.buf.outgoing_calls, 'Outgoing calls')
 end
 
 local function on_attach(client, bufnr)
@@ -1455,7 +1477,6 @@ require('lazy').setup({
     build = ':TSUpdate',
     dependencies = {
       { 'yioneko/nvim-yati', event = { 'BufReadPost', 'BufNewFile' } },
-      { 'nvim-treesitter/playground' },
       { 'windwp/nvim-ts-autotag' },
     },
     lazy = false,
@@ -1564,7 +1585,18 @@ require('lazy').setup({
         ghost_text = { enabled = false },
       },
       signature = { enabled = false },
-      sources = { default = { 'lsp', 'path', 'snippets', 'buffer' } },
+      sources = {
+        default = { 'lsp', 'path', 'snippets', 'buffer' },
+        providers = {
+          path = {
+            opts = {
+              get_cwd = function(_)
+                return vim.fn.getcwd()
+              end,
+            },
+          },
+        },
+      },
     },
   },
 
@@ -1643,6 +1675,9 @@ require('lazy').setup({
     build = function()
       require('fff.download').download_or_build_binary()
     end,
+    opts = {
+      prompt = '> ',
+    },
     keys = { {
       '<c-p>',
       function()
@@ -1743,8 +1778,28 @@ require('lazy').setup({
       { 'X', '<Plug>(leap-backward-till)', mode = { 'x', 'o' }, desc = 'leap backward till' },
       { 'gs', '<Plug>(leap-from-window)', mode = { 'n', 'x', 'o' }, desc = 'leap from window' },
     },
-    opts = { safe_labels = 'tyuofghjklvbn', labels = 'sfnjklhowembuyvrgtqpcxz/SFNJKLHOWEIMBUYVRGTAQPCXZ' },
     dependencies = { 'tpope/vim-repeat' },
+    config = function()
+      local leap = require 'leap'
+      leap.opts.safe_labels = 'tyuofghjklvbn'
+      leap.opts.labels = 'sfnjklhowembuyvrgtqpcxz/SFNJKLHOWEIMBUYVRGTAQPCXZ'
+      if not vim.g.enable_highlight then
+        vim.api.nvim_set_hl(0, 'LeapLabel', { fg = '#000000', bg = '#7fb4ca', bold = true, nocombine = true })
+        vim.api.nvim_set_hl(0, 'LeapMatch', { fg = '#000000', bg = '#98be65', bold = true, nocombine = true })
+      end
+    end,
+  },
+  {
+    'ggandor/flit.nvim',
+    event = { 'BufReadPost', 'BufNewFile' },
+    keys = (function()
+      local keys = {}
+      for _, key in ipairs { 'f', 'F', 't', 'T' } do
+        table.insert(keys, { key, mode = { 'n', 'x', 'o' }, desc = key })
+      end
+      return keys
+    end)(),
+    opts = { labeled_modes = 'nx' },
   },
 
   -- 5. UI COMPONENTS
@@ -1765,9 +1820,32 @@ require('lazy').setup({
       lualine_require.require = require
       vim.o.laststatus = vim.g.lualine_laststatus
 
+      local theme = 'auto'
+      if not vim.g.enable_highlight then
+        local c = {
+          bg = '#1a1a1a',
+          fg = '#e4e4e4',
+          fg_dim = '#949494',
+          blue = '#7fb4ca',
+          green = '#98be65',
+          red = '#e06c75',
+          yellow = '#e5c07b',
+          selection = '#2d4f67',
+        }
+        ---@diagnostic disable-next-line: cast-local-type
+        theme = {
+          normal = { a = { bg = c.blue, fg = '#000000', gui = 'bold' }, b = { bg = c.bg, fg = c.fg_dim }, c = { bg = c.bg, fg = c.fg } },
+          insert = { a = { bg = c.green, fg = '#000000', gui = 'bold' }, b = { bg = c.bg, fg = c.fg_dim }, c = { bg = c.bg, fg = c.fg } },
+          visual = { a = { bg = c.selection, fg = c.fg, gui = 'bold' }, b = { bg = c.bg, fg = c.fg_dim }, c = { bg = c.bg, fg = c.fg } },
+          replace = { a = { bg = c.red, fg = '#000000', gui = 'bold' }, b = { bg = c.bg, fg = c.fg_dim }, c = { bg = c.bg, fg = c.fg } },
+          command = { a = { bg = c.yellow, fg = '#000000', gui = 'bold' }, b = { bg = c.bg, fg = c.fg_dim }, c = { bg = c.bg, fg = c.fg } },
+          inactive = { a = { bg = c.bg, fg = c.fg_dim }, b = { bg = c.bg, fg = c.fg_dim }, c = { bg = c.bg, fg = c.fg_dim } },
+        }
+      end
+
       return {
         options = {
-          theme = 'auto',
+          theme = theme,
           globalstatus = vim.o.laststatus == 3,
           disabled_filetypes = { statusline = { 'dashboard', 'alpha', 'ministarter', 'snacks_dashboard' } },
           section_separators = '',
@@ -1794,6 +1872,11 @@ require('lazy').setup({
             },
           },
           lualine_x = {
+            {
+              function()
+                return require('lsp-progress').progress()
+              end,
+            },
             { 'diff', symbols = { added = ui.icons.git.added, modified = ui.icons.git.modified, removed = ui.icons.git.removed } },
           },
           lualine_y = { { 'progress', separator = ' ', padding = { left = 1, right = 0 } }, { 'location', padding = { left = 0, right = 1 } } },
@@ -1954,6 +2037,47 @@ require('lazy').setup({
       },
     },
   },
+  {
+    'folke/trouble.nvim',
+    cmd = { 'Trouble' },
+    keys = {
+      { '<leader>xx', '<cmd>Trouble diagnostics toggle<cr>', desc = 'Diagnostics (Trouble)' },
+      { '<leader>xX', '<cmd>Trouble diagnostics toggle filter.buf=0<cr>', desc = 'Buffer Diagnostics (Trouble)' },
+      { '<leader>xs', '<cmd>Trouble symbols toggle focus=false<cr>', desc = 'Symbols (Trouble)' },
+      { '<leader>xl', '<cmd>Trouble lsp toggle focus=false win.position=right<cr>', desc = 'LSP Definitions / references (Trouble)' },
+      { '<leader>xL', '<cmd>Trouble loclist toggle<cr>', desc = 'Location List (Trouble)' },
+      { '<leader>xQ', '<cmd>Trouble qflist toggle<cr>', desc = 'Quickfix List (Trouble)' },
+    },
+    opts = {},
+  },
+  {
+    'linrongbin16/lsp-progress.nvim',
+    config = function()
+      require('lsp-progress').setup {
+        format = function(client_messages)
+          local lsp_icon = ''
+          local clients = vim.lsp.get_clients { bufnr = 0 }
+          if #clients == 0 then
+            return ''
+          end
+          if #client_messages > 0 then
+            return lsp_icon .. ' ' .. table.concat(client_messages, ' ')
+          end
+          return '✔'
+        end,
+        client_format = function(_, spinner, series_messages)
+          if #series_messages > 0 then
+            return spinner
+          end
+          return nil
+        end,
+      }
+      vim.api.nvim_create_autocmd('User', {
+        pattern = 'LspProgressStatusUpdated',
+        callback = require('lualine').refresh,
+      })
+    end,
+  },
 
   -- 7. UTILITIES
   {
@@ -1963,19 +2087,6 @@ require('lazy').setup({
       'AstroNvim/astrocore',
       opts = { mappings = { n = { ['<Leader>fu'] = { '<cmd>UndotreeToggle<CR>', desc = 'Find undotree' } } } },
     },
-  },
-  {
-    'https://git.sr.ht/~swaits/zellij-nav.nvim',
-    lazy = true,
-    event = 'VeryLazy',
-    enabled = false,
-    keys = {
-      { '<c-h>', '<cmd>ZellijNavigateLeftTab<cr>', { silent = true, desc = 'navigate left or tab' } },
-      { '<c-j>', '<cmd>ZellijNavigateDown<cr>', { silent = true, desc = 'navigate down' } },
-      { '<c-k>', '<cmd>ZellijNavigateUp<cr>', { silent = true, desc = 'navigate up' } },
-      { '<c-l>', '<cmd>ZellijNavigateRightTab<cr>', { silent = true, desc = 'navigate right or tab' } },
-    },
-    opts = {},
   },
 
   -- 8. WORK
@@ -2026,58 +2137,88 @@ require('lazy').setup({
 }, { ui = { border = 'rounded' } })
 
 if vim.g.enable_highlight then
-  set_random_colorscheme 'kanagawa-wave, kanagawa-dragon'
+  -- set_random_colorscheme 'kanagawa-wave, kanagawa-dragon'
+  set_random_colorscheme 'kanagawa-dragon'
 else
   vim.cmd 'syntax on'
-  vim.api.nvim_set_hl(0, 'Normal', { bg = 'NONE', fg = '#ffffff' })
-  vim.api.nvim_set_hl(0, 'NonText', { bg = 'NONE', fg = '#555555' })
-  vim.api.nvim_set_hl(0, 'LineNr', { bg = 'NONE', fg = '#666666' })
-  vim.api.nvim_set_hl(0, 'SignColumn', { bg = 'NONE' })
-  vim.api.nvim_set_hl(0, 'EndOfBuffer', { bg = 'NONE', fg = '#555555' })
-  vim.api.nvim_set_hl(0, 'StatusLine', { bg = 'NONE', fg = '#ffffff' })
-  vim.api.nvim_set_hl(0, 'StatusLineNC', { bg = 'NONE', fg = '#666666' })
 
-  vim.api.nvim_set_hl(0, 'Comment', { fg = '#666666', italic = true })
-  vim.api.nvim_set_hl(0, 'Keyword', { fg = '#ffffff', bold = true })
-  vim.api.nvim_set_hl(0, 'Statement', { fg = '#ffffff', bold = true })
-  vim.api.nvim_set_hl(0, 'Conditional', { fg = '#ffffff', bold = true })
-  vim.api.nvim_set_hl(0, 'Repeat', { fg = '#ffffff', bold = true })
-  vim.api.nvim_set_hl(0, 'Function', { fg = '#88aaff', bold = true })
-  vim.api.nvim_set_hl(0, 'String', { fg = '#99cc99' })
-  vim.api.nvim_set_hl(0, 'Number', { fg = '#ffaa66' })
-  vim.api.nvim_set_hl(0, 'Boolean', { fg = '#ffaa66', bold = true })
-  vim.api.nvim_set_hl(0, 'Type', { fg = '#cccccc', bold = true })
-  vim.api.nvim_set_hl(0, 'Constant', { fg = '#ffaa66' })
-  vim.api.nvim_set_hl(0, 'Identifier', { fg = '#ffffff' })
-  vim.api.nvim_set_hl(0, 'Special', { fg = '#aaaaaa' })
-  vim.api.nvim_set_hl(0, 'Operator', { fg = '#ffffff' })
-  vim.api.nvim_set_hl(0, 'PreProc', { fg = '#cc99cc' })
-  vim.api.nvim_set_hl(0, 'Error', { fg = '#ff6666', bold = true })
-  vim.api.nvim_set_hl(0, 'Todo', { fg = '#ffcc00', bold = true })
+  local C = {
+    white = '#e4e4e4',
+    white_dim = '#949494',
+    white_dark = '#585858',
 
-  vim.api.nvim_set_hl(0, 'Visual', { bg = '#444444' })
-  vim.api.nvim_set_hl(0, 'Search', { bg = '#555500', fg = '#ffffff' })
-  vim.api.nvim_set_hl(0, 'IncSearch', { bg = '#777700', fg = '#ffffff', bold = true })
-  vim.api.nvim_set_hl(0, 'CursorLine', { bg = '#222222' })
-  vim.api.nvim_set_hl(0, 'Pmenu', { bg = '#222222', fg = '#ffffff' })
-  vim.api.nvim_set_hl(0, 'PmenuSel', { bg = '#444444', fg = '#ffffff', bold = true })
+    blue = '#7fb4ca',
+    blue_dim = '#88bad1',
+    blue_bright = '#82aaff',
 
-  vim.api.nvim_set_hl(0, 'DiagnosticError', { fg = '#ff6666' })
-  vim.api.nvim_set_hl(0, 'DiagnosticWarn', { fg = '#ffaa66' })
-  vim.api.nvim_set_hl(0, 'DiagnosticInfo', { fg = '#88aaff' })
-  vim.api.nvim_set_hl(0, 'DiagnosticHint', { fg = '#888888' })
+    green = '#98be65',
+    green_dim = '#6f8f57',
 
-  vim.api.nvim_set_hl(0, 'DiffAdd', { bg = '#223322' })
-  vim.api.nvim_set_hl(0, 'DiffChange', { bg = '#333322' })
-  vim.api.nvim_set_hl(0, 'DiffDelete', { bg = '#332222' })
-  vim.api.nvim_set_hl(0, 'DiffText', { bg = '#444422', bold = true })
+    bg = 'NONE',
+    selection = '#2d4f67',
+    search = '#4c7a8f',
+
+    error = '#e06c75',
+    warn = '#e5c07b',
+  }
+
+  local h = vim.api.nvim_set_hl
+
+  h(0, 'Normal', { bg = C.bg, fg = C.white })
+  h(0, 'NonText', { bg = C.bg, fg = C.white_dark })
+  h(0, 'LineNr', { bg = C.bg, fg = C.white_dark })
+  h(0, 'SignColumn', { bg = C.bg })
+  h(0, 'EndOfBuffer', { bg = C.bg, fg = C.white_dark })
+  h(0, 'StatusLine', { bg = C.bg, fg = C.white })
+  h(0, 'StatusLineNC', { bg = C.bg, fg = C.white_dark })
+
+  h(0, 'Comment', { fg = C.white_dim, italic = true })
+  h(0, 'Keyword', { fg = C.blue, bold = false })
+  h(0, 'Statement', { fg = C.blue, bold = true })
+  h(0, 'Conditional', { fg = C.blue, bold = false })
+  h(0, 'Repeat', { fg = C.blue, bold = true })
+  h(0, 'Function', { fg = C.white, bold = true })
+  h(0, 'String', { fg = C.green })
+  h(0, 'Number', { fg = C.green_dim })
+  h(0, 'Boolean', { fg = C.blue, bold = true })
+  h(0, 'Type', { fg = C.blue_bright, bold = true })
+  h(0, 'Constant', { fg = C.green })
+  h(0, 'Identifier', { fg = C.white })
+  h(0, 'Special', { fg = C.blue_dim })
+  h(0, 'Operator', { fg = C.white })
+  h(0, 'PreProc', { fg = C.white })
+  h(0, 'Error', { fg = C.error, bold = true })
+  h(0, 'Todo', { fg = C.warn, bold = true })
+
+  h(0, 'Visual', { bg = C.selection })
+  h(0, 'Search', { bg = C.search, fg = C.white })
+  h(0, 'IncSearch', { bg = C.blue, fg = C.white, bold = true })
+  h(0, 'CursorLine', { bg = '#222222' })
+  h(0, 'Pmenu', { bg = '#222222', fg = C.white })
+  h(0, 'PmenuSel', { bg = C.selection, fg = C.white, bold = true })
+
+  h(0, 'DiagnosticError', { fg = C.error })
+  h(0, 'DiagnosticWarn', { fg = C.warn })
+  h(0, 'DiagnosticInfo', { fg = C.blue })
+  h(0, 'DiagnosticHint', { fg = C.green })
+
+  h(0, 'DiffAdd', { bg = '#223322' })
+  h(0, 'DiffChange', { bg = '#222233' })
+  h(0, 'DiffDelete', { bg = '#332222' })
+  h(0, 'DiffText', { bg = '#444422', bold = true })
+
+  h(0, 'lualine_a_normal', { bg = C.blue, fg = '#000000', bold = true })
+  h(0, 'lualine_a_insert', { bg = C.green, fg = '#000000', bold = true })
+  h(0, 'lualine_a_visual', { bg = C.selection, fg = C.white, bold = true })
+  h(0, 'lualine_a_replace', { bg = C.error, fg = '#000000', bold = true })
+  h(0, 'lualine_a_command', { bg = C.warn, fg = '#000000', bold = true })
+  h(0, 'lualine_a_inactive', { bg = C.white_dark, fg = C.white_dim })
 
   for _, mode in ipairs { 'normal', 'insert', 'visual', 'replace', 'command', 'inactive' } do
-    vim.api.nvim_set_hl(0, 'lualine_a_' .. mode, { bg = '#333333', fg = '#ffffff' })
-    vim.api.nvim_set_hl(0, 'lualine_b_' .. mode, { bg = 'NONE', fg = '#aaaaaa' })
-    vim.api.nvim_set_hl(0, 'lualine_c_' .. mode, { bg = 'NONE', fg = '#ffffff' })
-    vim.api.nvim_set_hl(0, 'lualine_x_' .. mode, { bg = 'NONE', fg = '#aaaaaa' })
-    vim.api.nvim_set_hl(0, 'lualine_y_' .. mode, { bg = 'NONE', fg = '#aaaaaa' })
-    vim.api.nvim_set_hl(0, 'lualine_z_' .. mode, { bg = '#333333', fg = '#ffffff' })
+    h(0, 'lualine_b_' .. mode, { bg = '#1a1a1a', fg = C.white_dim })
+    h(0, 'lualine_c_' .. mode, { bg = '#1a1a1a', fg = C.white })
+    h(0, 'lualine_x_' .. mode, { bg = '#1a1a1a', fg = C.white_dim })
+    h(0, 'lualine_y_' .. mode, { bg = '#1a1a1a', fg = C.white_dim })
+    h(0, 'lualine_z_' .. mode, { bg = '#1a1a1a', fg = C.white })
   end
 end

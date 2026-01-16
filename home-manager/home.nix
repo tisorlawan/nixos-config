@@ -181,7 +181,7 @@ in
         # sccache
         # leptosfmt
         zig
-        # zls
+        zls
         # livebook
         stylua
         lua5_1
@@ -394,6 +394,7 @@ in
     EDITOR = "nvim";
     WLAN_IFACE = "wlp0s20f3";
     SXHKD_SHELL = "/bin/sh";
+    PASSLOCK_FILE = "/home/agung-b-sorlawan/.rice/passlock.enc";
   };
 
   # Let Home Manager install and manage itself.

@@ -99,3 +99,8 @@ ln -srf ./files/cfg/config/opencode/opencode.jsonc ~/.config/opencode/opencode.j
 
 rm -rf ~/.config/opencode/skill
 ln -srf ./files/cfg/config/opencode/skill ~/.config/opencode/skill
+
+rm -rf ~/.config/ghostty
+mkdir ~/.config/ghostty
+ln -srf ./files/cfg/config/ghostty/config ~/.config/ghostty/config
+

@@ -11,32 +11,33 @@ trap 'rm -rf "$EPHEMERAL_DIR"' EXIT
 
 DIFF_TARGET="--cached"
 CONTEXT="the currently staged changes. IMPORTANT: Ignore any unstaged changes."
-MODEL="openai/gpt-5.2"
+MODEL="opencode/grok-code"
 FORCE_SONNET=false
 
 # Handle flags and arguments
 ARGS=()
 while [[ $# -gt 0 ]]; do
-    case "$1" in
-        --sonnet)
-            FORCE_SONNET=true
-            shift
-            ;;
-        *)
-            ARGS+=("$1")
-            shift
-            ;;
-    esac
+  case "$1" in
+  --sonnet)
+    FORCE_SONNET=true
+    shift
+    ;;
+  *)
+    ARGS+=("$1")
+    shift
+    ;;
+  esac
 done
 
 if [ "${#ARGS[@]}" -ge 1 ]; then
-    # When a base commit is provided, we want to see changes from that commit up to what's staged.
-    # 'git diff <commit> --cached' shows the difference between the commit and the staging area.
-    DIFF_TARGET="${ARGS[0]} --cached"
-    CONTEXT="the changes from ${ARGS[0]} up to the current staged changes (squash commit target)."
+  # When a base commit is provided, we want to see changes from that commit up to what's staged.
+  # 'git diff <commit> --cached' shows the difference between the commit and the staging area.
+  DIFF_TARGET="${ARGS[0]} --cached"
+  CONTEXT="the changes from ${ARGS[0]} up to the current staged changes (squash commit target)."
 fi
 
-PROMPT=$(cat <<EOF
+PROMPT=$(
+  cat <<EOF
 Please generate a commit message for $CONTEXT
 
 Steps:
@@ -49,15 +50,13 @@ EOF
 )
 
 if [ "$FORCE_SONNET" = true ]; then
-    opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
+  opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
 else
-    # Try Gemini first
-    OUTPUT=$(opencode run --model "$MODEL" "$PROMPT" || true)
+  OUTPUT=$(opencode run --model "$MODEL" "$PROMPT" || true)
 
-    if [[ -z "$OUTPUT" ]]; then
-        # Fallback to Claude if Gemini fails or produced no output
-        opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
-    else
-        echo "$OUTPUT"
-    fi
+  if [[ -z "$OUTPUT" ]]; then
+    opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
+  else
+    echo "$OUTPUT"
+  fi
 fi

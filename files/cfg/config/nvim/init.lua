@@ -709,14 +709,19 @@ map('n', '<C-n>', buffer_picker, { desc = 'Buffer picker' })
 -- ============================================================================
 
 local function grep_picker(query)
-  local parts = vim.split(query, ' -g ')
-  local search_term = parts[1]
+  local search_term = query
   local additional_flags = ''
 
-  if #parts > 1 then
-    for i = 2, #parts do
-      additional_flags = additional_flags .. ' -g ' .. parts[i]
+  -- Only parse -g flags from the end of query to avoid false positives
+  -- Format: "search term -g *.lua -g !*.test.lua"
+  while true do
+    local glob_start = search_term:match '.*() %-g [^ ]+$'
+    if not glob_start then
+      break
     end
+    local glob_part = search_term:sub(glob_start + 4) -- skip ' -g '
+    additional_flags = ' -g ' .. vim.fn.shellescape(glob_part) .. additional_flags
+    search_term = search_term:sub(1, glob_start - 1)
   end
 
   local mode_flags = ' --fixed-strings'
@@ -789,6 +794,19 @@ map('v', '<leader>l', function()
     grep_picker(text)
   end
 end, { desc = 'Grep selection' })
+
+map('v', '<leader>L', function()
+  local text = get_visual_selection()
+  vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes('<Esc>', true, false, true), 'x', false)
+
+  if text ~= '' then
+    text = text:gsub('\n', ' ')
+    local query = vim.fn.input('Grep: ', text)
+    if query ~= '' then
+      grep_picker(query)
+    end
+  end
+end, { desc = 'Grep selection with prompt' })
 
 map('n', '<leader>ll', function()
   local query = vim.fn.input 'Grep: '

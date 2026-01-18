@@ -9,22 +9,22 @@ cp ~/.local/share/opencode/auth.json "$EPHEMERAL_DIR/opencode/" 2>/dev/null || t
 export XDG_DATA_HOME="$EPHEMERAL_DIR"
 trap 'rm -rf "$EPHEMERAL_DIR"' EXIT
 
-MODEL="openai/gpt-5.1-codex-mini"
+MODEL="opencode/grok-code"
 FORCE_SONNET=false
 
 # Handle flags and arguments
 ARGS=()
 while [[ $# -gt 0 ]]; do
-    case "$1" in
-        --sonnet)
-            FORCE_SONNET=true
-            shift
-            ;;
-        *)
-            ARGS+=("$1")
-            shift
-            ;;
-    esac
+  case "$1" in
+  --sonnet)
+    FORCE_SONNET=true
+    shift
+    ;;
+  *)
+    ARGS+=("$1")
+    shift
+    ;;
+  esac
 done
 
 if [ "${#ARGS[@]}" -ne 1 ]; then
@@ -34,9 +34,13 @@ fi
 
 BASE_COMMIT=${ARGS[0]}
 
-PROMPT=$(cat <<'TEMPLATE'
+PROMPT=$(
+  cat <<'TEMPLATE'
 At the end of this message, I will ask you to create a PR based on the commit hash provided.
-To see the diff, just run `git diff BASE_COMMIT_PLACEHOLDER HEAD`
+To see the diff, just run 
+   `git diff --stat BASE_COMMIT_PLACEHOLDER HEAD` or 
+   `git diff BASE_COMMIT_PLACEHOLDER HEAD` or 
+   `git diff BASE_COMMIT_PLACEHOLDER HEAD -- [file]` when you want to see the diff for [file].
 
 - Create a `PR.md` file (delete if it already exist/truncate it) with the following format:
 
@@ -118,87 +122,23 @@ Recommended to start a `<description>` with a verb (add, resolve, update, etc.)
 - **Author Checklist**: Set items as strikethrough if they are not necessary
   - Example: `- [ ] ~Synced with latest develop branch~`
 
----
+**Note: Do not create PR with gh command - only create the PR.md files with the proper templates.**
 
-- Create a `COMMIT.md` (truncate it if already exists) file with the squash merge commit message format:
-
-## Squash Commit Message Format
-
-```text
-<type>(<scope>): <description>
-
-- Major change 1
-- Major change 2
-- Important implementation note
-- Issue references
-```
-
-## Example Format
-
-```text
-feat(auth): implement OAuth2 login with Google integration
-
-- Add Google OAuth2 configuration
-- Implement login/logout endpoints
-- Add user session management
-- Include comprehensive tests
-```
-
-## Notes
-
-- Include key details in the squash message body:
-  - Major changes made
-  - Important implementation notes
-  - Issue references
-- Use the PR title as the squash commit title (if it follows conventional commits)
-- For tracking & tracing purpose ensure the Pull Request number is included, by default it should be:
-  `feat(auth): implement OAuth2 login with Google integration (#124)`
-
-**Note: Do not create PR with gh command - only create the PR.md and COMMIT.md files with the proper templates.**
-
----
-
-Create document called 'AI-REVIEW.md' (delete if it already exist/truncate it).
-
-Contains these content.
-I want you to basically analyze this diff, and count the findings.
-Please list the findings and reason in `### Findings`
-
-```markdown
-### AI Review Feedback
-
-- High_TP: <Jumlah review dari AI yang levelnya high dan tepat setelah divalidasi>
-- High_FP: <Jumlah review dari AI yang levelnya high namun kurang tepat setelah divalidasi>
-- Medium_TP: <Jumlah review dari AI yang levelnya medium dan tepat setelah divalidasi>
-- Medium_FP: <Jumlah review dari AI yang levelnya medium namun kurang tepat setelah divalidasi>
-- Low_TP: <Jumlah review dari AI yang levelnya low dan tepat setelah divalidasi>
-- Low_FP: <Jumlah review dari AI yang levelnya low namun kurang tepat setelah divalidasi>
-- Notes: <Tambahan catatan optional>
-
-### Findings
-
--
--
-```
-
----
-
-**Now, please analyze the following commit diff and create the appropriate PR.md, COMMIT.md and AI-REVIEW.md files:**
 TEMPLATE
 )
 
 PROMPT=${PROMPT//BASE_COMMIT_PLACEHOLDER/${BASE_COMMIT}}
 
 if [ "$FORCE_SONNET" = true ]; then
-    opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
+  opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
 else
-    # Try Gemini first
-    OUTPUT=$(opencode run --model "$MODEL" "$PROMPT" || true)
+  # Try Gemini first
+  OUTPUT=$(opencode run --model "$MODEL" "$PROMPT" || true)
 
-    if [[ -z "$OUTPUT" ]]; then
-        # Fallback to Claude if Gemini fails or produced no output
-        opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
-    else
-        echo "$OUTPUT"
-    fi
+  if [[ -z "$OUTPUT" ]]; then
+    # Fallback to Claude if Gemini fails or produced no output
+    opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
+  else
+    echo "$OUTPUT"
+  fi
 fi

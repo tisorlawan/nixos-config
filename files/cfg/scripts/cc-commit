@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MODEL="haiku"
+VERBOSE=true
+
+DIFF_TARGET="--cached"
+CONTEXT="the currently staged changes. IMPORTANT: Ignore any unstaged changes."
+
+# Handle flags and arguments
+ARGS=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+  --sonnet)
+    MODEL="sonnet"
+    shift
+    ;;
+  --opus)
+    MODEL="opus"
+    shift
+    ;;
+  -q | --quiet)
+    VERBOSE=false
+    shift
+    ;;
+  *)
+    ARGS+=("$1")
+    shift
+    ;;
+  esac
+done
+
+if [ "${#ARGS[@]}" -ge 1 ]; then
+  # When a base commit is provided, we want to see changes from that commit up to what's staged.
+  # 'git diff <commit> --cached' shows the difference between the commit and the staging area.
+  DIFF_TARGET="${ARGS[0]} --cached"
+  CONTEXT="the changes from ${ARGS[0]} up to the current staged changes (squash commit target)."
+fi
+
+PROMPT=$(
+  cat <<EOF
+CRITICAL INSTRUCTIONS:
+- DO NOT ask questions. DO NOT ask for confirmation.
+- Output ONLY the commit message. No conversational text, no markdown code blocks.
+- Just the raw commit message text, nothing else.
+
+YOUR TASK:
+Generate a commit message for $CONTEXT
+
+Steps:
+1. Run \`git diff $DIFF_TARGET\` to inspect the changes.
+2. Run \`git log -n 20\` to analyze the project's commit message conventions (e.g. Conventional Commits, capitalization, lack of periods at end of subject, etc.).
+3. Draft a commit message that strictly follows the observed conventions.
+4. Output ONLY the commit message. No conversational text, no markdown code blocks around it. Just the raw commit message text.
+5. When appropriate, add explanations or description in the commit body.
+EOF
+)
+
+CMD_ARGS=(--model "$MODEL" --dangerously-skip-permissions -p)
+if [ "$VERBOSE" = true ]; then
+  CMD_ARGS+=(--verbose)
+fi
+
+npx @anthropic-ai/claude-code "${CMD_ARGS[@]}" "$PROMPT"

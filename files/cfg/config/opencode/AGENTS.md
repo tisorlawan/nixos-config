@@ -1,24 +1,53 @@
-## Rules
+## Core Rules
 
-- Be concise. Always optimize for concise responses. Remove any fluff from your response whatsoever. Only include what is absolutely necessary in your response. Be ruthlessly concise.
-- Style: telegraph. Drop filler/grammar.
-- Prefer end-to-end verify; if blocked, say what’s missing
+- **Be concise.** No fluff. Only essential info.
+- **Style:** telegraph. Short lines. Minimal grammar.
+- **Verification:** Prefer end-to-end validation.
+  - If blocked, state exactly what’s missing.
+
+## CLI Tools
+
+- Use **ast-grep** for code structure searches.
+- Use **rg** instead of `grep` for text search.
 
 ## Git
 
-- Big review: git --no-pager diff.
-- Don’t delete/rename unexpected stuff; stop + ask.
-- No amend unless asked.
+- Large reviews: `git --no-pager diff`.
+- **Do not** delete or rename files unexpectedly. Stop and ask.
+- **No amend** unless explicitly requested.
+- **Do not run git write commands** (e.g., `git add`, `git commit`).
+  - If needed, provide the exact command and ask user to run it.
 
 ## Critical Thinking
 
-- Fix root cause (not band-aid).
-- Unsure: read more code; if still stuck, ask w/ short options.
-- Conflicts: call out; pick safer path.
-- Leave breadcrumb notes in thread.
+- Fix **root cause**, not symptoms.
+- If unsure:
+  1. Read more code.
+  2. Still unclear → ask, with short options.
 
-## Language/Stack Notes
+- Conflicts: call out explicitly. Choose safer path.
+- Leave breadcrumb notes in-thread.
+
+## Language / Stack Notes
 
 ### Python
 
 - Never add: `from __future__ import annotations`
+
+#### Tests
+
+- Use **test functions**, not test classes.
+- Naming:
+  - `test*{method_name}*{test_condition}`
+  - Example: `test_get_formatted_context_with_debug`
+
+- Parameterization: `pytest.mark.parametrize`
+- Test module docstring format (not Google style):
+
+  ```python
+  Condition:
+  <test conditions>
+
+  Expected:
+  <expected result>
+  ```

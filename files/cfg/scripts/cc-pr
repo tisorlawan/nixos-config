@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+MODEL="haiku"
+VERBOSE=true
+
+# Handle flags and arguments
+ARGS=()
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+  --sonnet)
+    MODEL="sonnet"
+    shift
+    ;;
+  --opus)
+    MODEL="opus"
+    shift
+    ;;
+  -q | --quiet)
+    VERBOSE=false
+    shift
+    ;;
+  *)
+    ARGS+=("$1")
+    shift
+    ;;
+  esac
+done
+
+if [ "${#ARGS[@]}" -lt 1 ] || [ "${#ARGS[@]}" -gt 2 ]; then
+  echo "Usage: $0 [--sonnet|--opus] [-q|--quiet] <base-commit> [additional-context]" >&2
+  exit 1
+fi
+
+BASE_COMMIT=${ARGS[0]}
+ADDITIONAL_CONTEXT=${ARGS[1]:-}
+
+PROMPT=$(
+  cat <<'TEMPLATE'
+CRITICAL INSTRUCTIONS:
+- DO NOT ask questions. DO NOT ask for confirmation. DO NOT explain what you will do.
+- JUST DO IT. Write the PR.md file directly without any commentary.
+- You have full permission to read files, run git commands, and write files.
+
+YOUR TASK:
+1. Run `git diff --stat BASE_COMMIT_PLACEHOLDER HEAD` to see changed files
+2. Run `git diff BASE_COMMIT_PLACEHOLDER HEAD` to see the full diff
+3. Write a `PR.md` file directly using the Write tool. Overwrite if exists.
+
+Use the following format for PR.md:
+
+## Pull Request Title Format
+
+Use Conventional Commits format for PR titles:
+
+```text
+<type>(<scope>): <description>
+```
+
+## Common Types
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, no logic changes)
+- `refactor`: Code refactoring
+- `test`: Adding or updating tests
+- `chore`: Maintenance tasks, dependency updates
+
+## Description Field
+
+Recommended to start a `<description>` with a verb (add, resolve, update, etc.)
+
+## Examples
+
+- `feat(auth): add OAuth2 login integration`
+- `fix(api): resolve null pointer exception in user service`
+- `docs(readme): update installation instructions`
+- `refactor(database): optimize query performance`
+- `feat(BE): add vector DB connection`
+- `fix(FE): login redirection`
+
+## Pull Request Description Format
+
+```markdown
+## Summary
+
+<!-- Brief description of what this PR does and why it's needed -->
+
+## How to Test
+
+<!-- Provide clear steps for reviewers to test your changes -->
+
+1. Step 1
+2. Step 2
+3. Expected result
+
+## Related Issues
+
+<!-- Link related issues using: Closes #123, Fixes #456, Related to #789 -->
+
+## Author Checklist
+
+- [ ] Code follows team coding standards and style guide
+- [ ] Self-reviewed the code changes
+- [ ] Added/updated tests for new functionality
+- [ ] All tests pass locally
+- [ ] Code is properly documented
+- [ ] Synced with latest `develop` branch
+- [ ] PR title follows conventional commit format
+- [ ] Meaningful commit messages used
+
+## Additional Notes
+
+1. [GDP Labs Coding and Code Review Best Practices](https://docs.google.com/document/d/1QCzqnxXPEN_fatbTaSt-LVL9vFKoEBrQ6zTCt3tbCWU/edit)
+<!-- Any additional context, screenshots, or information reviewers should know -->
+```
+
+## Guidelines for Authors
+
+- **Keep PRs Small**: Aim for changes under 200-300 lines when possible
+- **Use Draft**: Use Draft when the PR is not ready for review to reduce reviewer overhead
+- **Write Clear Descriptions**: Explain the "what" and "why", not just the "how"
+- **Test Thoroughly**: Test locally and in development environment before requesting review
+- **Use Meaningful Commits**: Each commit should represent a logical unit of work
+- **Link Issues**: Always reference related issues or tickets
+- **Author Checklist**: Set items as strikethrough if they are not necessary
+  - Example: `- [ ] ~Synced with latest develop branch~`
+
+REMEMBER: Just write the PR.md file. No questions. No explanations. No asking for permission.
+
+TEMPLATE
+)
+
+PROMPT=${PROMPT//BASE_COMMIT_PLACEHOLDER/${BASE_COMMIT}}
+
+if [ -n "$ADDITIONAL_CONTEXT" ]; then
+  PROMPT="${PROMPT}
+
+## Additional Context from Author
+
+${ADDITIONAL_CONTEXT}"
+fi
+
+CMD_ARGS=(--model "$MODEL" --dangerously-skip-permissions -p)
+if [ "$VERBOSE" = true ]; then
+  CMD_ARGS+=(--verbose)
+fi
+
+npx @anthropic-ai/claude-code "${CMD_ARGS[@]}" "$PROMPT"

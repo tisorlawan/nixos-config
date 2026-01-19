@@ -96,7 +96,6 @@ alias yda="yt-dlp -f '[ext=mp4]+ba/b' --extract-audio --no-playlist"
 alias t="priv todo"
 
 ##-- CLI AI Tools --##
-alias claude="npx @anthropic-ai/claude-code"
 alias codex="npx @openai/codex@latest --enable web_search_request -s danger-full-access"
 alias gemini="npx https://github.com/google-gemini/gemini-cli"
 
@@ -118,3 +117,35 @@ function uv-glsdk
 end
 
 alias cdls='cd $(zoxide query --list | fzf --header "Choose directory:")'
+
+function claude
+    set -l config_value personal
+    set -l claude_args
+
+    while test (count $argv) -gt 0
+        switch $argv[1]
+            case -u
+                if set -q argv[2]; and not string match -qr '^-' -- $argv[2]
+                    set config_value $argv[2]
+                    set -e argv[1..2]
+                else
+                    echo "Error: -u requires a value" >&2
+                    return 1
+                end
+            case '*'
+                set -a claude_args $argv[1]
+                set -e argv[1]
+        end
+    end
+
+    echo "Claude Code user: $config_value."
+    env CLAUDE_CONFIG_DIR="$HOME/.claude-$config_value" npx @anthropic-ai/claude-code $claude_args
+end
+
+function ccw
+    claude -u work $argv
+end
+
+function ccp
+    claude -u personal $argv
+end

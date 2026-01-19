@@ -81,9 +81,15 @@ ln -srf ./files/cfg/scripts ~/.scripts
 rm -rf ~/.doom.d/
 ln -srf files/cfg/doom.d/ ~/.doom.d
 
-mkdir -p ~/.claude
-rm -rf ~/.claude/commands
-ln -srf cc/commands/ ~/.claude/commands
+mkdir -p ~/.claude-personal
+rm -rf ~/.claude-peronal/commands
+ln -srf cc/commands/ ~/.claude-personal/commands
+ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.claude-personal/CLAUDE.md
+
+mkdir -p ~/.claude-work
+rm -rf ~/.claude-peronal/commands
+ln -srf cc/commands/ ~/.claude-work/commands
+ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.claude-work/CLAUDE.md
 
 rm -rf ~/.config/opencode/config.json
 ln -srf ./files/cfg/config/opencode/config.json ~/.config/opencode/config.json
@@ -103,4 +109,3 @@ ln -srf ./files/cfg/config/opencode/skill ~/.config/opencode/skill
 rm -rf ~/.config/ghostty
 mkdir ~/.config/ghostty
 ln -srf ./files/cfg/config/ghostty/config ~/.config/ghostty/config
-

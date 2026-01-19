@@ -1,25 +1,26 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# TODO: Replace XDG_DATA_HOME workaround with --ephemeral when merged
-# See: https://github.com/sst/opencode/issues/4489
-EPHEMERAL_DIR="${TMPDIR:-/tmp}/opencode-ephemeral-$$"
-mkdir -p "$EPHEMERAL_DIR/opencode"
-cp ~/.local/share/opencode/auth.json "$EPHEMERAL_DIR/opencode/" 2>/dev/null || true
-export XDG_DATA_HOME="$EPHEMERAL_DIR"
-trap 'rm -rf "$EPHEMERAL_DIR"' EXIT
+MODEL="haiku"
+VERBOSE=true
 
 DIFF_TARGET="--cached"
 CONTEXT="the currently staged changes. IMPORTANT: Ignore any unstaged changes."
-MODEL="opencode/grok-code"
-FORCE_SONNET=false
 
 # Handle flags and arguments
 ARGS=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
   --sonnet)
-    FORCE_SONNET=true
+    MODEL="sonnet"
+    shift
+    ;;
+  --opus)
+    MODEL="opus"
+    shift
+    ;;
+  -q | --quiet)
+    VERBOSE=false
     shift
     ;;
   *)
@@ -38,7 +39,13 @@ fi
 
 PROMPT=$(
   cat <<EOF
-Please generate a commit message for $CONTEXT
+CRITICAL INSTRUCTIONS:
+- DO NOT ask questions. DO NOT ask for confirmation.
+- Output ONLY the commit message. No conversational text, no markdown code blocks.
+- Just the raw commit message text, nothing else.
+
+YOUR TASK:
+Generate a commit message for $CONTEXT
 
 Steps:
 1. Run \`git diff $DIFF_TARGET\` to inspect the changes.
@@ -49,17 +56,9 @@ Steps:
 EOF
 )
 
-if [ "$FORCE_SONNET" = true ]; then
-  echo opencode run --model anthropic/claude-sonnet-4-5 <prompt>
-  opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
-else
-  echo opencode run --model "$MODEL" <prompt>
-  OUTPUT=$(opencode run --model "$MODEL" "$PROMPT" || true)
-
-  if [[ -z "$OUTPUT" ]]; then
-    echo opencode run --model anthropic/claude-sonnet-4-5 <prompt>
-    opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
-  else
-    echo "$OUTPUT"
-  fi
+CMD_ARGS=(--model "$MODEL" --dangerously-skip-permissions -p)
+if [ "$VERBOSE" = true ]; then
+  CMD_ARGS+=(--verbose)
 fi
+
+npx @anthropic-ai/claude-code "${CMD_ARGS[@]}" "$PROMPT"

@@ -1,9 +1,16 @@
 ## Core Rules
 
-- **Be concise.** No fluff. Only essential info.
-- **Style:** telegraph. Short lines. Minimal grammar.
-- **Verification:** Prefer end-to-end validation.
+- BE CONCISE. No fluff. Only essential info.
+- Style: TELEGRAPH. Short lines. Minimal grammar.
+- VERIFICATION: Prefer end-to-end validation.
   - If blocked, state exactly what’s missing.
+
+## Ask Questions
+
+- Ask the minimum set of clarifying questions needed to avoid wrong work;
+- do not start implementing until the must-have questions are answered (or the user explicitly approves proceeding with stated assumptions).
+- Don't ask questions you can answer with a quick, low-risk discovery read (e.g., configs, existing patterns, docs).
+- Don't ask open-ended questions if a tight multiple-choice or yes/no would eliminate ambiguity faster.
 
 ## CLI Tools
 
@@ -12,42 +19,17 @@
 
 ## Git
 
-- Large reviews: `git --no-pager diff`.
-- **Do not** delete or rename files unexpectedly. Stop and ask.
-- **No amend** unless explicitly requested.
-- **Do not run git write commands** (e.g., `git add`, `git commit`).
+- Large reviews: git --no-pager diff.
+- DO NOT delete or rename files unexpectedly. Stop and ask.
+- NO AMEND unless explicitly requested.
+- DO NOT run git write commands (e.g., git add, git commit).
   - If needed, provide the exact command and ask user to run it.
 
 ## Critical Thinking
 
-- Fix **root cause**, not symptoms.
+- Fix ROOT CAUSE, not symptoms.
 - If unsure:
   1. Read more code.
   2. Still unclear → ask, with short options.
-
 - Conflicts: call out explicitly. Choose safer path.
 - Leave breadcrumb notes in-thread.
-
-## Language / Stack Notes
-
-### Python
-
-- Never add: `from __future__ import annotations`
-
-#### Tests
-
-- Use **test functions**, not test classes.
-- Naming:
-  - `test*{method_name}*{test_condition}`
-  - Example: `test_get_formatted_context_with_debug`
-
-- Parameterization: `pytest.mark.parametrize`
-- Test module docstring format (not Google style):
-
-  ```python
-  Condition:
-  <test conditions>
-
-  Expected:
-  <expected result>
-  ```

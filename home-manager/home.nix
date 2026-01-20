@@ -78,7 +78,7 @@ in
         rofi
         antigravity-fhs
         # inputs.antigravity-nix.packages.x86_64-linux.default
-        mesa
+        # mesa
       ];
 
       # Productivity, syncing, and day-to-day utilities
@@ -95,6 +95,8 @@ in
         bat
         delta
         difftastic
+        diff-so-fancy
+        sxcs # color picker
         dust
         eza
         fd
@@ -176,6 +178,8 @@ in
       languageTooling = [
         go
         nodejs_22
+        typescript-language-server
+        oxlint
         bun
         # rustup
         # sccache
@@ -247,7 +251,6 @@ in
 
       # Audio, video, and imaging utilities
       mediaTools = [
-        mpv
         exiftool
         feh
         ffmpeg-full
@@ -259,6 +262,7 @@ in
         poppler
         imagemagick
         mediainfo
+        kubectl
         # wf-recorder
       ];
 
@@ -269,7 +273,7 @@ in
         sioyek
         nautilus
         pcmanfm
-        brave
+        # brave
         pkgs-unstable.xournalpp
         telegram-desktop
         inlyne
@@ -278,7 +282,7 @@ in
 
       # Hardware diagnostics and graphics
       hardwareDiagnostics = [
-        mesa-demos
+        # mesa-demos
       ];
 
       # Font families sourced from nixpkgs-unstable

@@ -1,7 +1,7 @@
 theme = "Catppuccin Mocha"
-background = 181820
+background = 131313 
 
-background-opacity = 0.95
+background-opacity = 1.0
 # background = 181818
 # font-family = "BlexMono Nerd Font Propo SemiBold"
 font-family = "JetBrainsMono Nerd Font"

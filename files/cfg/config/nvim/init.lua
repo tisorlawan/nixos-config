@@ -1,6 +1,6 @@
 -- stylua: ignore start
 vim.g.mapleader = ' '
-vim.g.enable_highlight = false
+vim.g.enable_highlight = true
 math.randomseed(os.time())
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -73,10 +73,12 @@ vim.opt.inccommand = 'split'
 vim.opt.showmatch = true
 vim.opt.ruler = true
 vim.opt.laststatus = 2
-vim.opt.shortmess:remove 'S'
+vim.opt.shortmess:append 'S'
 vim.opt.title = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 vim.opt.showbreak = '↪'
+
+vim.wo.foldcolumn = '0'
 
 -- Path & Wildignore
 vim.opt.path = '.,**'
@@ -84,6 +86,12 @@ vim.opt.wildignore:append '**/node_modules/**,**/.git/**,**/dist/**,**/build/**,
 
 vim.opt.grepprg = 'rg --vimgrep --smart-case'
 vim.opt.grepformat = '%f:%l:%c:%m'
+
+vim.filetype.add({
+  pattern = {
+    ['%.env%.[%w_.-]+'] = 'sh',
+  },
+})
 
 -- ============================================================================
 -- @KEYMAPS - GENERAL
@@ -122,8 +130,8 @@ map('v', '>', '>gv', { desc = 'Indent right' })
 map('x', 'p', '"_dP', { desc = 'Paste without yank' })
 map('n', '<C-d>', '<C-d>zz', { desc = 'Scroll down centered' })
 map('n', '<C-u>', '<C-u>zz', { desc = 'Scroll up centered' })
-map('n', 'n', 'nzzzv', { desc = 'Next search centered' })
-map('n', 'N', 'Nzzzv', { desc = 'Prev search centered' })
+map('n', 'n', 'nzzzv<cmd>redrawstatus<cr>', { desc = 'Next search centered' })
+map('n', 'N', 'Nzzzv<cmd>redrawstatus<cr>', { desc = 'Prev search centered' })
 
 -- ============================================================================
 -- @BUFFER MANAGEMENT
@@ -242,6 +250,49 @@ map('t', '<C-u>', '<C-u>', { noremap = true, desc = 'Scroll up' })
 map('t', '<C-a>', '<C-a>', { noremap = true, desc = 'Begin of line' })
 map('t', '<C-e>', '<C-e>', { noremap = true, desc = 'End of line' })
 map('t', '<C-k>', '<C-k>', { noremap = true, desc = 'Kill to end' })
+
+-- ============================================================================
+-- @ZEN MODE
+-- ============================================================================
+
+local zen_state = {
+  active = false,
+  saved = {},
+}
+
+local function zen_toggle()
+  if zen_state.active then
+    -- Restore
+    vim.o.laststatus = zen_state.saved.laststatus
+    vim.o.showtabline = zen_state.saved.showtabline
+    vim.o.cmdheight = zen_state.saved.cmdheight
+    vim.wo.number = zen_state.saved.number
+    vim.wo.relativenumber = zen_state.saved.relativenumber
+    vim.wo.signcolumn = zen_state.saved.signcolumn
+    vim.wo.foldcolumn = zen_state.saved.foldcolumn
+    zen_state.active = false
+  else
+    -- Save and hide
+    zen_state.saved.laststatus = vim.o.laststatus
+    zen_state.saved.showtabline = vim.o.showtabline
+    zen_state.saved.cmdheight = vim.o.cmdheight
+    zen_state.saved.number = vim.wo.number
+    zen_state.saved.relativenumber = vim.wo.relativenumber
+    zen_state.saved.signcolumn = vim.wo.signcolumn
+    zen_state.saved.foldcolumn = vim.wo.foldcolumn
+
+    vim.o.laststatus = 0
+    vim.o.showtabline = 0
+    vim.o.cmdheight = 0
+    vim.wo.number = false
+    vim.wo.relativenumber = false
+    vim.wo.signcolumn = 'no'
+    vim.wo.foldcolumn = '1'
+    zen_state.active = true
+  end
+end
+
+map('n', '<leader>zz', zen_toggle, { desc = 'Toggle zen mode' })
 
 -- ============================================================================
 -- @AUTOCMDS
@@ -511,14 +562,20 @@ local function run_in_terminal()
     end
     last_shell_cmd = cmd
   end
+  -- Replace % with current filename
+  local filename = vim.fn.expand '%:.'
+  cmd = cmd:gsub('%%', filename)
   local cur_win = vim.api.nvim_get_current_win()
   open_terminal_with_cmd(cmd)
   vim.api.nvim_set_current_win(cur_win)
 end
 
 local function edit_and_run_in_terminal()
-  local cmd = vim.fn.input('$ ', last_shell_cmd)
+  local filename = vim.fn.expand '%:.'
+  local default_cmd = last_shell_cmd:gsub('%%', filename)
+  local cmd = vim.fn.input('$ ', default_cmd)
   if cmd ~= '' then
+    cmd = cmd:gsub('%%', filename)
     last_shell_cmd = cmd
     open_terminal_with_cmd(cmd)
   end
@@ -758,11 +815,17 @@ local function grep_picker(query)
       col = 1
     end
 
-    if file and line then
-      vim.cmd('drop ' .. vim.fn.fnameescape(file))
+    if file and line and vim.fn.filereadable(file) == 1 then
+      ---@diagnostic disable-next-line: param-type-mismatch
+      local ok = pcall(vim.cmd, { cmd = 'drop', args = { file } })
+      if not ok then
+        vim.cmd.edit(vim.fn.fnameescape(file))
+      end
       vim.api.nvim_win_set_cursor(0, { tonumber(line), tonumber(col) - 1 })
       vim.cmd 'normal! zz'
       vim.cmd('redraw | echo "No other match for: ' .. search_term:gsub('"', '\\"') .. '"')
+    elseif file then
+      print('File not found: ' .. file)
     end
     return
   end
@@ -845,6 +908,7 @@ end, { noremap = true, silent = true, expr = true, desc = 'Grep word under curso
 map('n', '<leader>sp', '<cmd>Lazy<cr>', { desc = 'Lazy' })
 map('n', '<leader>sc', '<cmd>ConformInfo<cr>', { desc = 'Conform Info' })
 map('n', '<leader>sl', '<cmd>LspInfo<cr>', { desc = 'LSP Info' })
+map('n', '<leader>sr', '<cmd>LspRestart<cr>', { desc = 'LSP Restart' })
 
 vim.api.nvim_create_user_command('Grep', function(cmd_opts)
   grep_picker(cmd_opts.args)
@@ -1047,7 +1111,7 @@ map('n', '<M-5>', function() harpoon_go(5) end, { desc = 'Harpoon 5' })
 -- @SEMICOLON INSERT (C-d)
 -- ============================================================================
 
-local semicolon_filetypes = { 'c', 'cpp', 'rust', 'java', 'javascript', 'typescript', 'css', 'php', 'go', 'zig' }
+local semicolon_filetypes = { 'c', 'cpp', 'rust', 'java', 'javascript', 'typescript', 'typescriptreact', 'css', 'php', 'go', 'zig' }
 
 map('i', '<C-d>', function()
   local ft = vim.bo.filetype
@@ -1377,7 +1441,18 @@ local lsp_servers = {
     cmd = { 'typescript-language-server', '--stdio' },
     filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
     root_markers = { 'tsconfig.json', 'jsconfig.json', 'package.json', '.git' },
-    init_options = { hostInfo = 'neovim' },
+    init_options = {
+      hostInfo = 'neovim',
+      plugins = {
+        {
+          name = '@effect/language-service',
+          location = vim.fn.getcwd() .. '/node_modules',
+        },
+      },
+      preferences = {
+        includePackageJsonAutoImports = 'on',
+      },
+    },
   },
   zls = {
     cmd = { 'zls' },
@@ -1473,6 +1548,23 @@ vim.api.nvim_create_user_command('LspInfo', function()
   vim.keymap.set('n', 'q', '<cmd>tabclose<cr>', { buffer = buf, silent = true })
 end, {})
 
+vim.api.nvim_create_user_command('LspRestart', function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local clients = vim.lsp.get_clients { bufnr = bufnr }
+  local names = {}
+  for _, client in ipairs(clients) do
+    table.insert(names, client.name)
+    vim.lsp.stop_client(client.id)
+  end
+  vim.defer_fn(function()
+    for _, name in ipairs(names) do
+      ---@diagnostic disable-next-line: param-type-mismatch
+      vim.lsp.enable(name, { bufnr = bufnr })
+    end
+    vim.notify(string.format('Restarted %d LSP client(s): %s', #names, table.concat(names, ', ')), vim.log.levels.INFO)
+  end, 500)
+end, {})
+
 -- ============================================================================
 -- @PLUGINS (lazy.nvim)
 -- ============================================================================
@@ -1503,8 +1595,8 @@ require('lazy').setup({
       auto_install = true,
       ignore_install = { 'gitcommit' },
       highlight = { enable = vim.g.enable_highlight, additional_vim_regex_highlighting = vim.g.enable_highlight and { 'ruby', 'elixir' } or false },
-      indent = { enable = true, disable = { 'python', 'css', 'rust', 'lua', 'javascript', 'tsx', 'typescript', 'toml', 'json', 'c', 'heex' } },
-      yati = { enable = true, disable = { 'rust' }, default_lazy = true, default_fallback = 'auto' },
+      indent = { enable = true, disable = { 'python', 'css', 'rust', 'lua', 'javascript', 'tsx', 'typescript', 'toml', 'json', 'c', 'heex', 'yaml' } },
+      yati = { enable = true, disable = { 'rust', 'cpp' }, default_lazy = true, default_fallback = 'auto' },
     },
   },
 
@@ -1742,10 +1834,52 @@ require('lazy').setup({
           end
         end)
       end
+      local function open_with_relative_path(state)
+        local node = state.tree:get_node()
+        if node.type == 'directory' then
+          require('neo-tree.sources.filesystem.commands').toggle_node(state)
+          return
+        end
+        if node.type ~= 'file' then
+          return
+        end
+        local abs_path = node:get_id()
+        local target_buf = vim.fn.bufnr(abs_path)
+        if target_buf ~= -1 then
+          local win = vim.fn.bufwinid(target_buf)
+          if win ~= -1 then
+            vim.api.nvim_set_current_win(win)
+            return
+          end
+        end
+        local path = abs_path
+        local rel = vim.fn.fnamemodify(abs_path, ':.')
+        if not rel:match '^%.%.' then
+          path = rel
+        end
+        -- Check if neo-tree is the only window, create a new one first
+        local wins = vim.api.nvim_list_wins()
+        local real_wins = vim.tbl_filter(function(w)
+          local buf = vim.api.nvim_win_get_buf(w)
+          local bt = vim.bo[buf].buftype
+          return bt ~= 'nofile' and bt ~= 'prompt'
+        end, wins)
+        if #real_wins == 0 then
+          vim.cmd 'vsplit'
+        end
+        vim.cmd('edit ' .. vim.fn.fnameescape(path))
+      end
       return {
         close_if_last_window = true,
         enable_git_status = true,
-        window = { mappings = { ['Y'] = copy_path } },
+        window = {
+          mappings = {
+            ['Y'] = copy_path,
+            ['<cr>'] = open_with_relative_path,
+            ['o'] = open_with_relative_path,
+            ['<2-LeftMouse>'] = open_with_relative_path,
+          },
+        },
         filesystem = {
           follow_current_file = { enabled = false },
           use_libuv_file_watcher = true,
@@ -1824,7 +1958,6 @@ require('lazy').setup({
   {
     'nvim-lualine/lualine.nvim',
     event = 'VeryLazy',
-    dependencies = { 'bwpge/lualine-pretty-path' },
     init = function()
       vim.g.lualine_laststatus = vim.o.laststatus
       if vim.fn.argc(-1) > 0 then
@@ -1878,7 +2011,27 @@ require('lazy').setup({
           } },
           lualine_b = { 'branch' },
           lualine_c = {
-            { 'pretty_path' },
+            {
+              function()
+                local path = vim.fn.expand '%:p'
+                if path == '' then
+                  return '[No Name]'
+                end
+                local rel = vim.fn.fnamemodify(path, ':.')
+                -- Outside cwd: show full ~ path without truncation
+                if rel == path or rel:match '^%.%.' then
+                  return vim.fn.fnamemodify(path, ':~')
+                end
+                -- In cwd: truncate with max_depth only if path is long enough
+                local max_depth = 2
+                local min_len = 50
+                local parts = vim.split(rel, '/')
+                if #parts > max_depth + 1 and #rel >= min_len then
+                  rel = parts[1] .. '/…/' .. parts[#parts]
+                end
+                return rel
+              end,
+            },
             {
               'diagnostics',
               symbols = {
@@ -1897,14 +2050,44 @@ require('lazy').setup({
             },
             { 'diff', symbols = { added = ui.icons.git.added, modified = ui.icons.git.modified, removed = ui.icons.git.removed } },
           },
-          lualine_y = { { 'progress', separator = ' ', padding = { left = 1, right = 0 } }, { 'location', padding = { left = 0, right = 1 } } },
+          lualine_y = {
+            {
+              'searchcount',
+              maxcount = 999,
+              timeout = 500,
+            },
+            { 'progress', separator = ' ', padding = { left = 1, right = 0 } },
+            { 'location', padding = { left = 0, right = 1 } },
+          },
           lualine_z = {
             function()
               return ' ' .. os.date '%R'
             end,
           },
         },
-        inactive_sections = { lualine_c = { 'pretty_path' } },
+        inactive_sections = {
+          lualine_c = {
+            {
+              function()
+                local path = vim.fn.expand '%:p'
+                if path == '' then
+                  return '[No Name]'
+                end
+                local rel = vim.fn.fnamemodify(path, ':.')
+                local display = (rel == path or rel:match '^%.%.') and vim.fn.fnamemodify(path, ':~') or rel
+                local max_depth = 2
+                local min_len = 50
+                local parts = vim.split(display, '/')
+                if #parts > max_depth + 1 and #display >= min_len then
+                  local first = parts[1]
+                  local filename = parts[#parts]
+                  display = first .. '/…/' .. filename
+                end
+                return display
+              end,
+            },
+          },
+        },
         extensions = { 'lazy' },
       }
     end,
@@ -1991,10 +2174,11 @@ require('lazy').setup({
     opts = { enabled = false, message_template = ' <summary> • <date> • <author> • <<sha>>', date_format = '%d-%m-%Y %H:%M:%S', virtual_text_column = 1 },
   },
   {
-    'cdmill/focus.nvim',
-    cmd = { 'Focus', 'Zen', 'Narrow' },
-    keys = { { '<leader>zz', '<CMD>Zen<CR>', desc = 'Zen' } },
-    opts = { zen = { opts = { statuscolumn = ' ' } } },
+    'kdheepak/lazygit.nvim',
+    lazy = true,
+    cmd = { 'LazyGit', 'LazyGitConfig', 'LazyGitCurrentFile', 'LazyGitFilter', 'LazyGitFilterCurrentFile' },
+    keys = { { '<leader>gg', '<cmd>LazyGit<cr>', desc = 'LazyGit' } },
+    dependencies = { 'nvim-lua/plenary.nvim' },
   },
 
   -- 6. PRODUCTIVITY & EDITING

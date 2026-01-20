@@ -81,6 +81,11 @@ ln -srf ./files/cfg/scripts ~/.scripts
 rm -rf ~/.doom.d/
 ln -srf files/cfg/doom.d/ ~/.doom.d
 
+mkdir -p ~/.claude
+rm -rf ~/.claude/commands
+ln -srf cc/commands/ ~/.claude/commands
+ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.claude/CLAUDE.md
+
 mkdir -p ~/.claude-personal
 rm -rf ~/.claude-peronal/commands
 ln -srf cc/commands/ ~/.claude-personal/commands
@@ -97,14 +102,14 @@ ln -srf ./files/cfg/config/opencode/config.json ~/.config/opencode/config.json
 rm -rf ~/.config/opencode/AGENTS.md
 ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.config/opencode/AGENTS.md
 
-rm -rf ~/.config/opencode/oh-my-opencode.jsonc
-ln -srf ./files/cfg/config/opencode/oh-my-opencode.jsonc ~/.config/opencode/oh-my-opencode.jsonc
-
 rm -rf ~/.config/opencode/opencode.jsonc
 ln -srf ./files/cfg/config/opencode/opencode.jsonc ~/.config/opencode/opencode.jsonc
 
 rm -rf ~/.config/opencode/skill
 ln -srf ./files/cfg/config/opencode/skill ~/.config/opencode/skill
+
+rm -rf ~/.config/opencode/commands
+ln -srf cc/commands/ ~/.config/opencode/commands
 
 rm -rf ~/.config/ghostty
 mkdir ~/.config/ghostty

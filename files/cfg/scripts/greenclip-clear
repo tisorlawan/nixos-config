@@ -1,0 +1,6 @@
+#!/bin/sh
+
+pkill -x greenclip 2>/dev/null
+greenclip clear 2>/dev/null
+sleep 1
+nohup greenclip daemon >/tmp/.greenclip-out &

@@ -1,4 +1,11 @@
 gui:
+  wrapLinesInMainView: false
   theme:
     selectedLineBgColor:
       - reverse
+    selectedRangeBgColor:
+      - reverse
+git:
+  pagers:
+    - colorArg: always
+      pager: diff-so-fancy

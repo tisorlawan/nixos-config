@@ -96,6 +96,7 @@ alias yda="yt-dlp -f '[ext=mp4]+ba/b' --extract-audio --no-playlist"
 alias t="priv todo"
 
 alias pwdc="pwd | clip"
+alias gcloudc="gcloud auth print-access-token | clip"
 
 ##-- CLI AI Tools --##
 alias codex="npx @openai/codex@latest --enable web_search_request -s danger-full-access"

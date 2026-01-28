@@ -2265,7 +2265,7 @@ require('lazy').setup({
           if #client_messages > 0 then
             return lsp_icon .. ' ' .. table.concat(client_messages, ' ')
           end
-          return '✔'
+          return '󰄬'
         end,
         client_format = function(_, spinner, series_messages)
           if #series_messages > 0 then

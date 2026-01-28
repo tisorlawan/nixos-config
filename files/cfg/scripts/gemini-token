@@ -1,0 +1,51 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.10"
+# dependencies = [
+#     "google-genai",
+# ]
+# ///
+"""Count tokens for a file using Gemini API."""
+
+import os
+import sys
+
+from google import genai
+
+
+def main() -> int:
+    if len(sys.argv) < 2:
+        print(f"Usage: {sys.argv[0]} <path-to-file>", file=sys.stderr)
+        return 1
+
+    file_path = sys.argv[1]
+
+    if not os.path.isfile(file_path):
+        print(f"Error: File not found: {file_path}", file=sys.stderr)
+        return 1
+
+    api_key = os.environ.get("GOOGLE_API_KEY")
+    if not api_key:
+        print("Error: GOOGLE_API_KEY is not set", file=sys.stderr)
+        return 1
+
+    with open(file_path, encoding="utf-8") as f:
+        text = f.read()
+
+    client = genai.Client(api_key=api_key)
+    resp = client.models.count_tokens(model="gemini-2.5-flash", contents=text)
+
+    total_tokens = getattr(resp, "total_tokens", None)
+    if total_tokens is None:
+        usage = getattr(resp, "usage_metadata", None)
+        if usage is not None:
+            total_tokens = getattr(usage, "total_token_count", None)
+
+    print(f"total_tokens={total_tokens}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+
+# vim: ft=python

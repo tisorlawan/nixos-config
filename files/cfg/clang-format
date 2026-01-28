@@ -16,7 +16,7 @@ AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
 
 # Column limit
-ColumnLimit: 110
+ColumnLimit: 135
 
 # Spacing
 SpaceAfterCStyleCast: true

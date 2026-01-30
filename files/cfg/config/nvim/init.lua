@@ -2214,6 +2214,11 @@ require('lazy').setup({
   },
   { 'romainl/vim-cool' },
   {
+    'Aasim-A/scrollEOF.nvim',
+    event = { 'CursorMoved', 'WinScrolled' },
+    opts = {},
+  },
+  {
     'kevinhwang91/nvim-bqf',
     ft = 'qf',
     opts = { preview = { auto_preview = true } },

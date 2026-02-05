@@ -99,7 +99,7 @@ alias pwdc="pwd | clip"
 alias gcloudc="gcloud auth print-access-token | clip"
 
 ##-- CLI AI Tools --##
-alias codex="npx @openai/codex@latest --enable web_search_request -s danger-full-access"
+alias codex="npx @openai/codex@latest -s danger-full-access"
 alias gemini="npx https://github.com/google-gemini/gemini-cli"
 
 function poetry-glsdk

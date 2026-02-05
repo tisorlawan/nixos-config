@@ -759,7 +759,7 @@ local function buffer_picker()
   end
 end
 
-map('n', '<C-n>', buffer_picker, { desc = 'Buffer picker' })
+-- map('n', '<C-n>', buffer_picker, { desc = 'Buffer picker' })
 
 -- ============================================================================
 -- @GREP (ripgrep/grep)
@@ -1252,6 +1252,7 @@ local function get_used_ft()
     markdown = { formatters = { 'prettierd' }, servers = { 'marksman' } },
     nix = { servers = { 'nil_ls' }, formatters = { 'nixpkgs_fmt' } },
     php = { formatters = { 'php_cs_fixer' }, servers = { 'phpactor', 'html' } },
+    -- python = { formatters = { 'ruff_format', 'ruff_organize_imports' }, servers = { 'pyright', 'ruff' } },
     python = { formatters = { 'ruff_format', 'ruff_organize_imports' }, servers = { 'basedpyright', 'ruff' } },
     rust = { servers = { 'rust_analyzer' }, formatters = { 'rustfmt' } },
     sh = { servers = { 'bashls' }, formatters = { 'shfmt' } },
@@ -1363,6 +1364,21 @@ local lsp_servers = {
     root_markers = { 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', 'Pipfile', '.git' },
     settings = {
       basedpyright = {
+        analysis = {
+          autoImportCompletions = false,
+          autoSearchPaths = false,
+          useLibraryCodeForTypes = false,
+          diagnosticMode = 'openFilesOnly',
+        },
+      },
+    },
+  },
+  pyright = {
+    cmd = { 'pyright-langserver', '--stdio' },
+    filetypes = { 'python' },
+    root_markers = { 'pyproject.toml', 'setup.py', 'setup.cfg', 'requirements.txt', 'Pipfile', '.git' },
+    settings = {
+      pyright = {
         analysis = {
           autoImportCompletions = false,
           autoSearchPaths = false,
@@ -1578,6 +1594,7 @@ require('lazy').setup({
       require('kanagawa').setup { transparent = true }
     end,
   },
+  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
 
   -- 2. CORE ENGINE
   {
@@ -1716,6 +1733,7 @@ require('lazy').setup({
     event = { 'BufReadPre', 'BufNewFile', 'VimEnter' },
     -- stylua: ignore
     keys = {
+      { '<C-n>', function() require('fzf-lua').buffers()  end,    desc = 'Buffers' },
       { '<leader>fF', function() require('fzf-lua').files { cwd = vim.fn.getcwd() } end,    desc = 'Find Files (cwd)' },
       { '<leader>fg', function() require('fzf-lua').git_files() end,                        desc = 'Find Files (git-files)' },
       { '<leader>fr', function() require('fzf-lua').oldfiles() end,                         desc = 'Recent' },
@@ -1726,6 +1744,7 @@ require('lazy').setup({
       { '<leader>fx', function() require('fzf-lua').diagnostics_document() end,             desc = 'Document Diagnostics' },
       { '<leader>fX', function() require('fzf-lua').diagnostics_workspace() end,            desc = 'Workspace Diagnostics' },
       { '<leader>sg', function() require('fzf-lua').grep_project() end,                     desc = 'Grep (Root Dir)' },
+      { '<leader>fm', function() require('fzf-lua').marks() end,                            desc = 'Marks' },
       { '<leader>fM', function() require('fzf-lua').man_pages() end,                        desc = 'Man Pages' },
       { '<leader>f.', function() require('fzf-lua').resume() end,                           desc = 'Resume' },
       { '<leader>ss', function() require('fzf-lua').lsp_document_symbols() end,             desc = 'Goto Symbol' },
@@ -2014,13 +2033,14 @@ require('lazy').setup({
             {
               function()
                 local path = vim.fn.expand '%:p'
+                local modified = vim.bo.modified and ' [+]' or ''
                 if path == '' then
-                  return '[No Name]'
+                  return '[No Name]' .. modified
                 end
                 local rel = vim.fn.fnamemodify(path, ':.')
                 -- Outside cwd: show full ~ path without truncation
                 if rel == path or rel:match '^%.%.' then
-                  return vim.fn.fnamemodify(path, ':~')
+                  return vim.fn.fnamemodify(path, ':~') .. modified
                 end
                 -- In cwd: truncate with max_depth only if path is long enough
                 local max_depth = 2
@@ -2029,7 +2049,7 @@ require('lazy').setup({
                 if #parts > max_depth + 1 and #rel >= min_len then
                   rel = parts[1] .. '/…/' .. parts[#parts]
                 end
-                return rel
+                return rel .. modified
               end,
             },
             {
@@ -2070,8 +2090,9 @@ require('lazy').setup({
             {
               function()
                 local path = vim.fn.expand '%:p'
+                local modified = vim.bo.modified and ' [+]' or ''
                 if path == '' then
-                  return '[No Name]'
+                  return '[No Name]' .. modified
                 end
                 local rel = vim.fn.fnamemodify(path, ':.')
                 local display = (rel == path or rel:match '^%.%.') and vim.fn.fnamemodify(path, ':~') or rel
@@ -2083,7 +2104,7 @@ require('lazy').setup({
                   local filename = parts[#parts]
                   display = first .. '/…/' .. filename
                 end
-                return display
+                return display .. modified
               end,
             },
           },
@@ -2104,6 +2125,15 @@ require('lazy').setup({
     end,
     config = function()
       require('mini.icons').setup { style = 'glyph' }
+    end,
+  },
+  {
+    'lionyxml/gitlineage.nvim',
+    dependencies = {
+      'sindrets/diffview.nvim', -- optional, for open_diff feature
+    },
+    config = function()
+      require('gitlineage').setup()
     end,
   },
   {
@@ -2345,7 +2375,7 @@ require('lazy').setup({
 
 if vim.g.enable_highlight then
   -- set_random_colorscheme 'kanagawa-wave, kanagawa-dragon'
-  set_random_colorscheme 'kanagawa-dragon'
+  set_random_colorscheme 'catppuccin'
 else
   vim.cmd 'syntax on'
 

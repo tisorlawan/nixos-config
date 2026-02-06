@@ -11,7 +11,8 @@ trap 'rm -rf "$EPHEMERAL_DIR"' EXIT
 
 DIFF_TARGET="--cached"
 CONTEXT="the currently staged changes. IMPORTANT: Ignore any unstaged changes."
-MODEL="opencode/grok-code"
+# MODEL="anthropic/claude-sonnet-4-5-20250929"
+MODEL="opencode/kimi-k2.5-free"
 FORCE_SONNET=false
 
 # Handle flags and arguments
@@ -50,14 +51,14 @@ EOF
 )
 
 if [ "$FORCE_SONNET" = true ]; then
-  echo opencode run --model anthropic/claude-sonnet-4-5 <prompt>
+  echo 'opencode run --model anthropic/claude-sonnet-4-5-20250929 <prompt>'
   opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
 else
-  echo opencode run --model "$MODEL" <prompt>
+  echo "opencode run --model $MODEL <prompt>"
   OUTPUT=$(opencode run --model "$MODEL" "$PROMPT" || true)
 
   if [[ -z "$OUTPUT" ]]; then
-    echo opencode run --model anthropic/claude-sonnet-4-5 <prompt>
+    echo 'opencode run --model anthropic/claude-sonnet-4-5-20250929 <prompt>'
     opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
   else
     echo "$OUTPUT"

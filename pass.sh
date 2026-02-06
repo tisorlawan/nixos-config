@@ -1,22 +1,38 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
-uv run --with argon2-cffi --with cryptography python3 - "$@" << 'EOF'
-import sys
-from argon2.low_level import hash_secret_raw, Type
-from cryptography.hazmat.primitives.ciphers.aead import AESGCM
-import getpass
-from pathlib import Path
+SCRIPT_DIR="$(dirname "$(realpath "$0")")"
+SRC="$SCRIPT_DIR/pass_decrypt.c"
+CACHE_DIR="${XDG_CACHE_HOME:-$HOME/.cache}/passlock"
+BIN="$CACHE_DIR/pass_decrypt"
 
-path = sys.argv[1] if len(sys.argv) > 1 else Path(__file__).parent / "passlock.enc"
-with open(path, "rb") as f:
-    data = f.read()
+# --- dependency check ---
+command -v cc >/dev/null 2>&1 || command -v gcc >/dev/null 2>&1 || {
+	echo >&2 "error: C compiler not found. Install: sudo apt install build-essential"
+	exit 1
+}
+[ -f "$SRC" ] || {
+	echo >&2 "error: $SRC not found"
+	exit 1
+}
 
-salt, nonce, ciphertext = data[:16], data[16:28], data[28:]
-password = getpass.getpass("Master password: ").encode()
+# --- compile once, rebuild if source changed ---
+if [ ! -x "$BIN" ] || [ "$SRC" -nt "$BIN" ]; then
+	mkdir -p "$CACHE_DIR"
+	cc -O2 -o "$BIN" "$SRC" -lpthread 2>&1 || {
+		echo >&2 "error: compilation failed (need build-essential? sudo apt install build-essential)"
+		exit 1
+	}
+fi
 
-key = hash_secret_raw(password, salt, time_cost=2, memory_cost=19456,
-                      parallelism=1, hash_len=32, type=Type.ID)
+# --- run ---
+FILE="${1:-$SCRIPT_DIR/passlock.enc}"
+[ -f "$FILE" ] || {
+	echo >&2 "error: file not found: $FILE"
+	exit 1
+}
 
-plaintext = AESGCM(key).decrypt(nonce, ciphertext, None)
-print(plaintext.decode())
-EOF
+read -rsp "Master password: " PASSWORD
+echo >&2
+
+printf '%s' "$PASSWORD" | "$BIN" "$FILE"

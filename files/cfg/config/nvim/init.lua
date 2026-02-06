@@ -1253,7 +1253,7 @@ local function get_used_ft()
     nix = { servers = { 'nil_ls' }, formatters = { 'nixpkgs_fmt' } },
     php = { formatters = { 'php_cs_fixer' }, servers = { 'phpactor', 'html' } },
     -- python = { formatters = { 'ruff_format', 'ruff_organize_imports' }, servers = { 'pyright', 'ruff' } },
-    python = { formatters = { 'ruff_format', 'ruff_organize_imports' }, servers = { 'basedpyright', 'ruff' } },
+    python = { formatters = { 'ruff_format', 'ruff_organize_imports' }, servers = { 'pyright', 'ruff' } },
     rust = { servers = { 'rust_analyzer' }, formatters = { 'rustfmt' } },
     sh = { servers = { 'bashls' }, formatters = { 'shfmt' } },
     typescript = { formatters = { 'biome-check' }, servers = { 'ts_ls', 'eslint' } },
@@ -1594,7 +1594,11 @@ require('lazy').setup({
       require('kanagawa').setup { transparent = true }
     end,
   },
-  { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1000,
+  },
 
   -- 2. CORE ENGINE
   {
@@ -1804,9 +1808,7 @@ require('lazy').setup({
     build = function()
       require('fff.download').download_or_build_binary()
     end,
-    opts = {
-      prompt = '> ',
-    },
+    opts = { prompt = '> ' },
     keys = { {
       '<c-p>',
       function()
@@ -2375,7 +2377,7 @@ require('lazy').setup({
 
 if vim.g.enable_highlight then
   -- set_random_colorscheme 'kanagawa-wave, kanagawa-dragon'
-  set_random_colorscheme 'catppuccin'
+  set_random_colorscheme 'kanagawa-dragon'
 else
   vim.cmd 'syntax on'
 

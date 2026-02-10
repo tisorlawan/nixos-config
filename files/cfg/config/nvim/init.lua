@@ -2337,7 +2337,7 @@ require('lazy').setup({
           'sonarlint-ls',
           '-stdio',
           '-analyzers',
-          vim.fn.expand '$MASON/share/sonarlint-analyzers/sonarpython.jar',
+          vim.fn.expand '$HOME/.rice/files/misc/sonarpython.jar',
         },
         settings = {
           sonarlint = {
@@ -2345,8 +2345,22 @@ require('lazy').setup({
               connections = {
                 sonarqube = {
                   {
-                    connectionId = 'sqa-obrol',
-                    serverUrl = 'https://sqa.obrol.id',
+                    connectionId = 'gdp-admin',
+                    serverUrl = 'https://sonarcloud.io',
+                    disableNotifications = false,
+                  },
+                  -- {
+                  --   connectionId = 'sqa-obrol',
+                  --   serverUrl = 'https://sqa.obrol.id',
+                  --   disableNotifications = false,
+                  -- },
+                },
+                sonarcloud = {
+                  {
+                    connectionId = 'gdp-admin',
+                    serverUrl = 'https://sonarcloud.io',
+                    region = 'US',
+                    organizationKey = 'gdp-admin',
                     disableNotifications = false,
                   },
                 },
@@ -2360,10 +2374,12 @@ require('lazy').setup({
             ['/home/agung-b-sorlawan/Documents/services-llm-service'] = 'nlp',
             ['/home/agung-b-sorlawan/Documents/gen-ai-internal/libs/gllm-core'] = 'gllm-core',
             ['/home/agung-b-sorlawan/Documents/gen-ai-internal/libs/gllm-privacy'] = 'gllm-core',
+            ['/home/agung-b-sorlawan/Documents/gen-ai-internal/libs/gllm-evals'] = 'gllm-evals',
           }
 
           config.settings.sonarlint.connectedMode.project = {
-            connectionId = 'sqa-obrol',
+            -- connectionId = 'sqa-obrol',
+            connectionId = 'gdp-admin',
             projectKey = project_root_and_ids[params.rootPath],
           }
         end,

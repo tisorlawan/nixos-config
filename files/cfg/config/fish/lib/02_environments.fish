@@ -30,3 +30,14 @@ set -x DIRENV_LOG_FORMAT ""
 set -x UV_HTTP_TIMEOUT 300
 
 set -x PASSLOCK_FILE $HOME/.rice/passlock.enc
+
+set -l _color_mode $COLOR
+if test -z "$_color_mode"; and test -f "$HOME/.color"
+    set _color_mode (string trim (cat "$HOME/.color" 2>/dev/null))
+end
+
+if test "$_color_mode" = light
+    set -x BAT_THEME Coldark-Cold
+else
+    set -x BAT_THEME TwoDark
+end

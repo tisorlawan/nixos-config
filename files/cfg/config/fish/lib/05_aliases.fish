@@ -35,7 +35,7 @@ alias ds="devenv shell fish"
 alias fs="nix develop --command fish"
 
 ##-- NVIM --##
-alias W='nvim -c "setlocal buftype=nofile bufhidden=wipe" -c "nnoremap <buffer> q :q!<CR>" -'
+alias W='nvim -c "setlocal signcolumn=no ft=man nomod nolist nonumber norelativenumber signcolumn=no cmdheight=1 laststatus=1 hidden autowrite noswapfile statuscolumn= buftype=nofile bufhidden=wipe" -c "nnoremap <buffer> q :q!<CR>" -'
 alias lvim='nvim -c "normal '\''0"'
 alias teln="rg --files | fzf --border-label='[ File search ]' --preview 'bat --style=numbers --color=always --line-range :100 {}' | xargs nvim "
 alias nnvim="NVIM_APPNAME=nvim2 nvim"
@@ -72,6 +72,10 @@ function ci --argument-names env_name
     end
 end
 
+function rrr
+    nohup reminder $argv 2>/dev/null >/tmp/reminder-out &
+end
+
 ##-- RUST --##
 alias cb="cargo build"
 alias cbr="cargo build --release"
@@ -101,6 +105,7 @@ alias gcloudc="gcloud auth print-access-token | clip"
 ##-- CLI AI Tools --##
 alias codex="npx @openai/codex@latest -s danger-full-access"
 alias gemini="npx https://github.com/google-gemini/gemini-cli"
+alias opencode="my-opencode"
 
 function poetry-glsdk
     set -gx POETRY_HTTP_BASIC_GEN_AI_INTERNAL_USERNAME "oauth2accesstoken"

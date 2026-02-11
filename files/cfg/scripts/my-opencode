@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+WRITE_CONFIG_ONLY=0
+if [ "${1:-}" = "--write-config-only" ]; then
+    WRITE_CONFIG_ONLY=1
+    shift
+fi
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+COLOR_MODE="$($SCRIPT_DIR/color-mode)"
+
+CONFIG_DIR="$HOME/.config/opencode"
+mkdir -p "$CONFIG_DIR"
+THEME_DIR="$CONFIG_DIR/themes"
+mkdir -p "$THEME_DIR"
+THEME_CONFIG="$CONFIG_DIR/theme.json"
+TMP_CONFIG="$(mktemp "$CONFIG_DIR/theme.json.XXXXXX")"
+
+if [ "$COLOR_MODE" = "light" ]; then
+    theme="rice-light"
+
+    TMP_THEME="$(mktemp "$THEME_DIR/rice-light.json.XXXXXX")"
+    cat > "$TMP_THEME" << 'EOF'
+{
+  "$schema": "https://opencode.ai/theme.json",
+  "theme": {
+    "primary": "#1f5f9a",
+    "secondary": "#4f5d75",
+    "accent": "#7a3ea3",
+    "error": "#b53a2f",
+    "warning": "#8f5f00",
+    "success": "#2f7d32",
+    "info": "#1f5f9a",
+    "text": "#131722",
+    "textMuted": "#4a5568",
+    "background": "#ffffff",
+    "backgroundPanel": "#f6f8fb",
+    "backgroundElement": "#edf1f7",
+    "border": "#d6deea",
+    "borderActive": "#9eb1cc",
+    "borderSubtle": "#e3e9f2",
+    "diffAdded": "#216e39",
+    "diffRemoved": "#a7372c",
+    "diffContext": "#4a5568",
+    "diffHunkHeader": "#4f5d75",
+    "diffHighlightAdded": "#216e39",
+    "diffHighlightRemoved": "#a7372c",
+    "diffAddedBg": "#eaf7ed",
+    "diffRemovedBg": "#fdeeed",
+    "diffContextBg": "#f6f8fb",
+    "diffLineNumber": "#6b7280",
+    "diffAddedLineNumberBg": "#eaf7ed",
+    "diffRemovedLineNumberBg": "#fdeeed",
+    "markdownText": "#131722",
+    "markdownHeading": "#1f5f9a",
+    "markdownLink": "#1f5f9a",
+    "markdownLinkText": "#1f5f9a",
+    "markdownCode": "#2f7d32",
+    "markdownBlockQuote": "#4a5568",
+    "markdownEmph": "#7a3ea3",
+    "markdownStrong": "#8f5f00",
+    "markdownHorizontalRule": "#d6deea",
+    "markdownListItem": "#1f5f9a",
+    "markdownListEnumeration": "#4f5d75",
+    "markdownImage": "#1f5f9a",
+    "markdownImageText": "#4f5d75",
+    "markdownCodeBlock": "#131722",
+    "syntaxComment": "#6b7280",
+    "syntaxKeyword": "#7a3ea3",
+    "syntaxFunction": "#1f5f9a",
+    "syntaxVariable": "#4f5d75",
+    "syntaxString": "#2f7d32",
+    "syntaxNumber": "#8f5f00",
+    "syntaxType": "#1f5f9a",
+    "syntaxOperator": "#4f5d75",
+    "syntaxPunctuation": "#4f5d75"
+  }
+}
+EOF
+    mv "$TMP_THEME" "$THEME_DIR/rice-light.json"
+else
+    theme="opencode"
+fi
+
+cat > "$TMP_CONFIG" << EOF
+{
+  "\$schema": "https://opencode.ai/config.json",
+  "theme": "$theme"
+}
+EOF
+
+mv "$TMP_CONFIG" "$THEME_CONFIG"
+
+if [ "$WRITE_CONFIG_ONLY" -eq 1 ]; then
+    exit 0
+fi
+
+OPENCODE_CONFIG="$THEME_CONFIG" exec opencode "$@"

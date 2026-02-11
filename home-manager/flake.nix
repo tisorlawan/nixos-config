@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/release-25.11";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/00c21e4c";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/ec7c70d1";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -14,7 +14,7 @@
     #   url = "github:sst/opencode";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
-    ghostty.url = "github:ghostty-org/ghostty/3cc0115";
+    ghostty.url = "github:ghostty-org/ghostty/c846174";
     flake-utils.url = "github:numtide/flake-utils";
   };
 

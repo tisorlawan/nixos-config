@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+if [ "$#" -ne 1 ]; then
+    printf 'Usage: %s <dark|light>\n' "$(basename "$0")" >&2
+    exit 1
+fi
+
+mode="$1"
+case "$mode" in
+    dark|light)
+        ;;
+    *)
+        printf 'Invalid mode: %s (expected dark or light)\n' "$mode" >&2
+        exit 1
+        ;;
+esac
+
+printf '%s\n' "$mode" > "$HOME/.color"
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+"$SCRIPT_DIR/my-ghostty" --write-config-only
+"$SCRIPT_DIR/my-alacritty" --write-config-only
+"$SCRIPT_DIR/my-opencode" --write-config-only
+
+if command -v tmux >/dev/null 2>&1 && tmux info >/dev/null 2>&1; then
+    tmux source-file "$HOME/.tmux.conf" >/dev/null 2>&1 || true
+fi
+
+printf 'mode=%s\n' "$mode"
+printf 'Set shell override with: export COLOR=%s\n' "$mode"

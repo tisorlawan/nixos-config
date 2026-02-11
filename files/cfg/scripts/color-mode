@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+mode="${COLOR:-}"
+
+if [ -z "$mode" ] && [ -f "$HOME/.color" ]; then
+    mode="$(tr -d '[:space:]' < "$HOME/.color" 2>/dev/null || true)"
+fi
+
+case "$mode" in
+    light|dark)
+        printf '%s\n' "$mode"
+        ;;
+    *)
+        printf '%s\n' dark
+        ;;
+esac

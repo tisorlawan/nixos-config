@@ -1,7 +1,10 @@
 # theme = "Catppuccin Mocha"
-background = 131313 
+# background = 131313 
+
+theme = "Terminal Basic"
 
 background-opacity = 1.0
+background = fcfcfc
 # background = 181818
 # font-family = "BlexMono Nerd Font Propo SemiBold"
 font-family = "JetBrainsMono Nerd Font"

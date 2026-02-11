@@ -176,6 +176,7 @@ in
 
       # Compilers, language servers, and formatters
       languageTooling = [
+        gf
         go
         nodejs_22
         typescript-language-server

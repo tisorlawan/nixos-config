@@ -5,10 +5,10 @@
 # Terminal
 # $HOME/.scripts/my-ghostty
 super + Return
-    ghostty
+    $HOME/.scripts/my-ghostty
 
 super + shift + Return
-	alacritty
+    $HOME/.scripts/my-alacritty
 
 # Lock
 super + shift + 9
@@ -164,6 +164,10 @@ super + ctrl + space
 # cancel the preselection for the focused desktop
 super + ctrl + shift + space
 	bspc query -N -d | xargs -I id -n 1 bspc node id -p cancel
+
+# resize tiled window split ratio
+super + alt + {h,j,k,l}
+	bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
 
 # move float
 super + {Left,Down,Up,Right}

@@ -2,7 +2,7 @@
 vim.g.mapleader = ' '
 vim.g.enable_highlight = false
 local function get_color_mode()
-  local mode = vim.env.COLOR
+  local mode = vim.env.COLOR or vim.env.LC_COLOR
 
   if mode ~= 'dark' and mode ~= 'light' then
     local color_file = io.open(vim.fn.expand '~/.color', 'r')
@@ -342,8 +342,8 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 -- stylua: ignore
 local colorcolumn_rules = {
   gitcommit = { enable = true, limits = { 50, 72 } },
-  markdown   = { enable = true, limits = { 80 } },
-  python     = { enable = true, limits = { 88 } },
+  markdown  = { enable = true, limits = { 80 } },
+  python    = { enable = true, limits = { 88 } },
 }
 
 vim.api.nvim_create_autocmd('FileType', {
@@ -694,50 +694,6 @@ local function open_picker_terminal(cmd, name, on_done, height)
   vim.cmd 'startinsert'
 end
 
-local function fzf_callback_with_mode(lines)
-  if #lines < 2 then
-    return
-  end
-
-  local key = lines[1]
-
-  if key == 'ctrl-q' then
-    vim.fn.win_gotoid(fzf_source_win)
-    local qf_items = {}
-    for i = 2, #lines do
-      if lines[i] ~= '' then
-        table.insert(qf_items, { filename = lines[i], lnum = 1 })
-      end
-    end
-    if #qf_items > 0 then
-      vim.fn.setqflist({}, 'r', { title = 'Files', items = qf_items })
-      vim.cmd 'copen'
-    end
-    return
-  end
-
-  if vim.fn.win_gotoid(fzf_source_win) ~= 1 then
-    return
-  end
-
-  for i = 2, #lines do
-    local file = lines[i]
-    if file ~= '' and vim.fn.filereadable(file) == 1 then
-      if i == 2 then
-        if key == 'ctrl-s' then
-          vim.cmd('split ' .. vim.fn.fnameescape(file))
-        elseif key == 'ctrl-v' then
-          vim.cmd('vsplit ' .. vim.fn.fnameescape(file))
-        else
-          vim.cmd('edit ' .. vim.fn.fnameescape(file))
-        end
-      else
-        vim.cmd('badd ' .. vim.fn.fnameescape(file))
-      end
-    end
-  end
-end
-
 local function fzf_callback(lines)
   if #lines > 0 and lines[1] ~= '' and vim.fn.filereadable(lines[1]) == 1 then
     if vim.fn.win_gotoid(fzf_source_win) == 1 then
@@ -745,60 +701,6 @@ local function fzf_callback(lines)
     end
   end
 end
-
-local function buffer_picker()
-  fzf_source_win = vim.api.nvim_get_current_win()
-  local current_buf = vim.api.nvim_get_current_buf()
-  local finder = get_fuzzy_finder()
-
-  if finder ~= '' then
-    fzf_tempfile = vim.fn.tempname()
-    local bufs = {}
-    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
-      if vim.bo[buf].buflisted and buf ~= current_buf and vim.bo[buf].buftype ~= 'terminal' then
-        local name = vim.api.nvim_buf_get_name(buf)
-        if name ~= '' then
-          local cwd = vim.fn.getcwd()
-          if name:sub(1, #cwd) == cwd then
-            name = name:sub(#cwd + 2)
-          end
-          table.insert(bufs, name)
-        end
-      end
-    end
-
-    if #bufs == 0 then
-      print 'No other buffers'
-      return
-    end
-
-    local cmd
-    if finder == 'fzy' then
-      local buflist = table.concat(bufs, '\n')
-      cmd = 'echo ' .. vim.fn.shellescape(buflist) .. ' | ' .. finder .. ' > ' .. fzf_tempfile
-    else
-      local buflist = table.concat(bufs, '\n')
-      cmd = 'echo ' .. vim.fn.shellescape(buflist) .. ' | ' .. finder .. ' --layout=reverse --multi --expect=ctrl-s,ctrl-v,ctrl-q > ' .. fzf_tempfile
-    end
-
-    open_picker_terminal(cmd, '[Buffers]', function()
-      if vim.fn.filereadable(fzf_tempfile) == 1 then
-        local lines = vim.fn.readfile(fzf_tempfile)
-        vim.fn.delete(fzf_tempfile)
-        if finder == 'fzy' then
-          fzf_callback(lines)
-        else
-          fzf_callback_with_mode(lines)
-        end
-      end
-    end)
-  else
-    vim.cmd 'ls'
-    vim.api.nvim_feedkeys(':buffer ', 'n', false)
-  end
-end
-
--- map('n', '<C-n>', buffer_picker, { desc = 'Buffer picker' })
 
 -- ============================================================================
 -- @GREP (ripgrep/grep)
@@ -1224,6 +1126,43 @@ function ui.fg(name)
   return fg and { fg = string.format('#%06x', fg) } or nil
 end
 
+local function blend_color(bg, base, alpha)
+  local br = math.floor(bg / 0x10000) % 0x100
+  local bgc = math.floor(bg / 0x100) % 0x100
+  local bb = bg % 0x100
+
+  local rr = math.floor(base / 0x10000) % 0x100
+  local rg = math.floor(base / 0x100) % 0x100
+  local rb = base % 0x100
+
+  local r = math.floor(rr + (br - rr) * alpha + 0.5)
+  local g = math.floor(rg + (bgc - rg) * alpha + 0.5)
+  local b = math.floor(rb + (bb - rb) * alpha + 0.5)
+
+  return r * 0x10000 + g * 0x100 + b
+end
+
+local function style_quickfix_selection()
+  local cursor = vim.api.nvim_get_hl(0, { name = 'CursorLine', link = false })
+  local normal = vim.api.nvim_get_hl(0, { name = 'Normal', link = false })
+
+  local hl = vim.deepcopy(cursor)
+  if cursor.bg and normal.bg then
+    local alpha = 0.5
+    if not vim.g.enable_highlight then
+      if vim.o.background == 'light' then
+        alpha = 0.05
+      else
+        alpha = 0.85
+      end
+    end
+
+    hl.bg = blend_color(cursor.bg, normal.bg, alpha)
+  end
+
+  vim.api.nvim_set_hl(0, 'QuickFixLine', hl)
+end
+
 local function apply_transparency()
   local groups = {
     'NormalFloat',
@@ -1260,8 +1199,13 @@ end
 
 vim.api.nvim_create_autocmd('ColorScheme', {
   group = augroup,
-  callback = apply_transparency,
+  callback = function()
+    apply_transparency()
+    style_quickfix_selection()
+  end,
 })
+
+style_quickfix_selection()
 
 -- ============================================================================
 -- @USED FILETYPES SYSTEM
@@ -2612,8 +2556,8 @@ local function apply_monochrome(mode)
       blue_dim = '#688ea0',
       blue_bright = '#3a6f8a',
 
-      green = '#227d14',
-      green_dim = '#029629',
+      green = '#0ca621',
+      green_dim = '#027312',
 
       bg = '#ffffff',
       selection = '#c9dceb',
@@ -2650,7 +2594,7 @@ local function apply_monochrome(mode)
   h(0, 'Conditional', { fg = C.white, bold = true })
   h(0, 'Repeat', { fg = C.white, bold = true })
   h(0, 'Function', { fg = C.white, bold = true })
-  h(0, 'String', { fg = C.green, bold = false })
+  h(0, 'String', { fg = C.green, bold = true, italic = false })
   h(0, 'Number', { fg = C.white })
   h(0, 'Boolean', { fg = C.white, bold = true })
   h(0, 'Type', { fg = C.white, bold = true })

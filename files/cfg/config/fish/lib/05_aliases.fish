@@ -100,7 +100,18 @@ alias yda="yt-dlp -f '[ext=mp4]+ba/b' --extract-audio --no-playlist"
 alias t="priv todo"
 
 alias pwdc="pwd | clip"
-alias gcloudc="gcloud auth print-access-token | clip"
+alias gcloudc="gcloud auth print-access-token | tr -d '\n' | clip"
+
+##-- SSH --##
+function ssh
+    set -l color (string trim (cat ~/.color 2>/dev/null))
+    if test -n "$color"
+        set -lx LC_COLOR $color
+        command ssh -o "SendEnv LC_COLOR" $argv
+    else
+        command ssh $argv
+    end
+end
 
 ##-- CLI AI Tools --##
 alias codex="npx @openai/codex@latest -s danger-full-access"

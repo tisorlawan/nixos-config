@@ -14,7 +14,7 @@
     #   url = "github:sst/opencode";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
-    ghostty.url = "github:ghostty-org/ghostty/c846174";
+    ghostty.url = "github:ghostty-org/ghostty/b6dbd44";
     flake-utils.url = "github:numtide/flake-utils";
   };
 

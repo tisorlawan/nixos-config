@@ -12,9 +12,6 @@ ln -srf files/cfg/config/fish ~/.config/fish
 rm -rf ~/.config/rofi
 ln -srf files/cfg/config/rofi ~/.config/rofi
 
-rm -rf ~/.config/alacritty.toml
-ln -srf ./files/cfg/config/alacritty.toml ~/.config/alacritty.toml
-
 rm -rf ~/.config/greenclip.toml
 ln -srf ./files/cfg/config/greenclip.toml ~/.config/greenclip.toml
 
@@ -111,6 +108,7 @@ ln -srf ./files/cfg/config/opencode/skill ~/.config/opencode/skill
 rm -rf ~/.config/opencode/commands
 ln -srf cc/commands/ ~/.config/opencode/commands
 
-rm -rf ~/.config/ghostty
 mkdir ~/.config/ghostty
-ln -srf ./files/cfg/config/ghostty/config ~/.config/ghostty/config
+
+rm -rf ~/.bashrc
+ln -srf ./files/cfg/bashrc ~/.bashrc

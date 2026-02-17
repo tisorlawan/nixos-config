@@ -7,7 +7,7 @@ WINIT_X11_SCALE_FACTOR = "1.0"
 
 [font.normal]
 # family = "BlexMono Nerd Font Propo SemiBold"
-family = "JetBrainsMono Nerd Font"
+family = "Berkeley Mono"
 
 [font]
 size = 13

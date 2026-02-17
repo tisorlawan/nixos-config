@@ -1491,6 +1491,15 @@ local lsp_servers = {
     cmd = { 'rust-analyzer' },
     filetypes = { 'rust' },
     root_markers = { 'Cargo.toml', 'rust-project.json' },
+    settings = {
+      ['rust-analyzer'] = {
+        completion = {
+          callable = {
+            snippets = 'none',
+          },
+        },
+      },
+    },
   },
   ts_ls = {
     cmd = { 'typescript-language-server', '--stdio' },

@@ -1,4 +1,0 @@
-rm ~/.config/nushell/history.txt
-git s
-nvim .gitignore
-git s

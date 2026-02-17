@@ -10,15 +10,15 @@ WINIT_X11_SCALE_FACTOR = "1.0"
 family = "JetBrainsMono Nerd Font"
 
 [font]
-size = 14
+size = 13
 
 [font.glyph_offset]
 x = 0
-y = 0
+y = 1
 
 [font.offset]
 x = 0
-y = 0
+y = 1
 
 # [colors.primary]
 # background = "#151518"
@@ -29,4 +29,4 @@ opacity = 1.0
 
 [window.padding]
 x = 0
-y = 2
+y = 0

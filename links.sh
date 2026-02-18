@@ -83,16 +83,6 @@ rm -rf ~/.claude/commands
 ln -srf cc/commands/ ~/.claude/commands
 ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.claude/CLAUDE.md
 
-mkdir -p ~/.claude-personal
-rm -rf ~/.claude-peronal/commands
-ln -srf cc/commands/ ~/.claude-personal/commands
-ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.claude-personal/CLAUDE.md
-
-mkdir -p ~/.claude-work
-rm -rf ~/.claude-peronal/commands
-ln -srf cc/commands/ ~/.claude-work/commands
-ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.claude-work/CLAUDE.md
-
 rm -rf ~/.config/opencode/config.json
 ln -srf ./files/cfg/config/opencode/config.json ~/.config/opencode/config.json
 

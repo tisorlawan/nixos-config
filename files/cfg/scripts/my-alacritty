@@ -10,6 +10,7 @@ fi
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 COLOR_MODE="$($SCRIPT_DIR/color-mode)"
+COLOR_MODE=dark
 
 DIR="$HOME/.config/alacritty"
 mkdir -p "$DIR"

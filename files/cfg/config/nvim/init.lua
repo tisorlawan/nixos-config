@@ -391,6 +391,55 @@ vim.api.nvim_create_autocmd('FileType', {
   end,
 })
 
+local function fix_dirvish_leftcol(buf)
+  if not vim.api.nvim_buf_is_valid(buf) or vim.bo[buf].filetype ~= 'dirvish' then
+    return
+  end
+  local win = vim.fn.bufwinid(buf)
+  if win == -1 or not vim.api.nvim_win_is_valid(win) then
+    return
+  end
+  vim.api.nvim_win_call(win, function()
+    local row = vim.fn.line '.'
+    local col = vim.fn.col '.'
+    if col > 1 then
+      vim.api.nvim_win_set_cursor(0, { row, 0 })
+    end
+    local view = vim.fn.winsaveview()
+    if view.leftcol ~= 0 then
+      view.leftcol = 0
+      vim.fn.winrestview(view)
+    end
+  end)
+end
+
+vim.api.nvim_create_autocmd('FileType', {
+  group = augroup,
+  pattern = 'dirvish',
+  callback = function(event)
+    vim.opt_local.sidescrolloff = 0
+    vim.opt_local.sidescroll = 1
+    vim.keymap.set('n', '-', function()
+      vim.defer_fn(function()
+        fix_dirvish_leftcol(vim.api.nvim_get_current_buf())
+      end, 1)
+      return (vim.v.count > 0 and tostring(vim.v.count) or '') .. '<Plug>(dirvish_up)'
+    end, { buffer = event.buf, expr = true, remap = true, silent = true })
+    vim.schedule(function()
+      fix_dirvish_leftcol(event.buf)
+    end)
+  end,
+})
+
+vim.api.nvim_create_autocmd({ 'BufEnter', 'WinEnter' }, {
+  group = augroup,
+  callback = function(event)
+    if vim.api.nvim_buf_is_valid(event.buf) and vim.bo[event.buf].filetype == 'dirvish' then
+      fix_dirvish_leftcol(event.buf)
+    end
+  end,
+})
+
 vim.api.nvim_create_autocmd('BufWinEnter', {
   group = augroup,
   callback = function()
@@ -1228,19 +1277,19 @@ local function get_used_ft()
   local config = {
     c = { formatters = { 'clang_format' }, servers = { 'clangd' } },
     go = { formatters = { 'gofumpt', 'goimports', 'golines' }, servers = { 'gopls' } },
-    html = { servers = { 'html' }, formatters = { 'biome' } },
-    javascript = { formatters = { 'biome' } },
-    json = { formatters = { 'biome' } },
+    html = { servers = { 'html' }, formatters = { 'oxfmt' } },
+    javascript = { formatters = { 'oxfmt' } },
+    json = { formatters = { 'oxfmt' } },
     lua = { formatters = { 'stylua' }, servers = { 'lua_ls' } },
-    markdown = { formatters = { 'prettierd' }, servers = { 'marksman' } },
+    markdown = { formatters = { 'oxfmt' }, servers = { 'marksman' } },
     nix = { servers = { 'nil_ls' }, formatters = { 'nixpkgs_fmt' } },
     php = { formatters = { 'php_cs_fixer' }, servers = { 'phpactor', 'html' } },
     -- python = { formatters = { 'ruff_format', 'ruff_organize_imports' }, servers = { 'pyright', 'ruff' } },
     python = { formatters = { 'ruff_format', 'ruff_organize_imports' }, servers = { 'pyright', 'ruff' } },
     rust = { servers = { 'rust_analyzer' }, formatters = { 'rustfmt' } },
     sh = { servers = { 'bashls' }, formatters = { 'shfmt' } },
-    typescript = { formatters = { 'biome-check' }, servers = { 'ts_ls', 'eslint' } },
-    typescriptreact = { formatters = { 'biome-check' }, servers = { 'ts_ls', 'eslint' } },
+    typescript = { formatters = { 'oxfmt' }, servers = { 'ts_ls', 'eslint' } },
+    typescriptreact = { formatters = { 'oxfmt' }, servers = { 'ts_ls', 'eslint' } },
     zig = { formatters = { 'zigfmt' }, servers = { 'zls' } },
   }
 
@@ -1587,11 +1636,6 @@ if not vim.g.__user_lazy_setup_done then
         require('kanagawa').setup { transparent = true }
       end,
     },
-    {
-      'catppuccin/nvim',
-      name = 'catppuccin',
-      priority = 1000,
-    },
 
     -- 2. CORE ENGINE
     {
@@ -1618,20 +1662,6 @@ if not vim.g.__user_lazy_setup_done then
       'stevearc/conform.nvim',
       opts = {
         formatters_by_ft = used_ft_sys.formatters_by_ft,
-        formatters = {
-          biome = {
-            args = {
-              'format',
-              '--javascript-formatter-indent-width=2',
-              '--indent-style=space',
-              '--json-formatter-indent-style=space',
-              '--json-formatter-indent-width=4',
-              '--write',
-              '--stdin-file-path',
-              '$FILENAME',
-            },
-          },
-        },
         format_on_save = function(bufnr)
           if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
             return
@@ -2352,6 +2382,12 @@ if not vim.g.__user_lazy_setup_done then
       end,
     },
     { 'romainl/vim-cool' },
+    {
+      'wintermute-cell/gitignore.nvim',
+      config = function()
+        require 'gitignore'
+      end,
+    },
     {
       'Aasim-A/scrollEOF.nvim',
       event = { 'CursorMoved', 'WinScrolled' },

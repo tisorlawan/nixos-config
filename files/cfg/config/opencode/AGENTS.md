@@ -24,6 +24,7 @@
 - NO AMEND unless explicitly requested.
 - DO NOT run git write commands (e.g., git add, git commit).
   - If needed, provide the exact command and ask user to run it.
+- DO NOT create any PR, never use "gh" command that modify/write repository.
 
 ## Critical Thinking
 

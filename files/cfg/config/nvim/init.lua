@@ -2467,10 +2467,7 @@ if not vim.g.__user_lazy_setup_done then
     {
       'mbbill/undotree',
       cmd = 'UndotreeToggle',
-      dependencies = {
-        'AstroNvim/astrocore',
-        opts = { mappings = { n = { ['<Leader>fu'] = { '<cmd>UndotreeToggle<CR>', desc = 'Find undotree' } } } },
-      },
+      keys = { { '<Leader>fu', '<cmd>UndotreeToggle<CR>', desc = 'Undotree', silent = true } },
     },
 
     -- 8. WORK

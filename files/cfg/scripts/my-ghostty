@@ -50,7 +50,8 @@ $(if [ "$COLOR_MODE" = "light" ]; then
 else
   echo 'background-opacity = 1.0'
   echo '# background = 18181b'
-  echo 'background = 131313'
+  echo '# background = 131313'
+  echo 'background = 1D282F'
   echo 'foreground = f3f4f6'
   echo 'cursor-color = e5e7eb'
   echo 'cursor-text = 111827'
@@ -75,9 +76,16 @@ else
 fi)
 
 font-family = "Berkeley Mono"
-font-size = 14
+# font-size = 17
+# adjust-cell-height = 2
+
+# font-size = 16
+# adjust-cell-height = 5
+
+font-size = 15
+adjust-cell-height = 1
+
 adjust-font-baseline = 1
-adjust-cell-height = 2
 adjust-underline-position = 2
 
 window-decoration = "none"

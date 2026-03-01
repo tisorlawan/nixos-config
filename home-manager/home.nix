@@ -135,6 +135,7 @@ in
         # pkgs-unstable.ducker
         # inputs.opencode.packages.x86_64-linux.default
         tokei
+        xan
       ];
 
       # Core development toolchain and documentation
@@ -302,6 +303,8 @@ in
         nixpkgs-unstable.ibm-plex
         nixpkgs-unstable.inconsolata
         nixpkgs-unstable.liberation_ttf
+        fontforge
+        nerd-font-patcher
       ];
     in
     terminalAndShells

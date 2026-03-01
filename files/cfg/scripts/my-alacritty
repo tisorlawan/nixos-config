@@ -60,7 +60,7 @@ else
   cat <<'DARK'
 [colors.primary]
 #background = "#181820"
-background = "#131313"
+background = "#181828"
 foreground = "#c8c8d0"
 
 [colors.cursor]

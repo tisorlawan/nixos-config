@@ -1,6 +1,6 @@
 -- stylua: ignore start
 vim.g.mapleader = ' '
-vim.g.enable_highlight = false
+vim.g.enable_highlight = true
 local function get_color_mode()
   local mode = vim.env.COLOR or vim.env.LC_COLOR
 
@@ -570,6 +570,8 @@ local function close_diagnostics()
       elseif ft == 'toggleterm' then
         vim.cmd 'close'
       elseif ft == 'neo-tree-popup' then
+        vim.cmd 'close'
+      elseif ft == 'Outline' then
         vim.cmd 'close'
       elseif buf == terminal_buf and vim.api.nvim_buf_is_valid(buf) then
         vim.cmd('bdelete! ' .. buf)
@@ -1209,6 +1211,7 @@ local function style_quickfix_selection()
     hl.bg = blend_color(cursor.bg, normal.bg, alpha)
   end
 
+  ---@diagnostic disable-next-line: param-type-mismatch
   vim.api.nvim_set_hl(0, 'QuickFixLine', hl)
 end
 
@@ -1628,13 +1631,22 @@ end, { force = true })
 
 if not vim.g.__user_lazy_setup_done then
   require('lazy').setup({
-    -- 1. COLORSCHEME
+    -- 1. @COLORSCHEME
+    { 'https://github.com/catppuccin/nvim' },
     {
-      'rebelot/kanagawa.nvim',
-      priority = 1000,
-      config = function()
-        require('kanagawa').setup { transparent = true }
-      end,
+      'jpwol/thorn.nvim',
+      opts = {
+        styles = {
+          keywords = { italic = false, bold = false },
+          comments = { italic = true, bold = false },
+          strings = { italic = false, bold = true },
+
+          diagnostic = {
+            underline = false,
+            error = { highlight = false },
+          },
+        },
+      },
     },
 
     -- 2. CORE ENGINE
@@ -1651,7 +1663,7 @@ if not vim.g.__user_lazy_setup_done then
       opts = {
         ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'python', 'vim', 'vimdoc' },
         auto_install = true,
-        ignore_install = { 'gitcommit' },
+        -- ignore_install = { 'gitcommit' },
         highlight = { enable = vim.g.enable_highlight, additional_vim_regex_highlighting = vim.g.enable_highlight and { 'ruby', 'elixir' } or false },
         indent = { enable = true, disable = { 'python', 'css', 'rust', 'lua', 'javascript', 'tsx', 'typescript', 'toml', 'json', 'c', 'heex', 'yaml' } },
         yati = { enable = true, disable = { 'rust', 'cpp' }, default_lazy = true, default_fallback = 'auto' },
@@ -2381,6 +2393,14 @@ if not vim.g.__user_lazy_setup_done then
     ]]
       end,
     },
+    {
+      'hedyhli/outline.nvim',
+      config = function()
+        vim.keymap.set('n', '<leader>fo', '<cmd>Outline<CR>', { desc = 'Toggle Outline' })
+
+        require('outline').setup {}
+      end,
+    },
     { 'romainl/vim-cool' },
     {
       'wintermute-cell/gitignore.nvim',
@@ -2473,6 +2493,18 @@ if not vim.g.__user_lazy_setup_done then
     -- 8. WORK
     {
       'https://gitlab.com/schrieveslaach/sonarlint.nvim',
+      name = 'sonarlint.nvim',
+      lazy = true,
+      init = function()
+        vim.api.nvim_create_user_command('SonarlintEnable', function()
+          require('lazy').load { plugins = { 'sonarlint.nvim' } }
+          for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+            if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].filetype == 'python' then
+              vim.api.nvim_exec_autocmds('FileType', { buffer = buf })
+            end
+          end
+        end, { desc = 'Enable SonarLint for Python buffers' })
+      end,
       opts = {
         server = {
           cmd = {
@@ -2564,7 +2596,7 @@ local function apply_monochrome(mode)
       green = '#98be65',
       green_dim = '#6f8f57',
 
-      bg = '#131313',
+      bg = '#13131a',
       selection = '#2d4f67',
       search = '#4c7a8f',
 
@@ -2622,22 +2654,22 @@ local function apply_monochrome(mode)
   h(0, 'StatusLineNC', { bg = C.bg, fg = C.white_dark })
 
   h(0, 'Comment', { fg = C.white_dim, italic = true })
-  h(0, 'Keyword', { fg = C.white, bold = true })
-  h(0, 'Statement', { fg = C.white, bold = true })
-  h(0, 'Conditional', { fg = C.white, bold = true })
-  h(0, 'Repeat', { fg = C.white, bold = true })
-  h(0, 'Function', { fg = C.white, bold = true })
-  h(0, 'String', { fg = C.green, bold = true, italic = false })
+  h(0, 'Keyword', { fg = C.white, bold = false })
+  h(0, 'Statement', { fg = C.white, bold = false })
+  h(0, 'Conditional', { fg = C.white, bold = false })
+  h(0, 'Repeat', { fg = C.white, bold = false })
+  h(0, 'Function', { fg = C.white, bold = false })
+  h(0, 'String', { fg = C.green, bold = false, italic = false })
   h(0, 'Number', { fg = C.white })
-  h(0, 'Boolean', { fg = C.white, bold = true })
+  h(0, 'Boolean', { fg = C.white, bold = false })
   h(0, 'Type', { fg = C.white, bold = true })
-  h(0, 'Constant', { fg = C.green, bold = true })
+  h(0, 'Constant', { fg = C.green, bold = false })
   h(0, 'Identifier', { fg = C.white })
   h(0, 'Special', { fg = C.white })
   h(0, 'Operator', { fg = C.white })
   h(0, 'PreProc', { fg = C.white })
-  h(0, 'Error', { fg = C.error, bold = true })
-  h(0, 'Todo', { fg = C.error, bold = true, italic = true })
+  h(0, 'Error', { fg = C.error, bold = false })
+  h(0, 'Todo', { fg = C.error, bold = false, italic = true })
 
   h(0, 'Visual', { bg = C.selection })
   h(0, 'Search', { bg = C.search, fg = C.white })
@@ -2790,8 +2822,13 @@ vim.cmd [[cnoreabbrev <expr> ec getcmdtype() == ':' && getcmdline() == 'ec' ? 'E
 vim.cmd [[cnoreabbrev <expr> rr getcmdtype() == ':' && getcmdline() == 'rr' ? 'Rr' : 'rr']]
 
 if vim.g.enable_highlight then
-  -- set_random_colorscheme 'kanagawa-wave, kanagawa-dragon'
-  set_random_colorscheme 'kanagawa-dragon'
+  if vim.g.monochrome_mode == 'dark' then
+    -- set_random_colorscheme 'catppuccin-mocha,thorn-dark-cold'
+    set_random_colorscheme 'thorn-dark-cold'
+  else
+    set_random_colorscheme 'catppuccin-latte'
+    -- set_random_colorscheme 'thorn-light-cold'
+  end
 else
   apply_monochrome(vim.g.monochrome_mode)
 end

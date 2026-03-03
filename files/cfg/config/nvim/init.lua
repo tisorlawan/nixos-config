@@ -1,6 +1,5 @@
 -- stylua: ignore start
 vim.g.mapleader = ' '
-vim.g.enable_highlight = true
 local function get_color_mode()
   local mode = vim.env.COLOR or vim.env.LC_COLOR
 
@@ -20,7 +19,6 @@ local function get_color_mode()
 end
 
 vim.g.monochrome_mode = get_color_mode()
-vim.o.background = vim.g.monochrome_mode
 math.randomseed(os.time())
 
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -111,6 +109,16 @@ vim.opt.grepformat = '%f:%l:%c:%m'
 vim.filetype.add({
   pattern = {
     ['%.env%.[%w_.-]+'] = 'sh',
+  },
+  extension = {
+    lisp = 'lisp',
+    cl = 'lisp',
+    lsp = 'lisp',
+    asd = 'lisp',
+  },
+  filename = {
+    ['sbclrc'] = 'lisp',
+    ['.sbclrc'] = 'lisp',
   },
 })
 
@@ -343,17 +351,67 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 local colorcolumn_rules = {
   gitcommit = { enable = true, limits = { 50, 72 } },
   markdown  = { enable = true, limits = { 80 } },
-  python    = { enable = true, limits = { 88 } },
+  python    = { enable = false, limits = { 88 } },
 }
+
+local function parse_colorcolumn(input)
+  local cols = {}
+  for value in input:gmatch '[^,%s]+' do
+    local num = tonumber(value)
+    if not num or num < 1 then
+      return nil
+    end
+    table.insert(cols, tostring(math.floor(num)))
+  end
+  if #cols == 0 then
+    return nil
+  end
+  return table.concat(cols, ',')
+end
+
+local function default_colorcolumn_for_filetype(ft)
+  local rule = colorcolumn_rules[ft]
+  if not rule or not rule.enable or not rule.limits or #rule.limits == 0 then
+    return ''
+  end
+  return table.concat(vim.tbl_map(tostring, rule.limits), ',')
+end
+
+local function apply_colorcolumn_rule()
+  vim.wo.colorcolumn = default_colorcolumn_for_filetype(vim.bo.filetype)
+end
+
+vim.api.nvim_create_user_command('ColorColumnToggle', function(cmd_opts)
+  if vim.wo.colorcolumn ~= '' then
+    vim.wo.colorcolumn = ''
+    return
+  end
+  local parsed = cmd_opts.args ~= '' and parse_colorcolumn(cmd_opts.args) or nil
+  local default = default_colorcolumn_for_filetype(vim.bo.filetype)
+  if default == '' then
+    default = '80'
+  end
+  vim.wo.colorcolumn = parsed or default
+end, { nargs = '?', force = true, desc = 'Toggle colorcolumn in current window' })
+
+vim.api.nvim_create_user_command('ColorColumnSet', function(cmd_opts)
+  local parsed = parse_colorcolumn(cmd_opts.args)
+  if not parsed then
+    vim.notify('ColorColumnSet: expected positive integer columns, e.g. 80 or 80,100', vim.log.levels.ERROR)
+    return
+  end
+  vim.wo.colorcolumn = parsed
+end, { nargs = 1, force = true, desc = 'Set colorcolumn in current window' })
+
+vim.api.nvim_create_user_command('ColorColumnClear', function()
+  vim.wo.colorcolumn = ''
+end, { force = true, desc = 'Clear colorcolumn in current window' })
 
 vim.api.nvim_create_autocmd('FileType', {
   group = augroup,
   pattern = vim.tbl_keys(colorcolumn_rules),
   callback = function()
-    local rule = colorcolumn_rules[vim.bo.filetype]
-    if rule and rule.enable then
-      vim.opt_local.colorcolumn = vim.tbl_map(tostring, rule.limits)
-    end
+    apply_colorcolumn_rule()
   end,
 })
 
@@ -364,6 +422,32 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.opt_local.expandtab = true
     vim.opt_local.tabstop = 2
     vim.opt_local.shiftwidth = 2
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  group = augroup,
+  pattern = 'lisp',
+  callback = function()
+    vim.opt_local.smartindent = false
+    vim.opt_local.expandtab = true
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.softtabstop = 2
+    vim.bo.lisp = false
+  end,
+})
+
+vim.api.nvim_create_autocmd('FileType', {
+  group = augroup,
+  pattern = 'scheme',
+  callback = function()
+    vim.opt_local.smartindent = false
+    vim.opt_local.expandtab = true
+    vim.opt_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.softtabstop = 2
+    vim.bo.lisp = true
   end,
 })
 
@@ -1177,88 +1261,6 @@ function ui.fg(name)
   return fg and { fg = string.format('#%06x', fg) } or nil
 end
 
-local function blend_color(bg, base, alpha)
-  local br = math.floor(bg / 0x10000) % 0x100
-  local bgc = math.floor(bg / 0x100) % 0x100
-  local bb = bg % 0x100
-
-  local rr = math.floor(base / 0x10000) % 0x100
-  local rg = math.floor(base / 0x100) % 0x100
-  local rb = base % 0x100
-
-  local r = math.floor(rr + (br - rr) * alpha + 0.5)
-  local g = math.floor(rg + (bgc - rg) * alpha + 0.5)
-  local b = math.floor(rb + (bb - rb) * alpha + 0.5)
-
-  return r * 0x10000 + g * 0x100 + b
-end
-
-local function style_quickfix_selection()
-  local cursor = vim.api.nvim_get_hl(0, { name = 'CursorLine', link = false })
-  local normal = vim.api.nvim_get_hl(0, { name = 'Normal', link = false })
-
-  local hl = vim.deepcopy(cursor)
-  if cursor.bg and normal.bg then
-    local alpha = 0.5
-    if not vim.g.enable_highlight then
-      if vim.o.background == 'light' then
-        alpha = 0.05
-      else
-        alpha = 0.85
-      end
-    end
-
-    hl.bg = blend_color(cursor.bg, normal.bg, alpha)
-  end
-
-  ---@diagnostic disable-next-line: param-type-mismatch
-  vim.api.nvim_set_hl(0, 'QuickFixLine', hl)
-end
-
-local function apply_transparency()
-  local groups = {
-    'NormalFloat',
-    'FloatBorder',
-    'FloatTitle',
-    'DiagnosticFloatingError',
-    'DiagnosticFloatingWarn',
-    'DiagnosticFloatingInfo',
-    'DiagnosticFloatingHint',
-    'BlinkCmpMenu',
-    'BlinkCmpMenuBorder',
-    'Pmenu',
-    'BlinkCmpDoc',
-    'BlinkCmpDocBorder',
-    'BlinkCmpLabel',
-    'BlinkCmpKind',
-    'BlinkCmpLabelDescription',
-    'BlinkCmpLabelDetail',
-    'BlinkCmpSource',
-  }
-  for _, group in ipairs(groups) do
-    local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
-    ---@diagnostic disable-next-line: assign-type-mismatch
-    hl.bg = 'none'
-    ---@diagnostic disable-next-line: assign-type-mismatch
-    hl.ctermbg = 'none'
-    ---@diagnostic disable-next-line: param-type-mismatch
-    vim.api.nvim_set_hl(0, group, hl)
-  end
-
-  -- vim.api.nvim_set_hl(0, 'PmenuSel', { bg = '#2D4F67', fg = 'none' })
-  -- vim.api.nvim_set_hl(0, 'BlinkCmpMenuSelection', { bg = '#2D4F67', fg = 'none' })
-end
-
-vim.api.nvim_create_autocmd('ColorScheme', {
-  group = augroup,
-  callback = function()
-    apply_transparency()
-    style_quickfix_selection()
-  end,
-})
-
-style_quickfix_selection()
-
 -- ============================================================================
 -- @USED FILETYPES SYSTEM
 -- ============================================================================
@@ -1278,6 +1280,7 @@ local function get_used_ft()
   end
 
   local config = {
+    lisp = {},
     c = { formatters = { 'clang_format' }, servers = { 'clangd' } },
     go = { formatters = { 'gofumpt', 'goimports', 'golines' }, servers = { 'gopls' } },
     html = { servers = { 'html' }, formatters = { 'oxfmt' } },
@@ -1307,6 +1310,11 @@ local function get_used_ft()
 end
 
 local used_ft_sys = get_used_ft()
+local enabled_ft = {}
+for _, ft in ipairs(used_ft_sys.used_ft) do
+  enabled_ft[ft] = true
+end
+local lisp_enabled = enabled_ft.lisp == true
 
 -- ============================================================================
 -- @LSP
@@ -1336,9 +1344,6 @@ local function setup_lsp_keymaps(buf)
   lmap(']d', function()
     vim.diagnostic.jump { count = 1, float = { border = 'rounded' } }
   end, 'Next Diagnostic')
-  lmap('<leader>cd', function()
-    vim.diagnostic.open_float { border = 'rounded' }
-  end, 'Line Diagnostics')
   lmap('<leader>ci', vim.lsp.buf.incoming_calls, 'Incoming calls')
   lmap('<leader>co', vim.lsp.buf.outgoing_calls, 'Outgoing calls')
 end
@@ -1382,6 +1387,10 @@ setup_diagnostic()
 vim.keymap.set('n', '<leader>ud', function()
   vim.diagnostic.enable(not vim.diagnostic.is_enabled())
 end, { desc = 'Toggle diagnostics' })
+
+vim.keymap.set('n', 'gl', function()
+  vim.diagnostic.open_float { border = 'rounded' }
+end, { desc = 'Show line diagnostics' })
 
 -- ============================================================================
 -- @LSP SERVERS (native vim.lsp)
@@ -1625,6 +1634,152 @@ vim.api.nvim_create_user_command('LspRestart', function()
   end, 500)
 end, { force = true })
 
+local sbcl_virt_ns = vim.api.nvim_create_namespace 'sbcl_eval'
+
+local function sbcl_send(expr, label, on_result)
+  local uv = vim.uv or vim.loop
+  local client = uv.new_tcp()
+  local function notify_result(msg, level)
+    vim.schedule(function()
+      if on_result then
+        on_result(msg, level)
+      else
+        vim.notify(msg, level)
+      end
+    end)
+  end
+  client:connect('127.0.0.1', 5555, function(err)
+    if err then
+      notify_result(label .. ': connection failed', vim.log.levels.ERROR)
+      pcall(client.close, client)
+      return
+    end
+    client:read_start(function(_, data)
+      if not data then
+        pcall(client.close, client)
+        return
+      end
+      client:read_stop()
+      client:write(expr .. '\n', function(write_err)
+        if write_err then
+          notify_result(label .. ': send failed', vim.log.levels.ERROR)
+          pcall(client.close, client)
+          return
+        end
+        client:read_start(function(_, resp)
+          pcall(client.shutdown, client)
+          pcall(client.close, client)
+          if not resp then
+            return
+          end
+          local trimmed = vim.trim(resp)
+          if trimmed:match '^ERR ' then
+            notify_result(label .. ': ' .. trimmed:sub(5), vim.log.levels.ERROR)
+          elseif trimmed:match '^OK ' then
+            notify_result(trimmed:sub(4), vim.log.levels.INFO)
+          else
+            notify_result(trimmed, vim.log.levels.INFO)
+          end
+        end)
+      end)
+    end)
+  end)
+end
+
+local function sbcl_show_virt(msg, level)
+  local bufnr = vim.api.nvim_get_current_buf()
+  local row = vim.api.nvim_win_get_cursor(0)[1] - 1
+  local hl = level == vim.log.levels.ERROR and 'DiagnosticVirtualTextError' or 'DiagnosticVirtualTextInfo'
+  vim.api.nvim_buf_clear_namespace(bufnr, sbcl_virt_ns, 0, -1)
+  vim.api.nvim_buf_set_extmark(bufnr, sbcl_virt_ns, row, 0, {
+    virt_text = { { ' => ' .. msg, hl } },
+    virt_text_pos = 'eol',
+  })
+  vim.defer_fn(function()
+    pcall(vim.api.nvim_buf_clear_namespace, bufnr, sbcl_virt_ns, 0, -1)
+  end, 3000)
+end
+
+vim.api.nvim_create_user_command('SbclLoadFile', function()
+  local ft = vim.bo.filetype
+  if ft ~= 'lisp' and ft ~= 'commonlisp' then
+    vim.notify('SbclLoadFile: not a lisp file (ft=' .. ft .. ')', vim.log.levels.ERROR)
+    return
+  end
+  local filepath = vim.fn.expand '%:p'
+  if filepath == '' then
+    vim.notify('SbclLoadFile: no file in current buffer', vim.log.levels.ERROR)
+    return
+  end
+  sbcl_send(string.format('(load "%s")', filepath), 'SbclLoadFile')
+end, { force = true })
+
+local function sbcl_eval_expr(on_result)
+  local ft = vim.bo.filetype
+  if ft ~= 'lisp' and ft ~= 'commonlisp' then
+    vim.notify('SbclEvalExpr: not a lisp file (ft=' .. ft .. ')', vim.log.levels.ERROR)
+    return
+  end
+  local save = vim.fn.winsaveview()
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+  local char = line:sub(col + 1, col + 1)
+  local prev_char = col > 0 and line:sub(col, col) or ''
+  local start, finish
+
+  if char == '(' then
+    start = { row, col + 1 }
+    vim.fn.cursor(row, col + 1)
+    finish = vim.fn.searchpairpos('(', '', ')', 'nW')
+  elseif char == ')' then
+    finish = { row, col + 1 }
+    vim.fn.cursor(row, col + 1)
+    start = vim.fn.searchpairpos('(', '', ')', 'bnW')
+  elseif prev_char == ')' then
+    finish = { row, col }
+    vim.fn.cursor(row, col)
+    start = vim.fn.searchpairpos('(', '', ')', 'bnW')
+  else
+    start = vim.fn.searchpairpos('(', '', ')', 'bnW')
+    if start[1] ~= 0 then
+      vim.fn.cursor(start[1], start[2])
+      finish = vim.fn.searchpairpos('(', '', ')', 'nW')
+    end
+  end
+
+  vim.fn.winrestview(save)
+
+  if not start or start[1] == 0 or not finish or finish[1] == 0 then
+    vim.notify('SbclEvalExpr: no expression found', vim.log.levels.ERROR)
+    return
+  end
+
+  local lines = vim.api.nvim_buf_get_text(0, start[1] - 1, start[2] - 1, finish[1] - 1, finish[2], {})
+  local expr = table.concat(lines, ' ')
+  sbcl_send(expr, 'SbclEvalExpr', on_result)
+end
+
+vim.api.nvim_create_user_command('SbclEvalExpr', function()
+  sbcl_eval_expr()
+end, { force = true })
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = { 'lisp', 'commonlisp' },
+  callback = function(ev)
+    vim.keymap.set('n', '<C-x><C-x>', '<cmd>write | SbclLoadFile<cr>', { buffer = ev.buf, silent = true })
+    vim.keymap.set('i', '<C-x><C-x>', function()
+      vim.cmd 'write'
+      vim.cmd 'SbclLoadFile'
+      vim.cmd 'startinsert'
+    end, { buffer = ev.buf, silent = true })
+    vim.keymap.set('n', '<C-x><C-e>', '<cmd>SbclEvalExpr<cr>', { buffer = ev.buf, silent = true })
+    vim.keymap.set('i', '<C-x><C-e>', function()
+      sbcl_eval_expr(sbcl_show_virt)
+      vim.cmd 'startinsert'
+    end, { buffer = ev.buf, silent = true })
+  end,
+})
+
 -- ============================================================================
 -- @PLUGINS (lazy.nvim)
 -- ============================================================================
@@ -1632,7 +1787,6 @@ end, { force = true })
 if not vim.g.__user_lazy_setup_done then
   require('lazy').setup({
     -- 1. @COLORSCHEME
-    { 'https://github.com/catppuccin/nvim' },
     {
       'jpwol/thorn.nvim',
       opts = {
@@ -1648,6 +1802,9 @@ if not vim.g.__user_lazy_setup_done then
         },
       },
     },
+    { 'rebelot/kanagawa.nvim' },
+    { 'oskarnurm/koda.nvim' },
+    { 'yonatan-perel/lake-dweller.nvim' },
 
     -- 2. CORE ENGINE
     {
@@ -1661,11 +1818,27 @@ if not vim.g.__user_lazy_setup_done then
       },
       lazy = false,
       opts = {
-        ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'python', 'vim', 'vimdoc' },
+        ensure_installed = {
+          'bash',
+          'clojure',
+          'commonlisp',
+          'diff',
+          'html',
+          'lua',
+          'luadoc',
+          'markdown',
+          'markdown_inline',
+          'python',
+          'vim',
+          'vimdoc',
+        },
         auto_install = true,
         -- ignore_install = { 'gitcommit' },
-        highlight = { enable = vim.g.enable_highlight, additional_vim_regex_highlighting = vim.g.enable_highlight and { 'ruby', 'elixir' } or false },
-        indent = { enable = true, disable = { 'python', 'css', 'rust', 'lua', 'javascript', 'tsx', 'typescript', 'toml', 'json', 'c', 'heex', 'yaml' } },
+        highlight = { enable = true, additional_vim_regex_highlighting = true and { 'ruby', 'elixir' } or false },
+        indent = {
+          enable = true,
+          disable = { 'clojure', 'c', 'css', 'heex', 'javascript', 'json', 'lua', 'lisp', 'python', 'rust', 'scheme', 'toml', 'tsx', 'typescript', 'yaml' },
+        },
         yati = { enable = true, disable = { 'rust', 'cpp' }, default_lazy = true, default_fallback = 'auto' },
       },
     },
@@ -1910,7 +2083,6 @@ if not vim.g.__user_lazy_setup_done then
       event = 'VeryLazy',
       dependencies = { 'roginfarrer/vim-dirvish-dovish' },
       lazy = false,
-      enabled = true,
     },
     {
       'nvim-neo-tree/neo-tree.nvim',
@@ -2009,7 +2181,6 @@ if not vim.g.__user_lazy_setup_done then
     },
     {
       'mrjones2014/smart-splits.nvim',
-      enabled = true,
       lazy = true,
     -- stylua: ignore
     keys = {
@@ -2080,81 +2251,9 @@ if not vim.g.__user_lazy_setup_done then
         lualine_require.require = require
         vim.o.laststatus = vim.g.lualine_laststatus
 
-        local theme = 'auto'
-        if not vim.g.enable_highlight then
-          local palettes = {
-            dark = {
-              fg = '#e4e4e4',
-              fg_dim = '#b8b8b8',
-              panel = '#1a1a1a',
-              accent_bg = '#585858',
-              accent_fg = '#ffffff',
-            },
-            light = {
-              fg = '#101010',
-              fg_dim = '#2a2a2a',
-              panel = '#e5e5e5',
-              accent_bg = '#4a4a4a',
-              accent_fg = '#ffffff',
-            },
-          }
-          local c = palettes[vim.g.monochrome_mode] or palettes.dark
-          ---@diagnostic disable-next-line: cast-local-type
-          theme = {
-            normal = {
-              a = { bg = c.accent_bg, fg = c.accent_fg, gui = 'bold' },
-              b = { bg = c.panel, fg = c.fg },
-              c = { bg = c.panel, fg = c.fg },
-              x = { bg = c.panel, fg = c.fg },
-              y = { bg = c.panel, fg = c.fg },
-              z = { bg = c.accent_bg, fg = c.accent_fg, gui = 'bold' },
-            },
-            insert = {
-              a = { bg = c.accent_bg, fg = c.accent_fg, gui = 'bold' },
-              b = { bg = c.panel, fg = c.fg },
-              c = { bg = c.panel, fg = c.fg },
-              x = { bg = c.panel, fg = c.fg },
-              y = { bg = c.panel, fg = c.fg },
-              z = { bg = c.accent_bg, fg = c.accent_fg, gui = 'bold' },
-            },
-            visual = {
-              a = { bg = c.accent_bg, fg = c.accent_fg, gui = 'bold' },
-              b = { bg = c.panel, fg = c.fg },
-              c = { bg = c.panel, fg = c.fg },
-              x = { bg = c.panel, fg = c.fg },
-              y = { bg = c.panel, fg = c.fg },
-              z = { bg = c.accent_bg, fg = c.accent_fg, gui = 'bold' },
-            },
-            replace = {
-              a = { bg = c.accent_bg, fg = c.accent_fg, gui = 'bold' },
-              b = { bg = c.panel, fg = c.fg },
-              c = { bg = c.panel, fg = c.fg },
-              x = { bg = c.panel, fg = c.fg },
-              y = { bg = c.panel, fg = c.fg },
-              z = { bg = c.accent_bg, fg = c.accent_fg, gui = 'bold' },
-            },
-            command = {
-              a = { bg = c.accent_bg, fg = c.accent_fg, gui = 'bold' },
-              b = { bg = c.panel, fg = c.fg },
-              c = { bg = c.panel, fg = c.fg },
-              x = { bg = c.panel, fg = c.fg },
-              y = { bg = c.panel, fg = c.fg },
-              z = { bg = c.accent_bg, fg = c.accent_fg, gui = 'bold' },
-            },
-            inactive = {
-              a = { bg = c.panel, fg = c.fg_dim },
-              b = { bg = c.panel, fg = c.fg_dim },
-              c = { bg = c.panel, fg = c.fg_dim },
-              x = { bg = c.panel, fg = c.fg_dim },
-              y = { bg = c.panel, fg = c.fg_dim },
-              z = { bg = c.panel, fg = c.fg_dim },
-            },
-          }
-        end
-
         return {
           options = {
-            theme = theme,
+            theme = 'auto',
             globalstatus = vim.o.laststatus == 3,
             disabled_filetypes = { statusline = { 'dashboard', 'alpha', 'ministarter', 'snacks_dashboard' } },
             section_separators = '',
@@ -2335,7 +2434,6 @@ if not vim.g.__user_lazy_setup_done then
     {
       'f-person/git-blame.nvim',
       event = 'VeryLazy',
-      enabled = true,
       keys = {
         { '<leader>gbo', '<cmd>GitBlameOpenCommitURL<cr>', desc = 'Open blame commit URL' },
         { '<leader>gbb', '<cmd>GitBlameToggle<cr>', desc = 'Toggle git blame' },
@@ -2364,10 +2462,34 @@ if not vim.g.__user_lazy_setup_done then
 
     -- 6. PRODUCTIVITY & EDITING
     {
+      'kovisoft/slimv',
+      enabled = lisp_enabled,
+      ft = { 'lisp' },
+      init = function()
+        vim.g.slimv_keybindings = 0
+        vim.g.slimv_unmap_cr = 1
+        vim.g.slimv_unmap_tab = 1
+        vim.g.slimv_unmap_space = 1
+        vim.g.paredit_mode = 0
+        vim.g.paredit_electric_return = 0
+      end,
+    },
+
+    {
+      'eraserhd/parinfer-rust',
+      enabled = lisp_enabled and vim.fn.executable 'cargo' == 1,
+      ft = { 'carp', 'clojure', 'dune', 'fennel', 'hy', 'janet', 'lisp', 'racket', 'scheme', 'wast', 'yuck' },
+      build = 'cargo build --release',
+      init = function()
+        vim.g.parinfer_mode = 'smart'
+      end,
+    },
+
+    {
       'windwp/nvim-autopairs',
       event = 'InsertEnter',
       config = function()
-        require('nvim-autopairs').setup { disable_filetype = { 'TelescopePrompt', 'spectre_panel', 'scheme' } }
+        require('nvim-autopairs').setup { disable_filetype = { 'TelescopePrompt', 'spectre_panel', 'lisp', 'scheme' } }
       end,
     },
     {
@@ -2572,170 +2694,6 @@ local function get_init_path()
   return vim.fn.fnamemodify(myvimrc, ':p')
 end
 
-local function apply_monochrome(mode)
-  local monochrome_mode = mode or vim.g.monochrome_mode or 'dark'
-  if monochrome_mode ~= 'dark' and monochrome_mode ~= 'light' then
-    monochrome_mode = 'dark'
-  end
-
-  vim.g.enable_highlight = false
-  vim.g.monochrome_mode = monochrome_mode
-  vim.cmd 'syntax on'
-  vim.o.background = monochrome_mode
-
-  local palettes = {
-    dark = {
-      white = '#e4e4e4',
-      white_dim = '#949494',
-      white_dark = '#585858',
-
-      blue = '#7fb4ca',
-      blue_dim = '#88bad1',
-      blue_bright = '#82aaff',
-
-      green = '#98be65',
-      green_dim = '#6f8f57',
-
-      bg = '#13131a',
-      selection = '#2d4f67',
-      search = '#4c7a8f',
-
-      error = '#e06c75',
-      warn = '#e5c07b',
-
-      cursorline = '#222222',
-      menu = '#222222',
-      panel = '#1a1a1a',
-      diff_add = '#223322',
-      diff_change = '#222233',
-      diff_delete = '#332222',
-      diff_text = '#444422',
-      accent_fg = '#000000',
-    },
-    light = {
-      white = '#101010',
-      white_dim = '#757575',
-      white_dark = '#555555',
-
-      blue = '#4f7689',
-      blue_dim = '#688ea0',
-      blue_bright = '#3a6f8a',
-
-      green = '#0ca621',
-      green_dim = '#027312',
-
-      bg = '#ffffff',
-      selection = '#c9dceb',
-      search = '#d7e7f2',
-
-      error = '#b55a5a',
-      warn = '#8a6c2f',
-
-      cursorline = '#efefef',
-      menu = '#efefef',
-      panel = '#e5e5e5',
-      diff_add = '#dff0df',
-      diff_change = '#dee6f7',
-      diff_delete = '#f2dede',
-      diff_text = '#f5efcf',
-      accent_fg = '#ffffff',
-    },
-  }
-
-  local C = palettes[monochrome_mode]
-  local h = vim.api.nvim_set_hl
-
-  h(0, 'Normal', { bg = C.bg, fg = C.white })
-  h(0, 'NonText', { bg = C.bg, fg = C.white_dark })
-  h(0, 'LineNr', { bg = C.bg, fg = C.white_dark })
-  h(0, 'SignColumn', { bg = C.bg })
-  h(0, 'EndOfBuffer', { bg = C.bg, fg = C.white_dark })
-  h(0, 'StatusLine', { bg = C.bg, fg = C.white })
-  h(0, 'StatusLineNC', { bg = C.bg, fg = C.white_dark })
-
-  h(0, 'Comment', { fg = C.white_dim, italic = true })
-  h(0, 'Keyword', { fg = C.white, bold = false })
-  h(0, 'Statement', { fg = C.white, bold = false })
-  h(0, 'Conditional', { fg = C.white, bold = false })
-  h(0, 'Repeat', { fg = C.white, bold = false })
-  h(0, 'Function', { fg = C.white, bold = false })
-  h(0, 'String', { fg = C.green, bold = false, italic = false })
-  h(0, 'Number', { fg = C.white })
-  h(0, 'Boolean', { fg = C.white, bold = false })
-  h(0, 'Type', { fg = C.white, bold = true })
-  h(0, 'Constant', { fg = C.green, bold = false })
-  h(0, 'Identifier', { fg = C.white })
-  h(0, 'Special', { fg = C.white })
-  h(0, 'Operator', { fg = C.white })
-  h(0, 'PreProc', { fg = C.white })
-  h(0, 'Error', { fg = C.error, bold = false })
-  h(0, 'Todo', { fg = C.error, bold = false, italic = true })
-
-  h(0, 'Visual', { bg = C.selection })
-  h(0, 'Search', { bg = C.search, fg = C.white })
-  h(0, 'IncSearch', { bg = C.blue, fg = C.accent_fg, bold = true })
-  h(0, 'CursorLine', { bg = C.cursorline })
-  h(0, 'Pmenu', { bg = C.menu, fg = C.white })
-  h(0, 'PmenuSel', { bg = C.selection, fg = C.white, bold = true })
-
-  h(0, 'FzfLuaSel', { bg = C.selection, fg = C.white })
-  h(0, 'FzfLuaCursorLine', { bg = C.selection, fg = C.white })
-  h(0, 'FzfLuaTitleFlags', { fg = C.white })
-  h(0, 'FzfLuaBufNr', { fg = C.white })
-  h(0, 'FzfLuaBufName', { fg = C.white })
-  h(0, 'FzfLuaBufLineNr', { fg = C.white })
-  h(0, 'FzfLuaBufFlagCur', { fg = C.white })
-  h(0, 'FzfLuaBufFlagAlt', { fg = C.white })
-  h(0, 'FzfLuaFzfInfo', { fg = C.white })
-  h(0, 'FzfLuaFzfPointer', { fg = C.white })
-  h(0, 'FzfLuaFzfMarker', { fg = C.white })
-  h(0, 'FzfLuaFzfSpinner', { fg = C.white })
-  h(0, 'FzfLuaFzfPrompt', { fg = C.white })
-  h(0, 'FzfLuaFzfHeader', { fg = C.white })
-  h(0, 'FzfLuaFzfQuery', { fg = C.white })
-  h(0, 'FzfLuaPathLineNr', { fg = C.white })
-  h(0, 'FzfLuaPathColNr', { fg = C.white })
-  h(0, 'FzfLuaDirPart', { fg = C.white })
-  h(0, 'FzfLuaFilePart', { fg = C.white })
-  h(0, 'FzfLuaHeaderBind', { fg = C.white })
-  h(0, 'FzfLuaHeaderText', { fg = C.white })
-
-  -- h(0, 'NeoTreeNormal', { bg = C.bg, fg = C.white })
-  -- h(0, 'NeoTreeNormalNC', { bg = C.bg, fg = C.white_dim })
-  -- h(0, 'NeoTreeCursorLine', { bg = C.selection, fg = C.white })
-  h(0, 'NeoTreeTitleBar', { bg = C.panel, fg = C.white, bold = true })
-  -- h(0, 'NeoTreeWinSeparator', { bg = C.bg, fg = C.white_dim })
-  -- h(0, 'NeoTreeIndentMarker', { fg = C.white_dim })
-  -- h(0, 'NeoTreeExpander', { fg = C.white_dim })
-
-  h(0, 'DiagnosticError', { fg = C.error })
-  h(0, 'DiagnosticWarn', { fg = C.warn })
-  h(0, 'DiagnosticInfo', { fg = C.blue })
-  h(0, 'DiagnosticHint', { fg = C.green })
-
-  h(0, 'DiffAdd', { bg = C.diff_add })
-  h(0, 'DiffChange', { bg = C.diff_change })
-  h(0, 'DiffDelete', { bg = C.diff_delete })
-  h(0, 'DiffText', { bg = C.diff_text, bold = true })
-
-  h(0, 'lualine_a_normal', { bg = C.white_dark, fg = C.accent_fg, bold = true })
-  h(0, 'lualine_a_insert', { bg = C.white_dark, fg = C.accent_fg, bold = true })
-  h(0, 'lualine_a_visual', { bg = C.white_dark, fg = C.accent_fg, bold = true })
-  h(0, 'lualine_a_replace', { bg = C.white_dark, fg = C.accent_fg, bold = true })
-  h(0, 'lualine_a_command', { bg = C.white_dark, fg = C.accent_fg, bold = true })
-  h(0, 'lualine_a_inactive', { bg = C.panel, fg = C.white_dim })
-
-  for _, mode_name in ipairs { 'normal', 'insert', 'visual', 'replace', 'command', 'inactive' } do
-    h(0, 'lualine_b_' .. mode_name, { bg = C.panel, fg = C.white })
-    h(0, 'lualine_c_' .. mode_name, { bg = C.panel, fg = C.white })
-    h(0, 'lualine_x_' .. mode_name, { bg = C.panel, fg = C.white })
-    h(0, 'lualine_y_' .. mode_name, { bg = C.panel, fg = C.white })
-    h(0, 'lualine_z_' .. mode_name, { bg = C.white_dark, fg = C.accent_fg, bold = true })
-  end
-
-  vim.cmd 'redrawstatus'
-end
-
 local function has_modified_buffers()
   for _, buf in ipairs(vim.api.nvim_list_bufs()) do
     if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].modified then
@@ -2808,27 +2766,13 @@ vim.api.nvim_create_user_command('Rr', function()
   vim.notify('Config reloaded' .. (target ~= '' and (' -> ' .. target) or ''), vim.log.levels.INFO)
 end, { force = true })
 
-vim.api.nvim_create_user_command('ModeLight', function()
-  apply_monochrome 'light'
-end, { force = true })
-
-vim.api.nvim_create_user_command('ModeDark', function()
-  apply_monochrome 'dark'
-end, { force = true })
-
 vim.cmd 'silent! cunabbrev ec'
 vim.cmd 'silent! cunabbrev rr'
 vim.cmd [[cnoreabbrev <expr> ec getcmdtype() == ':' && getcmdline() == 'ec' ? 'Ec' : 'ec']]
 vim.cmd [[cnoreabbrev <expr> rr getcmdtype() == ':' && getcmdline() == 'rr' ? 'Rr' : 'rr']]
 
-if vim.g.enable_highlight then
-  if vim.g.monochrome_mode == 'dark' then
-    -- set_random_colorscheme 'catppuccin-mocha,thorn-dark-cold'
-    set_random_colorscheme 'thorn-dark-cold'
-  else
-    set_random_colorscheme 'catppuccin-latte'
-    -- set_random_colorscheme 'thorn-light-cold'
-  end
+if vim.g.monochrome_mode == 'dark' then
+  set_random_colorscheme 'lake-dweller'
 else
-  apply_monochrome(vim.g.monochrome_mode)
+  set_random_colorscheme 'koda-glade'
 end

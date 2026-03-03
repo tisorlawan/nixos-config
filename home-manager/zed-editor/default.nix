@@ -1,4 +1,4 @@
-{ pkgs, inputs ? {}, nixpkgs-unstable ? null }:
+{ pkgs, inputs ? { }, nixpkgs-unstable ? null }:
 
 let
   pkgs-unstable =

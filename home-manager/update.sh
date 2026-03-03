@@ -8,43 +8,43 @@ UPDATE_ALL=0
 ARGS=()
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    -v|--verbose)
-      VERBOSE=1
-      shift
-      ;;
-    -u|--update-input)
-      if [[ -z "${2:-}" ]]; then
-        echo "Error: --update-input requires a flake input name" >&2
-        exit 1
-      fi
-      UPDATE_INPUTS+=("$2")
-      shift 2
-      ;;
-    --upgrade)
-      UPDATE_ALL=1
-      shift
-      ;;
-    --update-all)
-      UPDATE_ALL=1
-      shift
-      ;;
-    -h|--help)
-      echo "Usage: $0 [-v|--verbose] [--upgrade] [-u|--update-input <input>] [--update-all] [extra home-manager args...]"
-      echo ""
-      echo "By default, only rebuilds the configuration without upgrading package versions."
-      echo "Use --upgrade to update all flake inputs before rebuilding."
-      echo ""
-      echo "Example: $0              # Rebuild only"
-      echo "Example: $0 --upgrade    # Update all inputs and rebuild"
-      echo "Example: $0 -v --upgrade --no-substitute"
-      echo "Example: $0 --update-input opencode"
-      echo "Example: $0 --update-all"
-      exit 0
-      ;;
-    *)
-      ARGS+=("$1")
-      shift
-      ;;
+  -v | --verbose)
+    VERBOSE=1
+    shift
+    ;;
+  -u | --update-input)
+    if [[ -z "${2:-}" ]]; then
+      echo "Error: --update-input requires a flake input name" >&2
+      exit 1
+    fi
+    UPDATE_INPUTS+=("$2")
+    shift 2
+    ;;
+  --upgrade)
+    UPDATE_ALL=1
+    shift
+    ;;
+  --update-all)
+    UPDATE_ALL=1
+    shift
+    ;;
+  -h | --help)
+    echo "Usage: $0 [-v|--verbose] [--upgrade] [-u|--update-input <input>] [--update-all] [extra home-manager args...]"
+    echo ""
+    echo "By default, only rebuilds the configuration without upgrading package versions."
+    echo "Use --upgrade to update all flake inputs before rebuilding."
+    echo ""
+    echo "Example: $0              # Rebuild only"
+    echo "Example: $0 --upgrade    # Update all inputs and rebuild"
+    echo "Example: $0 -v --upgrade --no-substitute"
+    echo "Example: $0 --update-input opencode"
+    echo "Example: $0 --update-all"
+    exit 0
+    ;;
+  *)
+    ARGS+=("$1")
+    shift
+    ;;
   esac
 done
 
@@ -77,11 +77,11 @@ for a in "${ARGS[@]}"; do
     break
   fi
 done
-if (( want_backup )); then
-  HM_ARGS+=( -b backup )
+if ((want_backup)); then
+  HM_ARGS+=(-b backup)
 fi
 
-if (( ${#ARGS[@]} > 0 )); then
+if ((${#ARGS[@]} > 0)); then
   home-manager switch "${HM_ARGS[@]}" "${ARGS[@]}"
 else
   home-manager switch "${HM_ARGS[@]}"

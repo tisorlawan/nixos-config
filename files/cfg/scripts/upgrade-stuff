@@ -1,0 +1,69 @@
+#!/usr/bin/env nu
+
+print "=============== @Codex ==============="
+let release = (http get https://api.github.com/repos/openai/codex/releases/latest --headers {
+    Accept: "application/vnd.github+json"
+    "X-GitHub-Api-Version": "2022-11-28"
+    "User-Agent": "nushell"
+})
+let release_id = ($release).id
+
+let version = ($release).name
+let installed_version = (
+    try {
+        codex --version
+        | parse "{name} {installed_version}"
+        | get installed_version
+        | first
+        | default "0.0.0"
+    } catch {
+        "none"
+    }
+)
+
+print $"* Codex Latest    Version: ($version)"
+print $"* Codex Installed Version: ($installed_version)"
+if $version == $installed_version {
+    print "* Nothing to do"
+} else {
+    let tmp_dir = $"/tmp/($release_id)"
+    print $"* Creating temporary directory ($tmp_dir)"
+    mkdir $tmp_dir
+
+    let assets = $release.assets | where name =~ "codex-x86_64-unknown-linux-gnu.(zst)" | select name browser_download_url
+    if ($assets | is-empty) {
+        print "* No matching assets found"
+    } else {
+        $assets | each {|asset|
+            let out_path = ($tmp_dir | path join $asset.name)
+            print $"* Downloading ($asset.name)"
+            http get $asset.browser_download_url --raw | save --force $out_path
+        }
+
+        print $"* Downloaded assets to ($tmp_dir)"
+        print $"* Extracting codex-x86_64-unknown-linux-gnu.zst"
+
+        let binary = ($tmp_dir | path join codex-x86_64-unknown-linux-gnu)
+        zstd -dq ($tmp_dir | path join "codex-x86_64-unknown-linux-gnu.zst")
+
+        let install_dir = ($env.HOME | path join ".local/bin")
+        let install_path = ($install_dir | path join "codex")
+
+        mkdir $install_dir
+        mv $binary $install_path
+        chmod +x $install_path
+
+        print $"* Installed version ($version) to ($install_path)"
+    }
+}
+print "====================================="
+print ""
+
+print "============= @OPENCODE ============="
+opencode upgrade
+
+print "============= @CLAUDE ============="
+claude upgrade
+
+print ""
+print "TODO: upgrade helium"

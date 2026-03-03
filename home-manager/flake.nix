@@ -1,20 +1,20 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/release-25.11";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/2fc6539b";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/aca4d95f";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     # zed-editor = {
-    #   url = "github:zed-industries/zed/v0.214.7";
+    #   url = "github:zed-industries/zed/v0.226.5";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
     # opencode = {
     #   url = "github:sst/opencode";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
-    ghostty.url = "github:ghostty-org/ghostty/336ca18";
+    ghostty.url = "github:ghostty-org/ghostty/4d89f1b";
     flake-utils.url = "github:numtide/flake-utils";
   };
 

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+rlwrap sbcl --load ~/.rice/clisp/sbcl-start-server.cl

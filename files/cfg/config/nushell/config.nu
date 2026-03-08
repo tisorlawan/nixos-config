@@ -12,6 +12,13 @@ $env.config = {
 alias mv = ^mv
 alias cp = ^cp
 alias rm = ^rm
+alias p8 = ping 8.8.8.8
+alias rn = sudo systemctl restart NetworkManager
+alias nn = nmtui-connect
+alias cat = bat --plain
+alias r = rsync -avzP
+alias lg = lazygit
+alias a = overlay use .venv/bin/activate.nu
 
 def gcloudc [--print] {
     let token = (gcloud auth print-access-token | str trim)
@@ -43,6 +50,34 @@ def cqr [] { cargo run --quiet --release }
 def cr [] { cargo run }
 def crr [] { cargo run --release }
 
+
+def --env poetry-shell [] {
+    let venv = (poetry env info --path | str trim)
+    let bin = ($venv | path join "bin")
+
+    $env.VIRTUAL_ENV = $venv
+    $env.PATH = ($env.PATH | prepend $bin)
+
+    print $"Activated poetry env: ($venv)"
+}
+
+def --env poetry-deactivate [] {
+    if "VIRTUAL_ENV" in ($env | columns) {
+        let bin = ($env.VIRTUAL_ENV | path join "bin")
+        $env.PATH = ($env.PATH | where $it != $bin)
+        hide-env VIRTUAL_ENV
+        print "Poetry environment deactivated"
+    }
+}
+
+def --env uv-glsdk [] {
+    $env.UV_INDEX_GEN_AI_INTERNAL_USERNAME = "oauth2accesstoken"
+    $env.UV_INDEX_GEN_AI_INTERNAL_PASSWORD = (gcloud auth print-access-token | str trim)
+    print "uv auth configured (expires in ~1 hour)"
+}
+alias pss = poetry-shell
+alias top = btop
+
 source ~/.config/nushell/.zoxide.nu
 source ~/.config/nushell/.atuin.nu
 
@@ -57,3 +92,4 @@ $env.config.keybindings = (
 
 $env.PATH = ([("~/.scripts" | path expand)] ++ $env.PATH)
 $env.PATH = ([("~/.opencode/bin" | path expand)] ++ $env.PATH)
+$env.PATH = ([("~/.bun/bin" | path expand)] ++ $env.PATH)

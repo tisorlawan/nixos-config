@@ -349,8 +349,8 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- stylua: ignore
 local colorcolumn_rules = {
-  gitcommit = { enable = true, limits = { 50, 72 } },
-  markdown  = { enable = true, limits = { 80 } },
+  gitcommit = { enable = false, limits = { 50, 72 } },
+  markdown  = { enable = false, limits = { 80 } },
   python    = { enable = false, limits = { 88 } },
 }
 
@@ -1315,6 +1315,7 @@ for _, ft in ipairs(used_ft_sys.used_ft) do
   enabled_ft[ft] = true
 end
 local lisp_enabled = enabled_ft.lisp == true
+local markdown_enabled = enabled_ft.markdown == true
 
 -- ============================================================================
 -- @LSP
@@ -1787,6 +1788,7 @@ vim.api.nvim_create_autocmd('FileType', {
 if not vim.g.__user_lazy_setup_done then
   require('lazy').setup({
     -- 1. @COLORSCHEME
+    { 'catppuccin/nvim', name = 'catppuccin', priority = 1000 },
     {
       'jpwol/thorn.nvim',
       opts = {
@@ -1990,19 +1992,6 @@ if not vim.g.__user_lazy_setup_done then
         local actions = require 'fzf-lua.actions'
         vim.cmd [[FzfLua register_ui_select]]
         require('fzf-lua').setup {
-          fzf_colors = {
-            ['fg+'] = { 'fg', 'Normal' },
-            ['bg+'] = { 'bg', 'FzfLuaSel' },
-            ['hl'] = { 'fg', 'Normal' },
-            ['hl+'] = { 'fg', 'Normal' },
-            ['info'] = { 'fg', 'Normal' },
-            ['pointer'] = { 'fg', 'Normal' },
-            ['marker'] = { 'fg', 'Normal' },
-            ['spinner'] = { 'fg', 'Normal' },
-            ['prompt'] = { 'fg', 'Normal' },
-            ['header'] = { 'fg', 'Normal' },
-            ['query'] = { 'fg', 'Normal' },
-          },
           winopts = { backdrop = 100, preview = { delay = 0 } },
           manpages = {
             previewer = 'man',
@@ -2023,16 +2012,7 @@ if not vim.g.__user_lazy_setup_done then
           },
           grep = {
             rg_opts = '--column --line-number --no-heading --color=never --smart-case --max-columns=4096 -e',
-            fzf_opts = {
-              ['--ansi'] = true,
-              ['--color'] = 'hl:-1,hl+:-1',
-            },
             winopts = { treesitter = { enabled = false } },
-            fzf_colors = {
-              ['hl'] = { 'fg', 'Normal' },
-              ['hl+'] = { 'fg', 'Normal' },
-            },
-            hls = { search = 'Normal' },
             actions = { ['ctrl-g'] = { actions.grep_lgrep }, ['ctrl-r'] = { actions.toggle_ignore } },
           },
           defaults = { git_icons = true, file_icons = true },
@@ -2215,10 +2195,6 @@ if not vim.g.__user_lazy_setup_done then
         local leap = require 'leap'
         leap.opts.safe_labels = 'tyuofghjklvbn'
         leap.opts.labels = 'sfnjklhowembuyvrgtqpcxz/SFNJKLHOWEIMBUYVRGTAQPCXZ'
-        if not vim.g.enable_highlight then
-          vim.api.nvim_set_hl(0, 'LeapLabel', { fg = '#000000', bg = '#7fb4ca', bold = true, nocombine = true })
-          vim.api.nvim_set_hl(0, 'LeapMatch', { fg = '#000000', bg = '#98be65', bold = true, nocombine = true })
-        end
       end,
     },
     {
@@ -2293,7 +2269,6 @@ if not vim.g.__user_lazy_setup_done then
               },
               {
                 'diagnostics',
-                colored = false,
                 symbols = {
                   error = ui.icons.diagnostics.Error,
                   warn = ui.icons.diagnostics.Warn,
@@ -2310,7 +2285,6 @@ if not vim.g.__user_lazy_setup_done then
               },
               {
                 'diff',
-                colored = false,
                 symbols = { added = ui.icons.git.added, modified = ui.icons.git.modified, removed = ui.icons.git.removed },
               },
             },
@@ -2483,6 +2457,19 @@ if not vim.g.__user_lazy_setup_done then
       init = function()
         vim.g.parinfer_mode = 'smart'
       end,
+    },
+
+    {
+      'MeanderingProgrammer/render-markdown.nvim',
+      enabled = markdown_enabled,
+      dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' }, -- if you use the mini.nvim suite
+      -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.icons' },        -- if you use standalone mini plugins
+      -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+      ---@module 'render-markdown'
+      ---@type render.md.UserConfig
+      opts = {
+        enabled = false,
+      },
     },
 
     {

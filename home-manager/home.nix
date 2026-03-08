@@ -50,6 +50,8 @@ in
         # (callPackage ./zoom-us { nixpkgs-unstable = nixpkgs-unstable; })
         nushell
         fish
+
+        pkgs-unstable.carapace
       ];
 
       # Desktop session utilities and applets
@@ -130,7 +132,6 @@ in
         jless
         rlwrap
         slides
-        carapace # completion helpers
         navi
         # pkgs-unstable.ducker
         # inputs.opencode.packages.x86_64-linux.default
@@ -156,6 +157,7 @@ in
         lldb
         typst
         ast-grep
+        pkgs-unstable.devenv
       ];
 
       # Python, Ruby, and related ecosystem tools

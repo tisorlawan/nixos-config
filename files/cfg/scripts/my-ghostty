@@ -26,27 +26,27 @@ cat >"$TMP_CONFIG" <<EOF
 $(if [ "$COLOR_MODE" = "light" ]; then
   echo 'background-opacity = 1.0'
   echo 'background = ffffff'
-  echo 'foreground = 111827'
-  echo 'cursor-color = 1f2937'
-  echo 'cursor-text = f9fafb'
-  echo 'selection-background = cfe2ff'
-  echo 'selection-foreground = 0f172a'
-  echo 'palette = 0=111827'
-  echo 'palette = 1=9f1239'
-  echo 'palette = 2=166534'
-  echo 'palette = 3=854d0e'
-  echo 'palette = 4=1d4ed8'
-  echo 'palette = 5=7e22ce'
-  echo 'palette = 6=0f766e'
-  echo 'palette = 7=e5e7eb'
-  echo 'palette = 8=4b5563'
-  echo 'palette = 9=be123c'
-  echo 'palette = 10=15803d'
-  echo 'palette = 11=a16207'
-  echo 'palette = 12=2563eb'
-  echo 'palette = 13=9333ea'
-  echo 'palette = 14=0d9488'
-  echo 'palette = 15=f9fafb'
+  echo 'foreground = 111111'
+  echo 'cursor-color = 111111'
+  echo 'cursor-text = ffffff'
+  echo 'selection-background = cfe8ff'
+  echo 'selection-foreground = 111111'
+  echo 'palette = 0=000000'
+  echo 'palette = 1=cc0000'
+  echo 'palette = 2=008700'
+  echo 'palette = 3=b58900'
+  echo 'palette = 4=0066cc'
+  echo 'palette = 5=aa33aa'
+  echo 'palette = 6=008b8b'
+  echo 'palette = 7=d9d9d9'
+  echo 'palette = 8=808080'
+  echo 'palette = 9=ff3333'
+  echo 'palette = 10=00aa00'
+  echo 'palette = 11=cc9900'
+  echo 'palette = 12=3385ff'
+  echo 'palette = 13=cc33cc'
+  echo 'palette = 14=00aaaa'
+  echo 'palette = 15=ffffff'
 else
   echo 'background-opacity = 1.0'
   echo '# background = 18181b'
@@ -91,7 +91,7 @@ adjust-font-baseline = 1
 adjust-underline-position = 2
 
 window-decoration = "none"
-window-padding-balance = true
+window-padding-balance = false
 window-padding-x = 0
 window-padding-y = 0
 maximize = true
@@ -114,6 +114,14 @@ keybind = all:alt+two=unbind
 keybind = all:alt+three=unbind
 keybind = all:alt+four=unbind
 keybind = ctrl+enter=unbind
+
+# keybind = alt+o=new_split:right
+# keybind = alt+i=new_split:down
+# 
+# keybind = alt+h=goto_split:left
+# keybind = alt+l=goto_split:right
+# keybind = alt+k=goto_split:up
+# keybind = alt+j=goto_split:down
 
 resize-overlay = never
 faint-opacity = 1.0

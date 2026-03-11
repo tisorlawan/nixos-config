@@ -328,6 +328,9 @@ map('n', '<leader>zz', zen_toggle, { desc = 'Toggle zen mode' })
 -- ============================================================================
 
 local augroup = vim.api.nvim_create_augroup('UserConfig', { clear = true })
+local trailspace_trim_on_save
+local trim_trailing_whitespace
+local set_trailing_whitespace_trim
 
 vim.api.nvim_create_autocmd('BufReadPost', {
   group = augroup,
@@ -344,6 +347,53 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = augroup,
   callback = function()
     vim.highlight.on_yank { timeout = 150 }
+  end,
+})
+
+vim.api.nvim_create_user_command('TrimWhitespace', function(opts)
+  local bufnr = opts.args ~= '' and tonumber(opts.args) or vim.api.nvim_get_current_buf()
+  if bufnr == nil or not vim.api.nvim_buf_is_valid(bufnr) then
+    vim.notify('TrimWhitespace: invalid buffer', vim.log.levels.ERROR)
+    return
+  end
+  trim_trailing_whitespace(bufnr)
+end, { nargs = '?', force = true, desc = 'Trim trailing whitespace in buffer' })
+
+vim.api.nvim_create_user_command('TrimWhitespaceEnableOnSave', function()
+  set_trailing_whitespace_trim(vim.bo.filetype, true)
+end, { force = true, desc = 'Enable trailing whitespace trim on save for filetype' })
+
+vim.api.nvim_create_user_command('TrimWhitespaceDisableOnSave', function()
+  set_trailing_whitespace_trim(vim.bo.filetype, false)
+end, { force = true, desc = 'Disable trailing whitespace trim on save for filetype' })
+
+vim.api.nvim_create_user_command('TrimWhitespaceToggleOnSave', function()
+  local ft = vim.bo.filetype
+  set_trailing_whitespace_trim(ft, not trailspace_trim_on_save[ft])
+end, { force = true, desc = 'Toggle trailing whitespace trim on save for filetype' })
+
+vim.api.nvim_create_user_command('ToggleParinfer', function()
+  if vim.fn.exists ':ParinferOn' == 0 or vim.fn.exists ':ParinferOff' == 0 then
+    vim.notify('Parinfer is not available in this buffer', vim.log.levels.WARN)
+    return
+  end
+
+  local enabled = vim.g.parinfer_enabled ~= 0
+  vim.cmd(enabled and 'ParinferOff' or 'ParinferOn')
+  vim.notify(string.format('Parinfer %s', enabled and 'disabled' or 'enabled'), vim.log.levels.INFO)
+end, { force = true, desc = 'Toggle parinfer' })
+
+vim.api.nvim_create_autocmd('BufWritePre', {
+  group = augroup,
+  callback = function(event)
+    if vim.bo[event.buf].buftype ~= '' or not vim.bo[event.buf].modifiable then
+      return
+    end
+
+    local ft = vim.bo[event.buf].filetype
+    if trailspace_trim_on_save[ft] then
+      trim_trailing_whitespace(event.buf)
+    end
   end,
 })
 
@@ -434,20 +484,9 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.opt_local.tabstop = 2
     vim.opt_local.shiftwidth = 2
     vim.opt_local.softtabstop = 2
+    vim.opt_local.lispwords:append { 'deftest', 'defsuite', 'define-test', 'defspec', 'describe', 'it', 'context', 'before', 'after', 'around', 'with-gensyms' }
+    vim.keymap.set('n', '<leader>uu', '<cmd>ToggleParinfer<cr>', { buffer = true, desc = 'toggle parinfer' })
     vim.bo.lisp = false
-  end,
-})
-
-vim.api.nvim_create_autocmd('FileType', {
-  group = augroup,
-  pattern = 'scheme',
-  callback = function()
-    vim.opt_local.smartindent = false
-    vim.opt_local.expandtab = true
-    vim.opt_local.tabstop = 2
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.softtabstop = 2
-    vim.bo.lisp = true
   end,
 })
 
@@ -985,6 +1024,7 @@ map('n', '<leader>sp', '<cmd>Lazy<cr>', { desc = 'Lazy' })
 map('n', '<leader>sc', '<cmd>ConformInfo<cr>', { desc = 'Conform Info' })
 map('n', '<leader>sl', '<cmd>LspInfo<cr>', { desc = 'LSP Info' })
 map('n', '<leader>sr', '<cmd>LspRestart<cr>', { desc = 'LSP Restart' })
+map('n', '<leader>uws', '<cmd>TrimWhitespaceToggleOnSave<cr>', { desc = 'toggle trim whitespace on save' })
 
 vim.api.nvim_create_user_command('Grep', function(cmd_opts)
   grep_picker(cmd_opts.args)
@@ -1316,6 +1356,36 @@ for _, ft in ipairs(used_ft_sys.used_ft) do
 end
 local lisp_enabled = enabled_ft.lisp == true
 local markdown_enabled = enabled_ft.markdown == true
+trailspace_trim_on_save = {
+  lua = true,
+  lisp = true,
+}
+
+trim_trailing_whitespace = function(bufnr)
+  local ok, trailspace = pcall(require, 'mini.trailspace')
+  if not ok then
+    return false
+  end
+
+  local target = bufnr or vim.api.nvim_get_current_buf()
+  vim.api.nvim_buf_call(target, function()
+    local view = vim.fn.winsaveview()
+    trailspace.trim()
+    trailspace.trim_last_lines()
+    vim.fn.winrestview(view)
+  end)
+  return true
+end
+
+set_trailing_whitespace_trim = function(ft, enabled)
+  if ft == '' then
+    vim.notify('No filetype for current buffer', vim.log.levels.WARN)
+    return
+  end
+
+  trailspace_trim_on_save[ft] = enabled or nil
+  vim.notify(string.format('Trailing whitespace trim on save %s for %s', enabled and 'enabled' or 'disabled', ft), vim.log.levels.INFO)
+end
 
 -- ============================================================================
 -- @LSP
@@ -1867,6 +1937,23 @@ if not vim.g.__user_lazy_setup_done then
           vim.g.disable_autocomplete = not vim.g.disable_autocomplete
           print((vim.g.disable_autocomplete and '-disabled-' or '-enabled-') .. ' autocomplete')
         end, { desc = 'toggle autocomplete' })
+      end,
+    },
+
+    {
+      'echasnovski/mini.trailspace',
+      event = { 'BufReadPre', 'BufNewFile' },
+      opts = {},
+      config = function(_, opts)
+        require('mini.trailspace').setup(opts)
+        local function set_trailspace_hl()
+          vim.api.nvim_set_hl(0, 'MiniTrailspace', { link = 'DiagnosticError' })
+        end
+        set_trailspace_hl()
+        vim.api.nvim_create_autocmd('ColorScheme', {
+          group = augroup,
+          callback = set_trailspace_hl,
+        })
       end,
     },
 

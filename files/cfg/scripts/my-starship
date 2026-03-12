@@ -3,17 +3,8 @@
 # Dynamic Starship config generator
 # This script reads COLOR env var or ~/.color file and generates appropriate config
 
-# Check COLOR environment variable first, then fall back to ~/.color file
-COLOR_MODE="$COLOR"
-
-if [ -z "$COLOR_MODE" ] && [ -f ~/.color ]; then
-    COLOR_MODE=$(cat ~/.color 2>/dev/null | tr -d '[:space:]')
-fi
-
-# Default to dark if no preference found
-if [ "$COLOR_MODE" != "light" ]; then
-    COLOR_MODE="dark"
-fi
+SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
+COLOR_MODE="$($SCRIPT_DIR/color-mode)"
 
 # Set colors based on mode
 if [ "$COLOR_MODE" = "light" ]; then

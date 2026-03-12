@@ -5,6 +5,7 @@
                         :defaults *load-truename*))))
 
 (load-relative #P"sbcl-server.cl")
+; (load #P"/home/agung-b-sorlawan/.rice/clisp/sbcl-server.cl")
 (ignore-errors
   (defparameter *listener*
-    (tcp-eval:start-server :port 5555)))
+    (tcp-eval:start-server :port 5677)))

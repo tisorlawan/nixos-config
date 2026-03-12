@@ -116,7 +116,7 @@ in
         file
         pkgs-unstable.neovim
         vim-full
-        sbcl
+        # sbcl
         killall
         yazi
         pkgs-unstable.yt-dlp

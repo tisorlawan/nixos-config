@@ -19,6 +19,7 @@ alias cat = bat --plain
 alias r = rsync -avzP
 alias lg = lazygit
 alias a = overlay use .venv/bin/activate.nu
+alias la = ls -a
 
 def gcloudc [--print] {
     let token = (gcloud auth print-access-token | str trim)

@@ -11,7 +11,7 @@
 (defun %trim (s)
   (string-trim '(#\Space #\Tab #\Newline #\Return) s))
 
-(defun start-server (&key (port 5555) (host "127.0.0.1"))
+(defun start-server (&key (port 5677) (host "127.0.0.1"))
   (let* ((sock (make-instance 'sb-bsd-sockets:inet-socket
                               :type :stream
                               :protocol :tcp))
@@ -29,7 +29,9 @@
             (lambda ()
               (unwind-protect
                    (let ((stream (sb-bsd-sockets:socket-make-stream
-                                  client :input t :output t
+                                  client
+                                  :input t
+                                  :output t
                                   :element-type 'character
                                   :buffering :line)))
                      (format stream "OK READY~%")
@@ -39,14 +41,19 @@
                              (let ((line (%trim line)))
                                (when (plusp (length line))
                                  (handler-case
-                                     (let* ((*package* (find-package :cl-user))
-                                            (form (read-from-string line))
-                                            (vals (multiple-value-list (eval form))))
-                                       (format stream "OK ~s~%" (car vals)))
-                                   (error (e)
-                                     (format stream "ERR ~a~%" e))))
+                                     (let* ((form (read-from-string line)))
+                                       (handler-bind
+                                           ((warning
+                                             (lambda (warn)
+                                               (format stream "WARN ~a~%" warn)
+                                               (muffle-warning warn))))
+                                         (let* ((*package* (find-package :cl-user))
+                                                (vals (multiple-value-list (eval form))))
+                                           (format stream "OK ~s~%" (car vals)))))
+                                   (error (err)
+                                     (format stream "ERR ~a~%" err))))
                                (finish-output stream))))
-                (ignore-errors (sb-bsd-sockets:socket-close client))))))))
+                   (ignore-errors (sb-bsd-sockets:socket-close client))))))))
      :name "tcp-eval-accept-loop")
     sock))
 

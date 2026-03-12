@@ -150,7 +150,6 @@ map('v', '<C-M-j>', ":m '>+1<CR>gv=gv", { desc = 'Move Line Down in Visual Mode'
 map('v', '<C-M-k>', ":m '<-2<CR>gv=gv", { desc = 'Move Line Up in Visual Mode', silent = true })
 map('v', '<leader>ss', ':s/\\C\\%V', { desc = 'Search only in visual selection using %V atom' })
 map('n', '<leader>w', '<cmd>update<CR>', { desc = 'Save file' })
-map('n', '<leader>h', '<cmd>nohlsearch<CR>', { desc = 'Clear search highlight' })
 map('n', '<leader>q', '<cmd>q<CR>', { desc = 'Quit' })
 map('v', '<leader>r', '"hy:%s/\\C\\v<C-r>h//g<left><left>', { desc = 'change selection' })
 map('n', '<leader>vc', '<cmd>edit $MYVIMRC<CR>', { desc = 'Edit vimrc' })
@@ -1253,53 +1252,8 @@ end, { expr = true, desc = 'Append semicolon' })
 -- ============================================================================
 
 local ui = {
-  icons = {
-    diagnostics = { Error = ' ', Warn = ' ', Hint = ' ', Info = ' ' },
-    git = { added = ' ', modified = ' ', removed = ' ' },
-    kinds = {
-      Array = ' ',
-      Boolean = '󰨙 ',
-      Class = ' ',
-      Color = ' ',
-      Constant = '󰏿 ',
-      Constructor = ' ',
-      Enum = ' ',
-      EnumMember = ' ',
-      Event = ' ',
-      Field = ' ',
-      File = ' ',
-      Folder = ' ',
-      Function = '󰊕 ',
-      Interface = ' ',
-      Key = ' ',
-      Keyword = ' ',
-      Method = '󰊕 ',
-      Module = ' ',
-      Namespace = '󰦮 ',
-      Null = ' ',
-      Number = '󰎠 ',
-      Object = ' ',
-      Operator = ' ',
-      Package = ' ',
-      Property = ' ',
-      Reference = ' ',
-      Snippet = ' ',
-      String = ' ',
-      Struct = '󰆼 ',
-      Text = ' ',
-      TypeParameter = ' ',
-      Unit = ' ',
-      Value = ' ',
-      Variable = '󰀫 ',
-    },
-  },
+  icons = { diagnostics = { Error = ' ', Warn = ' ', Hint = ' ', Info = ' ' } },
 }
-
-function ui.fg(name)
-  local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
-  local fg = hl and hl.fg
-  return fg and { fg = string.format('#%06x', fg) } or nil
-end
 
 -- ============================================================================
 -- @USED FILETYPES SYSTEM
@@ -1705,70 +1659,253 @@ vim.api.nvim_create_user_command('LspRestart', function()
   end, 500)
 end, { force = true })
 
-local sbcl_virt_ns = vim.api.nvim_create_namespace 'sbcl_eval'
+local sbcl_output_buf = nil
+local sbcl_output_win = nil
+
+-- Decode SBCL protocol `~S` style responses.
+local function sbcl_decode_protocol_value(value)
+  if value == nil then
+    return value
+  end
+
+  local quoted = value:match '^"(.*)"$'
+  if not quoted then
+    return value
+  end
+
+  local mmap = {
+    n = '\n',
+    r = '\r',
+    t = '\t',
+    a = '\a',
+    b = '\b',
+    f = '\f',
+    v = '\v',
+    ['"'] = '"',
+    ['\\'] = '\\',
+  }
+
+  local decoded = quoted:gsub('\\(.)', function(ch)
+    return mmap[ch] or ch
+  end)
+
+  return decoded
+end
+
+local function sbcl_strip_outer_quotes(text)
+  if text == nil then
+    return text
+  end
+  if text:sub(1, 1) == '"' and text:sub(-1) == '"' then
+    return text:sub(2, -2)
+  end
+  return text
+end
 
 local function sbcl_send(expr, label, on_result)
   local uv = vim.uv or vim.loop
   local client = uv.new_tcp()
+  local response_chunks = {}
   local function notify_result(msg, level)
     vim.schedule(function()
-      if on_result then
-        on_result(msg, level)
-      else
-        vim.notify(msg, level)
+      local ok, err = pcall(function()
+        if on_result then
+          on_result(msg, level)
+        else
+          vim.notify(msg, level)
+        end
+      end)
+      if not ok then
+        vim.notify('Sbcl callback error: ' .. tostring(err), vim.log.levels.ERROR)
       end
     end)
   end
-  client:connect('127.0.0.1', 5555, function(err)
+
+  local function parse_sbcl_response(output)
+    local parsed = {}
+    local lines = vim.split(output, '\n', { plain = true, trimempty = false })
+    local total_lines = #lines
+
+    for idx, raw in ipairs(lines) do
+      local line = vim.trim(raw)
+      local is_last_line = idx == total_lines
+
+      if line == 'OK READY' then
+        -- keep buffer open but ignore handshake
+      elseif line == '' and is_last_line then
+        -- Ignore protocol terminator newline.
+      else
+        local text
+        local level = vim.log.levels.INFO
+
+        if line == 'OK' then
+          text = '(no output)'
+        elseif line:match '^OK%s' then
+          text = line:match '^OK%s*(.*)$' or ''
+          text = sbcl_decode_protocol_value(text)
+        elseif line:match '^ERR%s' then
+          text = line:match '^ERR%s*(.*)$' or ''
+          if text == '' then
+            text = '(error)'
+          end
+          level = vim.log.levels.ERROR
+        elseif line == 'ERR' then
+          text = '(error)'
+          level = vim.log.levels.ERROR
+        else
+          text = line
+        end
+
+        table.insert(parsed, { text = text, level = level })
+      end
+    end
+
+    if #parsed == 0 then
+      table.insert(parsed, { text = '(no output)', level = vim.log.levels.INFO })
+    end
+
+    return parsed
+  end
+
+  if on_result then
+    notify_result(label .. ': waiting for SBCL response...', vim.log.levels.INFO)
+  end
+
+  local function flush_response(is_final)
+    if #response_chunks == 0 then
+      if is_final then
+        notify_result(label .. ': (no output)', vim.log.levels.INFO)
+        pcall(client.shutdown, client)
+        pcall(client.close, client)
+      end
+      return
+    end
+
+    local output = table.concat(response_chunks)
+    local parsed = parse_sbcl_response(output)
+    local payload = {}
+    local level = vim.log.levels.INFO
+
+    for _, item in ipairs(parsed) do
+      table.insert(payload, item.text)
+      if item.level == vim.log.levels.ERROR then
+        level = vim.log.levels.ERROR
+      end
+    end
+
+    local final_payload = table.concat(payload, '\n')
+    if final_payload == '' then
+      final_payload = '(no output)'
+    end
+
+    notify_result(final_payload, level)
+
+    if is_final then
+      pcall(client.shutdown, client)
+      pcall(client.close, client)
+    end
+  end
+
+  client:connect('127.0.0.1', 5677, function(err)
     if err then
       notify_result(label .. ': connection failed', vim.log.levels.ERROR)
       pcall(client.close, client)
       return
     end
-    client:read_start(function(_, data)
-      if not data then
+    client:write(expr .. '\n', function(write_err)
+      if write_err then
+        notify_result(label .. ': send failed', vim.log.levels.ERROR)
         pcall(client.close, client)
         return
       end
-      client:read_stop()
-      client:write(expr .. '\n', function(write_err)
-        if write_err then
-          notify_result(label .. ': send failed', vim.log.levels.ERROR)
-          pcall(client.close, client)
+
+      client:read_start(function(_, resp)
+        if not resp then
+          flush_response(true)
           return
         end
-        client:read_start(function(_, resp)
-          pcall(client.shutdown, client)
-          pcall(client.close, client)
-          if not resp then
-            return
-          end
-          local trimmed = vim.trim(resp)
-          if trimmed:match '^ERR ' then
-            notify_result(label .. ': ' .. trimmed:sub(5), vim.log.levels.ERROR)
-          elseif trimmed:match '^OK ' then
-            notify_result(trimmed:sub(4), vim.log.levels.INFO)
-          else
-            notify_result(trimmed, vim.log.levels.INFO)
-          end
-        end)
+
+        table.insert(response_chunks, resp)
+        flush_response(false)
       end)
     end)
   end)
 end
 
-local function sbcl_show_virt(msg, level)
-  local bufnr = vim.api.nvim_get_current_buf()
-  local row = vim.api.nvim_win_get_cursor(0)[1] - 1
-  local hl = level == vim.log.levels.ERROR and 'DiagnosticVirtualTextError' or 'DiagnosticVirtualTextInfo'
-  vim.api.nvim_buf_clear_namespace(bufnr, sbcl_virt_ns, 0, -1)
-  vim.api.nvim_buf_set_extmark(bufnr, sbcl_virt_ns, row, 0, {
-    virt_text = { { ' => ' .. msg, hl } },
-    virt_text_pos = 'eol',
-  })
-  vim.defer_fn(function()
-    pcall(vim.api.nvim_buf_clear_namespace, bufnr, sbcl_virt_ns, 0, -1)
-  end, 3000)
+local function set_lines_in_scratch(buf, lines)
+  vim.bo[buf].modifiable = true
+  vim.api.nvim_buf_set_lines(buf, 0, -1, false, lines)
+  vim.bo[buf].modifiable = false
+  vim.bo[buf].readonly = true
+end
+
+local function ensure_sbcl_output_window()
+  local win = nil
+
+  if sbcl_output_win and vim.api.nvim_win_is_valid(sbcl_output_win) then
+    win = sbcl_output_win
+  else
+    local existing_win = vim.fn.bufwinid(sbcl_output_buf or -1)
+    if existing_win ~= -1 then
+      win = existing_win
+    end
+  end
+
+  if not sbcl_output_buf or not vim.api.nvim_buf_is_valid(sbcl_output_buf) then
+    sbcl_output_buf = vim.api.nvim_create_buf(false, true)
+    vim.bo[sbcl_output_buf].buftype = 'nofile'
+    vim.bo[sbcl_output_buf].bufhidden = 'hide'
+    vim.bo[sbcl_output_buf].swapfile = false
+    vim.bo[sbcl_output_buf].buflisted = false
+    vim.api.nvim_buf_set_name(sbcl_output_buf, '[SBCL Output]')
+  end
+
+  if not win then
+    vim.cmd 'vsplit'
+    win = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_buf(win, sbcl_output_buf)
+  end
+
+  vim.api.nvim_win_set_buf(win, sbcl_output_buf)
+  sbcl_output_win = win
+  return win
+end
+
+local function sbcl_show_output(msg, level)
+  local cur_win = vim.api.nvim_get_current_win()
+  local cleaned = type(msg) == 'string' and sbcl_strip_outer_quotes(vim.trim(msg)) or ''
+  local lines = type(cleaned) == 'string' and vim.split(cleaned, '\n', { plain = true, trimempty = false }) or {}
+  if #lines == 0 then
+    lines = { '(no output)' }
+  end
+
+  if level == vim.log.levels.ERROR then
+    table.insert(lines, 1, '[error]')
+  end
+
+  local win = ensure_sbcl_output_window()
+  set_lines_in_scratch(sbcl_output_buf, lines)
+  if win and vim.api.nvim_win_is_valid(win) then
+    vim.api.nvim_win_set_cursor(win, { 1, 0 })
+  end
+  if cur_win and vim.api.nvim_win_is_valid(cur_win) then
+    vim.api.nvim_set_current_win(cur_win)
+  end
+end
+local function sbcl_wrap_expr_with_stdout_capture(expr)
+  local template = [[(let* ((sbcl__stream (make-string-output-stream))
+           (sbcl__values (multiple-value-list
+                          (let ((*standard-output* sbcl__stream)
+                                (*error-output* sbcl__stream)
+                                (*trace-output* sbcl__stream))
+                            %s))))
+       (let ((result (if (= (length sbcl__values) 1) (car sbcl__values) sbcl__values))
+             (output (get-output-stream-string sbcl__stream)))
+         (if (string= output "")
+             (format nil "~S" result)
+             (format nil "~A~%%=> ~S" output result))))]]
+  local wrapper = string.format(template:gsub('\n', ' '), expr)
+  return wrapper
 end
 
 vim.api.nvim_create_user_command('SbclLoadFile', function()
@@ -1782,7 +1919,7 @@ vim.api.nvim_create_user_command('SbclLoadFile', function()
     vim.notify('SbclLoadFile: no file in current buffer', vim.log.levels.ERROR)
     return
   end
-  sbcl_send(string.format('(load "%s")', filepath), 'SbclLoadFile')
+  sbcl_send(string.format('(load "%s")', filepath), 'SbclLoadFile', sbcl_show_output)
 end, { force = true })
 
 local function sbcl_eval_expr(on_result)
@@ -1827,11 +1964,11 @@ local function sbcl_eval_expr(on_result)
 
   local lines = vim.api.nvim_buf_get_text(0, start[1] - 1, start[2] - 1, finish[1] - 1, finish[2], {})
   local expr = table.concat(lines, ' ')
-  sbcl_send(expr, 'SbclEvalExpr', on_result)
+  sbcl_send(sbcl_wrap_expr_with_stdout_capture(expr), 'SbclEvalExpr', on_result)
 end
 
 vim.api.nvim_create_user_command('SbclEvalExpr', function()
-  sbcl_eval_expr()
+  sbcl_eval_expr(sbcl_show_output)
 end, { force = true })
 
 vim.api.nvim_create_autocmd('FileType', {
@@ -1845,7 +1982,7 @@ vim.api.nvim_create_autocmd('FileType', {
     end, { buffer = ev.buf, silent = true })
     vim.keymap.set('n', '<C-x><C-e>', '<cmd>SbclEvalExpr<cr>', { buffer = ev.buf, silent = true })
     vim.keymap.set('i', '<C-x><C-e>', function()
-      sbcl_eval_expr(sbcl_show_virt)
+      sbcl_eval_expr(sbcl_show_output)
       vim.cmd 'startinsert'
     end, { buffer = ev.buf, silent = true })
   end,
@@ -1986,7 +2123,7 @@ if not vim.g.__user_lazy_setup_done then
           ['<C-f>'] = { 'scroll_documentation_down', 'fallback' },
           ['<C-k>'] = { 'show_signature', 'hide_signature', 'fallback' },
         },
-        appearance = { kind_icons = ui.icons.kinds },
+        -- appearance = { kind_icons = ui.icons.kinds },
         completion = {
           list = {
             selection = {
@@ -2116,7 +2253,7 @@ if not vim.g.__user_lazy_setup_done then
       build = function()
         require('fff.download').download_or_build_binary()
       end,
-      opts = { prompt = '> ' },
+      opts = { prompt = '| ' },
       keys = {
         {
           '<c-p>',
@@ -2147,7 +2284,6 @@ if not vim.g.__user_lazy_setup_done then
     },
     {
       'justinmk/vim-dirvish',
-      event = 'VeryLazy',
       dependencies = { 'roginfarrer/vim-dirvish-dovish' },
       lazy = false,
     },
@@ -2233,15 +2369,6 @@ if not vim.g.__user_lazy_setup_done then
             use_libuv_file_watcher = true,
             hijack_netrw_behavior = 'disabled',
             filtered_items = { always_show = { '.gitignore' } },
-          },
-          default_component_configs = {
-            icon = {
-              folder_closed = ui.icons.kinds.Folder,
-              folder_open = ui.icons.kinds.Folder,
-              folder_empty = '󰜌',
-              default = '*',
-              highlight = 'NeoTreeFileIcon',
-            },
           },
         }
       end,
@@ -2370,10 +2497,7 @@ if not vim.g.__user_lazy_setup_done then
                   return require('lsp-progress').progress()
                 end,
               },
-              {
-                'diff',
-                symbols = { added = ui.icons.git.added, modified = ui.icons.git.modified, removed = ui.icons.git.removed },
-              },
+              { 'diff' },
             },
             lualine_y = {
               {
@@ -2446,22 +2570,6 @@ if not vim.g.__user_lazy_setup_done then
       'lewis6991/gitsigns.nvim',
       event = { 'BufReadPost', 'BufNewFile' },
       opts = {
-        signs = {
-          add = { text = '▎' },
-          change = { text = '▎' },
-          delete = { text = '' },
-          topdelete = { text = '' },
-          changedelete = { text = '▎' },
-          untracked = { text = '▎' },
-        },
-        signs_staged = {
-          add = { text = '│' },
-          change = { text = '│' },
-          delete = { text = '' },
-          topdelete = { text = '' },
-          changedelete = { text = '~' },
-          untracked = { text = '│' },
-        },
         on_attach = function(buffer)
           local gs = package.loaded.gitsigns
           local function lmap(mode, l, r, desc)

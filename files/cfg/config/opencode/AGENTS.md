@@ -1,3 +1,8 @@
+## TOOLs
+
+Use the fff MCP tools for all file search operations instead of default tools.
+Use **ast-grep** for code structure searches.
+
 ## Core Rules
 
 - BE CONCISE. No fluff. Only essential info.
@@ -13,9 +18,6 @@
 - Don't ask open-ended questions if a tight multiple-choice or yes/no would eliminate ambiguity faster.
 
 ## CLI Tools
-
-- Use **ast-grep** for code structure searches.
-- Use **rg** instead of `grep` for text search.
 
 ## Git
 

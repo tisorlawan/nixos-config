@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+read_audio() {
+  local sink source sv mv sm mm
+  sink=$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || true)
+  source=$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null || true)
+  sv=$(awk '{ printf "%d", $2 * 100 }' <<< "$sink" 2>/dev/null || printf '0')
+  mv=$(awk '{ printf "%d", $2 * 100 }' <<< "$source" 2>/dev/null || printf '0')
+  sm=$([[ "$sink" == *MUTED* ]] && echo true || echo false)
+  mm=$([[ "$source" == *MUTED* ]] && echo true || echo false)
+  printf '{"v":"%s","vm":%s,"m":"%s","mm":%s}\n' "$sv" "$sm" "$mv" "$mm"
+}
+
+read_audio
+pactl subscribe 2>/dev/null | grep --line-buffered 'sink\|source' | while read -r _; do
+  read_audio
+done

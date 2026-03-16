@@ -1,0 +1,20 @@
+{
+  "plugins": {
+    "kanagawa.nvim": {
+      "rev": "aef7f5cec0a40dbe7f3304214850c472e2264b10",
+      "src": "https://github.com/rebelot/kanagawa.nvim"
+    },
+    "nightfox.nvim": {
+      "rev": "ba47d4b4c5ec308718641ba7402c143836f35aa9",
+      "src": "https://github.com/EdenEast/nightfox.nvim"
+    },
+    "parinfer-rust": {
+      "rev": "845bfbb9916687cba5b6bae088c9eab70dbb83a3",
+      "src": "https://github.com/eraserhd/parinfer-rust.git"
+    },
+    "zen.nvim": {
+      "rev": "9a60e3fbef521f754cb54a78106647873a50a8ae",
+      "src": "https://github.com/nendix/zen.nvim"
+    }
+  }
+}

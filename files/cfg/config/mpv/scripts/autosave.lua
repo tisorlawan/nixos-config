@@ -1,4 +1,3 @@
-
 -- autosave.lua
 --
 -- Periodically saves "watch later" data during playback, rather than only saving on quit.
@@ -12,15 +11,15 @@
 --
 -- This will set the save period to once every 60 seconds of playback, time while paused is not counted towards the save period timer.
 -- The default save period is 30 seconds.
-local options = require 'mp.options'
+local options = require("mp.options")
 
 local o = {
-	save_period = 5
+	save_period = 5,
 }
 
 options.read_options(o)
 
-local mp = require 'mp'
+local mp = require("mp")
 
 local function save()
 	mp.command("write-watch-later-config")

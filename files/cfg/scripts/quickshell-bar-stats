@@ -1,0 +1,186 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+bytes_to_kb() {
+  awk -v val="$1" 'BEGIN { printf "%d", val / 1024 }'
+}
+
+json_escape() {
+  local value="$1"
+  value=${value//\\/\\\\}
+  value=${value//\"/\\\"}
+  value=${value//$'\n'/ }
+  value=${value//$'\r'/ }
+  value=${value//$'\t'/ }
+  printf '%s' "$value"
+}
+
+read_cpu() {
+  local cpu user nice system idle iowait irq softirq steal guest guest_nice
+  read -r cpu user nice system idle iowait irq softirq steal guest guest_nice < /proc/stat
+  local idle_all=$((idle + iowait))
+  local total=$((user + nice + system + idle + iowait + irq + softirq + steal))
+  printf '%s %s\n' "$idle_all" "$total"
+}
+
+read_memory_percent() {
+  awk '
+    /^MemTotal:/ { total = $2 }
+    /^MemAvailable:/ { available = $2 }
+    END {
+      if (total > 0) {
+        printf "%d", ((total - available) * 100) / total
+      } else {
+        printf "0"
+      }
+    }
+  ' /proc/meminfo
+}
+
+read_backlight_percent() {
+  local output
+  output="$(brightnessctl -m 2>/dev/null || true)"
+  if [[ -z "$output" ]]; then
+    printf '0'
+    return
+  fi
+
+  IFS=',' read -r _ _ _ percent _ <<< "$output"
+  percent=${percent%%%}
+  printf '%s' "${percent:-0}"
+}
+
+read_audio() {
+  local sink source sink_vol source_vol sink_muted source_muted sink_text source_text
+
+  sink="$(wpctl get-volume @DEFAULT_AUDIO_SINK@ 2>/dev/null || true)"
+  source="$(wpctl get-volume @DEFAULT_AUDIO_SOURCE@ 2>/dev/null || true)"
+
+  sink_vol=$(awk '{ printf "%d", $2 * 100 }' <<< "$sink" 2>/dev/null || printf '0')
+  source_vol=$(awk '{ printf "%d", $2 * 100 }' <<< "$source" 2>/dev/null || printf '0')
+
+  if [[ "$sink" == *MUTED* ]]; then
+    sink_muted=true
+  else
+    sink_muted=false
+  fi
+
+  if [[ "$source" == *MUTED* ]]; then
+    source_muted=true
+  else
+    source_muted=false
+  fi
+
+  sink_text="${sink_vol}"
+  source_text="${source_vol}"
+
+  printf '%s\t%s\t%s\t%s\n' "$sink_text" "$source_text" "$sink_muted" "$source_muted"
+}
+
+default_interface() {
+  ip route show default 2>/dev/null | awk 'NR==1 { print $5 }'
+}
+
+read_wifi_details() {
+  local iface="$1"
+  local essid signal
+
+  essid="$(iw dev "$iface" link 2>/dev/null | awk -F': ' '/SSID/ { print $2; exit }')"
+  signal="$(awk -v dev="$iface" '$1 ~ dev":" { gsub("\\.", "", $3); printf "%d", ($3 * 100) / 70 }' /proc/net/wireless 2>/dev/null || true)"
+
+  printf '%s\t%s\n' "${essid:-$iface}" "${signal:-0}"
+}
+
+read_ip_cidr() {
+  local iface="$1"
+  ip -o -4 addr show dev "$iface" 2>/dev/null | awk 'NR==1 { print $4 }'
+}
+
+network_kind() {
+  local iface="$1"
+  if [[ -d "/sys/class/net/$iface/wireless" ]]; then
+    printf 'wifi'
+  else
+    printf 'ethernet'
+  fi
+}
+
+prev_cpu_idle=0
+prev_cpu_total=0
+read prev_cpu_idle prev_cpu_total < <(read_cpu)
+
+prev_iface=""
+prev_rx=0
+prev_tx=0
+
+while true; do
+  sleep 1
+
+  cpu_idle=0
+  cpu_total=0
+  read cpu_idle cpu_total < <(read_cpu)
+  cpu_delta=$((cpu_total - prev_cpu_total))
+  idle_delta=$((cpu_idle - prev_cpu_idle))
+  if (( cpu_delta > 0 )); then
+    cpu_percent=$(((cpu_delta - idle_delta) * 100 / cpu_delta))
+  else
+    cpu_percent=0
+  fi
+  prev_cpu_idle=$cpu_idle
+  prev_cpu_total=$cpu_total
+
+  mem_percent="$(read_memory_percent)"
+  backlight_percent="$(read_backlight_percent)"
+
+  iface="$(default_interface)"
+  if [[ -n "$iface" && -r "/sys/class/net/$iface/statistics/rx_bytes" ]]; then
+    rx=$(< "/sys/class/net/$iface/statistics/rx_bytes")
+    tx=$(< "/sys/class/net/$iface/statistics/tx_bytes")
+    if [[ "$iface" != "$prev_iface" ]]; then
+      prev_rx=$rx
+      prev_tx=$tx
+      prev_iface=$iface
+    fi
+    down_rate=$((rx - prev_rx))
+    up_rate=$((tx - prev_tx))
+    prev_rx=$rx
+    prev_tx=$tx
+
+    if [[ -r "/sys/class/net/$iface/operstate" ]]; then
+      state=$(< "/sys/class/net/$iface/operstate")
+    else
+      state="down"
+    fi
+
+    if [[ "$state" == "up" || "$state" == "unknown" ]]; then
+      kind="$(network_kind "$iface")"
+      ip_cidr="$(read_ip_cidr "$iface")"
+      if [[ "$kind" == "wifi" ]]; then
+        IFS=$'\t' read -r wifi_name wifi_signal < <(read_wifi_details "$iface")
+        network_text="${wifi_name} (${wifi_signal}%) WiFi"
+      else
+        network_text="${ip_cidr:-$iface} Ethernet"
+      fi
+      down_kb=$(bytes_to_kb "$down_rate")
+      up_kb=$(bytes_to_kb "$up_rate")
+    else
+      network_text="Disconnected"
+      down_kb=0
+      up_kb=0
+    fi
+  else
+    iface=""
+    network_text="Disconnected"
+    down_kb=0
+    up_kb=0
+  fi
+
+  printf '{"cpu_text":"%-2d","memory_text":"%-2d","backlight_text":"%s","network_text":"%s","down_kb":%s,"up_kb":%s}\n' \
+    "$cpu_percent" \
+    "$mem_percent" \
+    "$backlight_percent" \
+    "$(json_escape "$network_text")" \
+    "${down_kb:-0}" \
+    "${up_kb:-0}"
+done

@@ -1,0 +1,8 @@
+#!/bin/bash
+WS=$(hyprctl activeworkspace -j | jq -r '.id')
+LAYOUT=$(hyprctl activeworkspace -j | jq -r '.tiledLayout')
+if [ "$LAYOUT" = "monocle" ]; then
+    hyprctl keyword workspace "$WS, layout:dwindle"
+else
+    hyprctl keyword workspace "$WS, layout:monocle"
+fi

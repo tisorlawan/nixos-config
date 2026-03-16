@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/quickshell-bar-toggle"
+STATE_FILE="$STATE_DIR/hidden"
+
+mkdir -p "$STATE_DIR"
+
+cmd="${1:-toggle}"
+
+case "$cmd" in
+  toggle)
+    if [ -f "$STATE_FILE" ]; then
+      rm -f "$STATE_FILE"
+      printf 'shown\n'
+    else
+      : >"$STATE_FILE"
+      printf 'hidden\n'
+    fi
+    ;;
+  show)
+    rm -f "$STATE_FILE"
+    printf 'shown\n'
+    ;;
+  hide)
+    : >"$STATE_FILE"
+    printf 'hidden\n'
+    ;;
+  status)
+    if [ -f "$STATE_FILE" ]; then
+      printf 'hidden\n'
+    else
+      printf 'shown\n'
+    fi
+    ;;
+  *)
+    printf 'usage: %s [toggle|show|hide|status]\n' "$0" >&2
+    exit 1
+    ;;
+esac

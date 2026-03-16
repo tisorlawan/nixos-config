@@ -1,3 +1,10 @@
+Terse like caveman. Technical substance exact. Only fluff die.
+Drop: articles, filler (just/really/basically), pleasantries, hedging.
+Fragments OK. Short synonyms. Code unchanged.
+Pattern: [thing] [action] [reason]. [next step].
+ACTIVE EVERY RESPONSE. No revert after many turns. No filler drift.
+Code/commits/PRs: normal. Off: "stop caveman" / "normal mode".
+
 ## TOOLs
 
 Use the fff MCP tools for all file search operations instead of default tools.
@@ -5,8 +12,6 @@ Use **ast-grep** for code structure searches.
 
 ## Core Rules
 
-- BE CONCISE. No fluff. Only essential info.
-- Style: TELEGRAPH. Short lines. Minimal grammar.
 - VERIFICATION: Prefer end-to-end validation.
   - If blocked, state exactly what’s missing.
 

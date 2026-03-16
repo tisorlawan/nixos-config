@@ -1,7 +1,22 @@
 #!/usr/bin/env bash
 
+rm -rf ~/.config/alacritty.toml
+ln -srf files/cfg/config/alacritty.toml ~/.config/alacritty.toml
+
 rm -rf ~/.config/nvim
 ln -srf files/cfg/config/nvim ~/.config/nvim
+
+rm -rf ~/.config/btop/btop.conf
+mkdir -p ~/.config/btop
+ln -srf files/cfg/config/btop/btop.conf ~/.config/btop/btop.conf
+
+rm -rf ~/.config/copyq/copyq.conf
+mkdir -p ~/.config/copyq
+ln -srf files/cfg/config/copyq/copyq.conf ~/.config/copyq/copyq.conf
+
+rm -rf ~/.config/pudb/pudb.cfg
+mkdir -p ~/.config/pudb
+ln -srf files/cfg/config/pudb/pudb.cfg ~/.config/pudb/pudb.cfg
 
 rm -rf ~/.vimrc
 ln -srf files/cfg/vimrc ~/.vimrc
@@ -48,6 +63,9 @@ ln -srf ./files/cfg/config/nushell ~/.config/nushell
 rm -rf ~/.config/yazi
 ln -srf ./files/cfg/config/yazi ~/.config/yazi
 
+rm -rf ~/.config/quickshell
+ln -srf ./files/cfg/config/quickshell ~/.config/quickshell
+
 rm -rf ~/.config/mpd
 ln -srf ./files/cfg/config/mpd ~/.config/mpd
 
@@ -86,13 +104,44 @@ ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.claude/CLAUDE.md
 rm -rf ~/.config/opencode/AGENTS.md
 ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.config/opencode/AGENTS.md
 
+rm -rf ~/.config/opencode/opencode.json
+ln -srf ./files/cfg/config/opencode/opencode.json ~/.config/opencode/opencode.json
+
 rm -rf ~/.config/opencode/skill
 ln -srf ./files/cfg/config/opencode/skill ~/.config/opencode/skill
 
 rm -rf ~/.config/opencode/commands
 ln -srf cc/commands/ ~/.config/opencode/commands
 
+rm -rf ~/.config/ghostty
 mkdir ~/.config/ghostty
+
+rm -rf ~/.config/gtk-3.0
+ln -srf files/cfg/config/gtk-3.0 ~/.config/gtk-3.0
+
+rm -rf ~/.config/gtk-4.0
+ln -srf files/cfg/config/gtk-4.0 ~/.config/gtk-4.0
+
+rm -rf ~/.config/hypr
+ln -srf files/cfg/config/hypr ~/.config/hypr
+
+rm -rf ~/.config/mako
+ln -srf files/cfg/config/mako ~/.config/mako
+
+rm -rf ~/.config/rclone
+cp -r files/cfg/config/rclone ~/.config/rclone
+
+rm -rf ~/.config/nix
+ln -srf files/cfg/config/nix ~/.config/nix
+
+rm -rf ~/.config/nix
+ln -srf files/cfg/config/nix ~/.config/nix
+
+rm -rf ~/.config/swappy
+ln -srf files/cfg/config/swappy ~/.config/swappy
+
+rm -rf ~/.config/waybar
+ln -srf files/cfg/config/waybar ~/.config/waybar
 
 rm -rf ~/.bashrc
 ln -srf ./files/cfg/bashrc ~/.bashrc

@@ -1,0 +1,870 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+STATE_DIR="${XDG_RUNTIME_DIR:-/tmp}/hype"
+PROJECTS_DIR="$STATE_DIR/projects"
+CURRENT_PROJECT_FILE="$STATE_DIR/current-project"
+WORKSPACE_START=11
+APP_SELECTOR_CMD='rofi -config "$HOME/.config/rofi/config.rasi" -show run -modi run,drun'
+
+die() {
+  printf 'hype: %s\n' "$*" >&2
+  exit 1
+}
+
+notify_message() {
+  local body="$1"
+  if command -v notify-send >/dev/null 2>&1; then
+    notify-send "hype" "$body" >/dev/null 2>&1 || true
+  fi
+}
+
+usage() {
+  cat <<'EOF'
+usage: hype activate
+       hype project [name]
+       hype rename-project <old> <new>
+       hype delete-project [name]
+       hype move-to-project
+       hype edit-projects
+       hype slot <number>
+       hype edit-slots
+       hype next-project
+       hype prev-project
+       hype current
+       hype list-projects
+       hype workspace-map
+       hype slot-map
+EOF
+}
+
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || die "missing command: $1"
+}
+
+slugify() {
+  local value="$1"
+  value="${value,,}"
+  value="${value//[^[:alnum:]._-]/-}"
+  value="${value//--/-}"
+  value="${value#-}"
+  value="${value%-}"
+  [ -n "$value" ] || value="default"
+  printf '%s\n' "$value"
+}
+
+project_dir() {
+  printf '%s/%s\n' "$PROJECTS_DIR" "$1"
+}
+
+project_slots_file() {
+  printf '%s/slots\n' "$(project_dir "$1")"
+}
+
+project_last_slot_file() {
+  printf '%s/last-slot\n' "$(project_dir "$1")"
+}
+
+project_workspace_file() {
+  printf '%s/workspace\n' "$(project_dir "$1")"
+}
+
+ensure_dirs() {
+  mkdir -p "$PROJECTS_DIR"
+}
+
+project_exists() {
+  [ -d "$(project_dir "$1")" ]
+}
+
+list_project_names() {
+  local dir
+  for dir in "$PROJECTS_DIR"/*; do
+    [ -d "$dir" ] || continue
+    basename "$dir"
+  done | sort
+}
+
+list_project_names_by_workspace() {
+  local name workspace
+  while IFS= read -r name; do
+    [ -n "$name" ] || continue
+    workspace="$(read_project_workspace "$name" 2>/dev/null || true)"
+    [ -n "$workspace" ] || continue
+    printf '%s\t%s\n' "$workspace" "$name"
+  done < <(list_project_names)
+}
+
+list_project_cycle_order() {
+  workspace_map | sort -t$'\t' -k2,2n | cut -f1
+}
+
+read_project_workspace() {
+  local file value
+  file="$(project_workspace_file "$1")"
+  [ -f "$file" ] || return 1
+  value="$(tr -d '\n' <"$file")"
+  [[ "$value" =~ ^[0-9]+$ ]] || return 1
+  printf '%s\n' "$value"
+}
+
+next_workspace_number() {
+  local ws="$WORKSPACE_START"
+  local used
+  used="$(for name in $(list_project_names); do read_project_workspace "$name" 2>/dev/null || true; done)"
+
+  while :; do
+    if ! grep -qxF "$ws" <<<"$used"; then
+      printf '%s\n' "$ws"
+      return 0
+    fi
+    ws=$((ws + 1))
+  done
+}
+
+ensure_project() {
+  local name="$1"
+  local dir workspace
+  dir="$(project_dir "$name")"
+  mkdir -p "$dir"
+  if ! read_project_workspace "$name" >/dev/null 2>&1; then
+    workspace="$(next_workspace_number)"
+    printf '%s\n' "$workspace" >"$(project_workspace_file "$name")"
+  fi
+}
+
+ensure_default_project() {
+  ensure_project default
+}
+
+rename_project() {
+  local old_name="$1"
+  local new_name="$2"
+  [ "$old_name" = "$new_name" ] && return 0
+  project_exists "$old_name" || return 0
+  project_exists "$new_name" && die "project already exists: $new_name"
+  mv "$(project_dir "$old_name")" "$(project_dir "$new_name")"
+  local current
+  current="$(cat "$CURRENT_PROJECT_FILE" 2>/dev/null | tr -d '\n')"
+  if [ "$current" = "$old_name" ]; then
+    set_current_project "$new_name"
+  fi
+}
+
+set_current_project() {
+  ensure_project "$1"
+  printf '%s\n' "$1" >"$CURRENT_PROJECT_FILE"
+}
+
+get_current_project() {
+  local name
+  if [ -f "$CURRENT_PROJECT_FILE" ]; then
+    name="$(tr -d '\n' <"$CURRENT_PROJECT_FILE")"
+    if project_exists "$name"; then
+      printf '%s\n' "$name"
+      return 0
+    fi
+  fi
+  name="$(list_project_names | head -n1)"
+  if [ -n "$name" ]; then
+    set_current_project "$name"
+    printf '%s\n' "$name"
+    return 0
+  fi
+  ensure_default_project
+  set_current_project default
+  printf 'default\n'
+}
+
+prompt_project_choice() {
+  local current input name filtered=""
+  current="$(get_current_project)"
+  while IFS= read -r name; do
+    [ -n "$name" ] || continue
+    [ "$name" = "$current" ] && continue
+    filtered+="$name"$'\n'
+  done < <(list_project_names || true)
+  input="${filtered%$'\n'}"
+  local result
+  result=$(printf '%s' "$input" | rofi -dmenu -matching fuzzy -i -p "($current) >" -mesg "current: $current | ctrl+x to delete" -selected-row 0 -theme-str 'prompt { enabled: true; } entry { placeholder: ""; }' -kb-custom-1 "Control+x")
+  local ec=$?
+  if [ "$ec" -eq 10 ]; then
+    DELETE_TARGET="$(slugify "$result")"
+    return 0
+  fi
+  printf '%s' "$result"
+  return "$ec"
+}
+
+clients_json() {
+  hyprctl clients -j
+}
+
+get_active_workspace() {
+  hyprctl activeworkspace -j | jq -r '.name // empty'
+}
+
+get_active_window_address() {
+  hyprctl activewindow -j | jq -r '.address // empty'
+}
+
+list_workspace_clients() {
+  local workspace="$1"
+  clients_json | jq -r --arg workspace "$workspace" '.[] | select(.workspace.name == $workspace) | .address'
+}
+
+client_is_live() {
+  local address="$1"
+  [ -n "$address" ] || return 1
+  clients_json | jq -r --arg address "$address" '.[] | select(.address == $address) | .address' | grep -qxF "$address"
+}
+
+client_title() {
+  local address="$1"
+  clients_json | jq -r --arg address "$address" '.[] | select(.address == $address) | .title // empty' | head -n 1
+}
+
+client_class() {
+  local address="$1"
+  clients_json | jq -r --arg address "$address" '.[] | select(.address == $address) | .class // .initialClass // empty' | head -n 1
+}
+
+slot_descriptor() {
+  local address="$1"
+  local class title
+  class="$(client_class "$address" | tr '\n\t' '  ')"
+  title="$(client_title "$address" | tr '\n\t' '  ')"
+  printf '%s (%s) [%s]\n' "$class" "$title" "$address"
+}
+
+focus_window() {
+  local address="$1"
+  [ -n "$address" ] || return 1
+  hyprctl dispatch focuswindow "address:$address" >/dev/null 2>&1
+}
+
+focus_project_workspace() {
+  local name="$1"
+  local workspace
+  workspace="$(read_project_workspace "$name")"
+  hyprctl keyword workspace "$workspace, layout:monocle" >/dev/null 2>&1 || true
+  hyprctl dispatch workspace "$workspace" >/dev/null 2>&1
+}
+
+read_project_slots() {
+  local file
+  file="$(project_slots_file "$1")"
+  [ -f "$file" ] || return 0
+  while IFS=$'\t' read -r slot address; do
+    [ -n "$slot" ] || continue
+    [ -n "$address" ] || continue
+    printf '%s\t%s\n' "$slot" "$address"
+  done <"$file"
+}
+
+write_project_slots() {
+  local name="$1"
+  local input="$2"
+  local file
+  ensure_project "$name"
+  file="$(project_slots_file "$name")"
+  if [ -n "$input" ]; then
+    printf '%s' "$input" | sort -t$'\t' -k1,1n >"$file"
+  else
+    : >"$file"
+  fi
+}
+
+slot_address() {
+  local name="$1"
+  local wanted_slot="$2"
+  local slot address
+  while IFS=$'\t' read -r slot address; do
+    [ "$slot" = "$wanted_slot" ] || continue
+    printf '%s\n' "$address"
+    return 0
+  done < <(read_project_slots "$name")
+  return 1
+}
+
+slot_for_address() {
+  local name="$1"
+  local wanted_address="$2"
+  local slot address
+  while IFS=$'\t' read -r slot address; do
+    [ "$address" = "$wanted_address" ] || continue
+    printf '%s\n' "$slot"
+    return 0
+  done < <(read_project_slots "$name")
+  return 1
+}
+
+write_last_slot() {
+  local name="$1"
+  local slot="$2"
+  ensure_project "$name"
+  printf '%s\n' "$slot" >"$(project_last_slot_file "$name")"
+}
+
+read_last_slot() {
+  local file value
+  file="$(project_last_slot_file "$1")"
+  [ -f "$file" ] || return 1
+  value="$(tr -d '\n' <"$file")"
+  [[ "$value" =~ ^[0-9]+$ ]] || return 1
+  printf '%s\n' "$value"
+}
+
+reconcile_project_slots() {
+  local name="$1"
+  local lines="" slot address active_window active_slot next_slot workspace
+  declare -A used_slots=()
+  declare -A seen_addresses=()
+
+  ensure_project "$name"
+  workspace="$(read_project_workspace "$name")"
+
+  while IFS=$'\t' read -r slot address; do
+    [ -n "$slot" ] || continue
+    [ -n "$address" ] || continue
+    client_is_live "$address" || continue
+    [ -n "${used_slots[$slot]:-}" ] && continue
+    [ -n "${seen_addresses[$address]:-}" ] && continue
+    used_slots[$slot]=1
+    seen_addresses[$address]=1
+    lines+="$slot"$'\t'"$address"$'\n'
+  done < <(read_project_slots "$name")
+
+  while IFS= read -r address; do
+    [ -n "$address" ] || continue
+    [ -n "${seen_addresses[$address]:-}" ] && continue
+    next_slot=1
+    while [ -n "${used_slots[$next_slot]:-}" ]; do
+      next_slot=$((next_slot + 1))
+    done
+    used_slots[$next_slot]=1
+    seen_addresses[$address]=1
+    lines+="$next_slot"$'\t'"$address"$'\n'
+  done < <(list_workspace_clients "$workspace")
+
+  write_project_slots "$name" "$lines"
+
+  active_window="$(get_active_window_address || true)"
+  if [ -n "$active_window" ]; then
+    active_slot="$(slot_for_address "$name" "$active_window" || true)"
+    if [ -n "$active_slot" ]; then
+      write_last_slot "$name" "$active_slot"
+    fi
+  fi
+}
+
+assign_address_to_slot() {
+  local name="$1"
+  local wanted_slot="$2"
+  local wanted_address="$3"
+  local lines="" slot address
+  while IFS=$'\t' read -r slot address; do
+    [ -n "$slot" ] || continue
+    [ -n "$address" ] || continue
+    [ "$slot" = "$wanted_slot" ] && continue
+    [ "$address" = "$wanted_address" ] && continue
+    lines+="$slot"$'\t'"$address"$'\n'
+  done < <(read_project_slots "$name")
+  lines+="$wanted_slot"$'\t'"$wanted_address"$'\n'
+  write_project_slots "$name" "$lines"
+  write_last_slot "$name" "$wanted_slot"
+}
+
+activate_project() {
+  local name="$1"
+  local focus_mode="${2:-focus-last}"
+  local address last_slot
+  ensure_project "$name"
+  focus_project_workspace "$name"
+  reconcile_project_slots "$name"
+  if [ "$focus_mode" = "focus-last" ]; then
+    last_slot="$(read_last_slot "$name" || true)"
+    if [ -n "$last_slot" ]; then
+      address="$(slot_address "$name" "$last_slot" || true)"
+      if [ -n "$address" ] && client_is_live "$address"; then
+        focus_window "$address" || true
+      fi
+    fi
+  fi
+}
+
+wait_for_new_client() {
+  local before_file="$1"
+  local workspace="$2"
+  local tries=120
+  local address
+  while [ "$tries" -gt 0 ]; do
+    while IFS= read -r address; do
+      [ -n "$address" ] || continue
+      if ! grep -qxF "$address" "$before_file"; then
+        printf '%s\n' "$address"
+        return 0
+      fi
+    done < <(list_workspace_clients "$workspace")
+    tries=$((tries - 1))
+    sleep 0.1
+  done
+  return 1
+}
+
+launch_app_selector() {
+  bash -lc "$APP_SELECTOR_CMD"
+}
+
+select_slot() {
+  local wanted_slot="$1"
+  local name address before_file workspace
+  [ -n "$wanted_slot" ] || die "slot number required"
+  name="$(get_current_project)"
+  workspace="$(read_project_workspace "$name")"
+  if [ "$(get_active_workspace)" != "$workspace" ]; then
+    activate_project "$name" no-focus
+  fi
+  address="$(slot_address "$name" "$wanted_slot" || true)"
+  if [ -n "$address" ] && client_is_live "$address"; then
+    write_last_slot "$name" "$wanted_slot"
+    focus_window "$address"
+    exit 0
+  fi
+  reconcile_project_slots "$name"
+  address="$(slot_address "$name" "$wanted_slot" || true)"
+  if [ -n "$address" ] && client_is_live "$address"; then
+    write_last_slot "$name" "$wanted_slot"
+    focus_window "$address"
+    exit 0
+  fi
+  before_file="$(mktemp)"
+  list_workspace_clients "$workspace" >"$before_file"
+  launch_app_selector
+  address="$(wait_for_new_client "$before_file" "$workspace" || true)"
+  rm -f "$before_file"
+  if [ -n "$address" ]; then
+    assign_address_to_slot "$name" "$wanted_slot" "$address"
+    focus_window "$address" || true
+  fi
+}
+
+sync_projects_file() {
+  local file="$1"
+  local current new_names=() old_names=() old_name new_name temp_name i count
+  declare -A seen=()
+  current="$(get_current_project)"
+  while IFS= read -r new_name; do
+    new_name="$(slugify "$new_name")"
+    [ -n "$new_name" ] || continue
+    [ -n "${seen[$new_name]:-}" ] && continue
+    seen[$new_name]=1
+    new_names+=("$new_name")
+  done <"$file"
+  if [ "${#new_names[@]}" -eq 0 ]; then
+    new_names+=("default")
+  fi
+  mapfile -t old_names < <(list_project_names)
+  count="${#old_names[@]}"
+  if [ "${#new_names[@]}" -lt "$count" ]; then
+    count="${#new_names[@]}"
+  fi
+  for ((i = 0; i < count; i++)); do
+    old_name="${old_names[$i]}"
+    new_name="${new_names[$i]}"
+    [ "$old_name" = "$new_name" ] && continue
+    temp_name="__hype_tmp_${i}_$$"
+    mv "$(project_dir "$old_name")" "$(project_dir "$temp_name")"
+    if [ "$current" = "$old_name" ]; then
+      current="$new_name"
+    fi
+  done
+  for ((i = 0; i < count; i++)); do
+    old_name="${old_names[$i]}"
+    new_name="${new_names[$i]}"
+    [ "$old_name" = "$new_name" ] && continue
+    temp_name="__hype_tmp_${i}_$$"
+    if [ -d "$(project_dir "$new_name")" ]; then
+      rm -rf "$(project_dir "$new_name")"
+    fi
+    mv "$(project_dir "$temp_name")" "$(project_dir "$new_name")"
+  done
+  for ((i = count; i < ${#old_names[@]}; i++)); do
+    rm -rf "$(project_dir "${old_names[$i]}")"
+  done
+  for ((i = count; i < ${#new_names[@]}; i++)); do
+    ensure_project "${new_names[$i]}"
+  done
+  if [ ! -d "$(project_dir "$current")" ]; then
+    current="${new_names[0]}"
+  fi
+  set_current_project "$current"
+}
+
+sync_slots_file() {
+  local file="$1"
+  local name="$2"
+  local new_slots=() slot address desc i last_slot_address="" last_slot next_slot
+  declare -A desc_to_address=()
+  declare -A seen_slots=()
+  declare -A seen_addresses=()
+  while IFS=$'\t' read -r slot address; do
+    [ -n "$slot" ] || continue
+    [ -n "$address" ] || continue
+    client_is_live "$address" || continue
+    desc="$(slot_descriptor "$address")"
+    desc_to_address["$desc"]="$address"
+  done < <(read_project_slots "$name")
+  local -a new_addresses=()
+  while IFS= read -r desc; do
+    [ -n "$desc" ] || continue
+    if [[ "$desc" =~ ^\[[0-9]+\]\ (.+)$ ]]; then
+      desc="${BASH_REMATCH[1]}"
+    fi
+    if [[ "$desc" =~ ^[0-9]+:\ (.+)$ ]]; then
+      desc="${BASH_REMATCH[1]}"
+    fi
+    slot="$((${#new_slots[@]} + 1))"
+    seen_slots[$slot]=1
+    local addr=""
+    if [[ "$desc" =~ \[([^]]+)\]$ ]]; then
+      addr="${BASH_REMATCH[1]}"
+    fi
+    if [ -z "$addr" ] || ! client_is_live "$addr"; then
+      addr="${desc_to_address[$desc]:-}"
+    fi
+    if [ -z "$addr" ]; then
+      notify_message "slot edit rejected: cannot identify window"
+      die "slot edit rejected: cannot identify window"
+    fi
+    if [ -n "${seen_addresses[$addr]:-}" ]; then
+      notify_message "slot edit rejected: duplicate window"
+      die "slot edit rejected: duplicate window"
+    fi
+    seen_addresses[$addr]=1
+    new_slots+=("$slot")
+    new_addresses+=("$addr")
+  done <"$file"
+  last_slot="$(read_last_slot "$name" || true)"
+  if [ -n "$last_slot" ]; then
+    last_slot_address="$(slot_address "$name" "$last_slot" || true)"
+  fi
+  local lines=""
+  for ((i = 0; i < ${#new_slots[@]}; i++)); do
+    slot="${new_slots[$i]}"
+    addr="${new_addresses[$i]}"
+    lines+="$slot"$'\t'"$addr"$'\n'
+    if [ -n "$last_slot_address" ] && [ "$addr" = "$last_slot_address" ]; then
+      write_last_slot "$name" "$slot"
+    fi
+  done
+
+  while IFS=$'\t' read -r slot address; do
+    [ -n "$slot" ] || continue
+    [ -n "$address" ] || continue
+    client_is_live "$address" || continue
+    [ -n "${seen_addresses[$address]:-}" ] && continue
+    next_slot="$slot"
+    while [ -n "${seen_slots[$next_slot]:-}" ]; do
+      next_slot=$((next_slot + 1))
+    done
+    seen_slots[$next_slot]=1
+    lines+="$next_slot"$'\t'"$address"$'\n'
+    if [ -n "$last_slot_address" ] && [ "$address" = "$last_slot_address" ]; then
+      write_last_slot "$name" "$next_slot"
+    fi
+  done < <(read_project_slots "$name")
+
+  write_project_slots "$name" "$lines"
+}
+
+open_projects_editor() {
+  local tmp_file script_file
+  tmp_file="$(mktemp)"
+  script_file="$(mktemp)"
+  list_project_names >"$tmp_file"
+  cat >"$script_file" <<EOF
+setlocal buftype=
+setlocal bufhidden=wipe
+setlocal noswapfile
+function! HypeSyncProjects()
+  let out = system('$HOME/.scripts/hype _sync-projects ' . shellescape(expand('%:p')))
+  if v:shell_error
+    call system('notify-send hype ' . shellescape(trim(out)))
+    echohl ErrorMsg | echom trim(out) | echohl None
+    return
+  endif
+  qa!
+endfunction
+nnoremap <silent> <CR> :call system('$HOME/.scripts/hype project ' . shellescape(getline('.')))<CR>:silent update<CR>:qa!<CR>
+augroup HypeProjects
+  autocmd!
+  autocmd BufWritePost $(basename "$tmp_file") call HypeSyncProjects()
+augroup END
+EOF
+  alacritty --class hype-editor -e nvim -S "$script_file" "$tmp_file" >/dev/null 2>&1 &
+}
+
+open_slots_editor() {
+  local name tmp_file script_file slot address
+  name="$(get_current_project)"
+  reconcile_project_slots "$name"
+  tmp_file="$(mktemp)"
+  script_file="$(mktemp)"
+  while IFS=$'\t' read -r slot address; do
+    [ -n "$slot" ] || continue
+    [ -n "$address" ] || continue
+    client_is_live "$address" || continue
+    printf '[%s] %s\n' "$slot" "$(slot_descriptor "$address")" >>"$tmp_file"
+  done < <(read_project_slots "$name")
+  cat >"$script_file" <<EOF
+setlocal buftype=
+setlocal bufhidden=wipe
+setlocal noswapfile
+setlocal nowrap
+function! HypeSyncSlots()
+  let out = system('$HOME/.scripts/hype _sync-slots ' . shellescape(expand('%:p')) . ' ' . shellescape('$name'))
+  if v:shell_error
+    call system('notify-send hype ' . shellescape(trim(out)))
+    echohl ErrorMsg | echom trim(out) | echohl None
+    return
+  endif
+  qa!
+endfunction
+augroup HypeSlots
+  autocmd!
+  autocmd BufWritePost $(basename "$tmp_file") call HypeSyncSlots()
+augroup END
+EOF
+  alacritty --class hype-editor -e nvim -S "$script_file" "$tmp_file" >/dev/null 2>&1 &
+}
+
+delete_project() {
+  local name="${1:-}"
+  [ -n "$name" ] || die "project name required"
+  local workspace
+  workspace="$(read_project_workspace "$name" 2>/dev/null || true)"
+  if [ -n "$workspace" ]; then
+    local count
+    count="$(hyprctl clients -j | jq -r --arg ws "$workspace" '[.[] | select(.workspace.name == $ws or .workspace.id == ($ws | tonumber))] | length')"
+    if [ "$count" -gt 0 ]; then
+      notify_message "cannot delete $name: $count window(s) on workspace $workspace"
+      die "cannot delete $name: $count window(s) on workspace $workspace"
+    fi
+  fi
+  rm -rf "$(project_dir "$name")"
+  local current first
+  current="$(cat "$CURRENT_PROJECT_FILE" 2>/dev/null | tr -d '\n')"
+  if [ "$name" = "$current" ]; then
+    first="$(list_project_names | head -n1)"
+    if [ -n "$first" ]; then
+      set_current_project "$first"
+      activate_project "$first" no-focus
+      notify_message "deleted $name, switched to $first"
+    else
+      ensure_default_project
+      set_current_project default
+      activate_project default no-focus
+      notify_message "deleted $name, switched to default"
+    fi
+    return 0
+  fi
+  notify_message "deleted project $name"
+}
+
+switch_project() {
+  local name="${1:-}"
+  if [ -z "$name" ]; then
+    DELETE_TARGET=""
+    name="$(prompt_project_choice)"
+    if [ -n "$DELETE_TARGET" ]; then
+      delete_project "$DELETE_TARGET"
+      return 0
+    fi
+    [ -n "$name" ] || exit 0
+  fi
+  name="$(slugify "$name")"
+  set_current_project "$name"
+  activate_project "$name" focus-last
+}
+
+cycle_project() {
+  local direction="$1"
+  local current index count next_index
+  local -a names=()
+  current="$(get_current_project)"
+  mapfile -t names < <(list_project_cycle_order)
+  count="${#names[@]}"
+  [ "$count" -gt 0 ] || die "no projects available"
+  for index in "${!names[@]}"; do
+    if [ "${names[$index]}" = "$current" ]; then
+      if [ "$direction" = "next" ]; then
+        next_index=$(((index + 1) % count))
+      else
+        next_index=$(((index - 1 + count) % count))
+      fi
+      set_current_project "${names[$next_index]}"
+      activate_project "${names[$next_index]}" focus-last
+      return 0
+    fi
+  done
+  set_current_project "${names[0]}"
+  activate_project "${names[0]}" focus-last
+}
+
+cmd_current() {
+  printf '%s\n' "$(get_current_project)"
+}
+
+list_projects_verbose() {
+  local current name workspace slot address title summary marker
+  current="$(get_current_project)"
+  while IFS= read -r name; do
+    [ -n "$name" ] || continue
+    reconcile_project_slots "$name"
+    workspace="$(read_project_workspace "$name" || echo '?')"
+    marker=" "
+    [ "$name" = "$current" ] && marker="*"
+    summary="ws:$workspace"
+    while IFS=$'\t' read -r slot address; do
+      [ -n "$slot" ] || continue
+      [ -n "$address" ] || continue
+      client_is_live "$address" || continue
+      title="$(client_title "$address")"
+      summary+=", $slot:$title"
+    done < <(read_project_slots "$name")
+    printf '%s %s - %s\n' "$marker" "$name" "$summary"
+  done < <(list_project_names)
+}
+
+workspace_map() {
+  local current name workspace
+  current="$(get_current_project)"
+  while IFS= read -r name; do
+    [ -n "$name" ] || continue
+    workspace="$(read_project_workspace "$name" || true)"
+    [ -n "$workspace" ] || continue
+    if [ "$name" = "$current" ]; then
+      printf '%s\t%s\t1\n' "$name" "$workspace"
+    else
+      printf '%s\t%s\t0\n' "$name" "$workspace"
+    fi
+  done < <(list_project_names)
+}
+
+slot_map() {
+  local name workspace active_window current_slot slot address
+  name="$(get_current_project)"
+  ensure_project "$name"
+  workspace="$(read_project_workspace "$name" || true)"
+  reconcile_project_slots "$name"
+  active_window="$(get_active_window_address || true)"
+  current_slot=""
+  if [ -n "$active_window" ] && [ "$(get_active_workspace)" = "$workspace" ]; then
+    current_slot="$(slot_for_address "$name" "$active_window" || true)"
+  fi
+  printf 'project\t%s\n' "$name"
+  printf 'workspace\t%s\n' "$workspace"
+  printf 'current\t%s\n' "$current_slot"
+  while IFS=$'\t' read -r slot address; do
+    [ -n "$slot" ] || continue
+    [ -n "$address" ] || continue
+    client_is_live "$address" || continue
+    printf 'slot\t%s\n' "$slot"
+  done < <(read_project_slots "$name")
+}
+
+move_to_project() {
+  local name workspace
+  name="$(get_current_project)"
+  workspace="$(read_project_workspace "$name")"
+  hyprctl dispatch movetoworkspacesilent "$workspace" >/dev/null 2>&1
+}
+
+main() {
+  local cmd="${1:-}"
+  [ -n "$cmd" ] || {
+    usage
+    exit 1
+  }
+  ensure_dirs
+  shift || true
+  case "$cmd" in
+    _sync-projects) sync_projects_file "${1:-}" ;;
+    _sync-slots) sync_slots_file "${1:-}" "${2:-$(get_current_project)}" ;;
+    move-to-project)
+      require_cmd hyprctl
+      move_to_project
+      ;;
+    activate)
+      require_cmd hyprctl
+      require_cmd jq
+      activate_project "$(get_current_project)" focus-last
+      ;;
+    project)
+      require_cmd rofi
+      require_cmd hyprctl
+      require_cmd jq
+      switch_project "${1:-}"
+      ;;
+    rename-project)
+      [ -n "${1:-}" ] || die "old name required"
+      [ -n "${2:-}" ] || die "new name required"
+      rename_project "$1" "$(slugify "$2")"
+      ;;
+    delete-project)
+      require_cmd hyprctl
+      require_cmd jq
+      delete_project "${1:-}"
+      ;;
+    edit-projects)
+      require_cmd alacritty
+      require_cmd nvim
+      open_projects_editor
+      ;;
+    slot)
+      require_cmd rofi
+      require_cmd hyprctl
+      require_cmd jq
+      select_slot "${1:-}"
+      ;;
+    edit-slots)
+      require_cmd alacritty
+      require_cmd nvim
+      require_cmd hyprctl
+      require_cmd jq
+      open_slots_editor
+      ;;
+    next-project)
+      require_cmd hyprctl
+      require_cmd jq
+      cycle_project next
+      ;;
+    prev-project)
+      require_cmd hyprctl
+      require_cmd jq
+      cycle_project prev
+      ;;
+    current) cmd_current ;;
+    list-projects)
+      require_cmd hyprctl
+      require_cmd jq
+      list_projects_verbose
+      ;;
+    workspace-map)
+      workspace_map
+      ;;
+    slot-map)
+      require_cmd hyprctl
+      require_cmd jq
+      slot_map
+      ;;
+    *)
+      usage
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

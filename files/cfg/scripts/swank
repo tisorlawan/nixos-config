@@ -1,0 +1,2 @@
+#!/bin/sh
+sbcl --load ~/.local/share/nvim/site/pack/core/opt/slimv/slime/start-swank.lisp

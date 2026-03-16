@@ -1,3 +1,14 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nu
 
-cat ~/.gittoken | grep zvsu | xclip -selection clipboard
+let content = (
+    open ~/.gittoken
+    | lines
+    | where $it =~ 'zvsu'
+    | str join "\n"
+)
+
+if ($env.WAYLAND_DISPLAY | is-empty) {
+    $content | xclip -selection clipboard
+} else {
+    $content | wl-copy
+}

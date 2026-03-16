@@ -26,6 +26,7 @@ alias gap="git add -p"
 alias mpvr="mpv --no-resume-playback"
 alias ms="mpv --shuffle --no-resume-playback"
 alias rmpv="find . -type f | shuf | head -n 1 | xargs -I {} mpv --no-resume-playback {}"
+alias mpv-pat="mpv --http-header-fields='Referer: https://www.patreon.com/'"
 
 ##-- NIX --##
 alias nix-generations-ls="nix profile history --profile /nix/var/nix/profiles/system"
@@ -98,7 +99,7 @@ alias ydv720compat="yt-dlp -f '230+233' --no-playlist --no-playlist"
 alias ydp="yt-dlp -f 'bv*[height<=1080][ext=mp4]+ba/b' -o '%(playlist_index)s [%(playlist_id)s]  - %(title)s.%(ext)s'"
 alias yda="yt-dlp -f '[ext=mp4]+ba/b' --extract-audio --no-playlist"
 
-alias t="priv todo"
+alias todo="priv todo"
 
 alias pwdc="pwd | clip"
 alias gcloudc="gcloud auth print-access-token | tr -d '\n' | clip"

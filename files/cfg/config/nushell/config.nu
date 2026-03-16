@@ -1,12 +1,10 @@
 $env.config.show_banner = false
 $env.config.buffer_editor = "neovim"
-$env.config = {
-  history: {
-    file_format: sqlite
-    sync_on_enter: false
-    isolation: true
-    max_size: 500000
-  }
+$env.config.history = {
+  file_format: sqlite
+  sync_on_enter: false
+  isolation: true
+  max_size: 500000
 }
 
 alias mv = ^mv
@@ -91,6 +89,18 @@ $env.config.keybindings = (
 )
 
 
-$env.PATH = ([("~/.scripts" | path expand)] ++ $env.PATH)
-$env.PATH = ([("~/.opencode/bin" | path expand)] ++ $env.PATH)
-$env.PATH = ([("~/.bun/bin" | path expand)] ++ $env.PATH)
+let preferred_paths = [
+  ("~/.cargo/bin" | path expand)
+  ("~/.local/bin" | path expand)
+  ("~/.bun/bin" | path expand)
+  ("~/.opencode/bin" | path expand)
+  ("~/.scripts" | path expand)
+  "/usr/local/sbin"
+  "/usr/local/bin"
+  "/usr/sbin"
+  "/usr/bin"
+  "/sbin"
+  "/bin"
+]
+
+$env.PATH = ($preferred_paths ++ ($env.PATH | where {|p| $p not-in $preferred_paths }))

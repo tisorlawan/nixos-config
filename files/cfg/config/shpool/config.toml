@@ -1,0 +1,3 @@
+shell = "/home/agung-b-sorlawan/.scripts/nu-via-bash"
+prompt_prefix = ""
+initial_path = "/home/agung-b-sorlawan/.bun/bin:/home/agung-b-sorlawan/.opencode/bin:/home/agung-b-sorlawan/.rice/files/cfg/scripts:/home/agung-b-sorlawan/.config/carapace/bin:/home/agung-b-sorlawan/.scripts:/home/agung-b-sorlawan/.cargo/bin:/home/agung-b-sorlawan/.local/bin:/home/agung-b-sorlawan/.nix-profile/bin:/nix/var/nix/profiles/default/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin"

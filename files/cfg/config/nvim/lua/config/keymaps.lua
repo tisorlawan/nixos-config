@@ -51,7 +51,9 @@ local function toggle_zen_mode()
     vim.wo.foldcolumn = zen_state.saved.foldcolumn
     vim.wo.foldenable = zen_state.saved.foldenable
     local gs = package.loaded.gitsigns
-    if gs then gs.toggle_signs(true) end
+    if gs then
+      gs.toggle_signs(true)
+    end
     zen_state.active = false
     return
   end
@@ -74,7 +76,9 @@ local function toggle_zen_mode()
   vim.wo.foldcolumn = '1'
   vim.wo.foldenable = false
   local gs = package.loaded.gitsigns
-  if gs then gs.toggle_signs(false) end
+  if gs then
+    gs.toggle_signs(false)
+  end
   zen_state.active = true
 end
 

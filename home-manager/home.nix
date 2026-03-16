@@ -109,7 +109,9 @@ in
         fzf
         btop
         tmux
-        zellij
+        dtach
+        abduco
+        shpool
         wget
         atool
         curl
@@ -150,7 +152,6 @@ in
         just
         gdb
         valgrind
-        pkg-config
         gitFull
         git-lfs
         protobuf
@@ -224,6 +225,7 @@ in
         sqlite
         litecli
         docker
+        process-compose
       ];
 
       # Document, PDF, and scientific tooling

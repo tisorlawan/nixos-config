@@ -10,6 +10,23 @@ super + Return
 super + shift + Return
     $HOME/.scripts/my-alacritty
 
+# @alts
+alt + {1,2,3,4,5,6,7,8,9}
+	$HOME/.scripts/t window {1,2,3,4,5,6,7,8,9}
+
+alt + s
+	env T_SESSION_HOTKEY_PROMPT=1 $HOME/.scripts/t session
+
+alt + shift + s
+	$HOME/.scripts/t window
+
+alt + n
+	$HOME/.scripts/t next-window
+
+alt + p
+	$HOME/.scripts/t prev-window
+#-----------------------------------------------------------#
+
 # Lock
 super + shift + 9
 	$HOME/.scripts/lock

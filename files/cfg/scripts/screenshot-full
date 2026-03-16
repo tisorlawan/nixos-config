@@ -1,0 +1,5 @@
+#!/bin/bash
+tmp=$(mktemp /tmp/screenshot-XXXX.png)
+grim -g "$(slurp)" "$tmp"
+swappy -f "$tmp" -o - | wl-copy && notify-send "Screenshot" "Annotated & copied to clipboard"
+rm "$tmp"

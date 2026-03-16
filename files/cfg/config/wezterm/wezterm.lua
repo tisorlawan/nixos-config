@@ -3,11 +3,11 @@ local utils = require("utils")
 
 local cfg = {}
 if w.config_builder then
-  cfg = w.config_builder()
+	cfg = w.config_builder()
 end
 
 w.on("update-right-status", function(window, _pane)
-  window:set_right_status(window:active_workspace())
+	window:set_right_status(window:active_workspace())
 end)
 
 cfg.disable_default_key_bindings = true

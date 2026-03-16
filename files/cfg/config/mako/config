@@ -1,0 +1,4 @@
+default-timeout=5000
+
+[body~="Region copied to clipboard"]
+invisible=1

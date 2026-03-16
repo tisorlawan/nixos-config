@@ -6,6 +6,12 @@
 
 let
   pkgs-unstable = nixpkgs-unstable;
+  system = pkgs.stdenv.hostPlatform.system;
+  hyprPkgs = inputs.hyprland.packages.${system};
+  hy3Pkgs = inputs.hy3.packages.${system};
+  hyprlandGuiUtilsPkgs = inputs.hyprland_guiutils.packages.${system};
+  nixGLIntel = inputs.nixgl.packages.${system}.nixGLIntel;
+  neovimPython = pkgs.python3.withPackages (ps: with ps; [ pynvim ]);
 
   # SonarLint was first added on 2025-05-21 using nixpkgs rev 292fa7d4.
   # Pin to that revision to avoid current mvnHash mismatch from republished artifacts.
@@ -46,20 +52,40 @@ in
           inherit inputs;
           nixpkgs-unstable = nixpkgs-unstable;
         })
+        xterm
         # (callPackage ./zed-editor { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
         # (callPackage ./zoom-us { nixpkgs-unstable = nixpkgs-unstable; })
         nushell
         fish
-
-        pkgs-unstable.carapace
       ];
 
       # Desktop session utilities and applets
       desktopEnvironment = [
+        wl-color-picker
+        mako
+        zotero
+        grim
+        slurp
+        swappy
+        wl-clipboard
         dunst
+        socat
+        quickshell
+        waybar
+        wf-recorder
+        rofi
+        hyprlandGuiUtilsPkgs.hyprland-guiutils
+        hyprPkgs.hyprland
+        hyprPkgs.xdg-desktop-portal-hyprland
+        pkgs-unstable.hyprpaper
+        hy3Pkgs.hy3
+        hyprsunset
+        xdg-desktop-portal
+        xdg-desktop-portal-gtk
         libinput
         libnotify
         (callPackage ./picom { })
+        cliphist
         xdotool
         xclip
         xdg-user-dirs
@@ -70,17 +96,21 @@ in
         xorg.xmodmap
         networkmanagerapplet
         sxhkd
-        pkgs-unstable.haskellPackages.greenclip
+        copyq
         redshift
         maim
         (flameshot.override { enableWlrSupport = true; })
+        playerctl
         adwaita-icon-theme
         file-roller
         eww
         rofi
+        wl-clipboard
+        wofi
         antigravity-fhs
         # inputs.antigravity-nix.packages.x86_64-linux.default
         # mesa
+        nixGLIntel
       ];
 
       # Productivity, syncing, and day-to-day utilities
@@ -103,6 +133,7 @@ in
         eza
         fd
         jq
+        fx
         ripgrep
         lazygit
         pkgs-unstable.jujutsu
@@ -111,12 +142,12 @@ in
         tmux
         dtach
         abduco
-        shpool
         wget
         atool
         curl
         file
-        pkgs-unstable.neovim
+        # pkgs-unstable.neovim
+        emacs-gtk
         vim-full
         # sbcl
         killall
@@ -130,6 +161,7 @@ in
         unzip
         p7zip
         zip
+        ouch
         openssl
         jless
         rlwrap
@@ -152,6 +184,7 @@ in
         just
         gdb
         valgrind
+        husky
         gitFull
         git-lfs
         protobuf
@@ -169,8 +202,6 @@ in
         virtualenv
         black
         isort
-        python312Packages.pytest
-        python312Packages.coverage
         pre-commit
         legacySonarLint
         poetry
@@ -189,8 +220,8 @@ in
         # rustup
         # sccache
         # leptosfmt
-        zig
-        zls
+        # zig
+        # zls
         # livebook
         stylua
         lua5_1
@@ -269,6 +300,7 @@ in
         imagemagick
         mediainfo
         kubectl
+        mpv
         # wf-recorder
       ];
 
@@ -302,13 +334,6 @@ in
         nixpkgs-unstable.nerd-fonts.blex-mono
         nixpkgs-unstable.cascadia-code
         nixpkgs-unstable.fira-code
-        nixpkgs-unstable.hack-font
-        nixpkgs-unstable.source-code-pro
-        nixpkgs-unstable.ibm-plex
-        nixpkgs-unstable.inconsolata
-        nixpkgs-unstable.liberation_ttf
-        fontforge
-        nerd-font-patcher
       ];
     in
     terminalAndShells
@@ -330,23 +355,21 @@ in
   # browsers dispatch meeting URLs to it.
   xdg.mimeApps.enable = true;
   xdg.mimeApps.defaultApplications = {
+    "text/plain" = [ "nvim.desktop" ];
     "x-scheme-handler/zoommtg" = [ "zoomus-wrapped.desktop" ];
     "x-scheme-handler/zoomphonecall" = [ "zoomus-wrapped.desktop" ];
   };
 
-  # Home Manager is pretty good at managing dotfiles. The primary way to manage
-  # plain files is through 'home.file'.
-  home.file = {
-    # # Building this configuration will create a copy of 'dotfiles/screenrc' in
-    # # the Nix store. Activating the configuration will then make '~/.screenrc' a
-    # # symlink to the Nix store copy.
-    # ".screenrc".source = dotfiles/screenrc;
-
-    # # You can also set the file content immediately.
-    # ".gradle/gradle.properties".text = ''
-    #   org.gradle.console=verbose
-    #   org.gradle.daemon.idletimeout=3600000
-    # '';
+  xdg.portal = {
+    enable = true;
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+      hyprPkgs.xdg-desktop-portal-hyprland
+    ];
+    config = {
+      common.default = [ "hyprland" "gtk" ];
+      hyprland.default = [ "hyprland" "gtk" ];
+    };
   };
 
   # fonts.fontconfig.enable = true;
@@ -404,9 +427,88 @@ in
 
   home.sessionVariables = {
     EDITOR = "nvim";
+    NVIM_PYTHON3_HOST_PROG = "${neovimPython}/bin/python3";
+    NIXOS_OZONE_WL = "1";
     WLAN_IFACE = "wlp0s20f3";
     SXHKD_SHELL = "/bin/sh";
     PASSLOCK_FILE = "/home/agung-b-sorlawan/.rice/passlock.enc";
+    # GBM_BACKENDS_PATH = "${pkgs.mesa}/lib/gbm";
+    # LIBGL_DRIVERS_PATH = "${pkgs.mesa}/lib/dri";
+    # __EGL_VENDOR_LIBRARY_DIRS = "${pkgs.mesa}/share/glvnd/egl_vendor.d";
+  };
+
+  # Home Manager can also manage your environment variables through
+  # 'home.sessionVariables'. These will be explicitly sourced when using a
+  # shell provided by Home Manager. If you don't want to manage your shell
+  # through Home Manager then you have to manually source 'hm-session-vars.sh'
+  # located at either
+  #
+  #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
+  #
+  # or
+  #
+  #  ~/.local/state/nix/profiles/profile/etc/profile.d/hm-session-vars.sh
+  #
+  # or
+  #
+  #  /etc/profiles/per-user/agung-b-sorlawan/etc/profile.d/hm-session-vars.sh
+
+  home.file = {
+    ".config/environment.d/90-rice-session.conf".text = ''
+      PATH=$HOME/.scripts:$HOME/.local/bin:$HOME/.nix-profile/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin
+      XDG_DATA_DIRS=$HOME/.nix-profile/share:/nix/var/nix/profiles/default/share:/usr/local/share:/usr/share
+      LANG=en_US.UTF-8
+      LC_ALL=en_US.UTF-8
+      LC_CTYPE=en_US.UTF-8
+    '';
+
+  };
+
+  # Override system portal services to use nix versions (system v1.18 can't
+  # discover nix-installed portal backends; nix v1.20 can).
+  systemd.user.services = {
+    xdg-desktop-portal = {
+      Unit = {
+        Description = "Portal service";
+        PartOf = [ "graphical-session.target" ];
+      };
+      Service = {
+        Type = "dbus";
+        BusName = "org.freedesktop.portal.Desktop";
+        ExecStart = "${pkgs.xdg-desktop-portal}/libexec/xdg-desktop-portal";
+        Slice = "session.slice";
+      };
+    };
+    xdg-desktop-portal-gtk = {
+      Unit.Description = "Portal service (GTK/GNOME implementation)";
+      Service = {
+        Type = "dbus";
+        BusName = "org.freedesktop.impl.portal.desktop.gtk";
+        ExecStart = "${pkgs.xdg-desktop-portal-gtk}/libexec/xdg-desktop-portal-gtk";
+      };
+    };
+    xdg-desktop-portal-hyprland = {
+      Unit.Description = "Portal service (Hyprland implementation)";
+      Service = {
+        Type = "dbus";
+        BusName = "org.freedesktop.impl.portal.desktop.hyprland";
+        ExecStart = "${hyprPkgs.xdg-desktop-portal-hyprland}/libexec/xdg-desktop-portal-hyprland";
+      };
+    };
+
+    quickshell = {
+      Unit = {
+        Description = "Quickshell bar";
+        PartOf = [ "graphical-session.target" ];
+        After = [ "graphical-session-pre.target" ];
+      };
+      Service = {
+        ExecStart = "${nixGLIntel}/bin/nixGLIntel ${pkgs.quickshell}/bin/qs -p %h/.config/quickshell --no-duplicate";
+        Restart = "on-failure";
+        RestartSec = 2;
+      };
+      Install.WantedBy = [ "graphical-session.target" ];
+    };
   };
 
   # Let Home Manager install and manage itself.

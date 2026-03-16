@@ -6,11 +6,11 @@ TERM = "xterm-256color"
 WINIT_X11_SCALE_FACTOR = "1.0"
 
 [font.normal]
-family = "BlexMono Nerd Font Propo"
+family = "Berkeley Mono"
 # family = "BlexMono Nerd Font Propo SemiBold"
 
 [font]
-size = 15
+size = 14
 
 [font.glyph_offset]
 x = 0
@@ -18,7 +18,7 @@ y = 1
 
 [font.offset]
 x = 0
-y = 3
+y = 2
 
 # [colors.primary]
 # background = "#151518"

@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
+
+install_gdm_session() {
+  local wrapper_src="$SCRIPT_DIR/gdm/hyprland-hm-session"
+  local desktop_src="$SCRIPT_DIR/gdm/hyprland.desktop"
+  local wrapper_dst="/usr/local/bin/hyprland-hm-session"
+  local desktop_dst="/usr/local/share/wayland-sessions/hyprland.desktop"
+
+  if [[ ! -x "$HOME/.nix-profile/bin/Hyprland" ]]; then
+    echo "Hyprland is not present in ~/.nix-profile/bin; removing stale GDM session files if they exist."
+    sudo rm -f "$wrapper_dst" "$desktop_dst"
+    return
+  fi
+
+  echo "Installing GDM session entry for Hyprland..."
+  sudo install -D -m 755 "$wrapper_src" "$wrapper_dst"
+  sudo install -D -m 644 "$desktop_src" "$desktop_dst"
+}
+
 VERBOSE=0
 
 UPDATE_INPUTS=()
@@ -86,3 +105,5 @@ if ((${#ARGS[@]} > 0)); then
 else
   home-manager switch "${HM_ARGS[@]}"
 fi
+
+install_gdm_session

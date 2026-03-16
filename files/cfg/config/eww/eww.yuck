@@ -1,12 +1,12 @@
-(defvar home_dir "/home/$USER/.config/eww/scripts")
+(defvar home_dir "/home/agung-b-sorlawan/.config/eww/scripts")
 
 (defpoll time :interval "1s" `date +" %a, %d %b, %H:%M"`)
-(defpoll battery :interval "1s" `/home/$USER/.config/eww/scripts/battery.py`)
-(deflisten system `/home/$USER/.config/eww/scripts/system.py`)
-(deflisten volume `/home/$USER/.config/eww/scripts/volume.py`)
-(deflisten wifi `/home/$USER/.config/eww/scripts/wifi.py`)
-(deflisten workspaces `/home/$USER/.config/eww/scripts/workspaces.sh`)
-(defpoll wifi_networks :interval "2s" `/home/$USER/.config/eww/scripts/wifi_selector.py`)
+(defpoll battery :interval "1s" `/home/agung-b-sorlawan/.config/eww/scripts/battery.py`)
+(deflisten system `/home/agung-b-sorlawan/.config/eww/scripts/system.py`)
+(deflisten volume `/home/agung-b-sorlawan/.config/eww/scripts/volume.py`)
+(deflisten wifi `/home/agung-b-sorlawan/.config/eww/scripts/wifi.py`)
+(deflisten workspaces `/home/agung-b-sorlawan/.config/eww/scripts/workspaces.sh`)
+(defpoll wifi_networks :interval "2s" `/home/agung-b-sorlawan/.config/eww/scripts/wifi_selector.py`)
 
 (defwindow bar
   :monitor 0

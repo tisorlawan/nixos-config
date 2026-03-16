@@ -98,7 +98,6 @@
 --    mp.osd_message("Skipped to "..mp.get_property_osd("time-pos"))
 --end
 
-
 ---- Adds the filters to the filtergraph on mpv init
 ---- in a disabled state.
 ---- Filter documentation: https://ffmpeg.org/ffmpeg-filters.html

@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-
-set -euo pipefail
-
-CONFIG_FILE="$HOME/.config/shpool/config.toml"
-
-pkill -f '(^|/)shpool( |$).*(^| )daemon($| )' 2>/dev/null || true
-sleep 0.2
-nohup shpool -c "$CONFIG_FILE" daemon >/dev/null 2>&1 &

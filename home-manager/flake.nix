@@ -1,24 +1,27 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/release-25.11";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/fe416aae";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/4c1018da";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+    nixgl.url = "github:nix-community/nixGL";
+    hyprland.url = "github:hyprwm/Hyprland/v0.54.2";
+    hyprland_guiutils.url = "github:hyprwm/hyprland-guiutils/v0.2.1";
+    hy3 = {
+      url = "github:outfoxxed/hy3/hl0.54.2";
+      inputs.hyprland.follows = "hyprland";
     };
     # zed-editor = {
     #   url = "github:zed-industries/zed/v0.226.5";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
-    # opencode = {
-    #   url = "github:sst/opencode";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
-    ghostty.url = "github:ghostty-org/ghostty/174aae3";
+    ghostty.url = "github:ghostty-org/ghostty/v1.3.1";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, flake-utils, home-manager, ghostty, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, flake-utils, home-manager, ghostty, nixgl, ... }:
     flake-utils.lib.eachDefaultSystem
       (system:
         let

@@ -1,5 +1,5 @@
 $env.config.show_banner = false
-$env.config.buffer_editor = "neovim"
+$env.config.buffer_editor = "nvim"
 $env.config.history = {
   file_format: sqlite
   sync_on_enter: false
@@ -88,13 +88,13 @@ $env.config.keybindings = (
     )
 )
 
-
 let preferred_paths = [
   ("~/.cargo/bin" | path expand)
   ("~/.local/bin" | path expand)
   ("~/.bun/bin" | path expand)
   ("~/.opencode/bin" | path expand)
   ("~/.scripts" | path expand)
+  ("~/go/bin" | path expand)
   "/usr/local/sbin"
   "/usr/local/bin"
   "/usr/sbin"

@@ -1,0 +1,98 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+die() {
+  printf 'waybar-session: %s\n' "$*" >&2
+  exit 1
+}
+
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || die "missing command: $1"
+}
+
+ensure_runtime_dir() {
+  if [ -z "${XDG_RUNTIME_DIR:-}" ]; then
+    export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+  fi
+}
+
+ensure_hypr_env() {
+  local instances_json instance wl_socket
+
+  if [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] && [ -n "${WAYLAND_DISPLAY:-}" ]; then
+    return 0
+  fi
+
+  instances_json="$(hyprctl instances -j 2>/dev/null)" || return 1
+  instance="$(printf '%s\n' "$instances_json" | jq -r '.[0].instance // empty')"
+  wl_socket="$(printf '%s\n' "$instances_json" | jq -r '.[0].wl_socket // empty')"
+
+  [ -n "$instance" ] || return 1
+  [ -n "$wl_socket" ] || return 1
+
+  export HYPRLAND_INSTANCE_SIGNATURE="$instance"
+  export WAYLAND_DISPLAY="$wl_socket"
+}
+
+wait_for_hyprland() {
+  local socket tries=100
+
+  while [ "$tries" -gt 0 ]; do
+    if [ -n "${WAYLAND_DISPLAY:-}" ] && [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+      socket="$XDG_RUNTIME_DIR/hypr/${HYPRLAND_INSTANCE_SIGNATURE}/.socket2.sock"
+      if [ -S "$socket" ] && hyprctl monitors >/dev/null 2>&1; then
+        return 0
+      fi
+    fi
+    tries=$((tries - 1))
+    sleep 0.1
+  done
+
+  die "hyprland/wayland not ready"
+}
+
+stop_existing_processes() {
+  local tries=50
+
+  pkill -f '^waybar$' >/dev/null 2>&1 || true
+  pkill -f '/home/agung-b-sorlawan/.scripts/waybar-workspace-toggle listen' >/dev/null 2>&1 || true
+
+  while [ "$tries" -gt 0 ]; do
+    if ! pgrep -f '^waybar$' >/dev/null 2>&1 && ! pgrep -f '/home/agung-b-sorlawan/.scripts/waybar-workspace-toggle listen' >/dev/null 2>&1; then
+      return 0
+    fi
+    tries=$((tries - 1))
+    sleep 0.1
+  done
+
+  die "failed to stop existing waybar processes"
+}
+
+main() {
+  require_cmd hyprctl
+  require_cmd jq
+  require_cmd waybar
+
+  ensure_runtime_dir
+  ensure_hypr_env || die "unable to discover hyprland environment"
+  wait_for_hyprland
+
+  stop_existing_processes
+  rm -f "$HOME/.local/state/waybar-workspace-toggle/global-hidden"
+
+  nohup waybar >/dev/null 2>&1 &
+
+  local tries=50
+  while [ "$tries" -gt 0 ]; do
+    if pgrep -x waybar >/dev/null 2>&1; then
+      break
+    fi
+    tries=$((tries - 1))
+    sleep 0.1
+  done
+
+  nohup /home/agung-b-sorlawan/.scripts/waybar-workspace-toggle listen >/dev/null 2>&1 &
+}
+
+main "$@"

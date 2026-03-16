@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+export SXHKD_SHELL=/bin/sh
+
+if pgrep -u "$USER" -x sxhkd >/dev/null; then
+  pkill -TERM -u "$USER" -x sxhkd
+
+  while pgrep -u "$USER" -x sxhkd >/dev/null; do
+    sleep 0.1
+  done
+fi
+
+nohup sxhkd >/dev/null 2>&1 &
+
+sleep 0.2
+
+if pgrep -u "$USER" -x sxhkd >/dev/null; then
+  notify-send "sxhkd restarted"
+else
+  notify-send "sxhkd restart failed"
+  exit 1
+fi

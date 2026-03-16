@@ -2,6 +2,8 @@ for f in $HOME/.config/fish/lib/*.fish
     source $f
 end
 
+fish_add_path -m /home/agung-b-sorlawan/.cargo/bin /usr/local/sbin /usr/local/bin /usr/sbin /usr/bin /sbin /bin
+
 # Basic aliases
 alias cat="bat --plain"
 alias l="eza -1"

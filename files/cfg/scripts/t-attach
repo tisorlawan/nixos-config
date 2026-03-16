@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+: "${T_BACKEND:?missing T_BACKEND}"
+
+if [ -n "${T_SESSION:-}" ] && [ -n "${T_WINDOW:-}" ]; then
+  printf '\033]0;t:%s:%s\007' "$T_SESSION" "$T_WINDOW"
+fi
+
+exec shpool -c "$HOME/.config/shpool/config.toml" attach "$T_BACKEND"

@@ -270,6 +270,7 @@ local function create_lsp_restart_command()
     vim.defer_fn(function()
       for _, name in ipairs(names) do
         vim.lsp.enable(name, { bufnr = bufnr })
+        vim.lsp.enable 'filepaths_ls'
       end
 
       vim.notify(string.format('Restarted %d LSP client(s): %s', #names, table.concat(names, ', ')), vim.log.levels.INFO)
@@ -317,6 +318,7 @@ function M.setup()
   end
 
   vim.lsp.enable(servers_to_enable)
+  vim.lsp.enable 'filepaths_ls'
   create_lsp_info_command()
   create_lsp_restart_command()
 end

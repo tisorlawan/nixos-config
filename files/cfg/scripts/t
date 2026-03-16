@@ -1,0 +1,550 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/t"
+CURRENT_SESSION_FILE="$STATE_DIR/current-session"
+SESSIONS_DIR="$STATE_DIR/sessions"
+NEW_SESSION_LABEL="Create New Session"
+
+mkdir -p "$SESSIONS_DIR"
+
+die() {
+  printf 't: %s\n' "$*" >&2
+  exit 1
+}
+
+usage() {
+  cat <<'EOF'
+usage: t new-session [name]
+       t session [name]
+       t window [name]
+       t next-window
+       t prev-window
+       t restart-daemon
+       t kill-all
+       t prompt-session
+       t prompt-window
+       t current
+       t list
+EOF
+}
+
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || die "missing command: $1"
+}
+
+have_cmd() {
+  command -v "$1" >/dev/null 2>&1
+}
+
+validate_name() {
+  local kind="$1"
+  local value="$2"
+
+  [ -n "$value" ] || die "$kind name cannot be empty"
+  case "$value" in
+    *:*) die "$kind name cannot contain ':'" ;;
+    *$'\n'*|*$'\t'*) die "$kind name cannot contain tabs or newlines" ;;
+  esac
+}
+
+slugify() {
+  local value="$1"
+  value="${value//[^[:alnum:]._-]/_}"
+  printf '%s' "$value"
+}
+
+session_state_file() {
+  printf '%s/%s.last-window\n' "$SESSIONS_DIR" "$(slugify "$1")"
+}
+
+set_current_session() {
+  printf '%s\n' "$1" >"$CURRENT_SESSION_FILE"
+}
+
+get_current_session() {
+  local session
+  if [ -f "$CURRENT_SESSION_FILE" ]; then
+    session="$(tr -d '\n' <"$CURRENT_SESSION_FILE")"
+    if session_exists "$session"; then
+      printf '%s\n' "$session"
+    fi
+  fi
+}
+
+set_last_window() {
+  printf '%s\n' "$2" >"$(session_state_file "$1")"
+}
+
+get_last_window() {
+  local file
+  file="$(session_state_file "$1")"
+  if [ -f "$file" ]; then
+    tr -d '\n' <"$file"
+  else
+    printf '1'
+  fi
+}
+
+window_exists() {
+  local target_session="$1"
+  local target_window="$2"
+  local backend
+
+  [ -n "$target_session" ] || return 1
+  [ -n "$target_window" ] || return 1
+
+  while IFS= read -r backend; do
+    [ "$backend" = "$(backend_name "$target_session" "$target_window")" ] && return 0
+  done < <(list_backends)
+
+  return 1
+}
+
+backend_name() {
+  printf '%s:%s' "$1" "$2"
+}
+
+instance_name() {
+  printf 't-%s-%s' "$(slugify "$1")" "$(slugify "$2")"
+}
+
+list_backends() {
+  shpool list 2>/dev/null | while IFS=$'\t' read -r name _rest; do
+    [ "$name" = "NAME" ] && continue
+    [ -n "$name" ] || continue
+    printf '%s\n' "$name"
+  done
+}
+
+list_sessions() {
+  declare -A seen=()
+  local backend session
+
+  while IFS= read -r backend; do
+    session="${backend%%:*}"
+    [ -n "$session" ] || continue
+    if [ -z "${seen[$session]:-}" ]; then
+      seen[$session]=1
+      printf '%s\n' "$session"
+    fi
+  done < <(list_backends)
+
+}
+
+session_exists() {
+  local target_session="$1"
+  local session
+
+  [ -n "$target_session" ] || return 1
+
+  while IFS= read -r session; do
+    [ "$session" = "$target_session" ] && return 0
+  done < <(list_sessions)
+
+  return 1
+}
+
+list_windows() {
+  local target_session="$1"
+  declare -A seen=()
+  local backend session window
+
+  while IFS= read -r backend; do
+    session="${backend%%:*}"
+    window="${backend#*:}"
+    [ "$session" = "$target_session" ] || continue
+    [ -n "$window" ] || continue
+    if [ -z "${seen[$window]:-}" ]; then
+      seen[$window]=1
+      printf '%s\n' "$window"
+    fi
+  done < <(list_backends)
+}
+
+sorted_windows() {
+  local session="$1"
+  list_windows "$session" | sort -V
+}
+
+cleanup_state() {
+  declare -A live_sessions=()
+  local backend session window file state_session last_window replacement
+
+  while IFS= read -r backend; do
+    session="${backend%%:*}"
+    window="${backend#*:}"
+    [ -n "$session" ] || continue
+    [ -n "$window" ] || continue
+    live_sessions[$session]=1
+  done < <(list_backends)
+
+  for file in "$SESSIONS_DIR"/*.last-window; do
+    [ -e "$file" ] || break
+
+    state_session="${file##*/}"
+    state_session="${state_session%.last-window}"
+
+    if [ -z "${live_sessions[$state_session]:-}" ]; then
+      rm -f "$file"
+      continue
+    fi
+
+    last_window="$(tr -d '\n' <"$file")"
+    if [ -z "$last_window" ] || ! window_exists "$state_session" "$last_window"; then
+      replacement="$(sorted_windows "$state_session" | head -n 1)"
+      if [ -n "$replacement" ]; then
+        set_last_window "$state_session" "$replacement"
+      fi
+    fi
+  done
+
+  if [ -f "$CURRENT_SESSION_FILE" ]; then
+    session="$(tr -d '\n' <"$CURRENT_SESSION_FILE")"
+    if [ -z "$session" ] || ! session_exists "$session"; then
+      rm -f "$CURRENT_SESSION_FILE"
+    fi
+  fi
+}
+
+cycle_window() {
+  local direction="$1"
+  local session current
+  local -a windows=()
+  local i count next_index
+
+  session="$(get_current_session)"
+  current="$(get_last_window "$session")"
+
+  mapfile -t windows < <(sorted_windows "$session")
+  count="${#windows[@]}"
+
+  [ "$count" -gt 0 ] || die "no windows in session: $session"
+
+  for i in "${!windows[@]}"; do
+    if [ "${windows[$i]}" = "$current" ]; then
+      if [ "$direction" = "next" ]; then
+        next_index=$(( (i + 1) % count ))
+      else
+        next_index=$(( (i - 1 + count) % count ))
+      fi
+      switch_to "$session" "${windows[$next_index]}"
+      return 0
+    fi
+  done
+
+  switch_to "$session" "${windows[0]}"
+}
+
+rofi_choose() {
+  local prompt="$1"
+  local message="$2"
+  local input="$3"
+
+  printf '%s' "$input" | rofi -dmenu -matching fuzzy -i -p "$prompt" -mesg "$message" -selected-row 0
+}
+
+prompt_session_name() {
+  local prompt_input current_session prompt message filtered_input session
+  prompt="session"
+  message="pick or type a session name"
+  prompt_input="$(list_sessions || true)"
+
+  if [ -n "${T_SESSION_HOTKEY_PROMPT:-}" ]; then
+    current_session="$(get_current_session || true)"
+    if [ -n "$current_session" ]; then
+      prompt="(current:$current_session)>"
+      filtered_input=""
+      while IFS= read -r session; do
+        [ -n "$session" ] || continue
+        [ "$session" = "$current_session" ] && continue
+        filtered_input+="$session"$'\n'
+      done <<<"$prompt_input"
+      prompt_input="${filtered_input%$'\n'}"
+      [ -n "$prompt_input" ] || message="no other sessions yet"
+    fi
+  fi
+
+  if [ -z "$prompt_input" ]; then
+    rofi_choose "$prompt" "$message" "$NEW_SESSION_LABEL"
+    return 0
+  fi
+  rofi_choose "$prompt" "$message" "$prompt_input"
+}
+
+prompt_new_session_name() {
+  rofi -dmenu -matching fuzzy -i -p "new session" -mesg "type a session name"
+}
+
+normalize_session_choice() {
+  local session="$1"
+  if [ "$session" = "$NEW_SESSION_LABEL" ]; then
+    prompt_new_session_name
+  else
+    printf '%s' "$session"
+  fi
+}
+
+require_current_session() {
+  local session
+  session="$(get_current_session)"
+  if [ -n "$session" ]; then
+    printf '%s\n' "$session"
+    return 0
+  fi
+
+  session="$(normalize_session_choice "$(prompt_session_name)")"
+  validate_name session "$session"
+  set_current_session "$session"
+  printf '%s\n' "$session"
+}
+
+prompt_window_name() {
+  local session="$1"
+  local prompt_input
+  prompt_input="$(list_windows "$session" || true)"
+  rofi_choose "window" "session: $session" "$prompt_input"
+}
+
+find_window_id() {
+  local title="$1"
+  xdotool search --limit 1 --name "$title" 2>/dev/null || true
+}
+
+focus_window_id() {
+  local wid="$1"
+  [ -n "$wid" ] || return 1
+  xdotool windowactivate "$wid" >/dev/null 2>&1 || true
+}
+
+focused_is_fullscreen() {
+  have_cmd bspc || return 1
+  bspc query -N -n focused.fullscreen >/dev/null 2>&1
+}
+
+fullscreen_window_id() {
+  local wid="$1"
+  [ -n "$wid" ] || return 0
+  have_cmd bspc || return 0
+  bspc node "$wid" -t fullscreen >/dev/null 2>&1 || true
+}
+
+wait_for_window_id() {
+  local title="$1"
+  local tries=40
+  local wid
+
+  while [ "$tries" -gt 0 ]; do
+    wid="$(find_window_id "$title")"
+    if [ -n "$wid" ]; then
+      printf '%s\n' "$wid"
+      return 0
+    fi
+    tries=$((tries - 1))
+    sleep 0.1
+  done
+
+  return 1
+}
+
+focus_existing_window() {
+  local session="$1"
+  local window="$2"
+  local title wid should_fullscreen=0
+
+  validate_name session "$session"
+  validate_name window "$window"
+
+  if focused_is_fullscreen; then
+    should_fullscreen=1
+  fi
+
+  title="t:$session:$window"
+  wid="$(find_window_id "$title")"
+  [ -n "$wid" ] || die "window not found: $session:$window"
+
+  if [ "$should_fullscreen" -eq 1 ]; then
+    fullscreen_window_id "$wid"
+  fi
+  focus_window_id "$wid"
+  set_current_session "$session"
+  set_last_window "$session" "$window"
+}
+
+preferred_existing_window() {
+  local session="$1"
+  local window backend live_window=""
+
+  window="$(get_last_window "$session")"
+  if window_exists "$session" "$window"; then
+    printf '%s\n' "$window"
+    return 0
+  fi
+
+  while IFS= read -r backend; do
+    [ "${backend%%:*}" = "$session" ] || continue
+    live_window="${backend#*:}"
+  done < <(list_backends)
+
+  [ -n "$live_window" ] || return 1
+  printf '%s\n' "$live_window"
+}
+
+open_window() {
+  local session="$1"
+  local window="$2"
+  local backend instance title
+  backend="$(backend_name "$session" "$window")"
+  instance="$(instance_name "$session" "$window")"
+  title="t:$session:$window"
+
+  env \
+    T_SESSION="$session" \
+    T_WINDOW="$window" \
+    T_BACKEND="$backend" \
+    "$HOME/.scripts/my-ghostty" \
+    --x11-instance-name="$instance" \
+    --title="$title" \
+    -e "$HOME/.scripts/t-attach" \
+    >/dev/null 2>&1 &
+}
+
+switch_to() {
+  local session="$1"
+  local window="$2"
+  local title wid should_fullscreen=0
+
+  validate_name session "$session"
+  validate_name window "$window"
+
+  if focused_is_fullscreen; then
+    should_fullscreen=1
+  fi
+
+  title="t:$session:$window"
+  wid="$(find_window_id "$title")"
+
+  if [ -n "$wid" ]; then
+    if [ "$should_fullscreen" -eq 1 ]; then
+      fullscreen_window_id "$wid"
+    fi
+    focus_window_id "$wid"
+  else
+    open_window "$session" "$window"
+    wid="$(wait_for_window_id "$title" || true)"
+    [ -n "$wid" ] || die "failed to open window: $session:$window"
+    if [ "$should_fullscreen" -eq 1 ]; then
+      fullscreen_window_id "$wid"
+    fi
+    focus_window_id "$wid"
+  fi
+
+  set_current_session "$session"
+  set_last_window "$session" "$window"
+}
+
+cmd_new_session() {
+  local session="${1:-}"
+  if [ -z "$session" ]; then
+    session="$(normalize_session_choice "$(prompt_session_name)")"
+  fi
+  validate_name session "$session"
+  switch_to "$session" "1"
+}
+
+cmd_session() {
+  local session="${1:-}"
+  local window
+  if [ -z "$session" ]; then
+    session="$(normalize_session_choice "$(prompt_session_name)")"
+  fi
+  validate_name session "$session"
+
+  if session_exists "$session"; then
+    window="$(preferred_existing_window "$session")" || die "no open windows in session: $session"
+    switch_to "$session" "$window"
+    return 0
+  fi
+
+  window="$(get_last_window "$session")"
+  switch_to "$session" "$window"
+}
+
+cmd_window() {
+  local window="${1:-}"
+  local session
+  session="$(require_current_session)"
+  if [ -z "$window" ]; then
+    window="$(prompt_window_name "$session")"
+  fi
+  validate_name window "$window"
+  switch_to "$session" "$window"
+}
+
+cmd_current() {
+  local session window
+  session="$(get_current_session)"
+  [ -n "$session" ] || return 0
+  window="$(preferred_existing_window "$session" || true)"
+  [ -n "$window" ] || return 0
+  printf '%s\t%s\n' "$session" "$window"
+}
+
+cmd_list() {
+  list_backends
+}
+
+cmd_next_window() {
+  require_current_session >/dev/null
+  cycle_window next
+}
+
+cmd_prev_window() {
+  require_current_session >/dev/null
+  cycle_window prev
+}
+
+cmd_restart_daemon() {
+  nohup "$HOME/.scripts/t-restart-shpool-daemon" >/dev/null 2>&1 &
+}
+
+cmd_kill_all() {
+  local backends
+  backends="$(list_backends || true)"
+  [ -n "$backends" ] || return 0
+  xargs -r shpool kill <<<"$backends"
+}
+
+main() {
+  local cmd="${1:-}"
+  [ -n "$cmd" ] || {
+    usage
+    exit 1
+  }
+
+  require_cmd shpool
+  require_cmd rofi
+  require_cmd xdotool
+  require_cmd ghostty
+  cleanup_state
+
+  shift || true
+
+  case "$cmd" in
+    new-session) cmd_new_session "${1:-}" ;;
+    session) cmd_session "${1:-}" ;;
+    window) cmd_window "${1:-}" ;;
+    next-window) cmd_next_window ;;
+    prev-window) cmd_prev_window ;;
+    restart-daemon) cmd_restart_daemon ;;
+    kill-all) cmd_kill_all ;;
+    prompt-session) printf '%s\n' "$(prompt_session_name)" ;;
+    prompt-window) printf '%s\n' "$(prompt_window_name "$(get_current_session)")" ;;
+    current) cmd_current ;;
+    list) cmd_list ;;
+    *) usage; exit 1 ;;
+  esac
+}
+
+main "$@"

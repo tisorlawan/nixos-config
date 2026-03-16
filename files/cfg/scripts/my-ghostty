@@ -90,6 +90,9 @@ adjust-cell-height = 1
 adjust-font-baseline = 1
 adjust-underline-position = 2
 
+term = xterm-256color
+command = /home/agung-b-sorlawan/.scripts/nu-via-bash
+
 window-decoration = "none"
 window-padding-balance = false
 window-padding-x = 0
@@ -113,11 +116,24 @@ keybind = all:alt+one=unbind
 keybind = all:alt+two=unbind
 keybind = all:alt+three=unbind
 keybind = all:alt+four=unbind
+keybind = all:alt+five=unbind
+keybind = all:alt+six=unbind
+keybind = all:alt+seven=unbind
+keybind = all:alt+eight=unbind
+keybind = all:alt+nine=unbind
+keybind = all:alt+n=unbind
+keybind = all:alt+p=unbind
+keybind = all:alt+s=unbind
+keybind = all:alt+shift+s=unbind
 keybind = ctrl+enter=unbind
 
-# keybind = alt+o=new_split:right
-# keybind = alt+i=new_split:down
-# 
+keybind = alt+o=new_split:right
+keybind = alt+i=new_split:down
+keybind = alt+h=goto_split:left
+keybind = alt+j=goto_split:down
+keybind = alt+k=goto_split:up
+keybind = alt+l=goto_split:right
+#
 # keybind = alt+h=goto_split:left
 # keybind = alt+l=goto_split:right
 # keybind = alt+k=goto_split:up
@@ -125,6 +141,10 @@ keybind = ctrl+enter=unbind
 
 resize-overlay = never
 faint-opacity = 1.0
+
+keybind = ctrl+shift+o=toggle_quick_terminal
+
+mouse-scroll-multiplier = precision:15
 
 # vim: ft=config
 EOF

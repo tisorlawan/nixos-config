@@ -2,8 +2,8 @@ local M = {}
 
 local sbcl_output_buf
 local sbcl_output_win
-local last_expr_ns = vim.api.nvim_create_namespace('sbcl_last_expr')
-local flash_ns = vim.api.nvim_create_namespace('sbcl_flash')
+local last_expr_ns = vim.api.nvim_create_namespace 'sbcl_last_expr'
+local flash_ns = vim.api.nvim_create_namespace 'sbcl_flash'
 local last_expr_buf
 local last_expr_start_mark
 local last_expr_end_mark
@@ -381,14 +381,25 @@ function M.setup()
         vim.cmd.startinsert()
       end, { buffer = event.buf, silent = true })
       vim.keymap.set('n', '<C-x><C-e>', '<cmd>SbclEvalExpr<cr>', { buffer = event.buf, silent = true })
+      vim.keymap.set('n', '<cr>', '<cmd>SbclEvalExpr<cr>', { buffer = event.buf, silent = true })
+
       vim.keymap.set('i', '<C-x><C-e>', function()
         eval_expr(show_output)
         vim.cmd.startinsert()
       end, { buffer = event.buf, silent = true })
+
       vim.keymap.set('n', '<C-x><C-l>', function()
         replay_last_expr(show_output)
       end, { buffer = event.buf, silent = true })
+      vim.keymap.set('n', '<C-CR>', function()
+        replay_last_expr(show_output)
+      end, { buffer = event.buf, silent = true })
+
       vim.keymap.set('i', '<C-x><C-l>', function()
+        replay_last_expr(show_output)
+        vim.cmd.startinsert()
+      end, { buffer = event.buf, silent = true })
+      vim.keymap.set('i', '<C-CR>', function()
         replay_last_expr(show_output)
         vim.cmd.startinsert()
       end, { buffer = event.buf, silent = true })

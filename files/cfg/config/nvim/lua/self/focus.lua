@@ -8,6 +8,13 @@ local state = {
   windows = {},
 }
 
+local function toggle_gitsigns(enabled)
+  local gs = package.loaded.gitsigns
+  if type(gs) == 'table' and type(gs.toggle_signs) == 'function' then
+    gs.toggle_signs(enabled)
+  end
+end
+
 local function is_normal_window(win)
   if not vim.api.nvim_win_is_valid(win) then
     return false
@@ -129,6 +136,7 @@ local function toggle()
     vim.opt.fillchars = state.global.fillchars
     vim.opt.fillchars:append { eob = ' ' }
     vim.o.laststatus = 0
+    toggle_gitsigns(false)
     apply_to_all_windows()
   else
     restore_all_windows()
@@ -137,6 +145,7 @@ local function toggle()
       vim.opt.fillchars = state.global.fillchars
       vim.o.laststatus = state.global.laststatus
     end
+    toggle_gitsigns(true)
     state.defaults = nil
     state.global = nil
   end

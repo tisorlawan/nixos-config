@@ -30,7 +30,7 @@ if $version == $installed_version {
     print $"* Creating temporary directory ($tmp_dir)"
     mkdir $tmp_dir
 
-    let assets = $release.assets | where name =~ "codex-x86_64-unknown-linux-gnu.(zst)" | select name browser_download_url
+    let assets = $release.assets | where name =~ "codex-x86_64-unknown-linux-musl.(zst)" | select name browser_download_url
     if ($assets | is-empty) {
         print "* No matching assets found"
     } else {
@@ -41,10 +41,10 @@ if $version == $installed_version {
         }
 
         print $"* Downloaded assets to ($tmp_dir)"
-        print $"* Extracting codex-x86_64-unknown-linux-gnu.zst"
+        print $"* Extracting codex-x86_64-unknown-linux-musl.zst"
 
-        let binary = ($tmp_dir | path join codex-x86_64-unknown-linux-gnu)
-        zstd -dq ($tmp_dir | path join "codex-x86_64-unknown-linux-gnu.zst")
+        let binary = ($tmp_dir | path join codex-x86_64-unknown-linux-musl)
+        zstd -dq ($tmp_dir | path join "codex-x86_64-unknown-linux-musl.zst")
 
         let install_dir = ($env.HOME | path join ".local/bin")
         let install_path = ($install_dir | path join "codex")

@@ -297,6 +297,7 @@ local function setup()
   setup_diagnostics()
   vim.keymap.set('n', '<leader>ud', function()
     vim.diagnostic.enable(not vim.diagnostic.is_enabled())
+    require('lualine').refresh()
   end, { desc = 'Toggle diagnostics' })
   vim.keymap.set('n', 'gl', function()
     vim.diagnostic.open_float { border = 'single' }

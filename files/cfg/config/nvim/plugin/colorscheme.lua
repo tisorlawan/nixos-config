@@ -17,16 +17,19 @@ end
 vim.o.bg = get_color_config()
 
 vim.pack.add {
-  'https://github.com/rebelot/kanagawa.nvim',
   'https://github.com/EdenEast/nightfox.nvim',
 }
+
+if vim.g.kami_transparent == nil then
+  vim.g.kami_transparent = true
+end
 
 local function setup_nightfox()
   local comment_fg = vim.o.bg == 'light' and '#ff9d00' or '#8afa1f'
 
   require('nightfox').setup {
     options = {
-      transparent = true,
+      transparent = vim.g.kami_transparent,
       modules = { leap = false },
     },
     groups = {
@@ -39,33 +42,34 @@ local function setup_nightfox()
   }
 end
 
-local function setup_kanagawa()
-  require('kanagawa').setup {
-    transparent = true,
-    commentStyle = { italic = true },
-    keywordStyle = { italic = false },
-    overrides = function(_)
-      local comment = { fg = '#8afa1f', italic = false, bold = true }
-
-      if vim.o.bg == 'light' then
-        comment.fg = '#ff9d00'
-      end
-
-      return {
-        Comment = comment,
-        MatchParen = { underline = true },
-      }
-    end,
-  }
-end
-
 setup_nightfox()
-setup_kanagawa()
 
 if vim.o.bg == 'light' then
-  -- vim.cmd.colorscheme 'kanagawa'
-  vim.cmd.colorscheme 'dayfox'
+  vim.cmd.colorscheme 'kami-light'
 else
-  -- vim.cmd.colorscheme 'kanagawa-lotus'
-  vim.cmd.colorscheme 'nightfox'
+  vim.cmd.colorscheme 'kami-dark'
 end
+
+local function toggle_transparency()
+  vim.g.kami_transparent = not vim.g.kami_transparent
+  local current = vim.g.colors_name or ''
+  if
+    current:find '^nightfox'
+    or current:find '^dayfox'
+    or current:find '^dawnfox'
+    or current:find '^duskfox'
+    or current:find '^nordfox'
+    or current:find '^terafox'
+    or current:find '^carbonfox'
+  then
+    setup_nightfox()
+    vim.cmd.colorscheme(current)
+  elseif current:find '^kami' then
+    vim.cmd.colorscheme(current)
+  else
+    vim.cmd.colorscheme(current)
+  end
+  vim.notify('Transparency: ' .. (vim.g.kami_transparent and 'on' or 'off'))
+end
+
+vim.keymap.set('n', '<leader>ut', toggle_transparency, { desc = 'Toggle transparency' })

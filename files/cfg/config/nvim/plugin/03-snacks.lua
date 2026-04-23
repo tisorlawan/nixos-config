@@ -13,6 +13,11 @@ require('edgy').setup {}
 Snacks.setup {
   picker = {
     ui_select = true,
+    sources = {
+      explorer = {
+        diagnostics = false,
+      },
+    },
   },
   terminal = {
     shell = 'fish',

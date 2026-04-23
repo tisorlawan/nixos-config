@@ -85,12 +85,21 @@ require('lualine').setup {
       file_path,
       {
         'diagnostics',
+        cond = vim.diagnostic.is_enabled,
         symbols = {
           error = icons.diagnostics.Error,
           warn = icons.diagnostics.Warn,
           info = icons.diagnostics.Info,
           hint = icons.diagnostics.Hint,
         },
+      },
+      {
+        function()
+          return '[DD]'
+        end,
+        cond = function()
+          return not vim.diagnostic.is_enabled()
+        end,
       },
     },
     lualine_x = {

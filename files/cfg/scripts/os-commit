@@ -12,7 +12,8 @@ trap 'rm -rf "$EPHEMERAL_DIR"' EXIT
 DIFF_TARGET="--cached"
 CONTEXT="the currently staged changes. IMPORTANT: Ignore any unstaged changes."
 # MODEL="anthropic/claude-sonnet-4-5-20250929"
-MODEL="opencode-go/minimax-m2.5"
+# MODEL="opencode-go/minimax-m2.5"
+MODEL="openai/gpt-5.4-mini-fast"
 FORCE_SONNET=false
 
 # Handle flags and arguments

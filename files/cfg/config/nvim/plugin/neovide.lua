@@ -7,7 +7,7 @@ if vim.g.neovide then
   vim.g.neovide_scroll_animation_length = 0.05
   vim.g.neovide_hide_mouse_when_typing = true
   vim.g.neovide_cursor_cell_color_fallback = true
-  vim.g.neovide_opacity = 0.83
+  vim.g.neovide_opacity = 0.88
   -- vim.g.neovide_normal_opacity = 0.85
   local default_scale = vim.g.neovide_scale_factor or 1.0
   local step = 0.1

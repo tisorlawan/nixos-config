@@ -325,8 +325,10 @@ in
 
       # Font families sourced from nixpkgs-unstable
       fontPackages = [
+        pkgs.corefonts
         nixpkgs-unstable.noto-fonts-color-emoji
         nixpkgs-unstable.noto-fonts-cjk-sans
+        nixpkgs-unstable.source-code-pro
         nixpkgs-unstable.noto-fonts-cjk-serif
         nixpkgs-unstable.material-icons
         nixpkgs-unstable.symbola
@@ -372,7 +374,7 @@ in
     };
   };
 
-  # fonts.fontconfig.enable = true;
+  fonts.fontconfig.enable = true;
 
   # Optional: Define default fonts for fontconfig
   # home.file.".config/fontconfig/fonts.conf".text = ''

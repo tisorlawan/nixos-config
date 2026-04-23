@@ -24,6 +24,10 @@ vim.opt.inccommand = 'split'
 
 vim.opt.clipboard = 'unnamedplus'
 
+vim.opt.undofile = true
+vim.opt.undodir = vim.fn.stdpath 'state' .. '/undo'
+vim.fn.mkdir(vim.opt.undodir:get()[1], 'p')
+
 vim.opt.scrolloff = 8
 vim.opt.sidescrolloff = 8
 

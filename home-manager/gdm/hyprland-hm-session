@@ -29,6 +29,11 @@ export XDG_SESSION_DESKTOP=Hyprland
 export XDG_SESSION_TYPE=wayland
 export NIXOS_OZONE_WL=1
 
+# Do not import Nix/nixGL graphics overrides into the user manager/DBus
+# activation environment. They are only valid for the wrapped Nix process and
+# break Ubuntu-built Vulkan/OpenGL apps by mixing Nix Mesa with Ubuntu ICDs.
+unset LD_LIBRARY_PATH LIBGL_DRIVERS_PATH GBM_BACKENDS_PATH __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES VK_ICD_FILENAMES
+
 if command -v systemctl >/dev/null 2>&1; then
   systemctl --user import-environment PATH XDG_DATA_DIRS XDG_CONFIG_DIRS XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP XDG_SESSION_TYPE NIXOS_OZONE_WL || true
 fi
@@ -39,6 +44,8 @@ fi
 
 nixgl_wrapper="$profile_bin/nixGLIntel"
 if [[ -x "$nixgl_wrapper" ]]; then
+  # Hyprland itself still needs nixGL on Ubuntu. Terminals start their shells
+  # through ~/.scripts/clean-terminal-shell to avoid leaking this into dev work.
   exec "$nixgl_wrapper" "$profile_bin/start-hyprland" --no-nixgl --path "$hyprland_bin"
 else
   exec "$profile_bin/start-hyprland" --no-nixgl --path "$hyprland_bin"

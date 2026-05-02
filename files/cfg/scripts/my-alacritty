@@ -83,4 +83,13 @@ if [ "$WRITE_CONFIG_ONLY" -eq 1 ]; then
   exit 0
 fi
 
-exec alacritty "$@"
+ALACRITTY_RUN=(alacritty)
+if command -v nixGLIntel >/dev/null 2>&1; then
+  ALACRITTY_RUN=(nixGLIntel alacritty)
+fi
+
+if [ "$#" -eq 0 ]; then
+  exec "${ALACRITTY_RUN[@]}" -e "$HOME/.scripts/clean-terminal-shell"
+fi
+
+exec "${ALACRITTY_RUN[@]}" "$@"

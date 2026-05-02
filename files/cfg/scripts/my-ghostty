@@ -124,7 +124,7 @@ adjust-underline-position = 2
 
 scrollback-limit = 10000000
 term = xterm-256color
-command = /home/agung-b-sorlawan/.nix-profile/bin/fish
+command = /home/agung-b-sorlawan/.scripts/clean-terminal-shell
 
 window-decoration = "none"
 window-padding-balance = false
@@ -241,8 +241,13 @@ if [ "$MY_GHOSTTY_DEBUG" = "1" ]; then
   printf 'my-ghostty cwd=%s\n' "${ACTIVE_GHOSTTY_CWD:-<unset>}" >&2
 fi
 
-if [ -n "$ACTIVE_GHOSTTY_CWD" ]; then
-  exec ghostty --working-directory="$ACTIVE_GHOSTTY_CWD" "$@"
+GHOSTTY_RUN=(ghostty)
+if command -v nixGLIntel >/dev/null 2>&1; then
+  GHOSTTY_RUN=(nixGLIntel ghostty)
 fi
 
-exec ghostty "$@"
+if [ -n "$ACTIVE_GHOSTTY_CWD" ]; then
+  exec "${GHOSTTY_RUN[@]}" --working-directory="$ACTIVE_GHOSTTY_CWD" "$@"
+fi
+
+exec "${GHOSTTY_RUN[@]}" "$@"

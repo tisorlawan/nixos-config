@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Start an interactive shell without Nix/nixGL graphics overrides.
+# Terminal emulators launched from Nix may need LD_LIBRARY_PATH for their own
+# GTK/EGL/OpenGL stack, but developer shells should use Ubuntu's Mesa/Vulkan.
+unset LD_LIBRARY_PATH
+unset LIBGL_DRIVERS_PATH
+unset GBM_BACKENDS_PATH
+unset __EGL_VENDOR_LIBRARY_DIRS
+unset __EGL_VENDOR_LIBRARY_FILENAMES
+unset VK_ICD_FILENAMES
+
+shell="${SHELL:-$HOME/.nix-profile/bin/fish}"
+if [ -x "$HOME/.nix-profile/bin/fish" ]; then
+  shell="$HOME/.nix-profile/bin/fish"
+fi
+
+exec "$shell" -l

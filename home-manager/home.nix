@@ -8,7 +8,6 @@ let
   pkgs-unstable = nixpkgs-unstable;
   system = pkgs.stdenv.hostPlatform.system;
   hyprPkgs = inputs.hyprland.packages.${system};
-  hy3Pkgs = inputs.hy3.packages.${system};
   hyprlandGuiUtilsPkgs = inputs.hyprland_guiutils.packages.${system};
   nixGLIntel = inputs.nixgl.packages.${system}.nixGLIntel;
   neovimPython = pkgs.python3.withPackages (ps: with ps; [ pynvim ]);
@@ -78,7 +77,6 @@ in
         hyprPkgs.hyprland
         hyprPkgs.xdg-desktop-portal-hyprland
         pkgs-unstable.hyprpaper
-        hy3Pkgs.hy3
         hyprsunset
         xdg-desktop-portal
         xdg-desktop-portal-gtk
@@ -300,7 +298,7 @@ in
         imagemagick
         mediainfo
         kubectl
-        mpv
+        # mpv
         # wf-recorder
       ];
 

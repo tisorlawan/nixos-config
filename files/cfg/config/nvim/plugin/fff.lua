@@ -11,6 +11,9 @@ vim.g.fff = {
     border = 'FFFBorder',
     title = 'FFFTitle',
   },
+  keymaps = {
+    close = { '<Esc>', '<C-c>' },
+  },
 }
 
 vim.keymap.set('n', '<C-p>', function()

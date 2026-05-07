@@ -121,6 +121,10 @@ map('n', '<leader>us', function()
   vim.wo.signcolumn = enabled and 'yes' or 'no'
 end, { desc = 'Toggle signcolumn' })
 
+map('n', '<leader>ul', function()
+  vim.wo.cursorline = not vim.wo.cursorline
+end, { desc = 'Toggle cursorline' })
+
 map('n', '<leader>xf', function()
   local directory = vim.fn.expand '%:.:h'
   if directory == '' or directory == '.' then

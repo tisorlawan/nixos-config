@@ -13,7 +13,7 @@ DIFF_TARGET="--cached"
 CONTEXT="the currently staged changes. IMPORTANT: Ignore any unstaged changes."
 # MODEL="anthropic/claude-sonnet-4-5-20250929"
 # MODEL="opencode-go/minimax-m2.5"
-MODEL="openai/gpt-5.4-mini-fast"
+MODEL="opencode-go/deepseek-v4-pro"
 FORCE_SONNET=false
 
 # Handle flags and arguments

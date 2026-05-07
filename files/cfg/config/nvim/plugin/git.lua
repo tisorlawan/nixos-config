@@ -26,7 +26,7 @@ require('gitblame').setup {
 vim.api.nvim_create_user_command('Eorig', function(opts)
   local file = opts.args
   if file == '' then
-    file = vim.fn.expand('%')
+    file = vim.fn.expand '%'
   end
 
   local abs = vim.fn.fnamemodify(file, ':p')

@@ -9,6 +9,9 @@ unset __EGL_VENDOR_LIBRARY_DIRS
 unset __EGL_VENDOR_LIBRARY_FILENAMES
 unset VK_ICD_FILENAMES
 
+export LIBVA_DRIVER_NAME=iHD
+export LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
+
 shell="${SHELL:-$HOME/.nix-profile/bin/fish}"
 if [ -x "$HOME/.nix-profile/bin/fish" ]; then
   shell="$HOME/.nix-profile/bin/fish"

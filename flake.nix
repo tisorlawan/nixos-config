@@ -2,15 +2,12 @@
   description = "Nixos config flake";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/62e0f05e";
-    home-manager.url = "github:nix-community/home-manager/release-25.05";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/64c08a7c";
+    home-manager.url = "github:nix-community/home-manager/release-26.05";
 
-    # iwmenu.url = "github:e-tho/iwmenu";
     zotimer.url = "github:tisorlawan/zotimer";
-    # television.url = "github:alexpasmantier/television";
     ghostty.url = "github:ghostty-org/ghostty/v1.2.3";
-    helix.url = "github:helix-editor/helix/25.01";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, home-manager, ... }@inputs:

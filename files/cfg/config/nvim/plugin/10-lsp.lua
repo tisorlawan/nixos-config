@@ -150,7 +150,7 @@ local function setup_lsp_keymaps(bufnr)
   map('[d', function()
     vim.diagnostic.jump {
       count = -1,
-      on_jump = function(_, bufnr)
+      on_jump = function(_, _)
         vim.diagnostic.open_float {
           bufnr = bufnr,
           border = 'single',
@@ -163,7 +163,7 @@ local function setup_lsp_keymaps(bufnr)
   map(']d', function()
     vim.diagnostic.jump {
       count = 1,
-      on_jump = function(_, bufnr)
+      on_jump = function(_, _)
         vim.diagnostic.open_float {
           bufnr = bufnr,
           border = 'single',
@@ -178,6 +178,11 @@ local function setup_lsp_keymaps(bufnr)
 end
 
 local function on_attach(client, bufnr)
+  if client.name == 'clangd' then
+    client.server_capabilities.documentFormattingProvider = false
+    client.server_capabilities.documentRangeFormattingProvider = false
+  end
+
   vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
   setup_lsp_keymaps(bufnr)
   -- client.server_capabilities.semanticTokensProvider = nil
@@ -338,3 +343,6 @@ local function setup()
 end
 
 setup()
+
+vim.pack.add { 'https://github.com/parwest/peeper-picker.nvim' }
+vim.keymap.set('n', '<leader>pp', '<cmd>PeeperPicker<cr>', { desc = 'Peeper Picker' })

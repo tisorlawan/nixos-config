@@ -57,6 +57,7 @@ vim.api.nvim_create_user_command('Eorig', function(opts)
 end, { nargs = '?', complete = 'file', desc = 'View file from git HEAD in split' })
 
 require('gitsigns').setup {
+  signcolumn = false,
   preview_config = {
     -- single double solid shadow
     border = 'single',

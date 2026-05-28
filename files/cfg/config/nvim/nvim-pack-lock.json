@@ -14,7 +14,7 @@
       "src": "https://github.com/folke/edgy.nvim"
     },
     "fff.nvim": {
-      "rev": "030a583b37802416ce9108295b209d2e6b9d0079",
+      "rev": "5e53b6e8cf83913d51a63b54f606b07d6e4de4bc",
       "src": "https://github.com/dmtrKovalenko/fff.nvim"
     },
     "git-blame.nvim": {
@@ -51,7 +51,7 @@
       "src": "https://github.com/linrongbin16/lsp-progress.nvim"
     },
     "lualine.nvim": {
-      "rev": "131a558e13f9f28b15cd235557150ccb23f89286",
+      "rev": "221ce6b2d999187044529f49da6554a92f740a96",
       "src": "https://github.com/nvim-lualine/lualine.nvim"
     },
     "mini.icons": {
@@ -63,7 +63,7 @@
       "src": "https://github.com/smoka7/multicursors.nvim"
     },
     "neo-tree.nvim": {
-      "rev": "2734f5cf4c59e79bbcc4521eb8d1e26fd305ad3c",
+      "rev": "b83de592f2a8bdd749a00668a8253878cd801f15",
       "src": "https://github.com/nvim-neo-tree/neo-tree.nvim"
     },
     "nightfox.nvim": {
@@ -83,12 +83,16 @@
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
     "outline.nvim": {
-      "rev": "c293eb56db880a0539bf9d85b4a27816960b863e",
+      "rev": "2a132953b944561d45b52e4541ebfff71934a742",
       "src": "https://github.com/hedyhli/outline.nvim"
     },
     "parinfer-rust": {
       "rev": "845bfbb9916687cba5b6bae088c9eab70dbb83a3",
       "src": "https://github.com/eraserhd/parinfer-rust.git"
+    },
+    "peeper-picker.nvim": {
+      "rev": "d4ef01ed6be7c041c11b1b001068c5aca486d859",
+      "src": "https://github.com/parwest/peeper-picker.nvim"
     },
     "plenary.nvim": {
       "rev": "74b06c6c75e4eeb3108ec01852001636d85a932b",

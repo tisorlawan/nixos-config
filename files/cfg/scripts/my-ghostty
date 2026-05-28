@@ -80,41 +80,37 @@ $(if [ "$COLOR_MODE" = "light" ]; then
     printf '%s\n' 'palette = 14=00aaaa'
     printf '%s\n' 'palette = 15=ffffff'
   else
-    printf '%s\n' 'background-opacity = 0.92'
+    printf '%s\n' 'background-opacity = 0.965'
+    printf '%s\n' 'theme = Nightfox'
     printf '%s\n' '# background = 18181b'
     printf '%s\n' '# background = 131313'
     printf '%s\n' '# background = 13131A'
     printf '%s\n' '# background = 1D282F'
-    printf '%s\n' 'background = 0E0E16'
-    printf '%s\n' 'foreground = f3f4f6'
-    printf '%s\n' 'cursor-color = e5e7eb'
-    printf '%s\n' 'cursor-text = 111827'
-    printf '%s\n' 'selection-background = 334155'
-    printf '%s\n' 'selection-foreground = f9fafb'
-    printf '%s\n' 'palette = 0=1f2937'
-    printf '%s\n' 'palette = 1=f87171'
-    printf '%s\n' 'palette = 2=4ade80'
-    printf '%s\n' 'palette = 3=facc15'
-    printf '%s\n' 'palette = 4=60a5fa'
-    printf '%s\n' 'palette = 5=c084fc'
-    printf '%s\n' 'palette = 6=2dd4bf'
-    printf '%s\n' 'palette = 7=f3f4f6'
-    printf '%s\n' 'palette = 8=64748b'
-    printf '%s\n' 'palette = 9=fca5a5'
-    printf '%s\n' 'palette = 10=86efac'
-    printf '%s\n' 'palette = 11=fde047'
-    printf '%s\n' 'palette = 12=93c5fd'
-    printf '%s\n' 'palette = 13=d8b4fe'
-    printf '%s\n' 'palette = 14=5eead4'
-    printf '%s\n' 'palette = 15=f9fafb'
+    printf '%s\n' '# background = 0E0E16'
+    printf '%s\n' '# foreground = f3f4f6'
+    printf '%s\n' '# cursor-color = e5e7eb'
+    printf '%s\n' '# cursor-text = 111827'
+    printf '%s\n' '# selection-background = 334155'
+    printf '%s\n' '# selection-foreground = f9fafb'
+    printf '%s\n' '# palette = 0=1f2937'
+    printf '%s\n' '# palette = 1=f87171'
+    printf '%s\n' '# palette = 2=4ade80'
+    printf '%s\n' '# palette = 3=facc15'
+    printf '%s\n' '# palette = 4=60a5fa'
+    printf '%s\n' '# palette = 5=c084fc'
+    printf '%s\n' '# palette = 6=2dd4bf'
+    printf '%s\n' '# palette = 7=f3f4f6'
+    printf '%s\n' '# palette = 8=64748b'
+    printf '%s\n' '# palette = 9=fca5a5'
+    printf '%s\n' '# palette = 10=86efac'
+    printf '%s\n' '# palette = 11=fde047'
+    printf '%s\n' '# palette = 12=93c5fd'
+    printf '%s\n' '# palette = 13=d8b4fe'
+    printf '%s\n' '# palette = 14=5eead4'
+    printf '%s\n' '# palette = 15=f9fafb'
   fi)
 
 font-family = "Berkeley Mono"
-# font-size = 17
-# adjust-cell-height = 2
-
-# font-size = 16
-# adjust-cell-height = 5
 
 font-size = 14
 adjust-cell-height = 2

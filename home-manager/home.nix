@@ -87,11 +87,11 @@ in
         xdotool
         xclip
         xdg-user-dirs
-        xorg.xbacklight
-        xorg.xkill
-        xorg.xdpyinfo
-        xorg.xwininfo
-        xorg.xmodmap
+        xbacklight
+        xkill
+        xdpyinfo
+        xwininfo
+        xmodmap
         networkmanagerapplet
         sxhkd
         copyq
@@ -275,7 +275,7 @@ in
         mold
         # google-cloud-sdk
         openconnect
-        neofetch
+        fastfetch
         rsync
         inotify-tools
         # php

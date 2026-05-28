@@ -125,6 +125,10 @@ map('n', '<leader>ul', function()
   vim.wo.cursorline = not vim.wo.cursorline
 end, { desc = 'Toggle cursorline' })
 
+map('n', '<leader>uww', function()
+  vim.wo.wrap = not vim.wo.wrap
+end, { desc = 'Toggle wrap' })
+
 map('n', '<leader>xf', function()
   local directory = vim.fn.expand '%:.:h'
   if directory == '' or directory == '.' then

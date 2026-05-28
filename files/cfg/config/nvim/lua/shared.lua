@@ -11,7 +11,8 @@ M.icons = {
 
 local filetype_config = {
   lisp = {},
-  c = { formatters = { 'clang_format' }, servers = { 'clangd' } },
+  -- c = { formatters = { 'clang_format' }, servers = { 'clangd' } },
+  c = { formatters = {}, servers = { 'clangd' } },
   go = { formatters = { 'gofumpt', 'goimports', 'golines' }, servers = { 'gopls' } },
   html = { formatters = { 'oxfmt' }, servers = { 'html' } },
   javascript = { formatters = { 'oxfmt' } },

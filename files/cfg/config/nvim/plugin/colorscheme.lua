@@ -21,12 +21,14 @@ vim.pack.add {
   'https://github.com/rebelot/kanagawa.nvim',
 }
 
+vim.g.kami_transparent = false
 if vim.g.kami_transparent == nil then
   vim.g.kami_transparent = true
 end
 
 local function setup_nightfox()
   local comment_fg = vim.o.bg == 'light' and '#ff9d00' or '#8afa1f'
+  local comment_bg = vim.o.bg == 'light' and '#fff0cc' or '#173500'
   local float_bg = vim.g.kami_transparent and 'NONE' or nil
 
   require('nightfox').setup {
@@ -36,8 +38,7 @@ local function setup_nightfox()
     },
     groups = {
       all = {
-        -- Comment = { fg = comment_fg, style = 'italic,bold' },
-        Comment = { fg = comment_fg, style = 'bold' },
+        Comment = { fg = comment_fg, bg = comment_bg, style = 'bold' },
         BlinkCmpDoc = { bg = float_bg },
         BlinkCmpDocBorder = { bg = float_bg },
         BlinkCmpMenu = { bg = float_bg },
@@ -64,10 +65,7 @@ setup_kanagawa()
 if vim.o.bg == 'light' then
   vim.cmd.colorscheme 'kami-light'
 else
-  vim.cmd.colorscheme 'kami-dark'
-  -- vim.cmd.colorscheme 'kanagawa-wave'
-  -- vim.cmd.colorscheme 'ocean'
-  -- vim.cmd.colorscheme 'carbonfox'
+  vim.cmd.colorscheme 'nightfox'
 end
 
 local function toggle_transparency()

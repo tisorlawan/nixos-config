@@ -20,7 +20,7 @@ local filetype_config = {
   lua = { formatters = { 'stylua' }, servers = { 'lua_ls' } },
   markdown = { formatters = { 'oxfmt' }, servers = { 'marksman' } },
   nix = { formatters = { 'nixpkgs_fmt' }, servers = { 'nil_ls' } },
-  php = { formatters = { 'php_cs_fixer' }, servers = { 'phpactor', 'html' } },
+  php = { formatters = { 'php_cs_fixer' }, servers = { 'phpactor', 'laravel_ls', 'html' } },
   python = { formatters = { 'ruff_format', 'ruff_organize_imports' }, servers = { 'pyright', 'ruff' } },
   rust = { formatters = { 'rustfmt' }, servers = { 'rust_analyzer' } },
   sh = { formatters = { 'shfmt' }, servers = { 'bashls' } },

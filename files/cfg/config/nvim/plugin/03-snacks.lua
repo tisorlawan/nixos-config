@@ -117,6 +117,9 @@ map('n', '<C-s>', function() Snacks.picker.lines() end, { desc = 'Lines' })
 map('n', '<leader>fd', function() Snacks.picker.diagnostics_buffer() end, { desc = 'Diagnostics buffer' })
 map('n', '<leader>fD', function() Snacks.picker.diagnostics() end, { desc = 'Diagnostics' })
 
+map('n', '<leader>ss', function() Snacks.picker.lsp_symbols { layout = { preset = 'vscode', preview = 'main' } } end, { desc = 'LSP Symbols' })
+map('n', '<leader>sS', function() Snacks.picker.lsp_workspace_symbols() end, { desc = 'LSP Workspace Symbols' })
+
 map('n', '<leader>fc', function()
   Snacks.picker.colorschemes {
     finder = function()

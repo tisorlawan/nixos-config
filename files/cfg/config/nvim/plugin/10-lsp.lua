@@ -61,6 +61,11 @@ local lsp_servers = {
       configurationSection = { 'html', 'css', 'javascript' },
     },
   },
+  laravel_ls = {
+    cmd = { 'laravel-ls', '--stdio' },
+    filetypes = { 'php' },
+    root_markers = { 'artisan', 'composer.json' },
+  },
   lua_ls = {
     cmd = { 'lua-language-server' },
     filetypes = { 'lua' },

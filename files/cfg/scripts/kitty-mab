@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+exec kitty --session /home/agung-b-sorlawan/.config/kitty/mab.session "$@"

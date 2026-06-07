@@ -1,7 +1,7 @@
 {
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
-    nixpkgs-unstable.url = "github:nixos/nixpkgs/64c08a7c";
+    nixpkgs-unstable.url = "github:nixos/nixpkgs/331800de";
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -14,7 +14,7 @@
       inputs.hyprland.follows = "hyprland";
     };
     # zed-editor = {
-    #   url = "github:zed-industries/zed/v0.226.5";
+    #   url = "github:zed-industries/zed/v1.5.4";
     #   inputs.nixpkgs.follows = "nixpkgs";
     # };
     ghostty.url = "github:ghostty-org/ghostty/v1.3.1";

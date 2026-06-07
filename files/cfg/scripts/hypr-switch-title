@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+mapfile -t windows < <(hyprctl clients -j \
+  | jq -r '.[] | select(.mapped and .class == "managed-kitty" and .focusHistoryID != 0 and (.title | length > 0)) | "\(.address)\t\(.title)"')
+
+prompt="Window title"
+current_title="$(hyprctl activewindow -j \
+  | jq -r 'select(.mapped and .class == "managed-kitty" and (.title | length > 0)) | .title // empty')"
+
+if [ -n "$current_title" ]; then
+  prompt="($current_title)>"
+fi
+
+prompt_rasi="${prompt//\\/\\\\}"
+prompt_rasi="${prompt_rasi//\"/\\\"}"
+
+selection="$(if [ "${#windows[@]}" -gt 0 ]; then
+  printf '%s\n' "${windows[@]}" | cut -f2-
+fi | rofi -dmenu -p "$prompt" -theme-str "entry { placeholder: \"$prompt_rasi\"; }")"
+
+if [ -z "$selection" ]; then
+  exit 0
+fi
+
+for window in "${windows[@]}"; do
+  address="${window%%$'\t'*}"
+  title="${window#*$'\t'}"
+
+  if [ "$title" = "$selection" ]; then
+    exec hyprctl dispatch focuswindow "address:$address"
+  fi
+done
+
+exec kitty --class managed-kitty --title "$selection"

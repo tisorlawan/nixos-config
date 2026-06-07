@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+title="$(rofi -dmenu -p 'Kitty title' </dev/null)"
+if [ -z "$title" ]; then
+  exit 0
+fi
+
+if hyprctl clients -j \
+  | jq -e --arg title "$title" '.[] | select(.mapped and .class == "managed-kitty" and .title == $title)' >/dev/null; then
+  notify-send 'Kitty title exists' "$title"
+  exit 0
+fi
+
+exec kitty --class managed-kitty --title "$title"

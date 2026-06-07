@@ -10,6 +10,19 @@ let
   hyprPkgs = inputs.hyprland.packages.${system};
   hyprlandGuiUtilsPkgs = inputs.hyprland_guiutils.packages.${system};
   nixGLIntel = inputs.nixgl.packages.${system}.nixGLIntel;
+  nixGLWrapped = pkg: binary: pkgs.symlinkJoin {
+    name = "${binary}-nixgl-wrapped";
+    paths = [ pkg ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      rm -f $out/bin/${binary}
+      makeWrapper ${nixGLIntel}/bin/nixGLIntel $out/bin/${binary} \
+        --add-flags ${pkg}/bin/${binary}
+    '';
+  };
+  kittyWrapped = pkgs.writeShellScriptBin "kitty" ''
+    exec ${nixGLIntel}/bin/nixGLIntel ${pkgs.kitty}/bin/kitty "$@"
+  '';
   neovimPython = pkgs.python3.withPackages (ps: with ps; [ pynvim ]);
 
   # SonarLint was first added on 2025-05-21 using nixpkgs rev 292fa7d4.
@@ -66,6 +79,7 @@ in
         grim
         slurp
         swappy
+        kittyWrapped
         wl-clipboard
         dunst
         socat
@@ -149,7 +163,7 @@ in
         vim-full
         # sbcl
         killall
-        yazi
+        # yazi
         pkgs-unstable.yt-dlp
         zoxide
         nethogs
@@ -221,6 +235,7 @@ in
         # zig
         # zls
         # livebook
+        odin
         stylua
         lua5_1
         lua-language-server
@@ -304,15 +319,15 @@ in
 
       # Graphical applications
       guiApplications = [
-        neovide
-        evince
-        sioyek
+        (nixGLWrapped neovide "neovide")
+        (nixGLWrapped evince "evince")
+        (nixGLWrapped sioyek "sioyek")
         nautilus
         pcmanfm
         # brave
-        pkgs-unstable.xournalpp
-        telegram-desktop
-        inlyne
+        (nixGLWrapped pkgs-unstable.xournalpp "xournalpp")
+        (nixGLWrapped telegram-desktop "telegram-desktop")
+        (nixGLWrapped inlyne "inlyne")
         transmission_4-gtk
       ];
 

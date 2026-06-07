@@ -6,6 +6,9 @@ ln -srf files/cfg/config/alacritty.toml ~/.config/alacritty.toml
 rm -rf ~/.config/nvim
 ln -srf files/cfg/config/nvim ~/.config/nvim
 
+rm -rf ~/.config/kittty
+ln -srf files/cfg/config/kitty ~/.config/kitty
+
 rm -rf ~/.config/btop/btop.conf
 mkdir -p ~/.config/btop
 ln -srf files/cfg/config/btop/btop.conf ~/.config/btop/btop.conf

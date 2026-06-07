@@ -80,7 +80,7 @@ $(if [ "$COLOR_MODE" = "light" ]; then
     printf '%s\n' 'palette = 14=00aaaa'
     printf '%s\n' 'palette = 15=ffffff'
   else
-    printf '%s\n' 'background-opacity = 0.963'
+    printf '%s\n' 'background-opacity = 0.95'
     printf '%s\n' 'theme = Nightfox'
     printf '%s\n' '# background = 18181b'
     printf '%s\n' '# background = 131313'

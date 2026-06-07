@@ -1,0 +1,11 @@
+cd /home/agung-b-sorlawan/Documents/model-accuracy-benchmarking
+new_tab opencode
+launch /home/agung-b-sorlawan/.opencode/bin/opencode
+
+cd /home/agung-b-sorlawan/Documents/model-accuracy-benchmarking
+new_tab shell
+launch
+
+cd /home/agung-b-sorlawan/Documents/model-accuracy-benchmarking
+new_tab shell
+launch

@@ -63,18 +63,9 @@ Scope {
 
               Repeater {
                 model: {
-                  const all = (Hyprland.workspaces.values || []).filter(w => w.id > 0);
-                  const curWs = parseInt(BarData.currentProjectWorkspace) || 0;
-                  const curProject = all.find(w => w.id === curWs);
-                  const normal = all.filter(w => w.id > 1 && w.id < 11).sort((a, b) => a.id - b.id);
-                  const projects = all.filter(w => w.id >= 11 && w.id !== curWs).sort((a, b) => a.id - b.id);
-                  if (curProject) {
-                    const curIdx = all.filter(w => w.id >= 11).sort((a, b) => a.id - b.id).findIndex(w => w.id === curWs);
-                    const before = projects.slice(0, curIdx);
-                    const after = projects.slice(curIdx);
-                    return [curProject, ...normal, ...after, ...before];
-                  }
-                  return [...normal, ...projects];
+                  return (Hyprland.workspaces.values || [])
+                    .filter(w => w.id > 0 && (BarData.occupiedWorkspaceIds[w.id] || w.active || w.focused))
+                    .sort((a, b) => a.id - b.id);
                 }
 
                 delegate: Chip {
@@ -91,9 +82,7 @@ Scope {
 
                   Text {
                     color: modelData.focused ? Theme.activeText : Theme.text
-                    text: String(modelData.name) === BarData.currentProjectWorkspace
-                      ? "1"
-                      : (BarData.projectWorkspaceNames[String(modelData.name)] || modelData.name).substring(0, 3)
+                    text: String(modelData.name).substring(0, 3)
                     font.pixelSize: Theme.fontSize
                     font.family: Theme.fontFamily
                   }
@@ -120,18 +109,6 @@ Scope {
                   text: BarData.submapText
                   font.pixelSize: Theme.fontSize
                   font.italic: true
-                  font.family: Theme.fontFamily
-                }
-              }
-
-              Chip {
-                visible: BarData.currentProjectName.length > 0
-                fill: Theme.chipDark
-
-                Text {
-                  color: Theme.text
-                  text: BarData.currentProjectName.substring(0, 3) + " " + (BarData.currentProjectSlot || "0") + ":" + BarData.currentProjectSlots.length
-                  font.pixelSize: Theme.fontSize
                   font.family: Theme.fontFamily
                 }
               }

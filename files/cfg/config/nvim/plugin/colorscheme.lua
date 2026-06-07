@@ -21,7 +21,7 @@ vim.pack.add {
   'https://github.com/rebelot/kanagawa.nvim',
 }
 
-vim.g.kami_transparent = false
+vim.g.kami_transparent = true
 if vim.g.kami_transparent == nil then
   vim.g.kami_transparent = true
 end
@@ -44,9 +44,15 @@ local function setup_nightfox()
         BlinkCmpMenu = { bg = float_bg },
         BlinkCmpMenuBorder = { bg = float_bg },
         FloatBorder = { bg = float_bg },
-        MatchParen = { style = 'underline' },
+        MatchParen = { style = 'bold,underline' },
         NormalFloat = { bg = float_bg },
         Pmenu = { bg = float_bg },
+      },
+      nightfox = {
+        CursorLine = { bg = '#222b37' },
+        SnacksPickerDir = { fg = '#738091' },
+        SnacksPickerPathHidden = { fg = '#738091' },
+        SnacksPickerPathIgnored = { fg = '#738091' },
       },
     },
   }

@@ -6,6 +6,8 @@ vim.o.number = false
 vim.o.ignorecase = true
 vim.o.smartcase = true
 
+vim.o.guicursor = ''
+
 -- vim.o.autocomplete = true
 
 vim.opt.shiftwidth = 4

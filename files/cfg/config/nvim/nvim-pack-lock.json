@@ -14,7 +14,7 @@
       "src": "https://github.com/folke/edgy.nvim"
     },
     "fff.nvim": {
-      "rev": "5e53b6e8cf83913d51a63b54f606b07d6e4de4bc",
+      "rev": "8092cfa3faf3471d29b3e11049e921d7e759d789",
       "src": "https://github.com/dmtrKovalenko/fff.nvim"
     },
     "git-blame.nvim": {
@@ -26,7 +26,7 @@
       "src": "https://github.com/wintermute-cell/gitignore.nvim"
     },
     "gitsigns.nvim": {
-      "rev": "dd3f588bacbeb041be6facf1742e42097f62165d",
+      "rev": "25050e4ed39e628282831d4cbecb1850454ce915",
       "src": "https://github.com/lewis6991/gitsigns.nvim"
     },
     "harpoon": {
@@ -43,7 +43,7 @@
       "src": "https://github.com/rebelot/kanagawa.nvim"
     },
     "leap.nvim": {
-      "rev": "59d70b1bdf8e76e0637e6ebcc150fb6767f67fc5",
+      "rev": "d3641f9aa86e7460b14d9f4479e7454f88cc6b2d",
       "src": "https://codeberg.org/andyg/leap.nvim"
     },
     "lsp-progress.nvim": {
@@ -63,7 +63,7 @@
       "src": "https://github.com/smoka7/multicursors.nvim"
     },
     "neo-tree.nvim": {
-      "rev": "b83de592f2a8bdd749a00668a8253878cd801f15",
+      "rev": "a3adf0a84554c9c4947991081fedc9750eac0652",
       "src": "https://github.com/nvim-neo-tree/neo-tree.nvim"
     },
     "nightfox.nvim": {
@@ -87,11 +87,11 @@
       "src": "https://github.com/hedyhli/outline.nvim"
     },
     "parinfer-rust": {
-      "rev": "845bfbb9916687cba5b6bae088c9eab70dbb83a3",
+      "rev": "7f13acea20f03228f72156cec4fa4e49f0d5d1e5",
       "src": "https://github.com/eraserhd/parinfer-rust.git"
     },
     "peeper-picker.nvim": {
-      "rev": "d4ef01ed6be7c041c11b1b001068c5aca486d859",
+      "rev": "638471164587ed463ac962c138904fc5dbef45fd",
       "src": "https://github.com/parwest/peeper-picker.nvim"
     },
     "plenary.nvim": {
@@ -131,7 +131,7 @@
       "src": "https://github.com/romainl/vim-cool"
     },
     "vim-dirvish": {
-      "rev": "9525f46ccbf2dd585523fe3e3b72151554df3a42",
+      "rev": "ad478b4ac86484edc525bfc5379f261204dfbf4c",
       "src": "https://github.com/justinmk/vim-dirvish"
     },
     "vim-dirvish-dovish": {

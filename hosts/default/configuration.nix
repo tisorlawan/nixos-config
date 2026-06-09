@@ -473,6 +473,7 @@ in
       typestarFont
 
       # Popular monospace/programming fonts
+      nerd-fonts.symbols-only
       nerd-fonts.jetbrains-mono
       nerd-fonts.blex-mono
       fira-code # Fira Code (with ligatures)

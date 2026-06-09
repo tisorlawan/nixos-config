@@ -19,6 +19,7 @@ vim.o.bg = get_color_config()
 vim.pack.add {
   'https://github.com/EdenEast/nightfox.nvim',
   'https://github.com/rebelot/kanagawa.nvim',
+  'https://github.com/yorickpeterse/nvim-grey',
 }
 
 vim.g.kami_transparent = true

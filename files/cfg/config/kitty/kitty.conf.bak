@@ -15,21 +15,14 @@ env VK_ICD_FILENAMES=
 env LIBVA_DRIVER_NAME=iHD
 env LIBVA_DRIVERS_PATH=/usr/lib/x86_64-linux-gnu/dri
 
-font_family      family='Berkeley Mono' postscript_name=BerkeleyMono-Regular
-font_size        14
-modify_font      cell_height        2px
-modify_font      underline_position 2px
-bold_font        auto
-italic_font      auto
-bold_italic_font auto
-text_composition_strategy legacy
-# - Symbols Nerd Font
-# - JetBrainsMono Nerd Font
-# - JetBrainsMonoNL Nerd Font
-# - BlexMono Nerd Font
-symbol_map U+E000-U+F8FF BlexMono Nerd Font
-symbol_map U+F0000-U+FFFFD BlexMono Nerd Font
-symbol_map U+100000-U+10FFFD BlexMono Nerd Font
+font_family family="Berkeley Mono" style=Regular
+font_size 14
+# # modify_font cell_height 2px
+# # modify_font underline_position 2px
+# # text_composition_strategy legacy
+bold_font family="Berkeley Mono" style=Bold
+italic_font family="Berkeley Mono" style=Oblique
+bold_italic_font family="Berkeley Mono" style="Bold Oblique"
 
 # Transparency / opacity
 background_opacity 0.94

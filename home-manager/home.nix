@@ -20,8 +20,35 @@ let
         --add-flags ${pkg}/bin/${binary}
     '';
   };
+  kittyPatched = pkgs.kitty.overrideAttrs (oldAttrs: {
+    postPatch = (oldAttrs.postPatch or "") + ''
+      python3 - <<'PY'
+      from pathlib import Path
+
+      path = Path("kitty/fonts/fontconfig.py")
+      text = path.read_text()
+      old = """def is_monospace(descriptor: FontConfigPattern) -> bool:
+          return descriptor['spacing'] in ('MONO', 'DUAL')
+      """
+      new = """def is_monospace(descriptor: FontConfigPattern) -> bool:
+          if descriptor['spacing'] in ('MONO', 'DUAL'):
+              return True
+          return descriptor.get('postscript_name') in {
+              'BerkeleyMono-Bold',
+              'BerkeleyMono-Oblique',
+              'BerkeleyMono-BoldOblique',
+          }
+      """
+      if new not in text:
+          if old not in text:
+              raise SystemExit("kitty fontconfig.py monospace marker not found")
+          text = text.replace(old, new, 1)
+          path.write_text(text)
+      PY
+    '';
+  });
   kittyWrapped = pkgs.writeShellScriptBin "kitty" ''
-    exec ${nixGLIntel}/bin/nixGLIntel ${pkgs.kitty}/bin/kitty "$@"
+    exec ${nixGLIntel}/bin/nixGLIntel ${kittyPatched}/bin/kitty "$@"
   '';
   neovimPython = pkgs.python3.withPackages (ps: with ps; [ pynvim ]);
 
@@ -345,6 +372,7 @@ in
         nixpkgs-unstable.noto-fonts-cjk-serif
         nixpkgs-unstable.material-icons
         nixpkgs-unstable.symbola
+        nixpkgs-unstable.nerd-fonts.symbols-only
         nixpkgs-unstable.nerd-fonts.jetbrains-mono
         nixpkgs-unstable.nerd-fonts.blex-mono
         nixpkgs-unstable.cascadia-code

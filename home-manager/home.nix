@@ -179,18 +179,13 @@ in
         fzf
         btop
         tmux
-        dtach
-        abduco
         wget
         atool
         curl
         file
-        # pkgs-unstable.neovim
         emacs-gtk
         vim-full
-        # sbcl
         killall
-        # yazi
         pkgs-unstable.yt-dlp
         zoxide
         nethogs
@@ -206,8 +201,6 @@ in
         rlwrap
         slides
         navi
-        # pkgs-unstable.ducker
-        # inputs.opencode.packages.x86_64-linux.default
         tokei
         xan
       ];
@@ -259,7 +252,7 @@ in
         # rustup
         # sccache
         # leptosfmt
-        # zig
+        zig
         # zls
         # livebook
         odin
@@ -283,9 +276,7 @@ in
         prettierd
         nil
         nixpkgs-fmt
-        pkgs-unstable.biome
         wabt
-
         pnpm
       ];
 

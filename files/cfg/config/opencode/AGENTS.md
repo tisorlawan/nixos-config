@@ -1,6 +1,5 @@
 ## TOOLs
 
-Use the fff MCP tools for all file search operations instead of default tools.
 Use **ast-grep** for code structure searches.
 
 ## Core Rules

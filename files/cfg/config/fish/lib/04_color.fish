@@ -68,35 +68,11 @@ function set_color_mode
     end
 
     set -gx COLOR $mode
-
-    echo $mode > ~/.color
-
-    update_starship_theme
-
-    echo "Color mode set to $mode"
+    $HOME/.scripts/set-color $mode
 end
 
 function update_starship_on_startup
-    set current_mode $COLOR
-
-    if test -z "$current_mode" -a -f ~/.color
-        set current_mode (cat ~/.color 2>/dev/null | string trim)
-    end
-
-    # Check if we have a stored mode and if starship config exists
-    if test -n "$current_mode" -a -f ~/.config/starship.toml
-        # Get modification time of ~/.color (if exists) and starship config
-        if test -f ~/.color
-            set color_file_time (stat -c %Y ~/.color 2>/dev/null || echo 0)
-            set starship_time (stat -c %Y ~/.config/starship.toml 2>/dev/null || echo 0)
-
-            if test $color_file_time -gt $starship_time
-                update_starship_theme >/dev/null
-            end
-        end
-    else
-        update_starship_theme >/dev/null
-    end
+    update_starship_theme >/dev/null
 end
 
 update_starship_on_startup

@@ -14,7 +14,7 @@
       "src": "https://github.com/folke/edgy.nvim"
     },
     "fff.nvim": {
-      "rev": "8092cfa3faf3471d29b3e11049e921d7e759d789",
+      "rev": "cf171e067d99a7ee1298bd3903f14a04addd8b39",
       "src": "https://github.com/dmtrKovalenko/fff.nvim"
     },
     "git-blame.nvim": {
@@ -43,7 +43,7 @@
       "src": "https://github.com/rebelot/kanagawa.nvim"
     },
     "leap.nvim": {
-      "rev": "d3641f9aa86e7460b14d9f4479e7454f88cc6b2d",
+      "rev": "d7f8ee64155b7790188f17a993390f32577cfb81",
       "src": "https://codeberg.org/andyg/leap.nvim"
     },
     "lsp-progress.nvim": {
@@ -55,7 +55,7 @@
       "src": "https://github.com/nvim-lualine/lualine.nvim"
     },
     "mini.icons": {
-      "rev": "520995f1d75da0e4cc901ee95080b1ff2bc46b94",
+      "rev": "284509648db084c5e40a31afa9abb9887c49e04a",
       "src": "https://github.com/echasnovski/mini.icons"
     },
     "multicursors.nvim": {
@@ -63,7 +63,7 @@
       "src": "https://github.com/smoka7/multicursors.nvim"
     },
     "neo-tree.nvim": {
-      "rev": "a3adf0a84554c9c4947991081fedc9750eac0652",
+      "rev": "1b4c40051f2623d0a7dcf19d5b74b997b97b0a9a",
       "src": "https://github.com/nvim-neo-tree/neo-tree.nvim"
     },
     "nightfox.nvim": {
@@ -77,10 +77,6 @@
     "nvim-autopairs": {
       "rev": "7b9923abad60b903ece7c52940e1321d39eccc79",
       "src": "https://github.com/windwp/nvim-autopairs"
-    },
-    "nvim-grey": {
-      "rev": "62d268a3e582b846f5c20a895a07bd7d563e9db9",
-      "src": "https://github.com/yorickpeterse/nvim-grey"
     },
     "nvim-treesitter": {
       "rev": "4916d6592ede8c07973490d9322f187e07dfefac",
@@ -141,10 +137,6 @@
     "vim-dirvish-dovish": {
       "rev": "04c77b6010f7e45e72b4d3c399c120d42f7c5d47",
       "src": "https://github.com/roginfarrer/vim-dirvish-dovish"
-    },
-    "vim-paper": {
-      "rev": "d8decc44569aec6247bae54d971e658bb8108399",
-      "src": "https://github.com/yorickpeterse/vim-paper"
     },
     "vim-repeat": {
       "rev": "65846025c15494983dafe5e3b46c8f88ab2e9635",

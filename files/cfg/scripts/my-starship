@@ -9,7 +9,7 @@ COLOR_MODE="$($SCRIPT_DIR/color-mode)"
 # Set colors based on mode
 if [ "$COLOR_MODE" = "light" ]; then
     DIR_COLOR="bold fg:25"        # Dark blue for light mode
-    GIT_COLOR="fg:28"             # Dark green for light mode
+    GIT_COLOR="fg:#006400"        # Dark green for light mode
     ACCENT_COLOR="fg:88"          # Dark red for light mode
 else
     DIR_COLOR="bold fg:69"        # Bright blue for dark mode

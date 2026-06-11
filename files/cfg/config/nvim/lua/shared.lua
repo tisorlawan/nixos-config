@@ -22,7 +22,7 @@ local filetype_config = {
   nix = { formatters = { 'nixpkgs_fmt' }, servers = { 'nil_ls' } },
   php = { formatters = { 'php_cs_fixer' }, servers = { 'phpactor', 'laravel_ls', 'html' } },
   python = { formatters = { 'ruff_format', 'ruff_organize_imports' }, servers = { 'pyright', 'ruff' } },
-  rust = { formatters = { 'rustfmt' }, servers = { 'rust_analyzer' } },
+  rust = { formatters = {}, servers = { 'rust_analyzer' } },
   sh = { formatters = { 'shfmt' }, servers = { 'bashls' } },
   typescript = { formatters = { 'oxfmt' }, servers = { 'ts_ls', 'eslint' } },
   typescriptreact = { formatters = { 'oxfmt' }, servers = { 'ts_ls', 'eslint' } },

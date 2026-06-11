@@ -3,6 +3,49 @@
 set -euo pipefail
 
 mode="${COLOR:-}"
+source="env"
+
+mode_from_kitty() {
+    local kitty_conf="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty.conf"
+    local include theme_path theme_name
+
+    [ -f "$kitty_conf" ] || return 1
+
+    include="$(awk '$1 == "include" { value = $2 } END { print value }' "$kitty_conf")"
+    [ -n "$include" ] || return 1
+
+    case "$include" in
+        /*) theme_path="$include" ;;
+        *) theme_path="$(dirname -- "$kitty_conf")/$include" ;;
+    esac
+
+    theme_name="$(basename -- "$theme_path" | tr '[:upper:]' '[:lower:]')"
+    case "$theme_name" in
+        light.conf) printf '%s\n' light ;;
+        current-theme.conf | nightfox.conf | dark.conf) printf '%s\n' dark ;;
+        *)
+            [ -f "$theme_path" ] || return 1
+            awk '
+                $1 == "background" {
+                    color = tolower($2)
+                    if (color ~ /^#?f/) print "light"
+                    else print "dark"
+                    found = 1
+                    exit
+                }
+                END { if (!found) exit 1 }
+            ' "$theme_path"
+            ;;
+    esac
+}
+
+if [ -z "$mode" ]; then
+    if mode="$(mode_from_kitty)"; then
+        source="kitty"
+    else
+        source="file"
+    fi
+fi
 
 if [ -z "$mode" ] && [ -f "$HOME/.color" ]; then
     mode="$(< "$HOME/.color")"
@@ -21,3 +64,7 @@ case "$mode" in
         printf '%s\n' dark
         ;;
 esac
+
+if [ "$source" = "kitty" ]; then
+    printf '%s\n' "$mode" >"$HOME/.color"
+fi

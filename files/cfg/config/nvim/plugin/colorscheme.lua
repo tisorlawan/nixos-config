@@ -19,22 +19,21 @@ vim.o.bg = get_color_config()
 vim.pack.add {
   'https://github.com/EdenEast/nightfox.nvim',
   'https://github.com/rebelot/kanagawa.nvim',
-  'https://github.com/yorickpeterse/nvim-grey',
 }
 
-vim.g.kami_transparent = true
-if vim.g.kami_transparent == nil then
-  vim.g.kami_transparent = true
+vim.g.transparent = true
+if vim.g.transparent == nil then
+  vim.g.transparent = true
 end
 
 local function setup_nightfox()
   local comment_fg = vim.o.bg == 'light' and '#ff9d00' or '#8afa1f'
   local comment_bg = vim.o.bg == 'light' and '#fff0cc' or '#173500'
-  local float_bg = vim.g.kami_transparent and 'NONE' or nil
+  local float_bg = vim.g.transparent and 'NONE' or nil
 
   require('nightfox').setup {
     options = {
-      transparent = vim.g.kami_transparent,
+      transparent = vim.g.transparent,
       modules = { leap = false },
     },
     groups = {
@@ -44,6 +43,10 @@ local function setup_nightfox()
         BlinkCmpDocBorder = { bg = float_bg },
         BlinkCmpMenu = { bg = float_bg },
         BlinkCmpMenuBorder = { bg = float_bg },
+        DiagnosticUnderlineError = { style = 'underline' },
+        DiagnosticUnderlineHint = { style = 'underline' },
+        DiagnosticUnderlineInfo = { style = 'underline' },
+        DiagnosticUnderlineWarn = { style = 'underline' },
         FloatBorder = { bg = float_bg },
         MatchParen = { style = 'bold,underline' },
         NormalFloat = { bg = float_bg },
@@ -63,20 +66,21 @@ setup_nightfox()
 
 local function setup_kanagawa()
   require('kanagawa').setup {
-    transparent = vim.g.kami_transparent,
+    transparent = vim.g.transparent,
   }
 end
 
 setup_kanagawa()
 
 if vim.o.bg == 'light' then
-  vim.cmd.colorscheme 'kami-light'
+  vim.cmd.colorscheme 'light'
 else
   vim.cmd.colorscheme 'nightfox'
+  -- vim.cmd.colorscheme 'black'
 end
 
 local function toggle_transparency()
-  vim.g.kami_transparent = not vim.g.kami_transparent
+  vim.g.transparent = not vim.g.transparent
   local current = vim.g.colors_name or ''
   if
     current:find '^nightfox'
@@ -92,12 +96,10 @@ local function toggle_transparency()
   elseif current:find '^kanagawa' then
     setup_kanagawa()
     vim.cmd.colorscheme(current)
-  elseif current:find '^kami' then
-    vim.cmd.colorscheme(current)
   else
     vim.cmd.colorscheme(current)
   end
-  vim.notify('Transparency: ' .. (vim.g.kami_transparent and 'on' or 'off'))
+  vim.notify('Transparency: ' .. (vim.g.transparent and 'on' or 'off'))
 end
 
 vim.keymap.set('n', '<leader>ut', toggle_transparency, { desc = 'Toggle transparency' })

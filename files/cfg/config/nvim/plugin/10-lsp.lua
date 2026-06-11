@@ -183,14 +183,15 @@ local function setup_lsp_keymaps(bufnr)
 end
 
 local function on_attach(client, bufnr)
-  if client.name == 'clangd' then
+  -- client.server_capabilities.semanticTokensProvider = nil
+  if client.name == 'clangd' or client.name == 'rust_analyzer' then
     client.server_capabilities.documentFormattingProvider = false
     client.server_capabilities.documentRangeFormattingProvider = false
+    -- client.server_capabilities.semanticTokensProvider = true
   end
 
   vim.bo[bufnr].omnifunc = 'v:lua.vim.lsp.omnifunc'
   setup_lsp_keymaps(bufnr)
-  -- client.server_capabilities.semanticTokensProvider = nil
 end
 
 local function setup_diagnostics()

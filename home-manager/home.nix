@@ -87,13 +87,8 @@ in
         starship
         atuin
         (callPackage ./alacritty { })
-        (callPackage ./ghostty {
-          inherit inputs;
-          nixpkgs-unstable = nixpkgs-unstable;
-        })
+        (callPackage ./ghostty { inherit inputs; })
         xterm
-        # (callPackage ./zed-editor { inherit inputs; nixpkgs-unstable = nixpkgs-unstable; })
-        # (callPackage ./zoom-us { nixpkgs-unstable = nixpkgs-unstable; })
         nushell
         fish
       ];
@@ -342,7 +337,6 @@ in
         (nixGLWrapped sioyek "sioyek")
         nautilus
         pcmanfm
-        # brave
         (nixGLWrapped pkgs-unstable.xournalpp "xournalpp")
         (nixGLWrapped telegram-desktop "telegram-desktop")
         (nixGLWrapped inlyne "inlyne")

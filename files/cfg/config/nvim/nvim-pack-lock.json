@@ -14,7 +14,7 @@
       "src": "https://github.com/folke/edgy.nvim"
     },
     "fff.nvim": {
-      "rev": "cf171e067d99a7ee1298bd3903f14a04addd8b39",
+      "rev": "733431e068746681cdf392101cadc5692d7f0d88",
       "src": "https://github.com/dmtrKovalenko/fff.nvim"
     },
     "git-blame.nvim": {

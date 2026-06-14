@@ -1,2 +1,0 @@
-- Dialog for brave download
-- Carapace config will be modified in other machine since it hardcode paths

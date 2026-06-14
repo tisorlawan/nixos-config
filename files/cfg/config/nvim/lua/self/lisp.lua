@@ -1,5 +1,25 @@
 local M = {}
 
+local repl_keymaps_augroup = vim.api.nvim_create_augroup('UserLispReplKeymaps', { clear = true })
+
+local function setup_repl_keymaps(buf)
+  if vim.b[buf].slimv_repl_buffer ~= 1 then
+    return
+  end
+
+  vim.keymap.set('i', '<C-h>', function()
+    vim.cmd.stopinsert()
+    vim.cmd.wincmd 'h'
+  end, { buffer = buf, desc = 'Move to left window' })
+end
+
+vim.api.nvim_create_autocmd({ 'BufEnter', 'FileType' }, {
+  group = repl_keymaps_augroup,
+  callback = function(event)
+    setup_repl_keymaps(event.buf)
+  end,
+})
+
 local function parinfer_plugin_dir()
   return vim.fs.joinpath(vim.fn.stdpath 'data', 'site', 'pack', 'core', 'opt', 'parinfer-rust')
 end
@@ -75,6 +95,7 @@ function M.setup_buffer(ft)
   vim.keymap.set('i', '<C-x><C-b>', function()
     feed_normal_keys ',b'
   end, { buffer = true, desc = 'Eval buffer' })
+  setup_repl_keymaps(0)
 end
 
 return M

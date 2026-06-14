@@ -391,7 +391,6 @@ in
 
       # Desktop GUI applications
       guiApplications = [
-        (callPackage ./../../pkgs/toptracker.nix { })
         neovide
         evince
         sioyek

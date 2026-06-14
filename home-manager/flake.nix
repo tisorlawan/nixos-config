@@ -13,15 +13,11 @@
       url = "github:outfoxxed/hy3/hl0.54.2";
       inputs.hyprland.follows = "hyprland";
     };
-    # zed-editor = {
-    #   url = "github:zed-industries/zed/v1.5.4";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
     ghostty.url = "github:ghostty-org/ghostty/v1.3.1";
     flake-utils.url = "github:numtide/flake-utils";
   };
 
-  outputs = { self, nixpkgs, nixpkgs-unstable, flake-utils, home-manager, ghostty, nixgl, ... }:
+  outputs = { self, nixpkgs, nixpkgs-unstable, flake-utils, home-manager, ... }:
     flake-utils.lib.eachDefaultSystem
       (system:
         let

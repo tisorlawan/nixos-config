@@ -6,3 +6,6 @@ history.txt
 repomix*
 files/cfg/config/starship.toml
 files/cfg/config/rclone/rclone.conf
+*~
+*#
+*.eld

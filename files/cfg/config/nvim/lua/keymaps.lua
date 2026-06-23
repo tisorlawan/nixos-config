@@ -62,12 +62,34 @@ end
 
 map('n', '<leader>w', '<cmd>update<CR>', { desc = 'Save file' })
 
-map('i', '<C-a>', '<C-o>^', { desc = 'Beginning of line' })
+-- Insert-mode Emacs/readline editing.
+-- blink.cmp owns C-b/C-f/C-p/C-n/C-k/C-e while its menu (or doc window) is
+-- open and falls back to these maps otherwise (see plugin/11-blink.lua).
+map('i', '<C-a>', '<Home>', { desc = 'Beginning of line' })
 map('i', '<C-e>', '<End>', { desc = 'End of line' })
-map('i', '<C-h>', '<Left>', { desc = 'Move left' })
-map('i', '<C-j>', '<Down>', { desc = 'Move down' })
-map('i', '<C-k>', '<Up>', { desc = 'Move up' })
-map('i', '<C-l>', '<Right>', { desc = 'Move right' })
+map('i', '<C-b>', '<Left>', { desc = 'Backward char' })
+map('i', '<C-f>', '<Right>', { desc = 'Forward char' })
+map('i', '<C-p>', '<Up>', { desc = 'Previous line' })
+map('i', '<C-n>', '<Down>', { desc = 'Next line' })
+map('i', '<M-b>', '<C-Left>', { desc = 'Backward word' })
+map('i', '<M-f>', '<C-Right>', { desc = 'Forward word' })
+map('i', '<M-m>', '<C-o>^', { desc = 'Back to indentation' })
+map('i', '<C-k>', function()
+  -- Emacs C-k: kill to end of line, but on an empty line remove the line.
+  if vim.api.nvim_get_current_line() == '' then
+    return '<C-o>dd'
+  end
+  return '<C-o>D'
+end, { expr = true, desc = 'Kill to end of line' })
+map('i', '<M-d>', '<C-o>dw', { desc = 'Kill word forward' })
+map('i', '<M-BS>', '<C-w>', { desc = 'Kill word backward' })
+map('i', '<C-y>', '<C-r>"', { desc = 'Yank (paste last kill)' })
+
+-- Undo (Emacs C-/, also C-_ which is what many terminals send for C-/).
+map('i', '<C-/>', '<C-o>u', { desc = 'Undo' })
+map('i', '<C-_>', '<C-o>u', { desc = 'Undo' })
+map('n', '<C-/>', 'u', { desc = 'Undo' })
+map('n', '<C-_>', 'u', { desc = 'Undo' })
 
 map('n', '<C-h>', '<C-w>h', { desc = 'Move left' })
 map('n', '<C-j>', '<C-w>j', { desc = 'Move down' })

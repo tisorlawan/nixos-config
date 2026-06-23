@@ -68,6 +68,8 @@ let
   legacySonarLint = legacyPkgs.sonarlint-ls;
 in
 {
+  nixpkgs.overlays = [ inputs.emacs-overlay.overlays.default ];
+
   home.username = "agung-b-sorlawan";
   home.homeDirectory = "/home/agung-b-sorlawan";
 
@@ -87,7 +89,7 @@ in
         starship
         atuin
         (callPackage ./alacritty { })
-        (callPackage ./ghostty { inherit inputs; })
+        # (callPackage ./ghostty { inherit inputs; })
         xterm
         nushell
         fish
@@ -105,7 +107,7 @@ in
         wl-clipboard
         dunst
         socat
-        quickshell
+        (nixGLWrapped quickshell "quickshell")
         waybar
         wf-recorder
         rofi
@@ -178,7 +180,7 @@ in
         atool
         curl
         file
-        emacs-gtk
+        pkgs.emacs-unstable-pgtk
         vim-full
         killall
         pkgs-unstable.yt-dlp

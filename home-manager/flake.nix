@@ -15,6 +15,10 @@
     };
     ghostty.url = "github:ghostty-org/ghostty/v1.3.1";
     flake-utils.url = "github:numtide/flake-utils";
+    emacs-overlay = {
+      url = "github:nix-community/emacs-overlay";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, flake-utils, home-manager, ... }:

@@ -20,7 +20,10 @@ require('blink.cmp').setup {
   keymap = {
     preset = 'super-tab',
     ['<C-space>'] = { 'show', 'show_documentation', 'hide_documentation' },
-    ['<C-e>'] = { 'hide', 'fallback' },
+    -- Disable C-e so it stays a pure end-of-line motion (see lua/keymaps.lua);
+    -- C-g cancels completion instead (reverts the preview and hides the menu).
+    ['<C-e>'] = {},
+    ['<C-g>'] = { 'cancel', 'fallback' },
     ['<Tab>'] = {
       function(cmp)
         if cmp.snippet_active() then

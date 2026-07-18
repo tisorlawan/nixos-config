@@ -1,5 +1,7 @@
 ;;; init.el --- Personal Emacs configuration -*- lexical-binding: t; -*-
 
+(add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory))
+
 (defun config ()
   (interactive)
   (find-file (expand-file-name "init.el" user-emacs-directory)))
@@ -26,8 +28,8 @@
 ;; @Appearance
 ;;; @fonts
 (defvar t/font-family "Berkeley Mono")
-(defvar t/font-size 130)
-(setq-default line-spacing 4)
+(defvar t/font-size 140)
+(setq-default line-spacing 5)
 
 (defun t/apply-font ()
   (let ((font-spec (font-spec :family t/font-family)))
@@ -40,9 +42,14 @@
                        `(font . ,(format "%s-%d"
                                          t/font-family
                                          (/ t/font-size 10))))))))
-
-
 (t/apply-font)
+(load-theme 'modus-vivendi-tinted)
+(setq-default scroll-margin 5)
+(setq-default line-spacing 4)
+(add-hook 'before-save-hook #'delete-trailing-whitespace)
+(setq whitespace-style '(face tabs trailing tab-mark)
+      whitespace-display-mappings '((tab-mark ?\t [?› ?\t] [?\\ ?\t])))
+(global-whitespace-mode 1)
 
 ;;; @window
 (menu-bar-mode -1)
@@ -54,8 +61,45 @@
       inhibit-startup-message t
       inhibit-startup-echo-area-message t
       initial-scratch-message nil)
-(fringe-mode 3)
-(fido-vertical-mode 1)
+(fringe-mode 0)
+(fido-mode 0)
+(electric-pair-mode 1)
 
-;;; @theme
-(load-theme 'modus-vivendi-tinted)
+
+;;; @git
+(use-package magit
+  :straight t
+  :commands magit-status
+  :custom
+  (magit-display-buffer-function #'magit-display-buffer-fullframe-status-v1))
+
+;;; @evil
+;; (use-package evil
+;;   :straight t
+;;   :config
+;;   (evil-mode 1)
+;;   (define-key evil-normal-state-map (kbd "SPC w") #'save-buffer)
+;; )
+
+;; (use-package evil-commentary
+;;   :straight t
+;;   :config
+;;   (evil-commentary-mode))
+
+
+;;; @minibuffer
+(use-package vertico
+  :straight t
+  :custom
+  (vertico-scroll-margin 0) ;; Different scroll margin
+  (vertico-count 6) ;; Show more candidates
+  (vertico-resize nil) ;; Grow and shrink the Vertico minibuffer
+  (vertico-cycle t) ;; Enable cycling for `vertico-next/previous'
+  :init
+  (vertico-mode))
+
+;;; @search
+;; (use-package consult :straight t)
+;; (use-package writeroom-mode :straight t)
+;; (setq-default indent-tabs-mode nil
+;;               tab-width 4)

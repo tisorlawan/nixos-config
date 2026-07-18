@@ -1,40 +1,3 @@
-## TOOLs
-
-Use **ast-grep** for code structure searches.
-
-## Core Rules
-
-- VERIFICATION: Prefer end-to-end validation.
-  - If blocked, state exactly what’s missing.
-
-## Ask Questions
-
-- Ask the minimum set of clarifying questions needed to avoid wrong work;
-- do not start implementing until the must-have questions are answered (or the user explicitly approves proceeding with stated assumptions).
-- Don't ask questions you can answer with a quick, low-risk discovery read (e.g., configs, existing patterns, docs).
-- Don't ask open-ended questions if a tight multiple-choice or yes/no would eliminate ambiguity faster.
-
-## CLI Tools
-
-## Git
-
-- Large reviews: git --no-pager diff.
-- DO NOT delete or rename files unexpectedly. Stop and ask.
-- NO AMEND unless explicitly requested.
-- DO NOT run git write commands (e.g., git add, git commit).
-  - If needed, provide the exact command and ask user to run it.
-- DO NOT create any PR, never use "gh" command that modify/write repository.
-
-## Critical Thinking
-
-- If unsure:
-  1. Read more code.
-  2. Still unclear → ask, with short options.
-- Conflicts: call out explicitly. Choose safer path.
-- Leave breadcrumb notes in-thread.
-
-================================================================================================
-
 > > EXTREMELY IMPORTANT <<<
 
 NO HACKS. The user is EXTREMELY concerned about code quality, much more so than
@@ -48,9 +11,7 @@ completed without hacks.
 To make it very clear:
 
 - DO NOT INTRODUCE HACKS IN THE CODEBASE.
-
 - DO NOT COMMIT CODE THAT COULD BREAK THINGS LATER.
-
 - DO NOT COMMIT PARTIAL SOLUTIONS OR WORKAROUNDS.
 
 THIS IS VERY IMPORTANT.
@@ -85,3 +46,32 @@ Core values:
 
 After every change you make, provide a clear, honest report on ANY change that
 you are not confident about and that could be considered a fragile hack.
+
+================================================================================================
+
+## TOOLs
+
+Use **ast-grep** for code structure searches.
+
+## Core Rules
+
+- Always answer in english, unless told otherwise.
+- VERIFICATION: Prefer end-to-end validation.
+  - If blocked, state exactly what’s missing.
+
+## Ask Questions
+
+- Ask the minimum set of clarifying questions needed to avoid wrong work;
+- do not start implementing until the must-have questions are answered (or the user explicitly approves proceeding with stated assumptions).
+- Don't ask questions you can answer with a quick, low-risk discovery read (e.g., configs, existing patterns, docs).
+- Don't ask open-ended questions if a tight multiple-choice or yes/no would eliminate ambiguity faster.
+
+## CLI Tools
+
+## Critical Thinking
+
+- If unsure:
+  1. Read more code.
+  2. Still unclear → ask, with short options.
+- Conflicts: call out explicitly. Choose safer path.
+- Leave breadcrumb notes in-thread.

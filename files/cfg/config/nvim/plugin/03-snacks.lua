@@ -130,10 +130,6 @@ map('n', '<leader>fc', function()
   }
 end, { desc = 'Colorschemes' })
 
-map('n', '<leader>gg', function() Snacks.lazygit() end, { desc = 'Lazygit' })
-
-map('n', '<leader>gf', function() Snacks.lazygit.log_file() end, { desc = 'Lazygit log file' })
-
 map('n', '<leader>gbl', function() Snacks.git.blame_line() end, { desc = 'Git Blame Line' })
 
 map('n', '<leader>d', function() Snacks.bufdelete() end, { desc = 'Hide buffer' })

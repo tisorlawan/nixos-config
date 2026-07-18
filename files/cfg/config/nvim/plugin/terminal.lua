@@ -28,21 +28,6 @@ toggleterm.setup {
   persist_mode = true,
 }
 
--- TODO: enable this only when we cant load snacks
-if false then
-  local lazygit = terms.Terminal:new {
-    cmd = 'lazygit',
-    direction = 'float',
-    id = 1001,
-    hidden = true,
-    float_border = 'single',
-  }
-
-  map({ 'n', 't' }, '<A-g>', function()
-    lazygit:toggle()
-  end, { desc = 'Toggle lazygit' })
-end
-
 local floaterm = terms.Terminal:new {
   direction = 'float',
   id = 1002,

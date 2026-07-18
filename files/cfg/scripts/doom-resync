@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# Force a clean Doom profile rebuild by purging the stale cached init files,
+# then running `doom sync`.  `doom sync` alone sometimes silently ignores
+# changes to $DOOMDIR/init.el (or packages.el) because Doom's incremental
+# profile cache in ~/.config/emacs/.local/etc/@/ isn't invalidated.  Clearing
+# those files plus the profile snapshot forces a full rebuild.
+#
+# Usage:
+#   doom-resync            # purge cache + sync
+#   doom-resync -u         # purge cache + sync with package updates
+#   doom-resync --help     # show this help
+
+set -euo pipefail
+
+emacs_local="$HOME/.config/emacs/.local"
+
+print_help() {
+  sed -n '2,12p' "$0" | sed 's/^# \{0,1\}//'
+  exit 0
+}
+
+for arg in "$@"; do
+  case "$arg" in
+    -h|--help) print_help ;;
+  esac
+done
+
+if [ ! -x "$HOME/.config/emacs/bin/doom" ]; then
+  printf 'error: doom not found at ~/.config/emacs/bin/doom\n' >&2
+  exit 1
+fi
+
+printf '==> Purging stale Doom profile cache:\n'
+rm -rfv "$emacs_local/etc/@/init.d" \
+        "$emacs_local/etc/@/init.31.0.el" \
+        "$emacs_local/cache/profiles._default.el"
+
+printf '\n==> Running doom sync %s\n' "${*:-}"
+exec "$HOME/.config/emacs/bin/doom" sync "$@"

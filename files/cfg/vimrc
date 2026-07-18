@@ -1,3 +1,8 @@
+" sudo apt install vim-gtk3 fzf fzy fd-find git coreutils findutils grep sed
+" mkdir -p ~/.local/bin
+" ln -s "$(command -v fdfind)" ~/.local/bin/fd
+" mkdir -p ~/.vim/undodir
+
 syntax on
 colorscheme habamax
 

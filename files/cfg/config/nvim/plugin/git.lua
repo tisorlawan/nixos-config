@@ -2,6 +2,8 @@ vim.pack.add {
   'https://github.com/f-person/git-blame.nvim',
   'https://github.com/wintermute-cell/gitignore.nvim',
   'https://github.com/lewis6991/gitsigns.nvim',
+  'https://github.com/NeogitOrg/neogit',
+  'https://github.com/sindrets/diffview.nvim',
 }
 
 local map = vim.keymap.set
@@ -107,3 +109,52 @@ require('gitsigns').setup {
     lmap('n', '<leader>ug', ':Gitsigns toggle_signs<cr>', 'Toggle git signs')
   end,
 }
+
+local neogit = require 'neogit'
+
+neogit.setup {
+  disable_hint = false,
+  disable_context_highlighting = false,
+  disable_signs = false,
+  auto_refresh = true,
+  kind = 'tab',
+  remember_settings = true,
+  use_per_project_settings = true,
+  graph_style = 'unicode',
+  commit_order = 'topo',
+  sort_branches = '-committerdate',
+  filewatcher = { enabled = true, interval = 1000 },
+  floating = {
+    relative = 'editor',
+    width = 0.8,
+    height = 0.7,
+    style = 'minimal',
+    border = 'single',
+  },
+  signs = {
+    section = { '>', 'v' },
+    item = { '>', 'v' },
+    hunk = { '', '' },
+  },
+  integrations = {
+    snacks = true,
+    diffview = true,
+  },
+  sections = {
+    untracked = { folded = false, hidden = false },
+    unstaged = { folded = false, hidden = false },
+    staged = { folded = false, hidden = false },
+    stashes = { folded = true, hidden = false },
+    unpulled_upstream = { folded = true, hidden = false },
+    unmerged_upstream = { folded = false, hidden = false },
+    recent = { folded = true, hidden = false },
+  },
+}
+
+map('n', '<leader>gg', function()
+  neogit.open()
+end, { desc = 'Neogit status' })
+
+map('n', '<leader>gf', function()
+  vim.cmd 'NeogitLog'
+end, { desc = 'Neogit log (current file)' })

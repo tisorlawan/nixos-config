@@ -1,3 +1,3 @@
 #!/bin/sh
 
-emacs --init-directory ~/.emacs-mini
+emacs --init-directory ~/probe/emacs

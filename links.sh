@@ -103,6 +103,7 @@ mkdir -p ~/.claude
 rm -rf ~/.claude/commands
 ln -srf cc/commands/ ~/.claude/commands
 ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.claude/CLAUDE.md
+ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.codex/AGENTS.md
 
 rm -rf ~/.config/opencode/AGENTS.md
 ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.config/opencode/AGENTS.md

@@ -48,6 +48,7 @@ let
     '';
   });
   kittyWrapped = pkgs.writeShellScriptBin "kitty" ''
+    "$HOME/.scripts/color-by-time" >/dev/null 2>&1 || true
     exec ${nixGLIntel}/bin/nixGLIntel ${kittyPatched}/bin/kitty "$@"
   '';
   neovimPython = pkgs.python3.withPackages (ps: with ps; [ pynvim ]);
@@ -200,6 +201,7 @@ in
         navi
         tokei
         xan
+        sniffnet
       ];
 
       # Core development toolchain and documentation
@@ -250,7 +252,7 @@ in
         # sccache
         # leptosfmt
         zig
-        # zls
+        zls
         # livebook
         odin
         stylua
@@ -353,6 +355,7 @@ in
       # Font families sourced from nixpkgs-unstable
       fontPackages = [
         pkgs.corefonts
+        aporetic
         nixpkgs-unstable.noto-fonts-color-emoji
         nixpkgs-unstable.noto-fonts-cjk-sans
         nixpkgs-unstable.source-code-pro
@@ -362,6 +365,7 @@ in
         nixpkgs-unstable.nerd-fonts.symbols-only
         nixpkgs-unstable.nerd-fonts.jetbrains-mono
         nixpkgs-unstable.nerd-fonts.blex-mono
+        nixpkgs-unstable.roboto-mono
         nixpkgs-unstable.cascadia-code
         nixpkgs-unstable.fira-code
       ];

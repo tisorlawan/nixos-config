@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+#
+# Switch color mode based on time of day in UTC+7 (Asia/Jakarta).
+#   Light: 05:30 - 17:30 (inclusive)
+#   Dark:  otherwise (Nightfox, via themes/current-theme.conf)
+#
+# Idempotent: only invokes set-color when the desired mode differs from the
+# current mode recorded in ~/.color. Safe to run on every kitty launch.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+COLOR_FILE="${HOME}/.color"
+TZ_NAME="Asia/Jakarta"
+
+LIGHT_START=$((5 * 60 + 30))
+LIGHT_END=$((17 * 60 + 30))
+
+print_usage() {
+    cat <<EOF
+Usage: $(basename "$0") [--force] [--print] [--verbose]
+
+Switch color mode based on time of day (UTC+7 / ${TZ_NAME}).
+  Light: 05:30-17:30, Dark: otherwise.
+
+Options:
+  --force    Apply set-color even if the current mode already matches.
+  --print    Print the desired mode (light|dark) and exit without applying.
+  --verbose  Print decisions to stderr; do not suppress set-color output.
+  -h, --help Show this help.
+EOF
+}
+
+force=0
+print_only=0
+verbose=0
+for arg in "$@"; do
+    case "$arg" in
+        --force) force=1 ;;
+        --print) print_only=1 ;;
+        --verbose) verbose=1 ;;
+        -h | --help) print_usage; exit 0 ;;
+        *) printf '%s: unknown option: %s\n' "$(basename "$0")" "$arg" >&2; exit 2 ;;
+    esac
+done
+
+log() {
+    [ "$verbose" -eq 1 ] || return 0
+    printf '%s: %s\n' "$(basename "$0")" "$*" >&2
+}
+
+desired_mode() {
+    local now h m minutes
+    now="$(TZ="$TZ_NAME" date '+%H:%M')"
+    h="${now%%:*}"
+    m="${now##*:}"
+    minutes=$((10#$h * 60 + 10#$m))
+    if [ "$minutes" -ge "$LIGHT_START" ] && [ "$minutes" -le "$LIGHT_END" ]; then
+        printf 'light'
+    else
+        printf 'dark'
+    fi
+}
+
+current_mode() {
+    [ -f "$COLOR_FILE" ] || return 1
+    local mode
+    mode="$(<"$COLOR_FILE")"
+    case "$mode" in
+        light | dark) printf '%s' "$mode" ;;
+        *) return 1 ;;
+    esac
+}
+
+desired="$(desired_mode)"
+
+if [ "$print_only" -eq 1 ]; then
+    printf '%s\n' "$desired"
+    exit 0
+fi
+
+current="$(current_mode 2>/dev/null || true)"
+
+if [ "$force" -eq 0 ] && [ "$current" = "$desired" ]; then
+    log "no change: current=${current:-<unset>} desired=$desired"
+    exit 0
+fi
+
+log "applying: current=${current:-<unset>} desired=$desired"
+if [ "$verbose" -eq 1 ]; then
+    "$SCRIPT_DIR/set-color" "$desired"
+else
+    "$SCRIPT_DIR/set-color" "$desired" >/dev/null 2>&1
+fi

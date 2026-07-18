@@ -1,21 +1,9 @@
 #!/bin/sh
 
-# Dynamic Starship config generator
-# This script reads COLOR env var or ~/.color file and generates appropriate config
-
-SCRIPT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
-COLOR_MODE="$($SCRIPT_DIR/color-mode)"
-
-# Set colors based on mode
-if [ "$COLOR_MODE" = "light" ]; then
-    DIR_COLOR="bold fg:25"        # Dark blue for light mode
-    GIT_COLOR="fg:#006400"        # Dark green for light mode
-    ACCENT_COLOR="fg:88"          # Dark red for light mode
-else
-    DIR_COLOR="bold fg:69"        # Bright blue for dark mode
-    GIT_COLOR="fg:82"             # Bright green for dark mode  
-    ACCENT_COLOR="fg:196"         # Bright red for dark mode
-fi
+# Let each terminal theme map these semantic ANSI colors appropriately.
+DIR_COLOR="bold blue"
+GIT_COLOR="green"
+ACCENT_COLOR="red"
 
 # Ensure config directory exists
 mkdir -p ~/.config
@@ -166,4 +154,4 @@ symbol = " "
 symbol = "ﯣ "
 EOF
 
-echo "Starship config updated for $COLOR_MODE mode"
+echo "Starship config updated"

@@ -8,6 +8,7 @@ if [ "$#" -ne 1 ]; then
 fi
 
 mode="$1"
+mode="dark"
 case "$mode" in
 dark | light) ;;
 *)
@@ -22,8 +23,8 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 KITTY_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty.conf"
 
 case "$mode" in
-  light) kitty_theme='themes/light.conf' ;;
-  dark) kitty_theme='themes/current-theme.conf' ;;
+light) kitty_theme='themes/light.conf' ;;
+dark) kitty_theme='themes/current-theme.conf' ;;
 esac
 
 if [ -f "$KITTY_CONF" ]; then

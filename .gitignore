@@ -9,3 +9,5 @@ files/cfg/config/rclone/rclone.conf
 *~
 *#
 *.eld
+*.gpg~
+secrets.org

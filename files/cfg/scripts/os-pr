@@ -9,8 +9,7 @@ cp ~/.local/share/opencode/auth.json "$EPHEMERAL_DIR/opencode/" 2>/dev/null || t
 export XDG_DATA_HOME="$EPHEMERAL_DIR"
 trap 'rm -rf "$EPHEMERAL_DIR"' EXIT
 
-# MODEL="anthropic/claude-sonnet-4-5-20250929"
-MODEL="opencode-go/deepseek-v4-pro"
+MODEL="opencode-go/grok-4.5"
 FORCE_SONNET=false
 
 # Handle flags and arguments

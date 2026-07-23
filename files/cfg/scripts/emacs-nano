@@ -1,0 +1,3 @@
+#!/bin/sh
+
+emacs --init-directory ~/Documents/tisorlawan/tiso-emacs

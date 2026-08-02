@@ -100,22 +100,30 @@ rm -rf ~/.doom.d/
 ln -srf files/cfg/doom.d/ ~/.doom.d
 
 mkdir -p ~/.claude
+mkdir -p ~/.codex
 rm -rf ~/.claude/commands
-ln -srf cc/commands/ ~/.claude/commands
-ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.claude/CLAUDE.md
-ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.codex/AGENTS.md
+ln -srf .agents/commands/ ~/.claude/commands
+rm -rf ~/.claude/skills
+ln -srf .agents/skills/ ~/.claude/skills
+ln -srf .agents/AGENTS.md ~/.claude/CLAUDE.md
+ln -srf .agents/AGENTS.md ~/.codex/AGENTS.md
 
+mkdir -p ~/.agents
+rm -rf ~/.agents/skills
+ln -srf .agents/skills/ ~/.agents/skills
+
+mkdir -p ~/.config/opencode
 rm -rf ~/.config/opencode/AGENTS.md
-ln -srf ./files/cfg/config/opencode/AGENTS.md ~/.config/opencode/AGENTS.md
+ln -srf .agents/AGENTS.md ~/.config/opencode/AGENTS.md
 
 rm -rf ~/.config/opencode/opencode.json
 ln -srf ./files/cfg/config/opencode/opencode.json ~/.config/opencode/opencode.json
 
 rm -rf ~/.config/opencode/skill
-ln -srf ./files/cfg/config/opencode/skill ~/.config/opencode/skill
+ln -srf .agents/skills/ ~/.config/opencode/skill
 
 rm -rf ~/.config/opencode/commands
-ln -srf cc/commands/ ~/.config/opencode/commands
+ln -srf .agents/commands/ ~/.config/opencode/commands
 
 rm -rf ~/.config/ghostty
 mkdir ~/.config/ghostty

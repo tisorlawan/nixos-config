@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sudo apt install locales git
+sudo apt install locales git less ripgrep
 sudo sed -i 's/^# \(en_US.UTF-8 UTF-8\)$/\1/' /etc/locale.gen
 sudo locale-gen en_US.UTF-8
 sudo update-locale LANG=en_US.UTF-8
@@ -8,10 +8,49 @@ sudo update-locale LANG=en_US.UTF-8
 cat >~/.bashrc <<'EOF'
 export NVIM_NOTTYFAST=1
 export PATH="$HOME/.local/bin:$PATH"
+export EDITOR=nvim
+export VISUAL="$EDITOR"
+export PAGER=less
+export GIT_PAGER="$PAGER"
+export LESS='-FRX'
+
+export GPG_TTY=$(tty)
+
+HISTCONTROL=ignoreboth:erasedups
+HISTSIZE=10000
+HISTFILESIZE=20000
+shopt -s histappend checkwinsize
+
 alias ls='ls --color=auto'
+alias l='ls'
 alias ll='ls -alF'
 alias la='ls -A'
 alias grep='grep --color=auto'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias c='clear'
+alias v='nvim'
+alias vi='nvim'
+alias vim='nvim'
+alias g='git'
+alias gs='git status --short --branch'
+alias gd='git diff'
+alias gl='git log --oneline --graph --decorate'
+alias df='df -h'
+alias free='free -h'
+alias a='source .venv/bin/activate'
+alias p='python'
+
+__git_prompt() {
+  local branch
+  branch=$(git branch --show-current 2>/dev/null) || return
+  [[ -n $branch ]] || branch=$(git rev-parse --short HEAD 2>/dev/null) || return
+
+  [[ -n $(git status --porcelain 2>/dev/null) ]] && branch+='*'
+  printf ' (%s)' "$branch"
+}
+
+PS1='\[\e[1;32m\]\u@\h\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\[\e[1;33m\]$(__git_prompt)\[\e[0m\]\$ '
 EOF
 
 cat >~/.tmux.conf <<'EOF'

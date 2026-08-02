@@ -11,9 +11,7 @@ trap 'rm -rf "$EPHEMERAL_DIR"' EXIT
 
 DIFF_TARGET="--cached"
 CONTEXT="the currently staged changes. IMPORTANT: Ignore any unstaged changes."
-# MODEL="anthropic/claude-sonnet-4-5-20250929"
-# MODEL="opencode-go/minimax-m2.5"
-MODEL="opencode-go/grok-4.5"
+MODEL="openai/gpt-5.6-luna"
 FORCE_SONNET=false
 
 # Handle flags and arguments
@@ -40,7 +38,13 @@ fi
 
 PROMPT=$(
   cat <<EOF
-Please generate a commit message for $CONTEXT
+CRITICAL INSTRUCTIONS:
+- DO NOT ask questions. DO NOT ask for confirmation.
+- Output ONLY the commit message. No conversational text, no markdown code blocks.
+- Just the raw commit message text, nothing else.
+
+YOUR TASK:
+Generate a commit message for $CONTEXT
 
 Steps:
 1. Run \`git diff $DIFF_TARGET\` to inspect the changes.
@@ -52,14 +56,11 @@ EOF
 )
 
 if [ "$FORCE_SONNET" = true ]; then
-  echo 'opencode run --model anthropic/claude-sonnet-4-5-20250929 <prompt>'
   opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
 else
-  echo "opencode run --model $MODEL <prompt>"
-  OUTPUT=$(opencode run --model "$MODEL" "$PROMPT" || true)
+  OUTPUT=$(opencode run --model "$MODEL" --variant high "$PROMPT" || true)
 
   if [[ -z "$OUTPUT" ]]; then
-    echo 'opencode run --model anthropic/claude-sonnet-4-5-20250929 <prompt>'
     opencode run --model anthropic/claude-sonnet-4-5 "$PROMPT"
   else
     echo "$OUTPUT"

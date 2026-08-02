@@ -247,7 +247,6 @@ in
         nodejs_22
         typescript-language-server
         oxlint
-        bun
         # rustup
         # sccache
         # leptosfmt

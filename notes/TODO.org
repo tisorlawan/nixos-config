@@ -1,0 +1,328 @@
+* 27 July 2026
+** GLChat
+*** DONE fix(BE): stop anonymized attachments from OOM-killing and stalling pods https://github.com/GDP-ADMIN/glchat/pull/13273
+** NER
+*** DONE fix(gllm-privacy): resolve cryptography CVE (https://github.com/GDP-ADMIN/gl-sdk/pull/5845) [issue: update cryptography https://chat.google.com/room/AAAAvnC4Qyg/gQf5rYLQfWI/9DlW7I-UEo8?cls=10]
+*** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
+*** TODO Merek Dagang Entities
+*** TODO Investigate https://github.com/GDP-ADMIN/glchat/issues/11698
+** Model Accuracy Benchmarking
+*** TODO Benchmark qwen3.8-27B
+*** TODO Benchmark qwen3.8-max
+*** TODO Benchmark new deepseek
+LLM
+Previous version of deepseek-v4-flash
++----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
+| Model Type           | Cost/25K | T1CU | Lat1CU  | T100CU | Lat100CU  | Botanica | Finstat | Hermes | Korika | Vowel  | Accuracy |
++----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
+| Reasoning            | $101.85  | 0.68 | 11.55   | 0.89   | 14.20     | 89.00%   | 96.15%  | 86.27% | 86.00% | 76.27% | 86.74%   |
+| Instruction Following| $101.85  | 0.68 | 11.55   | 0.89   | 14.20     | 94.00%   | 96.15%  | 80.39% | 86.00% | 76.27% | 86.56%   |
++----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
+New version of deepseek-v4-flash (using DeepSeek-V4-Flash-0731) (source:  https://api-docs.deepseek.com/)
++----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
+| Model Type           | Cost/25K | T1CU | Lat1CU  | T100CU | Lat100CU  | Botanica | Finstat | Hermes | Korika | Vowel  | Accuracy |
++----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
+| Reasoning            | $101.85  | 0.45 | 12.26   | 0.64   | 12.48     | 96.00%   | 98.08%  | 87.25% | 82.00% | 93.22% | 91.31%   |
+| Instruction Following| $101.85  | 0.45 | 12.26   | 0.64   | 12.48     | 95.00%   | 98.08%  | 92.16% | 78.00% | 86.44% | 89.93%%  |
++----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
+
+SLM
+Previous version of deepseek-v4-flash
++-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
+| SLM               | Provider | Model Type           | Licensing   | Cost/25K | T1CU | Lat1  | T100CU | Lat100  | Title Gen | Guardrail| GLChat Router | Query Transformer | Total |
++-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
+| deepseek-v4-flash | deepseek | Instruction Following| Open Source | $101.85  | 0.68 | 11.55 | 0.89   | 14.20   | 91.50%    | 94.00%   | 99.00%        | 98.47%            | 95.74%|
++-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
+New version of deepseek-v4-flash (using DeepSeek-V4-Flash-0731) (source:  https://api-docs.deepseek.com/)
++-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
+| SLM               | Provider | Model Type           | Licensing   | Cost/25K | T1CU | Lat1  | T100CU | Lat100  | Title Gen | Guardrail| GLChat Router | Query Transformer | Total |
++-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
+| deepseek-v4-flash | deepseek | Instruction Following| Open Source | $101.85  | 0.45 | 12.26 | 0.64   | 12.48   | 93.50%    | 98.00%   | 98.00%        | 99.23%            | 97.18%|
++-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
+
+
+AIP
+Previous version of deepseek-v4-flash
++-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+--------+
+| AIP               | Provider | Model Type            | Licensing   | Cost/1 | Cost/25K | T1CU | Lat1  | T100CU | Lat100 | Acc.   |
++-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+--------+
+| deepseek-v4-flash | deepseek | Reasoning             | Open Source | $0.00  | $101.85  | 0.68 | 11.55 | 0.89   | 14.20  | 62.32% |
+| deepseek-v4-flash | deepseek | Instruction Following | Open Source | $0.00  | $101.85  | 0.68 | 11.55 | 0.89   | 14.20  | 91.30% |
++-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+--------+
+New version of deepseek-v4-flash (using DeepSeek-V4-Flash-0731) (source:  https://api-docs.deepseek.com/)
++-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+---------+
+| AIP               | Provider | Model Type            | Licensing   | Cost/1 | Cost/25K | T1CU | Lat1  | T100CU | Lat100 | Acc.    |
++-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+---------+
+| deepseek-v4-flash | deepseek | Reasoning             | Open Source | $0.00  | $101.85  | 0.45 | 12.26 | 0.64   | 12.48  | 100.00% |
+| deepseek-v4-flash | deepseek | Instruction Following | Open Source | $0.00  | $101.85  | 0.45 | 12.26 | 0.64   | 12.48  | 98.55%  |
++-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+---------+
+
+
+
+*** DONE Self managed add latency troughput https://chat.google.com/room/AAQAAFd5mQk/loDiy7wDDMs/1Pp5Xhl5b4g?cls=10
++------------------+-------------+----------------+
+| Model            | MTP Latency | MTP Throughput |
++------------------+-------------+----------------+
+| Gemma 4 31B      | 16.92s      | 53 tok/s       |
+| Gemma 4 26B-A4B  | 7.78s       | 124 tok/s      |
++------------------+-------------+----------------+
+Source: https://docs.google.com/document/d/10wss3i1TxspZ-VTtdtBCP8qsJFTahr4uCyb7RKOqaeQ/edit?tab=t.0#heading=h.7s4sg4hrvfc3
+
+*** DONE Minta tolong DD cek gpt 5.6 terra
+True
+- Botanica
+    - before: 87.00
+    - after: 90.00
+- Djarum
+    - before: 89.22
+    - after: 87.25
+- Finstat
+    - bfore: N/A
+    - after: 96.15
+- Vowel
+    - before: 89.83
+    - after: 91.53
+- Korika
+    - before: N/A
+    - after: 86.00
+
+False
+- Botanica
+    - before: 95.00
+    - after : 95.00
+- Djarum
+    - before: 84.31
+    - after: 89.22
+- Finstat
+    - bfore: N/A
+    - after: 98.08
+- Vowel
+    - before: 83.05
+    - after: 84.75
+- Korika
+    - before: N/A
+    - after: 76.00
+
++-----------+----------+---------+----------+
+| Reasoning | Project  | Before  | After    |
++-----------+----------+---------+----------+
+| True      | Botanica | 95.00%  | 95.00%   |
+| True      | Djarum   | 89.22%  | 87.25%   |
+| True      | Finstat  | N/A     | 96.15%   |
+| True      | Vowel    | 89.83%  | 91.53%   |
+| True      | Korika   | N/A     | 86.00%   |
++-----------+----------+---------+----------+
+| False     | Botanica | 87.00%  | 90.00%   |
+| False     | Djarum   | 84.31%  | 89.21%   |
+| False     | Finstat  | N/A     | 98.08%   |
+| False     | Vowel    | 83.05%  | 84.75%   |
+| False     | Korika   | N/A     | 76.00%   |
++-----------+----------+---------+----------+
++-----------+-------------+------------+----------+
+| Reasoning | Before Avg. | After Avg. | Change   |
++-----------+-------------+------------+----------+
+| True      |
+| False     |
++-----------+-------------+------------+----------+
+*** TODO untuk yg size 12B minta DSO mesinnya apa (https://chat.google.com/room/AAQAAFd5mQk/loDiy7wDDMs/PpRDG3OEAW8?cls=10)
+*** DONE fix: update finstat formula (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/939)
+*** DONE feat: add openrouter parameters (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/941)
+*** DONE fix: add prompt templates (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/949)
+*** DONE fix(auth): bypass OAuth for local development https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/950
+*** TODO cari best opensource model MM
+*** TODO cari cost optimized model MM
+*** TODO rerun deepseek v4 pro
+*** TODO rerun gpt 5.6 di AIP
+*** TODO API Key GLChat Beta
+*** TODO Explore and give recommendation for provider replacement
+*** TODO Investigate why GPT Luna performance is not showing in the RAG etc leaderboard
+*** TODO <PA Item> Refactor MAB
+*** TODO [BACKLOG] calibrate semua benchmark
+*** DONE fix(financial_statement): use evaluator scores for result fields https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/930
+** GLLM Evals
+*** Review PRs
+**** TODO https://github.com/GDP-ADMIN/gl-sdk/pull/5778
+** GLLM Privacy
+*** TODO feat(gllm-privacy): support configurable URL-ignored entities https://github.com/GDP-ADMIN/gl-sdk/pull/5431
+*** DONE perf(gllm-privacy): optimize token-aware text chunking https://github.com/GDP-ADMIN/gl-sdk/pull/5863
+*** DONE perf(gllm-privacy): replace spaCy with model-free context analysis https://github.com/GDP-ADMIN/gl-sdk/pull/5873
+** Others
+*** TODO Sentry migration stuff https://chat.google.com/room/AAAAbEcfi_E/Hcdhg1_7xTQ/Hcdhg1_7xTQ?cls=10
+*** TODO Ask DSO regarding https://chat.google.com/room/AAQAYdGYTVg/XUeCOgqKeys/xlKEB5ozVRE?cls=10
+
+* 27 July 2026
+** DONE Regarding 20jt quota of MSCDX
+*** DONE Reset to 40jt
+** Meemo Summarization
+*** DONE Fix Trivy errors https://github.com/GDP-ADMIN/services-llm-service/actions/runs/29938212239/job/88985197403?pr=33
+*** DONE fix: restore missing app.chat.aip_usage (https://github.com/GDP-ADMIN/services-llm-service/pull/36)
+*** Review PRs:
+**** DONE https://github.com/GDP-ADMIN/services-llm-service/pull/33 (feat(ci): GitHub Actions pipeline — build → ECR → prosa-infra overlays → ArgoCD)
+** NER
+*** DONE Pre-label current NER data with additional BRAND_NAME
+*** DONE refactor: migrate bosa telemetry -> gl-observability (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/204)
+*** DONE Help debugging (HTTPError: 403 Client Error: Forbidden for url: https://ner-api.catapa.com/analyze) https://github.com/GDP-ADMIN/glchat/issues/12957
+** Model Accuracy Benchmarking
+*** DONE feat: add gl-observability (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/900)
+*** DONE Re-evaluate LLM Weekly Recommendation
+**** DONE re-benchmark performance of deepseek v4
+**** DONE benchmark performance claude sonnet 5
+*** Refactor
+**** refactor: remove pipeline from visual-qa benchmarks
+**** refactor: remove pipeline stuff from de_pm_catapa benchmark
+**** chore: reduce the number of celery workers
+**** chore: update glchat beta URL to use BE directlyrefactor: make korika chat benchmark uses direct control flow
+*** DONE Model Recommendation
+**** Create GPU detail requirement for generation models (https://docs.google.com/spreadsheets/d/158elBCQE3nOCehuCQHUd0O6jddHnwIUHw3sMmhFiV00/edit?gid=0#gid=0)
+**** Update TOP 10 LLM Model - Price to Performances
+*** DONE change korikachat beta URL (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/908)
+- staging: https://stag-gbe-gdplabs-gen-ai-starter.obrol.id/
+- beta: https://beta-gbe-gdplabs-gen-ai-starter.obrol.id/
+- prod: https://glchat-api.glair.ai/
+*** PR Reviews
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/875
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/882
+** Others
+*** DONE Ask Meemo Summarization PII config and CI/CD (CI CD Done)
+
+* 20 July 2026
+** Model Accuracy Benchmarking
+*** DONE fix: start flower from correct directory (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/881)
+*** DONE Benchmark Gemini 3.5 Flash Lite and Gemini 3.6 Flash (Result: https://docs.google.com/spreadsheets/d/1bY7DN8Wu68fQ-jSyr2wbM8w-fo3GQjOUbgzVYyBaFYw/edit?gid=999523196#gid=999523196&range=A1:A2)
+**** DONE feat: gemini 3.x flash reasoning config (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/883)
+*** DONE refactor: rename good/bad to PASS/FAIL https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/885
+*** DONE feat: remove pipeline from botanica and replace benchmark orchestrator (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/877)
+*** DONE refactor: make korika chat benchmark uses direct control flow https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/890
+*** DONE fix: simplify retries, validate PromptConfig, and surface GLChat HTTP errors (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/872)
+*** DONE fix(performance-benchmark): prevent user provided API Key to be overwritten (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/865)
+*** DONE fix(glchat-router): map router input to source (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/896)
+** GLLM Evals
+*** DONE docs(gllm-evals): use aip data analysis chart as example https://github.com/GDP-ADMIN/gl-sdk/pull/5544
+- chat: https://chat.google.com/room/AAQAE-LjMvQ/_5IJyGwcRjA/CIahuY6qEUE?cls=10
+*** PR Reviews
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/5542
+**** DONE https://github.com/gdplabs/gen-ai-sdk-cookbook/pull/86
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/5491
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/5521
+
+* 13 July 2026
+** Model Accuracy Benchmarking
+*** DONE <PA Item> Experiment DSpark (DSPark Exploration)
+**** Original Issue: https://github.com/GDP-ADMIN/dummy-gl-sdk/issues/2605
+**** New Issue     : https://github.com/GDP-ADMIN/dummy-gl-sdk/issues/2620
+**** DONE Continue DSpark exploration
+***** Resources: https://venturebeat.com/orchestration/deepseek-open-sources-dspark-a-new-framework-to-speed-up-llm-inference-by-up-to-85
+**** DONE Create DSPark exploration report https://docs.google.com/document/d/10wss3i1TxspZ-VTtdtBCP8qsJFTahr4uCyb7RKOqaeQ/edit?tab=t.avsucxh08ywa#heading=h.bq5expggzhm6
+**** DONE Benchmark RAG & QT with DSpark vs MTP vs Standard
+*** DONE Performance benchmark Luna
+*** DONE fix(query-transformer): update removed vector retriever API (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/854)
+*** DONE fix(performance-benchmark): prevent user provided API Key to be overwritten (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/865)
+*** DONE fix(performance-benchmark): log error message on benchmark error (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/864)
+*** PR Reviews
+**** https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/858
+**** https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/861
+
+* 6 July 2026
+** NER
+*** DONE fix: bound document processing memory https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/199/changes
+*** DONE feat(gllm-privacy): add option to disable arena memory https://github.com/GDP-ADMIN/gl-sdk/pull/5347
+*** DONE fix(gllm-privacy): fix phone number entity false positive (https://github.com/GDP-ADMIN/gl-sdk/pull/5357) (Issue: https://github.com/GDP-ADMIN/glchat/issues/12366)
+*** DONE fix: upgrade gllm-privacy to fix phone false positives and reduce memory
+** Model Accuracy Benchmarking
+*** PR Reviews
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/843
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/844
+** GLLM Evals
+*** DONE Continue Evals Multimodal PR (https://github.com/GDP-ADMIN/gl-sdk/pull/4504)
+*** DONE fix(gllm-evals): resolve Windows file URI paths correctly (https://github.com/GDP-ADMIN/gl-sdk/pull/5310)
+*** DONE tests(gllm-evals): fix gllm-evals multimodal windows path tests (https://github.com/GDP-ADMIN/gl-sdk/pull/5316)
+*** PR Reviews
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/5244
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/5213
+** Other
+*** DONE Create H1 2026 PA
+*** DONE Agentic Engineering Loop https://github.com/GDP-ADMIN/agentic-engineering-workflows/blob/main/docs/guide/installation.md
+** Technology
+*** DONE https://bun.com/blog/bun-in-rust
+
+* 29 June 2026
+** NER
+*** DONE Create implementation/architecture plan for NER
+*** DONE Create queueing to limit memory usage
+** Model Accuracy Benchmarking
+*** Review PRs
+**** DONE chore(aip_data_analysis_agent): remove remote execution path, stabilize local-only https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/830
+** GLLM Evals
+*** Review PRs
+**** DONE spec(gllm-evals): multi-turn metrics https://github.com/GDP-ADMIN/gl-sdk/pull/4503
+**** DONE feat(gllm-evals): rewire LangChain batch invocation https://github.com/GDP-ADMIN/gl-sdk/pull/4854
+** Meemo
+*** DONE Debug issue https://github.com/GDP-ADMIN/glchat/issues/11991
+*** DONE fix: added en-core-web-sm as direct dependency https://github.com/GDP-ADMIN/services-llm-service/pull/32
+**  Other
+*** Vocal
+**** DONE Update FSD (https://chat.google.com/dm/sA2JgyAAAAE/07ZiOiZYNKc/07ZiOiZYNKc?cls=10)
+*** MSCDX
+**** DONE Setup 20M quota for July
+*** Fix leaked secret (rotating and removing it from github history)
+*** DONE Grading [AIE] Practical Test Richardy Lobo Sapan
+
+* 22 June 2026
+** Model Accuracy Benchmarking
+*** DONE Running Catapa DE PM and AIP v2 Benchmarks (https://docs.google.com/spreadsheets/d/1bY7DN8Wu68fQ-jSyr2wbM8w-fo3GQjOUbgzVYyBaFYw/edit?gid=2117900059#gid=2117900059&range=A1:A2)
+*** DONE feat: 1 CU Latency + Upgrade GLLM Inference, Evals, Pipeline, Core https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/791
+** NER
+*** DONE Investigate OOM (https://docs.google.com/document/d/1RlGy5QZhSp7eR40R_PGJ_Ah5F7aUYoUTlYrsCn1a_cQ/edit?tab=t.0#heading=h.46djz5fnkyyf)
+** GLLM Evals
+*** Review PRs
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/5030
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/5052
+** GLLM Privacy
+*** DONE chore(gllm-privacy): relax starlette version requirement (https://github.com/GDP-ADMIN/gl-sdk/pull/5033)
+*** DONE fix(gllm-privacy): preserve project and organization names inside URLs (https://github.com/GDP-ADMIN/gl-sdk/pull/5123)
+** DONE Other
+*** DONE On boarding intern for MAB
+*** MSCDX
+**** DONE feat: add aspect sentiment debug (https://github.com/GDP-ADMIN/mscdx-api/pull/31)
+**** DONE Setup quota for testing
+#+BEGIN_SRC bash
+set usage_limit:JVHugTXgIDFLSaZnkaBzEUlUDranLDGo 41104555
+#+END_SRC
+**** DONE Create docs explaining OOT data
+**** DONE MSCDX Add information about remaining quota https://github.com/GDP-ADMIN/dummy-gl-sdk/issues/2467 (PR: https://github.com/GDP-ADMIN/mscdx-api/pull/32)
+
+* 15 june 2026
+** glchat
+*** done fix: prevent project entities detected inside a url (https://github.com/gdp-admin/glchat/pull/11655)
+** model accuracy benchmarking
+*** done fix: reasoning parameter leak (https://github.com/gdp-admin/model-accuracy-benchmarking/pull/802)
+*** done feat: add zai thinking config (https://github.com/gdp-admin/model-accuracy-benchmarking/pull/804)
+*** done run benchmarks https://docs.google.com/spreadsheets/d/1by7dn8wu68fq-jsyr2wbm8w-fo3gqjoubgzvyybafyw/edit?gid=1339329401#gid=1339329401
+*** done run guardrail benchmarks for finetuned model
+*** todo fix the leaderboard
+**** the source should be the raw leaderboard
+**** latency per task instead of direct model
+*** done review prs
+**** https://github.com/gdp-admin/model-accuracy-benchmarking/pull/805
+** gllm privacy & ner
+*** done fix(gllm-privacy): suppress project names detected inside scheme-less urls (https://github.com/gdp-admin/gl-sdk/pull/4982)
+**** issue: https://github.com/gdp-admin/glchat/issues/11628
+*** done [pr] chore(deps): update fastapi and privacy binary stack (https://github.com/gdp-admin/gdplabs-ner-api/pull/194)
+*** done chore(deps): update fastapi and privacy binary stack (https://github.com/gdp-admin/gdplabs-ner-api/pull/194)
+*** done fix: cryptography cve (ghsa-537c-gmf6-5ccf) (https://github.com/gdp-admin/gl-sdk/pull/4926)
+** gllm evals
+*** todo multimodal implementation
+*** done review prs
+**** https://github.com/gdp-admin/gl-sdk/pull/4744
+**** https://github.com/gdp-admin/gl-sdk/pull/4914
+**** https://github.com/gdplabs/gen-ai-sdk-cookbook/pull/66
+**** https://github.com/gdp-admin/gl-sdk/pull/4959
+**** https://github.com/gdp-admin/gl-sdk/pull/4854
+** other
+*** done [regetch skk] send patch for bca
+  - email           : https://mail.google.com/mail/u/0/#inbox/fmfcgzqgmcwfndxhctcrtppsvxhlqzlx
+  - new node version: v24.15.0
+  - build time      : 20260614-1828
+  - upload location : https://drive.google.com/drive/folders/119dlal9i3_br7qqewd-apkcuj_pm4c9x
+*** done review vocal fsd https://docs.google.com/document/d/1qnxfnnzqb2hic2lfv3v0x4teuy9mp4g3/edit
+*** done submit interview assesment for candidate

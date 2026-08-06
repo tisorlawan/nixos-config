@@ -1,0 +1,125 @@
+* Model Accuracy Benchmark (MAB)
+gh auth login --hostname github.com --web --git-protocol ssh --scopes repo,workflow
+
+docker run --rm --user 0 -v "$PWD":/workdir alpine sh -c "rm -rf /workdir/.cache"
+docker run --rm --user 0 -v "$PWD":/workdir alpine sh -c "rm -rf /workdir/models"
+
+/turn-azure-glair on gl-accuracy-benchmark-vllm
+/turn-azure-glair on glair-gl-vllm-opensource-1
+/turn-azure-glair on glair-gl-vllm-opensource-2
+
+/turn-azure-glair off gl-accuracy-benchmark-vllm
+/turn-azure-glair off glair-gl-vllm-opensource-1
+/turn-azure-glair off glair-gl-vllm-opensource-2
+
+/gcb_run gdp-labs:model-accuracy-benchmarking-push-model-accuracy-benchmark-stag --branch=f/1cu-latency-ttft --region=asia-southeast2
+/gcb_run gdp-labs:model-accuracy-benchmarking-deployment-kubernetes-stag --branch=f/1cu-latency-ttft --region=asia-southeast2 --substitutions='{"_COMMIT_ID":"fec474c","_MODULE":"model-accuracy-benchmark"}'
+
+/turn-gl-project enable-schedule model-accuracy-benchmarking-prod
+/turn-gl-project disable-schedule model-accuracy-benchmarking-prod
+
+/turn-azure-glair disable-schedule gl-accuracy-benchmark-vllm
+/turn-azure-glair disable-schedule glair-gl-vllm-opensource-1
+/turn-azure-glair disable-schedule glair-gl-vllm-opensource-2
+
+/turn-gl-project on model-accuracy-benchmarking-stag
+/turn-gl-project on model-accuracy-benchmarking-prod
+/turn-gl-project off model-accuracy-benchmarking-prod
+
+username=user.account
+password=Kurupuk!23
+
+** MLFlow MAB
+/turn status aws ec2 gl-mlflow-exploration 287109785743 ap-southeast-3
+/turn on aws ec2 gl-mlflow-exploration 287109785743 ap-southeast-3
+/turn off aws ec2 gl-mlflow-exploration 287109785743 ap-southeast-3
+
+https://mlflow-exploration.obrol.id/
+
+* NER
+Check image: https://grafana-kube-explore.obrol.id/d/e1f01b79-dc3c-4849-976f-1c9d77852bc9/kubernetes-container-images-apps?orgId=1&from=now-15m&to=now&timezone=browser&var-namespace=gdplabs-ner-api-prod
+Notes: https://docs.google.com/document/d/1HpsrvsHW31Cg3RdrzlMpLqprbuHEdfzALEGqxOKc8QE/edit?usp=meetingnotes
+
+** NER Exploration/benchmark
+tsh kube login gl-exploration-eks
+kubectl exec -it benchmark-client-pod -n gdplabs-ner-api-benchmark -- sh
+cd benchmark/
+./run.sh http://gdplabs-ner-api-cpu-service:8000/anonymize --debug
+python eval-bio.py --analyze-url http://gdplabs-ner-api-cpu-service:8000/analyze --result-dir result --test-file ./test-data.txt
+
+kubectl cp eval-bio.py benchmark-client-pod:/home/k6/benchmark/tt -n gdplabs-ner-api-benchmark
+
+kubectl get cm gdplabs-ner-api-cpu-public-variables -n gdplabs-ner-api-benchmark -o yaml
+kubectl edit -n gdplabs-ner-api-benchmark cm gdplabs-ner-api-cpu-public-variables
+kubectl rollout restart deploy/gdplabs-ner-api-cpu -n gdplabs-ner-api-benchmark
+
+kubectl get pods -n gdplabs-ner-api-benchmark -l app=gdplabs-ner-api-cpu --sort-by=.status.startTime
+export POD=gdplabs-ner-api-cpu-5556795c44-b6rvc
+kubectl logs $POD -n gdplabs-ner-api-benchmark
+
+/turn-gl-project on gdplabs-ner-api-benchmark
+
+* GCB Run
+/gcb_run gdp-labs:gdplabs-ner-api-push-gdplabs-ner-api-stag --branch=main --region=asia-southeast2
+/gcb_run gdp-labs:gdplabs-ner-api-push-gdplabs-ner-api-stag --branch=e/migrate-to-uv --region=asia-southeast2
+/gcb_run gdp-labs:gdplabs-ner-api-push-gdplabs-ner-api-stag --branch=gpu --region=asia-southeast2
+/gcb_run gdp-labs:gen-ai-template-push-glchat-ui-dev3 --branch=main --region=asia-southeast2 --substitutions='{"_ENVIRONMENT":"dev3","_MODULE":"glchat-ui"}
+/gcb_run gdp-labs:gen-ai-template-push-glchat-be-dev3 --branch=e/be-location-pii --region=asia-southeast2
+/gcb_run gdp-labs:gdplabs-ner-api-deployment-kubernetes-benchmark --branch=c/add-benchmark-log --region=asia-southeast2 --substitutions='{"_COMMIT_ID":"8b3302ecd8148931d4a6e458d4d16cfa18a4abcc","_MODULE":"gdplabs-ner-api"}'
+/gcb_run gdp-labs:gdplabs-ner-api-push-gdplabs-ner-api-benchmark --branch=c/add-benchmark-log --region=asia-southeast2
+
+
+* GLChat
+/turn-gl-project on gen-ai-template-stag,gen-ai-template-dev
+/turn-gl-project off gen-ai-template-dev
+/turn-gl-project status gen-ai-template-stag,gen-ai-template-dev
+https://dev-chat-ui-gdplabs-gen-ai-starter.obrol.id
+
+/turn-gl-project on gen-ai-template-stag,gen-ai-template-dev2
+/turn-gl-project off gen-ai-template-dev2
+/turn-gl-project status gen-ai-template-stag,gen-ai-template-dev2
+https://dev2-chat-ui-gdplabs-gen-ai-starter.obrol.id
+
+/turn-gl-project on gen-ai-template-stag,gen-ai-template-dev3
+/turn-gl-project off gen-ai-template-dev3
+/turn-gl-project status gen-ai-template-stag,gen-ai-template-dev3
+https://dev3-chat-ui-gdplabs-gen-ai-starter.obrol.id
+
+
+Filter:
+https://gl-log.kb.us-west1.gcp.cloud.es.io:9243/app/discover#/?_g=(filters:!(),refreshInterval:(pause:!t,value:60000),time:(from:now-15m,to:now))&_a=(columns:!(message),filters:!(('$state':(store:appState),meta:(alias:!n,disabled:!f,field:kubernetes.namespace.keyword,index:'6440b336-b2c9-41ae-865e-3b09f8811b14',key:kubernetes.namespace.keyword,negate:!f,params:(query:gen-ai-template-dev3),type:phrase),query:(match_phrase:(kubernetes.namespace.keyword:gen-ai-template-dev3))),('$state':(store:appState),meta:(alias:!n,disabled:!f,field:kubernetes.deployment.name,index:'6440b336-b2c9-41ae-865e-3b09f8811b14',key:kubernetes.deployment.name,negate:!f,params:(query:glchat-be-api),type:phrase),query:(match_phrase:(kubernetes.deployment.name:glchat-be-api))),('$state':(store:appState),meta:(alias:!n,disabled:!f,field:level.keyword,index:'6440b336-b2c9-41ae-865e-3b09f8811b14',key:level.keyword,negate:!f,params:(query:ERROR),type:phrase),query:(match_phrase:(level.keyword:ERROR)))),hideChart:!t,index:'6440b336-b2c9-41ae-865e-3b09f8811b14',interval:auto,query:(language:kuery,query:''),sort:!(!('@timestamp',desc)))
+
+gcloud kms decrypt --ciphertext-file=deployment/kubernetes/helm-values/dev3/glchat-be/values-secret.yaml.enc --plaintext-file=deployment/kubernetes/helm-values/dev3/glchat-be/values-secret.yaml --location=global --keyring=cloudbuild --key=gen-ai-template-dev3
+
+curl -X POST https://dev3-gbe-gdplabs-gen-ai-starter.obrol.id/auth/direct-api-login \
+  -H 'Content-Type: application/json' \
+  -d '{"username":"admin@gdplabs.id","password":"admin@123"}'
+
+Global ADMIN: global_admin@glair password
+
+* MSCDX Deployment
+ssh bastion
+# mscdx api
+ssh ubuntu@172.69.141.68
+# entity
+ssh ubuntu@172.69.140.68
+
+
+aws ecr get-login-password --region ap-southeast-3 | docker login --username AWS --password-stdin 654654411542.dkr.ecr.ap-southeast-3.amazonaws.com
+
+## MAKE sure see latest version
+git stash -u
+gcloud auth print-access-token > gcloud_token.txt
+export IMAGE=654654411542.dkr.ecr.ap-southeast-3.amazonaws.com/mscdx-api:0.1.14
+docker build --secret id=gcloud_token,src=gcloud_token.txt -t $IMAGE .
+docker push $IMAGE
+
+* Mount nas-data 2 Prosa Server
+mount -t nfs 10.181.131.253:/mnt/DATA2/text /srv/nas_data2/text
+
+* VSI staging
+/turn status aws ec2 glair-shared-vllm 708914600472 us-east-1
+/turn on aws ec2 glair-shared-vllm 708914600472 us-east-1
+/turn off aws ec2 glair-shared-vllm 708914600472 us-east-1
+/turn status aws ec2 glair-shared-vllm 708914600472 us-east-1
+Script example usage: https://drive.google.com/file/d/1ya07-EtimohwILyy_EPzBVduWEEtj0yi/view?usp=drive_link

@@ -1,0 +1,22 @@
+* Lisp
+** ~S -> format placeholder to print lisp syntax (readable/debug representation)
+For example using this to pring list of string
+~A -> for aesthetic print
+** `uiop` -> library, provided in asdf for portability utitlities
+E.g.: (uiop:command-line-arguments)
+** (format t ...) -> print to stdout
+* Linux Stuff
+** Containers: namespace + cgroups (additionally Capabilities, Seccomp)
+- [https://igupta.in/blog/what-i-learned-being-a-programmer/]
+- [https://jvns.ca/blog/2016/10/10/what-even-is-a-container/]
+*** Namespace: an isolation primitive that helps us to isolate various types of resources e.g. network
+- Network namespace
+- Mount
+- UTS or Hostname namespace
+- PID namespace
+- Inter process communication or IPC namespace
+- cgroup namespace
+- User namespace
+*** Cgroups: controlling the amount of the resources that a process can consume
+*** Capabilities: limits the use of root privileges
+*** Seccomp: It limits the use of syscalls

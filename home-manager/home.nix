@@ -262,7 +262,7 @@ in
         marksman
         # clang
         # clang-tools
-        # gopls
+        gopls
         # golines
         # gofumpt
         # gotools

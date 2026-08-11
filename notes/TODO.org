@@ -1,15 +1,35 @@
-* 27 July 2026
+* 10 August 2026
+** NER
+*** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
+*** TODO Merek Dagang Entities
+*** TODO Investigate https://github.com/GDP-ADMIN/glchat/issues/11698
+*** DONE perf(ner): reduce inference latency and improve authentication reliability (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/209)
+*** TODO Setup runpod VM for finetuning NER
+*** TODO Benchmark meta/muse-glimmer-30b
+** Model Accuracy Benchmarking
+*** TODO Benchmark qwen3.8-27B
+*** TODO untuk yg size 12B minta DSO mesinnya apa (https://chat.google.com/room/AAQAAFd5mQk/loDiy7wDDMs/PpRDG3OEAW8?cls=10)
+*** TODO rerun deepseek v4 pro
+*** TODO API Key GLChat Beta
+*** TODO Explore and give recommendation for provider replacement
+*** TODO Investigate why GPT Luna performance is not showing in the RAG etc leaderboard
+*** TODO [BACKLOG] calibrate semua benchmark
+*** TODO [BACKLOG] create skill to update code review leaderboard
+** GLLM Privacy
+*** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
+*** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
+** Others
+*** TODO Sentry migration stuff https://chat.google.com/room/AAAAbEcfi_E/Hcdhg1_7xTQ/Hcdhg1_7xTQ?cls=10
+*** TODO Ask DSO regarding https://chat.google.com/room/AAQAYdGYTVg/XUeCOgqKeys/xlKEB5ozVRE?cls=10
+
+* 3 August 2026
 ** GLChat
 *** DONE fix(BE): stop anonymized attachments from OOM-killing and stalling pods https://github.com/GDP-ADMIN/glchat/pull/13273
 ** NER
 *** DONE fix(gllm-privacy): resolve cryptography CVE (https://github.com/GDP-ADMIN/gl-sdk/pull/5845) [issue: update cryptography https://chat.google.com/room/AAAAvnC4Qyg/gQf5rYLQfWI/9DlW7I-UEo8?cls=10]
-*** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
-*** TODO Merek Dagang Entities
-*** TODO Investigate https://github.com/GDP-ADMIN/glchat/issues/11698
 ** Model Accuracy Benchmarking
-*** TODO Benchmark qwen3.8-27B
-*** TODO Benchmark qwen3.8-max
-*** TODO Benchmark new deepseek
+*** DONE Benchmark qwen3.8-max
+*** DONE Benchmark new deepseek
 LLM
 Previous version of deepseek-v4-flash
 +----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
@@ -124,31 +144,21 @@ False
 | True      |
 | False     |
 +-----------+-------------+------------+----------+
-*** TODO untuk yg size 12B minta DSO mesinnya apa (https://chat.google.com/room/AAQAAFd5mQk/loDiy7wDDMs/PpRDG3OEAW8?cls=10)
 *** DONE fix: update finstat formula (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/939)
 *** DONE feat: add openrouter parameters (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/941)
 *** DONE fix: add prompt templates (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/949)
 *** DONE fix(auth): bypass OAuth for local development https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/950
-*** TODO cari best opensource model MM
-*** TODO cari cost optimized model MM
-*** TODO rerun deepseek v4 pro
-*** TODO rerun gpt 5.6 di AIP
-*** TODO API Key GLChat Beta
-*** TODO Explore and give recommendation for provider replacement
-*** TODO Investigate why GPT Luna performance is not showing in the RAG etc leaderboard
-*** TODO <PA Item> Refactor MAB
-*** TODO [BACKLOG] calibrate semua benchmark
+*** DONE cari best opensource model MM
+*** DONE cari cost optimized model MM
+*** DONE rerun gpt 5.6 di AIP
+*** DONE <PA Item> Refactor MAB
 *** DONE fix(financial_statement): use evaluator scores for result fields https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/930
 ** GLLM Evals
 *** Review PRs
-**** TODO https://github.com/GDP-ADMIN/gl-sdk/pull/5778
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/5778
 ** GLLM Privacy
-*** TODO feat(gllm-privacy): support configurable URL-ignored entities https://github.com/GDP-ADMIN/gl-sdk/pull/5431
 *** DONE perf(gllm-privacy): optimize token-aware text chunking https://github.com/GDP-ADMIN/gl-sdk/pull/5863
 *** DONE perf(gllm-privacy): replace spaCy with model-free context analysis https://github.com/GDP-ADMIN/gl-sdk/pull/5873
-** Others
-*** TODO Sentry migration stuff https://chat.google.com/room/AAAAbEcfi_E/Hcdhg1_7xTQ/Hcdhg1_7xTQ?cls=10
-*** TODO Ask DSO regarding https://chat.google.com/room/AAQAYdGYTVg/XUeCOgqKeys/xlKEB5ozVRE?cls=10
 
 * 27 July 2026
 ** DONE Regarding 20jt quota of MSCDX

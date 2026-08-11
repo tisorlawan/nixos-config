@@ -20,3 +20,12 @@ E.g.: (uiop:command-line-arguments)
 *** Cgroups: controlling the amount of the resources that a process can consume
 *** Capabilities: limits the use of root privileges
 *** Seccomp: It limits the use of syscalls
+* Anything
+** IAM means Identity and Access Management. It is Google Cloud’s system for deciding:
+Who can perform which actions on which resources?
+
+The relationship is:
+  Service account = Who
+  IAM role        = What it can do
+  Google project  = Where it can do it
+

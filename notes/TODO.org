@@ -1,4 +1,6 @@
 * 10 August 2026
+** TODO Google Generative AI (Gemini) API Key https://docs.google.com/spreadsheets/d/1DIL-S25iybAAAaFzOOHOIo7bVpBIEiiwj2Ya4VvqsAo/edit?gid=0#gid=0
+** DONE Setup vertex AI for Meemo summarization
 ** NER
 *** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
 *** TODO Merek Dagang Entities

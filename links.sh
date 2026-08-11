@@ -5,6 +5,8 @@ ln -srf files/cfg/config/alacritty.toml ~/.config/alacritty.toml
 
 rm -rf ~/.config/nvim
 ln -srf files/cfg/config/nvim ~/.config/nvim
+rm -rf ~/.config/nvim-minimal
+ln -srf files/cfg/config/nvim-minimal ~/.config/nvim-minimal
 
 rm -rf ~/.config/kittty
 ln -srf files/cfg/config/kitty ~/.config/kitty

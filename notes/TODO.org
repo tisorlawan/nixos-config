@@ -1,15 +1,21 @@
 * 10 August 2026
 ** TODO Google Generative AI (Gemini) API Key https://docs.google.com/spreadsheets/d/1DIL-S25iybAAAaFzOOHOIo7bVpBIEiiwj2Ya4VvqsAo/edit?gid=0#gid=0
+team:<team-name>
+environment:production / environment:test
+component:<component-name>
+*** DONE feat: migrate Gemini integration to Vertex AI (https://github.com/GDP-ADMIN/services-llm-service/pull/39)
 ** DONE Setup vertex AI for Meemo summarization
 ** NER
 *** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
 *** TODO Merek Dagang Entities
 *** TODO Investigate https://github.com/GDP-ADMIN/glchat/issues/11698
 *** DONE perf(ner): reduce inference latency and improve authentication reliability (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/209)
-*** TODO Setup runpod VM for finetuning NER
-*** TODO Benchmark meta/muse-glimmer-30b
+*** DONE Setup runpod VM for finetuning NER
 ** Model Accuracy Benchmarking
 *** TODO Benchmark qwen3.8-27B
+*** DONE Benchmark meta/muse-glimmer-30b
+*** DONE feat: add vLLM Compose configurations and generation skill
+*** TODO Benchmark NVIDIA Nemotron 3.5 Lightning
 *** TODO untuk yg size 12B minta DSO mesinnya apa (https://chat.google.com/room/AAQAAFd5mQk/loDiy7wDDMs/PpRDG3OEAW8?cls=10)
 *** TODO rerun deepseek v4 pro
 *** TODO API Key GLChat Beta
@@ -17,6 +23,7 @@
 *** TODO Investigate why GPT Luna performance is not showing in the RAG etc leaderboard
 *** TODO [BACKLOG] calibrate semua benchmark
 *** TODO [BACKLOG] create skill to update code review leaderboard
+*** TODO [BACKLOG] ZDR https://chat.google.com/room/AAQAAFd5mQk/6PnLot9gSc8/4JL3gdAlEis?cls=10
 ** GLLM Privacy
 *** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
 *** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)

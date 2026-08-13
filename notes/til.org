@@ -5,6 +5,7 @@ For example using this to pring list of string
 ** `uiop` -> library, provided in asdf for portability utitlities
 E.g.: (uiop:command-line-arguments)
 ** (format t ...) -> print to stdout
+
 * Linux Stuff
 ** Containers: namespace + cgroups (additionally Capabilities, Seccomp)
 - [https://igupta.in/blog/what-i-learned-being-a-programmer/]
@@ -20,6 +21,7 @@ E.g.: (uiop:command-line-arguments)
 *** Cgroups: controlling the amount of the resources that a process can consume
 *** Capabilities: limits the use of root privileges
 *** Seccomp: It limits the use of syscalls
+
 * Anything
 ** IAM means Identity and Access Management. It is Google Cloud’s system for deciding:
 Who can perform which actions on which resources?
@@ -29,3 +31,11 @@ The relationship is:
   IAM role        = What it can do
   Google project  = Where it can do it
 
+* AI Stuff
+** Mamba => alternative to transformer attention
+- In a normal Transformer, attention lets every token look back at previous tokens:
+- This is powerful, but maintaining that history requires a KV cache. As context grows, the KV cache grows too.
+- Mamba uses a different idea called a State Space Model (SSM).
+- Mamba is like a GPU-optimized running memory that continuously compresses the important information
+  from previous tokens into a fixed-size hidden state, instead of attention repeatedly looking
+  back through the whole token history.

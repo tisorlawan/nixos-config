@@ -1,11 +1,13 @@
 #!/usr/bin/env bash
 
-set -euo pipefail
+NVIM_APPNAME=nvim-minimal nvim
 
-if [ -n "${WAYLAND_DISPLAY:-}" ]; then
-  NEOVIDE=(nixGLIntel neovide)
-else
-  NEOVIDE=(neovide)
-fi
-
-exec "${NEOVIDE[@]}" "$@"
+# set -euo pipefail
+#
+# if [ -n "${WAYLAND_DISPLAY:-}" ]; then
+#   NEOVIDE=(nixGLIntel neovide)
+# else
+#   NEOVIDE=(neovide)
+# fi
+#
+# exec "${NEOVIDE[@]}" "$@"

@@ -1,6 +1,6 @@
 ---
 name: how
-description: "Use for \"how does X work\", code walkthroughs before changing something, and placement / ownership / layering questions (\"where should this live\", \"which package owns this\", \"is this the right layer\"). Explains subsystem architecture, runtime flow, onboarding mental models. Can critique architecture. Use why for motivation."
+description: "Explain how code works and where it belongs. Use for walkthroughs, runtime flows, subsystem architecture, ownership, layering, and architecture critiques; not for historical rationale."
 ---
 
 # How
@@ -11,11 +11,6 @@ Two modes:
 
 1. **Explain** (default). Explore the codebase and produce a clear explanation
 2. **Critique.** Explain first, then spawn independent critics to identify architectural issues
-
-Before spawning an agent, read and follow
-[`../_shared/subagent-model-routing.md`](../_shared/subagent-model-routing.md).
-That policy is authoritative for model selection, reasoning effort, fork mode,
-and escalation.
 
 ## Explain Mode
 

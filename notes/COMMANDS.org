@@ -16,7 +16,6 @@ curl -sS https://accuracy-benchmark-opensource-vllm-2.obrol.id/v1/models -H "Aut
 /turn-azure-glair off glair-gl-vllm-opensource-1
 /turn-azure-glair off glair-gl-vllm-opensource-2
 
-
 /gcb_run gdp-labs:model-accuracy-benchmarking-push-model-accuracy-benchmark-stag --branch=f/1cu-latency-ttft --region=asia-southeast2
 /gcb_run gdp-labs:model-accuracy-benchmarking-deployment-kubernetes-stag --branch=f/1cu-latency-ttft --region=asia-southeast2 --substitutions='{"_COMMIT_ID":"fec474c","_MODULE":"model-accuracy-benchmark"}'
 

@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: Generate a commit message from staged Git changes that matches the repository's existing conventions. Use when the user invokes git-commit, asks for a commit message for staged changes, or provides a base commit for a squash commit message.
+description: "Write a repository-style commit message from staged changes. Use when asked for a commit message or a squash message from a base commit."
 ---
 
 # Git Commit

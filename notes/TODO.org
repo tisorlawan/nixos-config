@@ -1,35 +1,60 @@
-* 10 August 2026
-** TODO Google Generative AI (Gemini) API Key https://docs.google.com/spreadsheets/d/1DIL-S25iybAAAaFzOOHOIo7bVpBIEiiwj2Ya4VvqsAo/edit?gid=0#gid=0
-team:<team-name>
-environment:production / environment:test
-component:<component-name>
-*** DONE feat: migrate Gemini integration to Vertex AI (https://github.com/GDP-ADMIN/services-llm-service/pull/39)
-** DONE Setup vertex AI for Meemo summarization
+* 24 August 2026
+** Meemo
+*** TODO Evaluate migration to deepseek for summarization
+** GLLM Privacy
+*** TODO Create public function https://chat.google.com/room/AAQA-yhQs0Y/hfVUaRtl43U/00xA_xt_Il8?cls=10
+*** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
+*** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
 ** NER
 *** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
 *** TODO Merek Dagang Entities
 *** TODO Investigate https://github.com/GDP-ADMIN/glchat/issues/11698
-*** DONE perf(ner): reduce inference latency and improve authentication reliability (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/209)
-*** DONE Setup runpod VM for finetuning NER
-** Model Accuracy Benchmarking
-*** TODO Benchmark qwen3.8-27B
-*** DONE Benchmark meta/muse-glimmer-30b
-*** DONE feat: add vLLM Compose configurations and generation skill
-*** TODO Benchmark NVIDIA Nemotron 3.5 Lightning
-*** TODO untuk yg size 12B minta DSO mesinnya apa (https://chat.google.com/room/AAQAAFd5mQk/loDiy7wDDMs/PpRDG3OEAW8?cls=10)
-*** TODO rerun deepseek v4 pro
+** MAB
+*** TODO delete gloria benchmark
+*** TODO re-run ZDR models for other categories (https://docs.google.com/spreadsheets/d/12O69WX0y2Lhg5NP9GiZN5l14MYS87Tg7ReO3prp53xM/edit?gid=459567968#gid=459567968&range=A1:A2)
+*** TODO re-run gemma 3 31b for catapa de pm https://chat.google.com/room/AAQAOisDtVg/2dSWUEvfcyk/2dSWUEvfcyk?cls=10
+*** TODO benchmark qwen3.8-27B
 *** TODO API Key GLChat Beta
 *** TODO Explore and give recommendation for provider replacement
 *** TODO Investigate why GPT Luna performance is not showing in the RAG etc leaderboard
 *** TODO [BACKLOG] calibrate semua benchmark
 *** TODO [BACKLOG] create skill to update code review leaderboard
-*** TODO [BACKLOG] ZDR https://chat.google.com/room/AAQAAFd5mQk/6PnLot9gSc8/4JL3gdAlEis?cls=10
-** GLLM Privacy
-*** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
-*** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
 ** Others
 *** TODO Sentry migration stuff https://chat.google.com/room/AAAAbEcfi_E/Hcdhg1_7xTQ/Hcdhg1_7xTQ?cls=10
 *** TODO Ask DSO regarding https://chat.google.com/room/AAQAYdGYTVg/XUeCOgqKeys/xlKEB5ozVRE?cls=10
+
+* 17 August 2026
+** Meemo
+*** DONE Follow up feat: migrate Gemini integration to Vertex AI
+** NER
+*** DONE Fine-tuning NER with new dataset
+** MAB
+*** DONE Create ZDR recommendation for AIP
+*** DONE Benchmark various Openrouter ZDR providers
+*** DONE Create ZDR recommendation fro top 10 LLM Weekly
+*** DONE PR Reviews:
+**** DONE: https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/990
+
+* 10 August 2026
+*** TODO <MAB REPORT>
+**** Deepseek v4 flash pricing update
+** Meemo
+*** DONE Google Generative AI (Gemini) API Key https://docs.google.com/spreadsheets/d/1DIL-S25iybAAAaFzOOHOIo7bVpBIEiiwj2Ya4VvqsAo/edit?gid=0#gid=0
+team:<team-name>
+environment:production / environment:test
+component:<component-name>
+**** DONE feat: migrate Gemini integration to Vertex AI (https://github.com/GDP-ADMIN/services-llm-service/pull/39)
+*** DONE Setup vertex AI for Meemo summarization
+** NER
+*** DONE perf(ner): reduce inference latency and improve authentication reliability (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/209)
+*** DONE Setup runpod VM for finetuning NER
+** Model Accuracy Benchmarking
+*** DONE Benchmark meta/muse-glimmer-30b
+*** DONE feat: add vLLM Compose configurations and generation skill
+*** DONE feat(cli): add benchmark tracker webhook integration https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/970
+*** DONE ZDR Stuff
+*** DONE Benchmark NVIDIA Nemotron 3.5 Lightning
+*** DONE rerun deepseek v4 pro
 
 * 3 August 2026
 ** GLChat
@@ -240,7 +265,6 @@ False
 *** PR Reviews
 **** https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/858
 **** https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/861
-
 * 6 July 2026
 ** NER
 *** DONE fix: bound document processing memory https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/199/changes

@@ -1,6 +1,7 @@
 ---
 name: complexity
-description: Analyze code complexity in files or directories. Identifies accidental complexity (reducible/eliminable) vs essential complexity (inherent to the problem). Outputs prioritized recommendations to a markdown report. Use when user asks to analyze complexity, review code quality, identify technical debt, or find simplification opportunities.
+description: "Find and prioritize avoidable code complexity. Use for complexity reviews, technical-debt analysis, code-quality audits, and simplification recommendations."
+disable-model-invocation: true
 ---
 
 # Complexity Analysis

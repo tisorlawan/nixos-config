@@ -25,6 +25,11 @@ vim.opt.timeoutlen = 300
 vim.opt.termguicolors = true
 vim.opt.clipboard = "unnamedplus"
 
+vim.keymap.set({ "n", "i", "v", "o", "c", "t" }, "<C-x><C-s>", function()
+	vim.cmd.write()
+end, { desc = "Write buffer" })
+vim.keymap.set("n", "<leader>w", "<cmd>write<CR>", { desc = "Write buffer" })
+
 vim.keymap.set("n", "<Esc>", "<cmd>nohlsearch<CR>")
 vim.keymap.set("c", "<C-g>", "<C-c>")
 vim.keymap.set("i", "<C-a>", "<Home>")

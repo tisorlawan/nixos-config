@@ -3,9 +3,11 @@
 *** TODO Evaluate migration to deepseek for summarization
 ** GLLM Privacy
 *** TODO Create public function https://chat.google.com/room/AAQA-yhQs0Y/hfVUaRtl43U/00xA_xt_Il8?cls=10
+**** TODO feat(gllm-privacy): support anonymization with an existing mapping (https://github.com/GDP-ADMIN/gl-sdk/pull/6214)
 *** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
 *** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
 ** NER
+*** TODO Make so that InvalidClientException is not recorded in sentry maybe (https://sentry.obrol.id/organizations/sentry-gdplabs/issues/159013/?environment=staging&project=16&query=is%3Aunresolved%20issue.priority%3A%5Bhigh%2C%20medium%5D&referrer=issue-stream)
 *** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
 *** TODO Merek Dagang Entities
 *** TODO Investigate https://github.com/GDP-ADMIN/glchat/issues/11698
@@ -19,6 +21,11 @@
 *** TODO Investigate why GPT Luna performance is not showing in the RAG etc leaderboard
 *** TODO [BACKLOG] calibrate semua benchmark
 *** TODO [BACKLOG] create skill to update code review leaderboard
+*** DONE fix(visual-qa): run multimodal probe on benchmark loop https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/997
+*** PR Reviews:
+**** TODO https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/989
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/993
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/994
 ** Others
 *** TODO Sentry migration stuff https://chat.google.com/room/AAAAbEcfi_E/Hcdhg1_7xTQ/Hcdhg1_7xTQ?cls=10
 *** TODO Ask DSO regarding https://chat.google.com/room/AAQAYdGYTVg/XUeCOgqKeys/xlKEB5ozVRE?cls=10

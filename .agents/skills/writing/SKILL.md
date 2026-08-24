@@ -14,6 +14,9 @@ Decide what the reader needs to do or understand. Write for that need, not to di
 - Use the real symbol, file, flag, command, or product name from the repository.
 - State the conclusion first. Follow it with evidence, constraints, and the next action.
 - Be specific. Write "a column rename fails the build," not "schema changes can cause issues."
+- Never use a vague claim when the mechanism is known. Name the exact operation, behavior, or constraint. Write
+  "`save()` catches `OSError` and returns `False`, so callers cannot distinguish a full disk from a missing
+  directory," not "`save()` has poor error handling."
 - Have an opinion when judgment matters. Do not hide behind a neutral list of advantages and disadvantages.
 - Keep reference material factual. Save opinions and tradeoffs for explanations and proposals.
 

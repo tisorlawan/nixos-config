@@ -1,8 +1,33 @@
 {
   "plugins": {
+    "blink.cmp": {
+      "rev": "78336bc89ee5365633bcf754d93df01678b5c08f",
+      "src": "https://github.com/saghen/blink.cmp",
+      "version": ">=0.0.0"
+    },
+    "fff.nvim": {
+      "rev": "28fce4145a3aa6ee7ab72de010539a498365aa45",
+      "src": "https://github.com/dmtrKovalenko/fff.nvim"
+    },
+    "kanagawa.nvim": {
+      "rev": "bb85e4bfc8d89b0e62c8fa53ccdd13d12e2f77b3",
+      "src": "https://github.com/rebelot/kanagawa.nvim"
+    },
+    "leap.nvim": {
+      "rev": "7884f9455e5bf07bd11a3dcd9f961095a966a5d7",
+      "src": "https://codeberg.org/andyg/leap.nvim"
+    },
     "snacks.nvim": {
       "rev": "882c996cf28183f4d63640de0b4c02ec886d01f2",
       "src": "https://github.com/folke/snacks.nvim"
+    },
+    "vim-dirvish": {
+      "rev": "4cbf39ce024c57f700c4d5502cc172ea91d69360",
+      "src": "https://github.com/justinmk/vim-dirvish"
+    },
+    "vim-dirvish-dovish": {
+      "rev": "04c77b6010f7e45e72b4d3c399c120d42f7c5d47",
+      "src": "https://github.com/roginfarrer/vim-dirvish-dovish"
     }
   }
 }

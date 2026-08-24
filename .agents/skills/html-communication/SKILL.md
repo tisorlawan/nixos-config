@@ -22,11 +22,29 @@ Create one `.html` file no larger than 512 KB. Keep every required asset in that
 - Start with the title and the information the reader needs most. Do not add a hero, slogan, marketing copy, or decorative chrome.
 - Use semantic HTML landmarks, headings in order, lists, tables, figures, and code blocks where they fit the content.
 - Use inline CSS. Use inline SVG only when a diagram or icon communicates information.
-- Use system fonts unless a supplied data-URL font is essential.
 - Make the layout responsive. It must remain readable at 320 CSS pixels without horizontal page scrolling. Wide tables and code blocks may scroll inside their own containers.
-- Default to true black (`#000`) with white primary text. Reserve dark gray for secondary surfaces and restrained accents. Depart from this palette only when the content or user requests another visual direction.
 - Use sufficient contrast, visible keyboard focus, descriptive link text, text alternatives for meaningful images, and labels for controls.
 - Respect `prefers-reduced-motion`. Do not rely on color alone to convey meaning.
+
+### Use the Kami design system
+
+Follow the [Kami design system](https://kami.tw93.fun/) by default:
+
+- Use a warm parchment canvas (`#f5f4ed`) and near-white paper surfaces.
+- Use ink blue (`#1B365D`) as the single primary accent for headings, links, focus rings, and key diagram edges.
+- Use editorial whitespace, restrained borders, compact shadows, and clear section rhythm.
+- Prefer document structure over app chrome. Cards, tables, and diagrams must organize information rather than decorate it.
+- Keep status colors muted. Never rely on color alone to communicate status.
+- Use the white-paper variant only when the user asks for print-oriented output.
+- Depart from Kami only when the user asks for another visual direction or the content has an established visual identity.
+
+### Use two typography roles
+
+- Use one stack for all normal text and one stack for code. Apply the same normal-text stack to headings, paragraphs, navigation, labels, tables, callouts, captions, SVG text, and pseudo-elements.
+- When the delivery target permits embedded fonts, use `IBM Plex Serif` for normal text and `IBM Plex Mono` for code. Embed only the required WOFF2 subsets and weights as data URLs.
+- Postplan currently sends `default-src 'none'` without a `font-src` directive. It blocks data-URL and HTTPS web fonts. For Postplan documents, use `Ubuntu, "Noto Sans", sans-serif` for normal text and `"Ubuntu Mono", "Noto Sans Mono", "Roboto Mono", monospace` for code.
+- Do not add font families outside the two selected stacks.
+- Verify computed styles on the published document, not only the local file. Confirm that rendered text resolves through the normal-text stack and code resolves through the code stack. Embedded font faces must have `loaded` status.
 
 Use HTTPS or data URLs for images. Include dimensions to prevent layout shifts. Do not include secrets, private URLs, machine names, usernames, or local filesystem paths in document content.
 

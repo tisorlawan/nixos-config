@@ -1,0 +1,1 @@
+https://rahuljuliato.com/posts/completions-buffer-is-now-enough

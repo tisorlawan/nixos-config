@@ -159,3 +159,6 @@ ln -srf files/cfg/config/waybar ~/.config/waybar
 
 rm -rf ~/.bashrc
 ln -srf ./files/cfg/bashrc ~/.bashrc
+
+rm -rf ~/.config/emacs
+ln -srf emacs ~/.config/emacs

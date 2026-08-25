@@ -7,13 +7,16 @@
 *** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
 *** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
 ** NER
+*** TODO PERSON dipisah tab https://chat.google.com/room/AAQAYtQZtE0/a1sjC6GY-Ws/_okEaa3tb9s?cls=10
 *** TODO Make so that InvalidClientException is not recorded in sentry maybe (https://sentry.obrol.id/organizations/sentry-gdplabs/issues/159013/?environment=staging&project=16&query=is%3Aunresolved%20issue.priority%3A%5Bhigh%2C%20medium%5D&referrer=issue-stream)
 *** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
 *** TODO Merek Dagang Entities
 *** TODO Investigate https://github.com/GDP-ADMIN/glchat/issues/11698
 ** MAB
 *** TODO delete gloria benchmark
-*** TODO re-run ZDR models for other categories (https://docs.google.com/spreadsheets/d/12O69WX0y2Lhg5NP9GiZN5l14MYS87Tg7ReO3prp53xM/edit?gid=459567968#gid=459567968&range=A1:A2)
+*** TODO recommendation (masukin cost juga ke AIP di email) https://mail.google.com/mail/u/0/#chat/space/AAAA4wgSydA
+*** TODO Eval suite
+*** DONE re-run ZDR models for other categories (https://docs.google.com/spreadsheets/d/12O69WX0y2Lhg5NP9GiZN5l14MYS87Tg7ReO3prp53xM/edit?gid=459567968#gid=459567968&range=A1:A2)
 *** TODO re-run gemma 3 31b for catapa de pm https://chat.google.com/room/AAQAOisDtVg/2dSWUEvfcyk/2dSWUEvfcyk?cls=10
 *** TODO benchmark qwen3.8-27B
 *** TODO API Key GLChat Beta
@@ -22,10 +25,12 @@
 *** TODO [BACKLOG] calibrate semua benchmark
 *** TODO [BACKLOG] create skill to update code review leaderboard
 *** DONE fix(visual-qa): run multimodal probe on benchmark loop https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/997
+*** DONE fix(aip): attach uploaded charts to multimodal judge prompts https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1001
 *** PR Reviews:
 **** TODO https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/989
 **** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/993
 **** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/994
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/957
 ** Others
 *** TODO Sentry migration stuff https://chat.google.com/room/AAAAbEcfi_E/Hcdhg1_7xTQ/Hcdhg1_7xTQ?cls=10
 *** TODO Ask DSO regarding https://chat.google.com/room/AAQAYdGYTVg/XUeCOgqKeys/xlKEB5ozVRE?cls=10

@@ -1,28 +1,35 @@
-# Inside host
-export HOST=ner2
+#!/usr/bin/env bash
+# Usage: ./runpod.sh push    (on host)
+#        ./runpod.sh setup   (inside the pod)
+set -euo pipefail
 
-ssh $HOST 'mkdir -p /workspace/{.cache,.config,.local,tmp}'
-scp backup.sh $HOST:/workspace/tmp
-scp ~/.gitconfig $HOST:/workspace/tmp
-scp files/cfg/config/nvim-minimal/init.lua $HOST:/workspace/.config/nvim/init.lua
-gpg --yes --output ~/.ssh/agung.b.sorlawan_id_ed25519.gpg \
-  --encrypt --recipient tisorlawan@gmail.com ~/.ssh/agung.b.sorlawan_id_ed25519 &&
-  scp ~/.ssh/agung.b.sorlawan_id_ed25519.gpg $HOST:/workspace/tmp &&
-  rm ~/.ssh/agung.b.sorlawan_id_ed25519.gpg
+push() {
+  export HOST=ner
+  export TMP=/workspace/tmp
+  ssh "$HOST" "mkdir -p /workspace/.cache /workspace/.config/nvim /workspace/.local $TMP"
+  gpg --yes --output - \
+    --encrypt --recipient tisorlawan@gmail.com \
+    ~/.ssh/agung.b.sorlawan_id_ed25519 |
+    ssh "$HOST" "cat > $TMP/agung.b.sorlawan_id_ed25519.gpg"
+  scp backup.sh "$(readlink -f "${BASH_SOURCE[0]}")" "$HOST:$TMP/"
+  scp ~/.gitconfig "$HOST:$TMP/.gitconfig"
+  scp files/cfg/config/nvim-minimal/init.lua "$HOST:/workspace/.config/nvim/init.lua"
+}
 
-# Inside the pod run
-sudo apt update
-sudo apt install locales git gnupg less ripgrep less bubblewrap fd-find
-sudo ln -s $(which fdfind) /usr/bin/fd
-sudo sed -i 's/^# \(en_US.UTF-8 UTF-8\)$/\1/' /etc/locale.gen
-sudo locale-gen en_US.UTF-8
-sudo update-locale LANG=en_US.UTF-8
+setup() {
+  export TMP=/workspace/tmp
+  sudo apt update
+  sudo apt install -y locales git gnupg less ripgrep bubblewrap fd-find
+  sudo ln -sf "$(which fdfind)" /usr/bin/fd
+  sudo sed -i 's/^# \(en_US.UTF-8 UTF-8\)$/\1/' /etc/locale.gen
+  sudo locale-gen en_US.UTF-8
+  sudo update-locale LANG=en_US.UTF-8
 
-cd /workspace/tmp
-cat >bashrc <<'EOF'
+  mkdir -p "$TMP" /root/.ssh
+  cd "$TMP"
+
+  cat >bashrc <<'EOF'
 export HF_HOME=/workspace/.cache/huggingface
-export TRANSFORMERS_CACHE=/workspace/.cache/huggingface/transformers
-export HF_DATASETS_CACHE=/workspace/.cache/huggingface/datasets
 export TORCH_HOME=/workspace/.cache/torch
 export PIP_CACHE_DIR=/workspace/.cache/pip
 export XDG_CACHE_HOME=/workspace/.cache
@@ -79,7 +86,7 @@ PS1='\[\e[1;32m\]\u@\h\[\e[0m\]:\[\e[1;34m\]\w\[\e[0m\]\[\e[1;33m\]$(__git_promp
 export PATH=$HOME/.local/share/bob/nvim-bin:$PATH
 EOF
 
-cat >tmux.conf <<'EOF'
+  cat >tmux.conf <<'EOF'
 set -sg escape-time 0
 set -g default-terminal "screen-256color"
 set -as terminal-features ",xterm-256color:RGB"
@@ -88,48 +95,57 @@ set-option -g default-shell /bin/bash
 set-option -g default-command "/bin/bash"
 EOF
 
-mkdir -p /root/.ssh
-cd /workspace/tmp
-cat >>ssh_config <<'EOF'
+  cat >ssh_config <<'EOF'
 Host github.com
     PreferredAuthentications publickey
     IdentityFile ~/.ssh/agung.b.sorlawan_id_ed25519
 EOF
-mkdir -p codex
-mkdir -p cache
-mv /root/.local local 2>/dev/null
-mkdir -p local
-rm -f /root/.bash_history
-touch bash_history
-ln -srf local ~/.local
 
-# restart
-cd /workspace/tmp
-ln -srf bashrc /root/.bashrc
-source /root/.bashrc
-curl -fsSL https://raw.githubusercontent.com/MordechaiHadad/bob/master/scripts/install.sh | bash
-bob install v0.12.4
-bob use v0.12.4
+  # Persistent state dirs on /workspace
+  if [ -d /root/.local ] && [ ! -L /root/.local ]; then
+    mv /root/.local local
+  fi
+  mkdir -p codex cache local
+  touch bash_history
 
-## codex
-curl -fsSL https://chatgpt.com/codex/install.sh | sh
-mkdir -p ./codex
-cp -a --no-preserve=ownership ~/.codex/. ./codex/
-rm -rf ~/.codex
-ln -srf ./codex ~/.codex
+  # Link everything into $HOME
+  ln -srf bashrc /root/.bashrc
+  ln -srf tmux.conf /root/.tmux.conf
+  ln -srf bash_history /root/.bash_history
+  ln -srf .gitconfig /root/.gitconfig
+  rm -f /root/.ssh/config
+  ln -srf "$TMP/ssh_config" /root/.ssh/config
+  chmod 400 /root/.ssh/config
+  rm -rf /root/.cache
+  ln -srf cache /root/.cache
+  rm -rf /root/.local
+  ln -srf local /root/.local
+  source /root/.bashrc
 
-# ----------------RESTART-----------------------
+  # Tools
+  curl -fsSL https://raw.githubusercontent.com/MordechaiHadad/bob/master/scripts/install.sh | bash
+  bob install v0.12.4
+  bob use v0.12.4
 
-cd /workspace/tmp
-./backup.sh
-ln -srf .gitconfig /root/.gitconfig
-rm -f /root/.ssh/config
-cp ./ssh_config /root/.ssh/config
-gpg --yes --output /root/.ssh/agung.b.sorlawan_id_ed25519 --decrypt ./agung.b.sorlawan_id_ed25519.gpg && chmod 400 /root/.ssh/agung.b.sorlawan_id_ed25519
-rm -rf ~/.cache
-ln -srf cache ~/.cache
-rm -rf ~/.local
-ln -srf local ~/.local
-ln -srf bashrc /root/.bashrc
-ln -srf tmux.conf /root/.tmux.conf
-ln -srf bash_history /root/.bash_history
+  # CODEX_NON_INTERACTIVE=1 curl -fsSL https://chatgpt.com/codex/install.sh | sh
+  # if [ -d ~/.codex ] && [ ! -L ~/.codex ]; then
+  #   cp -a --no-preserve=ownership ~/.codex/. codex/
+  #   rm -rf ~/.codex
+  # fi
+  # ln -srf codex ~/.codex
+
+  # Restore git config history and SSH key
+  ./backup.sh
+  gpg --yes --output /root/.ssh/agung.b.sorlawan_id_ed25519 \
+    --decrypt agung.b.sorlawan_id_ed25519.gpg
+  chmod 400 /root/.ssh/agung.b.sorlawan_id_ed25519
+}
+
+case "${1:-}" in
+push) push ;;
+setup) setup ;;
+*)
+  echo "usage: $0 push|setup" >&2
+  exit 1
+  ;;
+esac

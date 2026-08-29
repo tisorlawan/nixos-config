@@ -230,6 +230,7 @@ in
         ruff
         pyright
         basedpyright
+        pkgs-unstable.pyrefly
         virtualenv
         black
         isort

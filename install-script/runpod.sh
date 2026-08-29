@@ -24,6 +24,10 @@ setup() {
   sudo sed -i 's/^# \(en_US.UTF-8 UTF-8\)$/\1/' /etc/locale.gen
   sudo locale-gen en_US.UTF-8
   sudo update-locale LANG=en_US.UTF-8
+  find . -type d | xargs -I {} chmod 755 {}
+  find . -type f | xargs -I {} chmod 644 {}
+  chmod +x runpod.sh
+  chmod +x backup.sh
 
   mkdir -p "$TMP" /root/.ssh
   cd "$TMP"

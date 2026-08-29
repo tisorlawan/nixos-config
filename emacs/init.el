@@ -59,6 +59,10 @@
 (my/prepend-executable-directory "~/.cargo/bin")
 (my/prepend-executable-directory "~/.nix-profile/bin")
 
+;; Locally compiled tree-sitter grammars (js/ts/tsx) live in tree-sitter/
+;; inside this config; see tree-sitter/README note in the repo.
+(add-to-list 'treesit-extra-load-path (locate-user-emacs-file "tree-sitter"))
+
 (defun my/reset-font ()
   "Restore the configured fonts, line spacing, and text scale."
   (interactive)
@@ -77,6 +81,14 @@
       (set-frame-parameter nil 'alpha-background (if transparent-p 100 90))
       (message "Frame transparency %s"
                (if transparent-p "disabled" "enabled")))))
+
+(defun my/enable-frame-transparency (&optional frame)
+  "Set FRAME's background to 90% opacity."
+  (set-frame-parameter frame 'alpha-background 90))
+
+(when (display-graphic-p)
+  (my/enable-frame-transparency))
+(add-hook 'after-make-frame-functions #'my/enable-frame-transparency)
 
 (defun my/current-theme ()
   "Display the currently enabled theme."
@@ -129,11 +141,33 @@
     (interactive)
     (find-file (expand-file-name path))))
 
+(defun my/copy-file-path (absolute)
+  "Copy the current file's path to the kill ring.
+Relative to the project root when ABSOLUTE is nil, absolute otherwise."
+  (interactive "P")
+  (unless buffer-file-name
+    (user-error "Buffer is not visiting a file"))
+  (let ((path (if absolute
+                  buffer-file-name
+                (let ((root (and (fboundp 'project-current)
+                                 (project-current)
+                                 (project-root (project-current)))))
+                  (if (and root (file-in-directory-p buffer-file-name root))
+                      (file-relative-name buffer-file-name root)
+                    (file-relative-name buffer-file-name
+                                        default-directory))))))
+    (kill-new path)
+    (message "Copied %s" path)))
+
+(defun my/copy-file-path-absolute ()
+  "Copy the current file's absolute path to the kill ring."
+  (interactive)
+  (my/copy-file-path t))
+
 (defvar my/notes-directory  (expand-file-name "~/notes/"))
 (defvar my/credentials-file (expand-file-name "~/Documents/credentials/acc.txt"))
 (defvar my/secrets-file     (expand-file-name "~/.rice/secrets.org.gpg"))
 (defvar my/backup-directory (locate-user-emacs-file "backups/"))
-
 
 (use-package emacs
   :config
@@ -215,6 +249,9 @@
   (global-set-key (kbd "C-x C-, t i") #'eglot-momentary-inlay-hints)
   (global-set-key (kbd "C-x C-, t n") #'my/cycle-line-numbers)
   (global-set-key (kbd "C-x C-, t p") #'electric-pair-mode)
+  (global-set-key (kbd "C-x C-, t D") #'my/toggle-flymake-eol-diagnostics)
+  (global-set-key (kbd "C-x C-, y p") #'my/copy-file-path)
+  (global-set-key (kbd "C-x C-, y P") #'my/copy-file-path-absolute)
   (global-set-key (kbd "C-x C-, t r") #'my/toggle-frame-transparency))
 
 
@@ -232,15 +269,19 @@
     "C-x C-, n s" "secret"
     "C-x C-, d t" "Current Theme"
 
-    "C-x C-, t" "Toggle"
-    "C-x C-, t d" "Diagnostic"
+    "C-x C-, t d" "Toggle Diagnostics"
+    "C-x C-, t D" "Toggle EOL Diagnostics"
     "C-x C-, t n" "Line Numbers"
     "C-x C-, t p" "Auto Pair"
     "C-x C-, t r" "Transparency"
 
     "C-x C-, f" "Find"
+    "C-x C-, y" "Copy Path"
+    "C-x C-, y p" "Project-Relative Path"
+    "C-x C-, y P" "Absolute Path"
     "C-x C-, f r" "Recent Files"
 
+    "C-x C-, c" "Code"
     "C-x C-, e" "File Explorer"
 
     "C-x j" "Toggle Buffer"))
@@ -424,6 +465,18 @@
   (treemacs-follow-mode 1)
   (treemacs-filewatch-mode 1)
   (treemacs-hide-gitignored-files-mode 1)
+  ;; The gitignore prefetch runs before any project is loaded from the
+  ;; persist file, so the first render still shows ignored entries. Refresh
+  ;; once the deferred git status has filled the ignore cache.
+  (defun my/treemacs-refresh-after-cache-fill ()
+    "Refresh this Treemacs buffer once its git ignore cache is filled."
+    (let ((buffer (current-buffer)))
+      (run-with-timer 3 nil
+                      (lambda ()
+                        (when (buffer-live-p buffer)
+                          (with-current-buffer buffer
+                            (treemacs--do-refresh (current-buffer) 'all)))))))
+  (add-hook 'treemacs-mode-hook #'my/treemacs-refresh-after-cache-fill)
   (setq treemacs-show-hidden-files nil))
 
 
@@ -433,6 +486,19 @@
   :after treemacs
   :config
   (treemacs-load-theme "nerd-icons"))
+
+(use-package dired-x
+  :straight nil
+  :after dired
+  :hook (dired-mode . dired-omit-mode)
+  :config
+  (setq dired-omit-files
+        (concat dired-omit-files
+                "\\|^__pycache__$"
+                "\\|^\\.venv$"
+                "\\|^node_modules$"
+                "\\|^\\.pytest_cache$"
+                "\\|\\.pyc\\'")))
  
  
  (use-package treemacs-evil
@@ -537,6 +603,21 @@
     (dolist (face '(flymake-error flymake-warning flymake-note))
       (set-face-attribute face nil :underline '(:style line :position t))))
   :config
+  (setq flymake-show-diagnostics-at-end-of-line 'short)
+
+  (defun my/toggle-flymake-eol-diagnostics ()
+    "Toggle showing Flymake diagnostics at end of line."
+    (interactive)
+    (if flymake-show-diagnostics-at-end-of-line
+        (progn
+          (setq flymake-show-diagnostics-at-end-of-line nil)
+          (dolist (o (overlays-in (point-min) (point-max)))
+            (when (overlay-get o 'flymake--eol-overlay)
+              (delete-overlay o)))
+          (message "Flymake end-of-line diagnostics hidden"))
+      (setq flymake-show-diagnostics-at-end-of-line 'short)
+      (when flymake-mode (flymake-start))
+      (message "Flymake end-of-line diagnostics shown")))
   (add-hook 'flymake-mode-hook #'my--keep-flymake-globally-disabled)
   (add-hook 'flymake-mode-hook #'my--flymake-hide-dirty-buffer-diagnostics)
   (advice-add 'flymake--handle-report
@@ -550,7 +631,7 @@
   (setq-local eldoc-documentation-functions '(flymake-eldoc-function)))
 
 (add-hook 'prog-mode-hook #'my--eldoc-diagnostics-only)
-
+(setq eldoc-echo-area-use-multiline-p t)
 (use-package markdown-mode
   :demand t
   :mode ("\\.\\(?:md\\|markdown\\|mkd\\|mdown\\|mkdn\\|mdwn\\|mdx\\)\\'" . gfm-view-mode)
@@ -574,6 +655,9 @@
         (gfm-mode)
       (gfm-view-mode)))
 
+  (add-to-list 'markdown-code-lang-modes '("tsx" . tsx-ts-mode))
+  (add-to-list 'markdown-code-lang-modes '("jsx" . tsx-ts-mode))
+  (add-to-list 'markdown-code-lang-modes '("js" . js-ts-mode))
   (add-to-list 'markdown-code-lang-modes '("ts" . typescript-ts-mode)))
 
 (use-package yaml-mode
@@ -613,6 +697,20 @@
 (use-package org-appear
   :after org)
 
+
+;; Eglot advertises the `snippetSupport' capability to language servers only
+;; while Yasnippet is loaded, so it must load eagerly at init, before any
+;; server connects.  Yasnippet itself is enabled only in Eglot-managed
+;; buffers, where it expands parameter placeholders on accepted completions.
+(use-package yasnippet
+  :config
+  (defun my/corfu-popup-open-p ()
+    "Return non-nil while Corfu's completion popup is shown."
+    (and (bound-and-true-p corfu-mode) corfu--input))
+  ;; While Corfu's popup is open, disable Yasnippet's field keymap so TAB
+  ;; completes the selected candidate instead of jumping to the next
+  ;; snippet placeholder.
+  (add-hook 'yas-keymap-disable-hook #'my/corfu-popup-open-p))
 (use-package eglot
   :straight nil
   :bind
@@ -620,9 +718,35 @@
    ("C-x C-, c a" . eglot-code-actions)
    ("C-x C-, c r" . my/eglot-rename))
   :init
-  (setq eglot-ignored-server-capabilities '(:inlayHintProvider))
+  (setq eglot-ignored-server-capabilities '(:inlayHintProvider)
+        ;; Never stall file opening while a language server boots; the
+        ;; connection completes in the background instead.
+        eglot-sync-connect nil)
+  ;; LSP servers can emit large bursts of output; read process pipes in
+  ;; 1MB chunks instead of the 64KB default so chatty servers (rust-analyzer,
+  ;; clangd) don't bottleneck on emacs process input.
+  (setq read-process-output-max (* 1024 1024))
   :config
   (add-to-list 'eglot-server-programs '(zig-mode . ("zls")))
+  ;; clangd omits parameter placeholders by default; snippets require
+  ;; --function-arg-placeholders.  Keep the ccls fallback for machines
+  ;; without clangd.
+  (add-to-list 'eglot-server-programs
+               `((c-mode c-ts-mode c++-mode c++-ts-mode objc-mode)
+                 . ,(eglot-alternatives
+                     '(("clangd" "--function-arg-placeholders") "ccls"))))
+
+  ;; Prefer pyrefly for Python; fall back to basedpyright where pyrefly is
+  ;; not installed.
+  (add-to-list 'eglot-server-programs
+               `((python-mode python-ts-mode)
+                 . ,(eglot-alternatives
+                     '(("pyrefly" "lsp") ("basedpyright-langserver" "--stdio")))))
+
+  ;; Web: typescript-language-server for TS/TSX/JS (incl. JSX via tsx grammar).
+  (add-to-list 'eglot-server-programs
+               '((js-ts-mode tsx-ts-mode typescript-ts-mode)
+                 . ("typescript-language-server" "--stdio")))
   (setq-default eglot-workspace-configuration
                 '(:python.analysis
                   (:autoImportCompletions :json-false)
@@ -684,10 +808,11 @@
     (evil-local-set-key 'insert (kbd "C-c h") #'my/eglot-signature))
 
 
-  (defun my--eglot-code-actions-after-save ()
-    "Use Flymake in Eldoc and query Eglot code actions only after save."
+  (defun my--eglot-buffer-setup ()
+    "Set up Yasnippet, Eldoc, and code action queries for Eglot buffers."
     (if (eglot-managed-p)
         (progn
+          (yas-minor-mode 1)
           (my--eldoc-diagnostics-only)
           (my--eglot-bind-hover-keys)
           ;; Run after Eglot's didSave notification.
@@ -699,9 +824,10 @@
                    #'my--eglot-query-code-actions-after-save t)
       (remove-hook 'after-change-functions
                    #'my--eglot-clear-code-action-suggestion t)
+      (yas-minor-mode -1)
       (my--eglot-clear-code-action-suggestion)))
 
-  (add-hook 'eglot-managed-mode-hook #'my--eglot-code-actions-after-save))
+  (add-hook 'eglot-managed-mode-hook #'my--eglot-buffer-setup))
 
 
 ;; @languages
@@ -721,6 +847,40 @@
   :mode "\\.zig\\'"
   :hook
   (zig-mode . eglot-ensure))
+
+(use-package typescript-ts-mode
+  :straight nil
+  :mode (("\\.ts\\'" . typescript-ts-mode)
+         ("\\.tsx\\'" . tsx-ts-mode)
+         ("\\.jsx\\'" . tsx-ts-mode))
+  :hook
+  (typescript-ts-mode . eglot-ensure)
+  (tsx-ts-mode . eglot-ensure))
+
+(use-package js
+  :straight nil
+  :mode (("\\.js\\'" . js-ts-mode)
+         ("\\.mjs\\'" . js-ts-mode)
+         ("\\.cjs\\'" . js-ts-mode))
+  :hook (js-ts-mode . eglot-ensure))
+
+;; Web buffers: 2-space indentation (same pattern as my--c-setup).
+(defun my--web-setup ()
+  (setq-local indent-tabs-mode nil)
+  (setq-local tab-width 2)
+  (when (derived-mode-p 'typescript-ts-mode 'tsx-ts-mode)
+    (setq-local typescript-ts-mode-indent-offset 2))
+  (when (derived-mode-p 'js-ts-mode)
+    (setq-local js-indent-level 2)))
+
+(add-hook 'typescript-ts-mode-hook #'my--web-setup)
+(add-hook 'tsx-ts-mode-hook #'my--web-setup)
+(add-hook 'js-ts-mode-hook #'my--web-setup)
+
+
+
+(add-to-list 'auto-mode-alist '("\\.env\\(\\..*\\)?\\'" . conf-unix-mode))
+
 
 
 ;; @compilation
@@ -766,6 +926,10 @@
 (with-eval-after-load 'zig-mode (my--bind-compilation-keys zig-mode-map))
 (with-eval-after-load 'go-mode (my--bind-compilation-keys go-mode-map))
 (with-eval-after-load 'go-ts-mode (my--bind-compilation-keys go-ts-mode-map))
+(with-eval-after-load 'typescript-ts-mode
+  (my--bind-compilation-keys typescript-ts-mode-map)
+  (my--bind-compilation-keys tsx-ts-mode-map))
+(with-eval-after-load 'js (my--bind-compilation-keys js-ts-mode-map))
 
 ;; @prog-c
 

@@ -1,9 +1,9 @@
-* 24 August 2026
+* 31 August 2026
+** TODO Rerelease  https://chat.google.com/room/AAAA_HPfXJU/JXSNg94yrQk/18dN6-lYShE?cls=10
 ** Meemo
 *** TODO Evaluate migration to deepseek for summarization
 ** GLLM Privacy
-*** TODO Create public function https://chat.google.com/room/AAQA-yhQs0Y/hfVUaRtl43U/00xA_xt_Il8?cls=10
-**** TODO feat(gllm-privacy): support anonymization with an existing mapping (https://github.com/GDP-ADMIN/gl-sdk/pull/6214)
+*** TODO Partial match https://chat.google.com/dm/kVRRkyAAAAE/HR0oKY3CR2Y/HR0oKY3CR2Y?cls=10
 *** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
 *** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
 ** NER
@@ -13,27 +13,47 @@
 *** TODO Merek Dagang Entities
 *** TODO Investigate https://github.com/GDP-ADMIN/glchat/issues/11698
 ** MAB
-*** TODO delete gloria benchmark
-*** TODO recommendation (masukin cost juga ke AIP di email) https://mail.google.com/mail/u/0/#chat/space/AAAA4wgSydA
-*** TODO Eval suite
-*** DONE re-run ZDR models for other categories (https://docs.google.com/spreadsheets/d/12O69WX0y2Lhg5NP9GiZN5l14MYS87Tg7ReO3prp53xM/edit?gid=459567968#gid=459567968&range=A1:A2)
-*** TODO re-run gemma 3 31b for catapa de pm https://chat.google.com/room/AAQAOisDtVg/2dSWUEvfcyk/2dSWUEvfcyk?cls=10
-*** TODO benchmark qwen3.8-27B
+*** TODO Untuk SLM run eval_suite sekali semua sesudah inference untuk semua row https://chat.google.com/room/AAQAAFd5mQk/2Q-GykZDIdg/C6kL_mR91VI?cls=10
+*** TODO Fallback kalo kalian mau prose sheet, tolong bikin copynya ya, siapa tw ak mau itu ditunda dulu, jd bukan edit main sheet yg bakal diemail dan dicek orang
+*** DONE Re-run GLM 5.3 Flash.
+*** DONE Do code review recommendation 
+*** TODO Recommendation fallback https://chat.google.com/room/AAQAAFd5mQk/H9Y0WlA1LgU/H9Y0WlA1LgU?cls=10
+*** TODO Fallback feature
+*** DONE feat(evals): score every benchmark row with gllm-evals evaluate_suites https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1000
+*** TODO Recommendation (masukin cost juga ke AIP di email) https://mail.google.com/mail/u/0/#chat/space/AAAA4wgSydA
+*** TODO Add LLM As a judge recommendation https://chat.google.com/room/AAAA4wgSydA/g65icrv5I7o/eMBGVt1kvs8?cls=10
+*** TODO Skill automatically give code review recommendation
+*** TODO Add code review recommendation to recommendation table https://chat.google.com/room/AAQAAFd5mQk/hSovIzErIIg/hSovIzErIIg?cls=10
+**** LLM Recomendation https://docs.google.com/document/d/1Qt6bO6I_7DpPFnJFMNs2Coy7Hfbj0_0K3O0Lx7pCZ_k/edit?tab=t.0
+*** DONE Update TTFT Latency untuk pakai 10 CR
+*** TODO Accomodate AA, LM Arena give suggestions
 *** TODO API Key GLChat Beta
 *** TODO Explore and give recommendation for provider replacement
 *** TODO Investigate why GPT Luna performance is not showing in the RAG etc leaderboard
 *** TODO [BACKLOG] calibrate semua benchmark
 *** TODO [BACKLOG] create skill to update code review leaderboard
-*** DONE fix(visual-qa): run multimodal probe on benchmark loop https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/997
-*** DONE fix(aip): attach uploaded charts to multimodal judge prompts https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1001
 *** PR Reviews:
 **** TODO https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/989
-**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/993
-**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/994
-**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/957
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1010
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1009
 ** Others
 *** TODO Sentry migration stuff https://chat.google.com/room/AAAAbEcfi_E/Hcdhg1_7xTQ/Hcdhg1_7xTQ?cls=10
 *** TODO Ask DSO regarding https://chat.google.com/room/AAQAYdGYTVg/XUeCOgqKeys/xlKEB5ozVRE?cls=10
+
+* 24 August 2026
+** GLLM Privacy
+*** DONE Create public function https://chat.google.com/room/AAQA-yhQs0Y/hfVUaRtl43U/00xA_xt_Il8?cls=10
+**** DONE feat(gllm-privacy): support anonymization with an existing mapping https://github.com/GDP-ADMIN/gl-sdk/pull/6214
+** MAB
+*** DONE re-run ZDR models for other categories (https://docs.google.com/spreadsheets/d/12O69WX0y2Lhg5NP9GiZN5l14MYS87Tg7ReO3prp53xM/edit?gid=459567968#gid=459567968&range=A1:A2)
+*** DONE fix(visual-qa): run multimodal probe on benchmark loop https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/997
+*** DONE fix(aip): attach uploaded charts to multimodal judge prompts https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1001
+*** DONE feat(email): reproduce and send weekly recommendation reports https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1002
+*** PR Reviews:
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/993
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/994
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/957
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/965/
 
 * 17 August 2026
 ** Meemo

@@ -18,6 +18,7 @@ Minimal status bar for Hyprland using [Quickshell](https://quickshell.outfoxxed.
 `~/.scripts/quickshell-bar-stats` — bash script that outputs one JSON line per second with cpu, memory, backlight, audio, and network info. Source: `../../scripts/quickshell-bar-stats`.
 
 `~/.scripts/quickshell-clock-toggle` — toggles the standalone top-right clock by writing a state file under `~/.local/state/quickshell-clock-toggle`.
+`~/.scripts/quickshell-ghostty-status` — reports the focused Ghostty window's working directory and terminal-surface count as JSON.
 
 ## Gotchas
 

@@ -1,5 +1,44 @@
 local shared = require 'shared'
 
+-- Pyright sends hover markdown with `&nbsp;` for indentation and `\_` for
+-- escaped underscores. Both leak into the float as raw text, so clean the
+-- markdown prose before Neovim renders it. Fenced code blocks are left alone.
+local function clean_lsp_hover_markdown(value)
+  local lines = vim.split(value, '\n', { plain = true })
+  local in_fence = false
+  for i, line in ipairs(lines) do
+    if line:match '^%s*```' then
+      in_fence = not in_fence
+    elseif not in_fence then
+      line = line:gsub('&nbsp;', ' ')
+      line = line:gsub('\\_', '_')
+      lines[i] = line
+    end
+  end
+  return table.concat(lines, '\n')
+end
+
+local hover_handler = vim.lsp.handlers['textDocument/hover']
+vim.lsp.handlers['textDocument/hover'] = function(err, result, ctx, config)
+  if result and result.contents then
+    local contents = result.contents
+    if type(contents) == 'string' then
+      result.contents = clean_lsp_hover_markdown(contents)
+    elseif type(contents) == 'table' and contents.kind == 'markdown' then
+      contents.value = clean_lsp_hover_markdown(contents.value or '')
+    elseif type(contents) == 'table' and contents.kind == nil and contents.value == nil then
+      for i, item in ipairs(contents) do
+        if type(item) == 'string' then
+          contents[i] = clean_lsp_hover_markdown(item)
+        elseif type(item) == 'table' and item.kind == 'markdown' then
+          item.value = clean_lsp_hover_markdown(item.value or '')
+        end
+      end
+    end
+  end
+  return hover_handler(err, result, ctx, config)
+end
+
 local lsp_servers = {
   bashls = {
     cmd = { 'bash-language-server', 'start' },

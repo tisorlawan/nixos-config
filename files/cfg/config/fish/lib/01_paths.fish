@@ -7,6 +7,7 @@ set -x PATH "$HOME/.config/emacs/bin" $PATH
 set -x PATH "$HOME/.local/share/bob/nvim-bin" $PATH
 set -x PATH "$HOME/.local/share/gem/ruby/3.3.0/bin" $PATH
 set -x PATH "$HOME/.cache/npm/global/bin" $PATH
+set -x PATH "$HOME/.bend/bin" $PATH
 
 set -x ANDROID_HOME "$HOME/Android/Sdk"
 set -x PATH "$PATH" "$ANDROID_HOME/emulator"

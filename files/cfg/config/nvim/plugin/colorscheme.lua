@@ -73,11 +73,40 @@ end
 
 setup_kanagawa()
 
-if vim.o.bg == 'light' then
-  vim.cmd.colorscheme 'light'
-else
-  vim.cmd.colorscheme 'nightfox'
-  -- vim.cmd.colorscheme 'black'
+local function apply_color_mode()
+  vim.o.bg = get_color_config()
+  setup_nightfox()
+
+  if vim.o.bg == 'light' then
+    vim.cmd.colorscheme 'light'
+  else
+    vim.cmd.colorscheme 'nightfox'
+    -- vim.cmd.colorscheme 'black'
+  end
+end
+
+apply_color_mode()
+
+-- Re-apply the colorscheme when ~/.color changes (see ~/.scripts/set-color).
+-- One persistent handle: a write can queue several inotify events, so apply
+-- is debounced instead of re-arming a new watcher per event.
+do
+  local color_path = vim.fn.expand '~/.color'
+  local pending = false
+
+  local function apply_debounced()
+    if pending then
+      return
+    end
+    pending = true
+    vim.defer_fn(function()
+      pending = false
+      apply_color_mode()
+    end, 100)
+  end
+
+  local handle = vim.uv.new_fs_event()
+  handle:start(color_path, {}, vim.schedule_wrap(apply_debounced))
 end
 
 local function toggle_transparency()

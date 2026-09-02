@@ -127,9 +127,10 @@ EOF
   source /root/.bashrc
 
   # Tools
+  rm -rf ~/.local/share/bob/
   curl -fsSL https://raw.githubusercontent.com/MordechaiHadad/bob/master/scripts/install.sh | bash
-  bob install v0.12.4
-  bob use v0.12.4
+  ~/.local/bin/bob install v0.12.4
+  ~/.local/bin/bob use v0.12.4
 
   # CODEX_NON_INTERACTIVE=1 curl -fsSL https://chatgpt.com/codex/install.sh | sh
   # if [ -d ~/.codex ] && [ ! -L ~/.codex ]; then

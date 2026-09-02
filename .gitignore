@@ -13,3 +13,5 @@ files/cfg/config/rclone/rclone.conf
 secrets.org
 
 emacs/tree-sitter/*.so
+/.agent-shell/
+.commandcode

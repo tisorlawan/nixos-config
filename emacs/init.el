@@ -82,9 +82,17 @@
       (message "Frame transparency %s"
                (if transparent-p "disabled" "enabled")))))
 
+(defun my/color-mode ()
+  "Read the color mode from ~/.color (see ~/.scripts/set-color)."
+  (let ((mode (condition-case nil
+                  (with-temp-buffer
+                    (insert-file-contents "~/.color")
+                    (string-trim (buffer-string)))
+                (file-error ""))))
+    (if (string-prefix-p "light" mode) 'light 'dark)))
 (defun my/enable-frame-transparency (&optional frame)
-  "Set FRAME's background to 90% opacity."
-  (set-frame-parameter frame 'alpha-background 90))
+  "Set FRAME's background alpha: opaque in light mode, 90% in dark mode."
+  (set-frame-parameter frame 'alpha-background (if (eq (my/color-mode) 'light) 100 90)))
 
 (when (display-graphic-p)
   (my/enable-frame-transparency))
@@ -252,7 +260,8 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
   (global-set-key (kbd "C-x C-, t D") #'my/toggle-flymake-eol-diagnostics)
   (global-set-key (kbd "C-x C-, y p") #'my/copy-file-path)
   (global-set-key (kbd "C-x C-, y P") #'my/copy-file-path-absolute)
-  (global-set-key (kbd "C-x C-, t r") #'my/toggle-frame-transparency))
+  (global-set-key (kbd "C-x C-, t r") #'my/toggle-frame-transparency)
+  (global-set-key (kbd "C-x C-, t w") #'toggle-truncate-lines))
 
 
 (use-package which-key
@@ -274,6 +283,7 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
     "C-x C-, t n" "Line Numbers"
     "C-x C-, t p" "Auto Pair"
     "C-x C-, t r" "Transparency"
+    "C-x C-, t w" "Toggle Wrap"
 
     "C-x C-, f" "Find"
     "C-x C-, y" "Copy Path"
@@ -287,9 +297,19 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
     "C-x j" "Toggle Buffer"))
 
 
+
+(defun my/set-theme (mode)
+  "Enable the ef-themes variant matching MODE (`light' or `dark')."
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme (if (member mode '(light "light")) 'ef-light 'ef-maris-dark) t)
+  ;; Light mode is opaque; re-evaluate frame alpha on every live frame.
+  (when (display-graphic-p)
+    (dolist (frame (frame-list))
+      (my/enable-frame-transparency frame))))
+
 (use-package ef-themes
   :config
-  (load-theme 'ef-maris-dark))
+  (my/set-theme (my/color-mode)))
 
 
 (use-package isearch
@@ -785,7 +805,7 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
              (with-current-buffer buffer
                (let ((inhibit-read-only t))
                  (erase-buffer)
-                 (insert (string-replace "&nbsp;" " " documentation))
+                 (insert (string-replace "\\_" "_" (string-replace "&nbsp;" " " documentation)))
                  (goto-char (point-min)))
                (help-mode)
                (evil-local-mode 1)
@@ -966,6 +986,9 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
 (use-package evil-ghostel
   :after (ghostel evil)
   :hook (ghostel-mode . evil-ghostel-mode)
+  :custom
+  ;; Keep ESC for the terminal app; `C-c C-t' enters Evil normal state.
+  (evil-ghostel-escape 'terminal)
   :config
   (defun my/ghostel-history-previous ()
     "Send an up-arrow key to the terminal."
@@ -979,6 +1002,8 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
 
   (evil-define-key* 'insert evil-ghostel-mode-map
     (kbd "C-y") #'ghostel-paste)
+  (evil-define-key* '(normal insert visual) evil-ghostel-mode-map
+    (kbd "C-c C-t") #'evil-force-normal-state)
   (evil-define-key* '(normal insert) evil-ghostel-mode-map
     (kbd "C-p") #'tiso/fff-find-file
     (kbd "C-n") #'consult-buffer
@@ -992,32 +1017,6 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
   :after evil
   :config
   (evil-collection-init))
-
-(use-package agent-shell
-  :defer t
-  :custom
-  (agent-shell-header-style 'text)
-  (agent-shell-show-welcome-message nil)
-  :preface
-  (defun my/enable-evil-agent-shell ()
-    "Select the appropriate Evil state for the current Agent Shell buffer."
-    (evil-local-mode 1)
-    (if (derived-mode-p 'agent-shell-viewport-edit-mode)
-        (evil-insert-state)
-      (evil-normal-state)))
-  :hook
-  ((agent-shell-mode
-    agent-shell-viewport-view-mode
-    agent-shell-viewport-edit-mode
-    agent-shell-diff-mode) . my/enable-evil-agent-shell)
-  :config
-  (dolist (buffer (buffer-list))
-    (with-current-buffer buffer
-      (when (derived-mode-p 'agent-shell-mode
-                            'agent-shell-viewport-view-mode
-                            'agent-shell-viewport-edit-mode
-                            'agent-shell-diff-mode)
-        (my/enable-evil-agent-shell)))))
 
 (defun my/shell-root ()
   "Project root if inside a project, else the current directory."
@@ -1038,10 +1037,7 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
 
 (defun my/shell-buffer-p ()
   "Return non-nil when the current buffer is a managed shell."
-  (derived-mode-p 'ghostel-mode
-                  'agent-shell-mode
-                  'agent-shell-viewport-view-mode
-                  'agent-shell-viewport-edit-mode))
+  (derived-mode-p 'ghostel-mode))
 
 (require 'project)
 
@@ -1107,26 +1103,7 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
             (my/remember-shell-workspace)
             (pop-to-buffer buffer)
             (delete-other-windows))
-        (my/agent-shell-max)))))
-
-(defun my/agent-shell-max (&optional prompt-for-agent)
-  "Switch to a project shell, or choose an agent when creating one."
-  (interactive "P")
-  (my/remember-shell-workspace)
-  (require 'agent-shell)
-  (let* ((root (my/shell-root))
-         (default-directory root)
-         (buffer
-          (or (agent-shell--shell-buffer :no-create t :no-error t)
-              (agent-shell--start
-               :config (if prompt-for-agent
-                           (agent-shell-select-config :prompt "Start new agent: ")
-                         (agent-shell-omp-make-agent-config))
-               :no-focus t
-               :new-session t))))
-    (my/remember-shell-buffer root buffer)
-    (pop-to-buffer buffer))
-  (delete-other-windows))
+        (my/ghostel-slot 1)))))
 
 (defun my/ghostel-slot (n)
   "Switch to or create Ghostel slot N for the current project."
@@ -1140,9 +1117,8 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
     (my/remember-shell-buffer root buffer))
   (delete-other-windows))
 
-(global-set-key (kbd "M-1") #'my/agent-shell-max)
-(dotimes (index 4)
-  (let ((slot (+ index 2)))
+(dotimes (index 5)
+  (let ((slot (1+ index)))
     (global-set-key (kbd (format "M-%d" slot))
                     (lambda ()
                       (interactive)
@@ -1153,3 +1129,9 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
 (global-set-key (kbd "C-c r") #'recompile)
 (global-set-key (kbd "<f5>") #'compile)
 (global-set-key (kbd "S-<f5>") #'recompile)
+
+;; Serve the default socket so emacsclient works; set-color pushes theme
+;; changes through it. Harmless if another instance owns the socket.
+(require 'server)
+(unless (server-running-p)
+  (server-start))

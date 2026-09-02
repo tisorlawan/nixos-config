@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#
+# Flip dark/light mode. Reads the current mode from ~/.color and inverts it;
+# when unset, dark is treated as the current default.
+
+set -euo pipefail
+
+current="$(cat "$HOME/.color" 2>/dev/null || true)"
+case "$current" in
+light) next=dark ;;
+*) next=light ;;
+esac
+
+exec "$(dirname -- "${BASH_SOURCE[0]}")/set-color" "$next"

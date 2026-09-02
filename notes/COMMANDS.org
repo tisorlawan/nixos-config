@@ -16,8 +16,14 @@ curl -sS https://accuracy-benchmark-opensource-vllm-2.obrol.id/v1/models -H "Aut
 /turn-azure-glair off glair-gl-vllm-opensource-1
 /turn-azure-glair off glair-gl-vllm-opensource-2
 
+/gcb_run gdp-labs:model-accuracy-benchmarking-push-model-accuracy-benchmark-stag --branch=feat/frontend-db --region=asia-southeast2
+/gcb_run gdp-labs:model-accuracy-benchmarking-deployment-kubernetes-stag --branch=feat/frontend-db --region=asia-southeast2
+python -c "from alembic import command; from alembic.config import Config; c=Config(); c.set_main_option('script_location','/app/model_accuracy_benchmark/db/migrations'); command.downgrade(c,'base')"
+kubectl --context enderman.gdplabs.net-gl-exploration-eks -n model-accuracy-benchmarking-stag exec -it pods/model-accuracy-benchmark-api-7d7f66b6cc-mb6dm -- bash
+CTX=enderman.gdplabs.net-gl-exploration-eks NS=model-accuracy-benchmarking-stag kubectl --context "$CTX" -n "$NS" exec -it deploy/model-accuracy-benchmark-api -- bash
+
 /gcb_run gdp-labs:model-accuracy-benchmarking-push-model-accuracy-benchmark-stag --branch=f/1cu-latency-ttft --region=asia-southeast2
-/gcb_run gdp-labs:model-accuracy-benchmarking-deployment-kubernetes-stag --branch=f/1cu-latency-ttft --region=asia-southeast2 --substitutions='{"_COMMIT_ID":"fec474c","_MODULE":"model-accuracy-benchmark"}'
+/gcb_run gdp-labs:model-accuracy-benchmarking-deployment-kubernetes-stag --branch=feat/frontend-db --region=asia-southeast2 --substitutions='{"_COMMIT_ID":"fec474c","_MODULE":"model-accuracy-benchmark"}'
 
 /turn-gl-project enable-schedule model-accuracy-benchmarking-prod
 /turn-gl-project disable-schedule model-accuracy-benchmarking-prod

@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# List ghostty windows by shell cwd in rofi; select one to focus it.
+set -euo pipefail
+
+shorten_cwd() {
+  local cwd="$1"
+  if [[ "$cwd" == "$HOME" ]]; then
+    printf '~'
+  elif [[ "$cwd" == "$HOME"/* ]]; then
+    printf '~/%s' "${cwd#"$HOME"/}"
+  else
+    printf '%s' "$cwd"
+  fi
+}
+
+# First shell cwd found under the window pid, same walk as
+# quickshell-ghostty-status: window -> surfaces -> shells.
+resolve_cwd() {
+  local pid="$1" surface child child_pid child_comm candidate_cwd
+  mapfile -t surfaces < <(ps --ppid "$pid" -o pid= 2>/dev/null | tr -d ' ' | sort -n)
+  for surface in "${surfaces[@]}"; do
+    [[ "$surface" =~ ^[0-9]+$ ]] || continue
+    mapfile -t children < <(ps --ppid "$surface" -o pid=,comm= 2>/dev/null)
+    for child in "${children[@]}"; do
+      read -r child_pid child_comm <<< "$child"
+      [[ "$child_pid" =~ ^[0-9]+$ ]] || continue
+      case "$child_comm" in
+        bash | fish | nu | nushell | sh | zsh) ;;
+        *) continue ;;
+      esac
+      candidate_cwd="$(readlink -f "/proc/$child_pid/cwd" 2>/dev/null || true)"
+      if [[ -n "$candidate_cwd" && -d "$candidate_cwd" ]]; then
+        printf '%s\n' "$candidate_cwd"
+        return 0
+      fi
+    done
+  done
+  return 1
+}
+
+command -v hyprctl >/dev/null 2>&1 || exit 1
+command -v jq >/dev/null 2>&1 || exit 1
+[ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ] || exit 1
+
+mapfile -t windows < <(hyprctl clients -j 2>/dev/null | jq -r '
+  [ .[]
+    | select(.mapped and ((.class // "") | ascii_downcase | contains("ghostty")))
+  ] | sort_by([(if .focusHistoryID == 0 then 1 else 0 end), .focusHistoryID])
+    | .[] | "\(.address)\t\(.pid)\t\(.workspace.name // "?")\t\(.title // "")"
+')
+[ "${#windows[@]}" -gt 0 ] || exit 0
+
+addresses=()
+entries=()
+for window in "${windows[@]}"; do
+  IFS=$'\t' read -r address pid ws title <<< "$window"
+  [[ "$pid" =~ ^[0-9]+$ ]] && [[ -d "/proc/$pid" ]] || continue
+  cwd="$(resolve_cwd "$pid" || true)"
+  [[ -n "$cwd" ]] || continue
+  row="$(shorten_cwd "$cwd")   [ws $ws]"
+  [[ -n "$title" ]] && row+="   $title"
+  addresses+=("$address")
+  entries+=("$row")
+done
+[ "${#entries[@]}" -gt 0 ] || exit 0
+
+# -format i returns the row index, so duplicate cwds stay unambiguous.
+index="$(printf '%s\n' "${entries[@]}" | rofi -dmenu -p "ghostty" -format i)" || exit 0
+[[ "$index" =~ ^[0-9]+$ ]] || exit 0
+[[ -n "${addresses[$index]:-}" ]] || exit 0
+
+exec hyprctl dispatch focuswindow "address:${addresses[$index]}"

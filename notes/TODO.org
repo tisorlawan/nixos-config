@@ -1,39 +1,104 @@
-* 31 August 2026
-** TODO Rerelease  https://chat.google.com/room/AAAA_HPfXJU/JXSNg94yrQk/18dN6-lYShE?cls=10
-** Meemo
-*** TODO Evaluate migration to deepseek for summarization
+* 21 September 2026
+** NER
+*** TODO [GLChat NER] 2 findings - DAST scan #395
+*** TODO Update NER model and deployment
+**** DONE feat(ner): detect BRAND_NAME entities and upgrade model to v1-01 https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/215 
+**** TODO Update docs and version tracker
+*** TODO PERSON dipisah tab https://chat.google.com/room/AAQAYtQZtE0/a1sjC6GY-Ws/_okEaa3tb9s?cls=10
+*** TODO Make so that InvalidClientException is not recorded in sentry maybe (https://sentry.obrol.id/organizations/sentry-gdplabs/issues/159013/?environment=staging&project=16&query=is%3Aunresolved%20issue.priority%3A%5Bhigh%2C%20medium%5D&referrer=issue-stream)
+*** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
+*** TODO fix tab between person name
 ** GLLM Privacy
 *** TODO Partial match https://chat.google.com/dm/kVRRkyAAAAE/HR0oKY3CR2Y/HR0oKY3CR2Y?cls=10
 *** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
 *** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
-** NER
-*** TODO PERSON dipisah tab https://chat.google.com/room/AAQAYtQZtE0/a1sjC6GY-Ws/_okEaa3tb9s?cls=10
-*** TODO Make so that InvalidClientException is not recorded in sentry maybe (https://sentry.obrol.id/organizations/sentry-gdplabs/issues/159013/?environment=staging&project=16&query=is%3Aunresolved%20issue.priority%3A%5Bhigh%2C%20medium%5D&referrer=issue-stream)
-*** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
-*** TODO Merek Dagang Entities
-*** TODO Investigate https://github.com/GDP-ADMIN/glchat/issues/11698
+*** TODO fix tab between person name
+*** TODO fix URL 'Text: Parag Agrawal (Former CEO/CTO of Twitter), email aku agung.b.sorlawan@gdplabs.id'
 ** MAB
+*** TODO Review PRs
+**** feat(benchmark): add smart mode router benchmark https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1088
+**** DONE fix(llm-judge): stop groundedness crash on refusal rows https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1087
+*** TODO Run LLM As Judge Model (google/gemini-3.1-flash-lite, https://github.com/GDP-ADMIN/gl-sdk/issues/5961, https://chat.google.com/room/AAQAE-LjMvQ/9vuutw76Y-0/HXXTRJaiTrs?cls=10)
+*** TODO Create LLM recommendation in MAB FE
+*** TODO ZDR seed
+*** TODO Performance benchmark seed
+*** TODO LLM Recommendations 
+*** TODO Recommendations
+**** TODO Tiered recommendation 
+**** TODO Impact kalo RAG cuma 2
+**** TODO cm fallback kita jadi beberapa ya
+     Di tier yg sama bisa ada
+     1. luna oai direct
+     2. luna OR azure
+*** TODO DE exploration
+*** TODO issue cost inference AIP https://docs.google.com/spreadsheets/d/1FW8J97BnwwcmdhPpkAIikMN4IqgSvFtgxEP9ER_fZFE/edit?gid=571881137#gid=571881137&range=A2
 *** TODO Untuk SLM run eval_suite sekali semua sesudah inference untuk semua row https://chat.google.com/room/AAQAAFd5mQk/2Q-GykZDIdg/C6kL_mR91VI?cls=10
-*** TODO Fallback kalo kalian mau prose sheet, tolong bikin copynya ya, siapa tw ak mau itu ditunda dulu, jd bukan edit main sheet yg bakal diemail dan dicek orang
-*** DONE Re-run GLM 5.3 Flash.
-*** DONE Do code review recommendation 
+*** TODO Benchmark Embedding https://chat.google.com/room/AAAA4wgSydA/K8zUmiRlDRk/6zfXxAx51SE?cls=10
+**** PR https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1025
 *** TODO Recommendation fallback https://chat.google.com/room/AAQAAFd5mQk/H9Y0WlA1LgU/H9Y0WlA1LgU?cls=10
-*** TODO Fallback feature
-*** DONE feat(evals): score every benchmark row with gllm-evals evaluate_suites https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1000
 *** TODO Recommendation (masukin cost juga ke AIP di email) https://mail.google.com/mail/u/0/#chat/space/AAAA4wgSydA
 *** TODO Add LLM As a judge recommendation https://chat.google.com/room/AAAA4wgSydA/g65icrv5I7o/eMBGVt1kvs8?cls=10
 *** TODO Skill automatically give code review recommendation
 *** TODO Add code review recommendation to recommendation table https://chat.google.com/room/AAQAAFd5mQk/hSovIzErIIg/hSovIzErIIg?cls=10
 **** LLM Recomendation https://docs.google.com/document/d/1Qt6bO6I_7DpPFnJFMNs2Coy7Hfbj0_0K3O0Lx7pCZ_k/edit?tab=t.0
-*** DONE Update TTFT Latency untuk pakai 10 CR
 *** TODO Accomodate AA, LM Arena give suggestions
 *** TODO API Key GLChat Beta
 *** TODO Explore and give recommendation for provider replacement
-*** TODO Investigate why GPT Luna performance is not showing in the RAG etc leaderboard
 *** TODO [BACKLOG] calibrate semua benchmark
 *** TODO [BACKLOG] create skill to update code review leaderboard
+
+* 14 September 2026
+** DONE Migrate MSCDX from Gemini to Vertex AI https://github.com/GDP-ADMIN/dummy-gl-sdk/issues/3402
+*** DONE fix: convert to vertex https://github.com/GDP-ADMIN/mscdx-api/pull/33
+** NER
+*** DONE <PA Item> Fine tune and add BRAND NAME
+** GLLM Privacy
+*** DONE feat(gllm-privacy): support brand-name anonymization (https://github.com/GDP-ADMIN/gl-sdk/pull/6817)
+** MAB
+*** DONE show build version in the MAB FE (already implemented in branch f/show-build-version)
+*** TODO LLM Recommendations 
+**** DONE Create docs explaining the AIP selection tiered
+**** DONE Create Cost/task
+**** DONE ZDR recommendations that use 'openrouter (azure)' is changed to direct openai
+*** DONE Update MAB to use gllm-evals native cost/task
+*** DONE MAB use LMBasedMetric from gllm-evals instead of its own LLMBasedMetric
+*** DONE <PA Item> Migrate runs to DB
+*** DONE AEW recommendation
+
+* 7 September 2026
+** MEEMO
+*** DONE Test Deepseek, GLM 5.3 Flash for Meemo
+**** DONE re-run summarization data for evaluations 
+*** DONE Migrate Meemo Summarization to GLM 5.3 Flash
+**** feat: migrate LLM default routing to OpenRouter (https://github.com/GDP-ADMIN/services-llm-service/pull/41)
+** NER
+*** DONE Continue finetuning NER model, result +2% F1 from previous week.
+** MAB
+*** TODO issue cost inference AIP https://docs.google.com/spreadsheets/d/1FW8J97BnwwcmdhPpkAIikMN4IqgSvFtgxEP9ER_fZFE/edit?gid=571881137#gid=571881137&range=A2
+*** DONE Benchmark models
+**** deepseek-flash
+*** DONE Benchmark cost/task for recommended models
+*** DONE Fix Vertex Related Issues
+**** DONE fix: remove unnecessary parameters from vertex (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1047)
+**** DONE feat(aip): use Vertex credentials for Google models (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1039)
+
+* 31 August 2026
+** Meemo
+*** DONE Update metadata for Gemini Vertex summarization
+** GLLM Privacy
+*** DONE Rerelease https://chat.google.com/room/AAAA_HPfXJU/JXSNg94yrQk/18dN6-lYShE?cls=10
+** MAB
+*** DONE fix(leaderboard): append missing spreadsheet columns without rewriting rows (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1033)
+*** DONE Re-run GLM 5.3 Flash.
+*** DONE Create code review recommendation 
+*** DONE Create AIP Fallback recommendation
+*** DONE feat(evals): score every benchmark row with gllm-evals evaluate_suites https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1000
+*** DONE Update TTFT Latency untuk pakai 10 CR
+*** DONE feat: migrate Google API to Vertex (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1028)
+*** DONE feat: use google/gemini-3.1-flash-lite as eval judge (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1027)
+*** DONE feat(skill): add code review recommendation skill (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1020)
 *** PR Reviews:
-**** TODO https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/989
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/989
 **** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1010
 **** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1009
 ** Others
@@ -72,9 +137,9 @@
 **** Deepseek v4 flash pricing update
 ** Meemo
 *** DONE Google Generative AI (Gemini) API Key https://docs.google.com/spreadsheets/d/1DIL-S25iybAAAaFzOOHOIo7bVpBIEiiwj2Ya4VvqsAo/edit?gid=0#gid=0
-team:<team-name>
-environment:production / environment:test
-component:<component-name>
+    team:<team-name>
+    environment:production / environment:test
+    component:<component-name>
 **** DONE feat: migrate Gemini integration to Vertex AI (https://github.com/GDP-ADMIN/services-llm-service/pull/39)
 *** DONE Setup vertex AI for Meemo summarization
 ** NER
@@ -96,120 +161,120 @@ component:<component-name>
 ** Model Accuracy Benchmarking
 *** DONE Benchmark qwen3.8-max
 *** DONE Benchmark new deepseek
-LLM
-Previous version of deepseek-v4-flash
-+----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
-| Model Type           | Cost/25K | T1CU | Lat1CU  | T100CU | Lat100CU  | Botanica | Finstat | Hermes | Korika | Vowel  | Accuracy |
-+----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
-| Reasoning            | $101.85  | 0.68 | 11.55   | 0.89   | 14.20     | 89.00%   | 96.15%  | 86.27% | 86.00% | 76.27% | 86.74%   |
-| Instruction Following| $101.85  | 0.68 | 11.55   | 0.89   | 14.20     | 94.00%   | 96.15%  | 80.39% | 86.00% | 76.27% | 86.56%   |
-+----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
-New version of deepseek-v4-flash (using DeepSeek-V4-Flash-0731) (source:  https://api-docs.deepseek.com/)
-+----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
-| Model Type           | Cost/25K | T1CU | Lat1CU  | T100CU | Lat100CU  | Botanica | Finstat | Hermes | Korika | Vowel  | Accuracy |
-+----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
-| Reasoning            | $101.85  | 0.45 | 12.26   | 0.64   | 12.48     | 96.00%   | 98.08%  | 87.25% | 82.00% | 93.22% | 91.31%   |
-| Instruction Following| $101.85  | 0.45 | 12.26   | 0.64   | 12.48     | 95.00%   | 98.08%  | 92.16% | 78.00% | 86.44% | 89.93%%  |
-+----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
+    LLM
+    Previous version of deepseek-v4-flash
+    +----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
+    | Model Type           | Cost/25K | T1CU | Lat1CU  | T100CU | Lat100CU  | Botanica | Finstat | Hermes | Korika | Vowel  | Accuracy |
+    +----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
+    | Reasoning            | $101.85  | 0.68 | 11.55   | 0.89   | 14.20     | 89.00%   | 96.15%  | 86.27% | 86.00% | 76.27% | 86.74%   |
+    | Instruction Following| $101.85  | 0.68 | 11.55   | 0.89   | 14.20     | 94.00%   | 96.15%  | 80.39% | 86.00% | 76.27% | 86.56%   |
+    +----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
+    New version of deepseek-v4-flash (using DeepSeek-V4-Flash-0731) (source:  https://api-docs.deepseek.com/)
+    +----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
+    | Model Type           | Cost/25K | T1CU | Lat1CU  | T100CU | Lat100CU  | Botanica | Finstat | Hermes | Korika | Vowel  | Accuracy |
+    +----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
+    | Reasoning            | $101.85  | 0.45 | 12.26   | 0.64   | 12.48     | 96.00%   | 98.08%  | 87.25% | 82.00% | 93.22% | 91.31%   |
+    | Instruction Following| $101.85  | 0.45 | 12.26   | 0.64   | 12.48     | 95.00%   | 98.08%  | 92.16% | 78.00% | 86.44% | 89.93%%  |
+    +----------------------+----------+------+---------+--------+-----------+----------+---------+--------+--------+--------+----------+
 
-SLM
-Previous version of deepseek-v4-flash
-+-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
-| SLM               | Provider | Model Type           | Licensing   | Cost/25K | T1CU | Lat1  | T100CU | Lat100  | Title Gen | Guardrail| GLChat Router | Query Transformer | Total |
-+-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
-| deepseek-v4-flash | deepseek | Instruction Following| Open Source | $101.85  | 0.68 | 11.55 | 0.89   | 14.20   | 91.50%    | 94.00%   | 99.00%        | 98.47%            | 95.74%|
-+-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
-New version of deepseek-v4-flash (using DeepSeek-V4-Flash-0731) (source:  https://api-docs.deepseek.com/)
-+-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
-| SLM               | Provider | Model Type           | Licensing   | Cost/25K | T1CU | Lat1  | T100CU | Lat100  | Title Gen | Guardrail| GLChat Router | Query Transformer | Total |
-+-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
-| deepseek-v4-flash | deepseek | Instruction Following| Open Source | $101.85  | 0.45 | 12.26 | 0.64   | 12.48   | 93.50%    | 98.00%   | 98.00%        | 99.23%            | 97.18%|
-+-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
+    SLM
+    Previous version of deepseek-v4-flash
+    +-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
+    | SLM               | Provider | Model Type           | Licensing   | Cost/25K | T1CU | Lat1  | T100CU | Lat100  | Title Gen | Guardrail| GLChat Router | Query Transformer | Total |
+    +-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
+    | deepseek-v4-flash | deepseek | Instruction Following| Open Source | $101.85  | 0.68 | 11.55 | 0.89   | 14.20   | 91.50%    | 94.00%   | 99.00%        | 98.47%            | 95.74%|
+    +-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
+    New version of deepseek-v4-flash (using DeepSeek-V4-Flash-0731) (source:  https://api-docs.deepseek.com/)
+    +-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
+    | SLM               | Provider | Model Type           | Licensing   | Cost/25K | T1CU | Lat1  | T100CU | Lat100  | Title Gen | Guardrail| GLChat Router | Query Transformer | Total |
+    +-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
+    | deepseek-v4-flash | deepseek | Instruction Following| Open Source | $101.85  | 0.45 | 12.26 | 0.64   | 12.48   | 93.50%    | 98.00%   | 98.00%        | 99.23%            | 97.18%|
+    +-------------------+----------+----------------------+-------------+----------+------+-------+--------+---------+-----------+----------+---------------+-------------------+-------+
 
 
-AIP
-Previous version of deepseek-v4-flash
-+-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+--------+
-| AIP               | Provider | Model Type            | Licensing   | Cost/1 | Cost/25K | T1CU | Lat1  | T100CU | Lat100 | Acc.   |
-+-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+--------+
-| deepseek-v4-flash | deepseek | Reasoning             | Open Source | $0.00  | $101.85  | 0.68 | 11.55 | 0.89   | 14.20  | 62.32% |
-| deepseek-v4-flash | deepseek | Instruction Following | Open Source | $0.00  | $101.85  | 0.68 | 11.55 | 0.89   | 14.20  | 91.30% |
-+-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+--------+
-New version of deepseek-v4-flash (using DeepSeek-V4-Flash-0731) (source:  https://api-docs.deepseek.com/)
-+-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+---------+
-| AIP               | Provider | Model Type            | Licensing   | Cost/1 | Cost/25K | T1CU | Lat1  | T100CU | Lat100 | Acc.    |
-+-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+---------+
-| deepseek-v4-flash | deepseek | Reasoning             | Open Source | $0.00  | $101.85  | 0.45 | 12.26 | 0.64   | 12.48  | 100.00% |
-| deepseek-v4-flash | deepseek | Instruction Following | Open Source | $0.00  | $101.85  | 0.45 | 12.26 | 0.64   | 12.48  | 98.55%  |
-+-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+---------+
+    AIP
+    Previous version of deepseek-v4-flash
+    +-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+--------+
+    | AIP               | Provider | Model Type            | Licensing   | Cost/1 | Cost/25K | T1CU | Lat1  | T100CU | Lat100 | Acc.   |
+    +-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+--------+
+    | deepseek-v4-flash | deepseek | Reasoning             | Open Source | $0.00  | $101.85  | 0.68 | 11.55 | 0.89   | 14.20  | 62.32% |
+    | deepseek-v4-flash | deepseek | Instruction Following | Open Source | $0.00  | $101.85  | 0.68 | 11.55 | 0.89   | 14.20  | 91.30% |
+    +-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+--------+
+    New version of deepseek-v4-flash (using DeepSeek-V4-Flash-0731) (source:  https://api-docs.deepseek.com/)
+    +-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+---------+
+    | AIP               | Provider | Model Type            | Licensing   | Cost/1 | Cost/25K | T1CU | Lat1  | T100CU | Lat100 | Acc.    |
+    +-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+---------+
+    | deepseek-v4-flash | deepseek | Reasoning             | Open Source | $0.00  | $101.85  | 0.45 | 12.26 | 0.64   | 12.48  | 100.00% |
+    | deepseek-v4-flash | deepseek | Instruction Following | Open Source | $0.00  | $101.85  | 0.45 | 12.26 | 0.64   | 12.48  | 98.55%  |
+    +-------------------+----------+-----------------------+-------------+--------+----------+------+-------+--------+--------+---------+
 
 
 
 *** DONE Self managed add latency troughput https://chat.google.com/room/AAQAAFd5mQk/loDiy7wDDMs/1Pp5Xhl5b4g?cls=10
-+------------------+-------------+----------------+
-| Model            | MTP Latency | MTP Throughput |
-+------------------+-------------+----------------+
-| Gemma 4 31B      | 16.92s      | 53 tok/s       |
-| Gemma 4 26B-A4B  | 7.78s       | 124 tok/s      |
-+------------------+-------------+----------------+
-Source: https://docs.google.com/document/d/10wss3i1TxspZ-VTtdtBCP8qsJFTahr4uCyb7RKOqaeQ/edit?tab=t.0#heading=h.7s4sg4hrvfc3
+    +------------------+-------------+----------------+
+    | Model            | MTP Latency | MTP Throughput |
+    +------------------+-------------+----------------+
+    | Gemma 4 31B      | 16.92s      | 53 tok/s       |
+    | Gemma 4 26B-A4B  | 7.78s       | 124 tok/s      |
+    +------------------+-------------+----------------+
+    Source: https://docs.google.com/document/d/10wss3i1TxspZ-VTtdtBCP8qsJFTahr4uCyb7RKOqaeQ/edit?tab=t.0#heading=h.7s4sg4hrvfc3
 
 *** DONE Minta tolong DD cek gpt 5.6 terra
-True
-- Botanica
-    - before: 87.00
-    - after: 90.00
-- Djarum
-    - before: 89.22
-    - after: 87.25
-- Finstat
-    - bfore: N/A
-    - after: 96.15
-- Vowel
-    - before: 89.83
-    - after: 91.53
-- Korika
-    - before: N/A
-    - after: 86.00
+    True
+    - Botanica
+      - before: 87.00
+      - after: 90.00
+    - Djarum
+      - before: 89.22
+      - after: 87.25
+    - Finstat
+      - bfore: N/A
+      - after: 96.15
+    - Vowel
+      - before: 89.83
+      - after: 91.53
+    - Korika
+      - before: N/A
+      - after: 86.00
 
-False
-- Botanica
-    - before: 95.00
-    - after : 95.00
-- Djarum
-    - before: 84.31
-    - after: 89.22
-- Finstat
-    - bfore: N/A
-    - after: 98.08
-- Vowel
-    - before: 83.05
-    - after: 84.75
-- Korika
-    - before: N/A
-    - after: 76.00
+    False
+    - Botanica
+      - before: 95.00
+      - after : 95.00
+    - Djarum
+      - before: 84.31
+      - after: 89.22
+    - Finstat
+      - bfore: N/A
+      - after: 98.08
+    - Vowel
+      - before: 83.05
+      - after: 84.75
+    - Korika
+      - before: N/A
+      - after: 76.00
 
-+-----------+----------+---------+----------+
-| Reasoning | Project  | Before  | After    |
-+-----------+----------+---------+----------+
-| True      | Botanica | 95.00%  | 95.00%   |
-| True      | Djarum   | 89.22%  | 87.25%   |
-| True      | Finstat  | N/A     | 96.15%   |
-| True      | Vowel    | 89.83%  | 91.53%   |
-| True      | Korika   | N/A     | 86.00%   |
-+-----------+----------+---------+----------+
-| False     | Botanica | 87.00%  | 90.00%   |
-| False     | Djarum   | 84.31%  | 89.21%   |
-| False     | Finstat  | N/A     | 98.08%   |
-| False     | Vowel    | 83.05%  | 84.75%   |
-| False     | Korika   | N/A     | 76.00%   |
-+-----------+----------+---------+----------+
-+-----------+-------------+------------+----------+
-| Reasoning | Before Avg. | After Avg. | Change   |
-+-----------+-------------+------------+----------+
-| True      |
-| False     |
-+-----------+-------------+------------+----------+
+    +-----------+----------+---------+----------+
+    | Reasoning | Project  | Before  | After    |
+    +-----------+----------+---------+----------+
+    | True      | Botanica | 95.00%  | 95.00%   |
+    | True      | Djarum   | 89.22%  | 87.25%   |
+    | True      | Finstat  | N/A     | 96.15%   |
+    | True      | Vowel    | 89.83%  | 91.53%   |
+    | True      | Korika   | N/A     | 86.00%   |
+    +-----------+----------+---------+----------+
+    | False     | Botanica | 87.00%  | 90.00%   |
+    | False     | Djarum   | 84.31%  | 89.21%   |
+    | False     | Finstat  | N/A     | 98.08%   |
+    | False     | Vowel    | 83.05%  | 84.75%   |
+    | False     | Korika   | N/A     | 76.00%   |
+    +-----------+----------+---------+----------+
+    +-----------+-------------+------------+----------+
+    | Reasoning | Before Avg. | After Avg. | Change   |
+    +-----------+-------------+------------+----------+
+    | True      |
+    | False     |
+    +-----------+-------------+------------+----------+
 *** DONE fix: update finstat formula (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/939)
 *** DONE feat: add openrouter parameters (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/941)
 *** DONE fix: add prompt templates (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/949)
@@ -252,9 +317,9 @@ False
 **** Create GPU detail requirement for generation models (https://docs.google.com/spreadsheets/d/158elBCQE3nOCehuCQHUd0O6jddHnwIUHw3sMmhFiV00/edit?gid=0#gid=0)
 **** Update TOP 10 LLM Model - Price to Performances
 *** DONE change korikachat beta URL (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/908)
-- staging: https://stag-gbe-gdplabs-gen-ai-starter.obrol.id/
-- beta: https://beta-gbe-gdplabs-gen-ai-starter.obrol.id/
-- prod: https://glchat-api.glair.ai/
+    - staging: https://stag-gbe-gdplabs-gen-ai-starter.obrol.id/
+    - beta: https://beta-gbe-gdplabs-gen-ai-starter.obrol.id/
+    - prod: https://glchat-api.glair.ai/
 *** PR Reviews
 **** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/875
 **** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/882
@@ -274,7 +339,7 @@ False
 *** DONE fix(glchat-router): map router input to source (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/896)
 ** GLLM Evals
 *** DONE docs(gllm-evals): use aip data analysis chart as example https://github.com/GDP-ADMIN/gl-sdk/pull/5544
-- chat: https://chat.google.com/room/AAQAE-LjMvQ/_5IJyGwcRjA/CIahuY6qEUE?cls=10
+    - chat: https://chat.google.com/room/AAQAE-LjMvQ/_5IJyGwcRjA/CIahuY6qEUE?cls=10
 *** PR Reviews
 **** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/5542
 **** DONE https://github.com/gdplabs/gen-ai-sdk-cookbook/pull/86
@@ -360,9 +425,9 @@ False
 *** MSCDX
 **** DONE feat: add aspect sentiment debug (https://github.com/GDP-ADMIN/mscdx-api/pull/31)
 **** DONE Setup quota for testing
-#+BEGIN_SRC bash
-set usage_limit:JVHugTXgIDFLSaZnkaBzEUlUDranLDGo 41104555
-#+END_SRC
+     #+BEGIN_SRC bash
+     set usage_limit:JVHugTXgIDFLSaZnkaBzEUlUDranLDGo 41104555
+     #+END_SRC
 **** DONE Create docs explaining OOT data
 **** DONE MSCDX Add information about remaining quota https://github.com/GDP-ADMIN/dummy-gl-sdk/issues/2467 (PR: https://github.com/GDP-ADMIN/mscdx-api/pull/32)
 
@@ -395,9 +460,9 @@ set usage_limit:JVHugTXgIDFLSaZnkaBzEUlUDranLDGo 41104555
 **** https://github.com/gdp-admin/gl-sdk/pull/4854
 ** other
 *** done [regetch skk] send patch for bca
-  - email           : https://mail.google.com/mail/u/0/#inbox/fmfcgzqgmcwfndxhctcrtppsvxhlqzlx
-  - new node version: v24.15.0
-  - build time      : 20260614-1828
-  - upload location : https://drive.google.com/drive/folders/119dlal9i3_br7qqewd-apkcuj_pm4c9x
+    - email           : https://mail.google.com/mail/u/0/#inbox/fmfcgzqgmcwfndxhctcrtppsvxhlqzlx
+    - new node version: v24.15.0
+    - build time      : 20260614-1828
+    - upload location : https://drive.google.com/drive/folders/119dlal9i3_br7qqewd-apkcuj_pm4c9x
 *** done review vocal fsd https://docs.google.com/document/d/1qnxfnnzqb2hic2lfv3v0x4teuy9mp4g3/edit
 *** done submit interview assesment for candidate

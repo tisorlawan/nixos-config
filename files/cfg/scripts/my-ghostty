@@ -134,6 +134,8 @@ window-padding-color = background
 gtk-single-instance = false
 adw-toolbar-style = flat
 gtk-titlebar-hide-when-maximized = true
+gtk-tabs-location = hidden
+gtk-custom-css = /home/agung-b-sorlawan/.config/ghostty/no-anim.css
 
 cursor-invert-fg-bg = true
 clipboard-paste-protection = false
@@ -144,15 +146,28 @@ app-notifications = no-clipboard-copy
 # keybind = ctrl+c=copy_to_clipboard
 # keybind = ctrl+v=paste_from_clipboard
 
-keybind = all:alt+one=unbind
-keybind = all:alt+two=unbind
-keybind = all:alt+three=unbind
-keybind = all:alt+four=unbind
-keybind = all:alt+five=unbind
-keybind = all:alt+six=unbind
-keybind = all:alt+seven=unbind
-keybind = all:alt+eight=unbind
-keybind = all:alt+nine=unbind
+# alt+1 .. alt+9 select the matching Ghostty tab, as in the kitty config.
+# A trigger matches either a codepoint (1, layout dependent) or a physical
+# key (digit_1, layout independent). Both spellings are listed so the keys
+# work under any layout and the stock alt+9=last_tab is replaced.
+keybind = alt+one=goto_tab:1
+keybind = alt+digit_1=goto_tab:1
+keybind = alt+two=goto_tab:2
+keybind = alt+digit_2=goto_tab:2
+keybind = alt+three=goto_tab:3
+keybind = alt+digit_3=goto_tab:3
+keybind = alt+four=goto_tab:4
+keybind = alt+digit_4=goto_tab:4
+keybind = alt+five=goto_tab:5
+keybind = alt+digit_5=goto_tab:5
+keybind = alt+six=goto_tab:6
+keybind = alt+digit_6=goto_tab:6
+keybind = alt+seven=goto_tab:7
+keybind = alt+digit_7=goto_tab:7
+keybind = alt+eight=goto_tab:8
+keybind = alt+digit_8=goto_tab:8
+keybind = alt+nine=goto_tab:9
+keybind = alt+digit_9=goto_tab:9
 keybind = all:alt+n=unbind
 keybind = all:alt+p=unbind
 keybind = all:alt+s=unbind
@@ -167,6 +182,10 @@ keybind = alt+k=goto_split:up
 keybind = alt+l=goto_split:right
 
 keybind = alt+f=toggle_split_zoom
+
+keybind = alt+t=toggle_tab_overview
+keybind = alt+arrow_left=previous_tab
+keybind = alt+arrow_right=next_tab
 
 resize-overlay = never
 faint-opacity = 1.0

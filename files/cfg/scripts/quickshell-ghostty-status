@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+empty_status() {
+  printf '{"focused":false,"cwd":"","tab_count":0}\n'
+}
+
+json_escape() {
+  local value="$1"
+  value=${value//\\/\\\\}
+  value=${value//\"/\\\"}
+  value=${value//$'\n'/ }
+  value=${value//$'\r'/ }
+  value=${value//$'\t'/ }
+  printf '%s' "$value"
+}
+
+shorten_cwd() {
+  local cwd="$1"
+  if [[ "$cwd" == "$HOME" ]]; then
+    printf '~'
+  elif [[ "$cwd" == "$HOME"/* ]]; then
+    printf '~/%s' "${cwd#"$HOME"/}"
+  else
+    printf '%s' "$cwd"
+  fi
+}
+
+active_window_json="$(hyprctl activewindow -j 2>/dev/null || true)"
+if [[ -z "$active_window_json" ]]; then
+  empty_status
+  exit 0
+fi
+
+class="$(printf '%s\n' "$active_window_json" | jq -r '(.class // "") | ascii_downcase' 2>/dev/null || true)"
+case "$class" in
+  *ghostty*) ;;
+  *)
+    empty_status
+    exit 0
+    ;;
+esac
+
+pid="$(printf '%s\n' "$active_window_json" | jq -r '.pid // empty' 2>/dev/null || true)"
+if [[ ! "$pid" =~ ^[0-9]+$ ]] || [[ ! -d "/proc/$pid" ]]; then
+  empty_status
+  exit 0
+fi
+
+mapfile -t surfaces < <(ps --ppid "$pid" -o pid= 2>/dev/null | tr -d ' ' | sort -n)
+tab_count="${#surfaces[@]}"
+cwd=""
+
+for surface in "${surfaces[@]}"; do
+  [[ "$surface" =~ ^[0-9]+$ ]] || continue
+
+  mapfile -t children < <(ps --ppid "$surface" -o pid=,comm= 2>/dev/null)
+  for child in "${children[@]}"; do
+    read -r child_pid child_comm <<< "$child"
+    [[ "$child_pid" =~ ^[0-9]+$ ]] || continue
+    case "$child_comm" in
+      bash|fish|nu|nushell|sh|zsh)
+        candidate="$child_pid"
+        ;;
+      *)
+        continue
+        ;;
+    esac
+
+    candidate_cwd="$(readlink -f "/proc/$candidate/cwd" 2>/dev/null || true)"
+    if [[ -n "$candidate_cwd" && -d "$candidate_cwd" ]]; then
+      cwd="$candidate_cwd"
+      break 2
+    fi
+  done
+done
+
+if [[ -z "$cwd" ]]; then
+  empty_status
+  exit 0
+fi
+
+printf '{"focused":true,"cwd":"%s","tab_count":%s}\n' \
+  "$(json_escape "$(shorten_cwd "$cwd")")" \
+  "$tab_count"
+

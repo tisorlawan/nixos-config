@@ -5,6 +5,14 @@ set -x VISUAL "$EDITOR"
 
 set -x GIT_ASKPASS ""
 
+# git pipes the commit payload to gpg, so gpg cannot discover the terminal from
+# its own stdin. Without GPG_TTY, gpg-agent starts pinentry without a tty and
+# signed commits fail with "Inappropriate ioctl for device". The GTK frontend
+# cannot cover for it: the systemd-supervised agent was started without DISPLAY.
+if isatty stdin
+    set -x GPG_TTY (tty)
+end
+
 set -x GOPATH "$HOME/go"
 set -x PATH "$GOROOT/bin:$GOPATH/bin" "$PATH"
 

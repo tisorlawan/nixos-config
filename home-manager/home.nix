@@ -48,7 +48,6 @@ let
     '';
   });
   kittyWrapped = pkgs.writeShellScriptBin "kitty" ''
-    "$HOME/.scripts/color-by-time" >/dev/null 2>&1 || true
     exec ${nixGLIntel}/bin/nixGLIntel ${kittyPatched}/bin/kitty "$@"
   '';
   neovimPython = pkgs.python3.withPackages (ps: with ps; [ pynvim ]);
@@ -90,7 +89,7 @@ in
         starship
         atuin
         (callPackage ./alacritty { })
-        # (callPackage ./ghostty { inherit inputs; })
+        (callPackage ./ghostty { inherit inputs; })
         xterm
         nushell
         fish

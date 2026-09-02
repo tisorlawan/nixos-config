@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
+#
+# Single entrypoint for switching dark/light mode. Every app either reads the
+# state file (~/.color) directly with its own watcher (nvim, quickshell) or is
+# reloaded from here (kitty, hyprland, hyprpaper, emacs, ghostty, alacritty,
+# starship, tmux, brave).
 
 set -euo pipefail
 
@@ -8,7 +13,6 @@ if [ "$#" -ne 1 ]; then
 fi
 
 mode="$1"
-mode="dark"
 case "$mode" in
 dark | light) ;;
 *)
@@ -20,8 +24,10 @@ esac
 printf '%s\n' "$mode" >"$HOME/.color"
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-KITTY_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty.conf"
 
+# kitty: swap the included theme, then hot-reload every running instance.
+KITTY_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty.conf"
+KITTY_SOCK="${KITTY_SOCK:-/tmp/kitty-${USER}.sock}"
 case "$mode" in
 light) kitty_theme='themes/light.conf' ;;
 dark) kitty_theme='themes/current-theme.conf' ;;
@@ -36,11 +42,88 @@ if [ -f "$KITTY_CONF" ]; then
   mv "$tmp" "$KITTY_CONF"
 
   if command -v kitten >/dev/null 2>&1; then
-    kitten @ load-config --to unix:/tmp/kitty-agung-b-sorlawan.sock --no-response >/dev/null 2>&1 || true
+    kitten @ load-config --to "unix:${KITTY_SOCK}" --no-response >/dev/null 2>&1 || true
   fi
 fi
 
+# hyprland: swap the sourced theme file and reload.
+HYPR_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/hypr"
+if [ -d "$HYPR_DIR" ] && [ -f "$HYPR_DIR/theme-${mode}.conf" ]; then
+  cp "$HYPR_DIR/theme-${mode}.conf" "$HYPR_DIR/theme.conf"
+  if command -v hyprctl >/dev/null 2>&1; then
+    hyprctl reload >/dev/null 2>&1 || true
+  fi
+fi
+
+# hyprpaper: switch to the mode-specific collection and restart it so its
+# directory slideshow continues using the new mode.
+HYPERPAPER_CONF="$HYPR_DIR/hyprpaper.conf"
+WALLPAPER_DIR="$HOME/.rice/wallpaper/$mode"
+WALLPAPER_PATH="~/.rice/wallpaper/$mode"
+if [ -f "$HYPERPAPER_CONF" ] && [ -d "$WALLPAPER_DIR" ]; then
+  tmp="$(mktemp "${HYPERPAPER_CONF}.XXXXXX")"
+  awk -v path="$WALLPAPER_PATH" '
+    $1 == "path" && !updated { print "    path = " path; updated = 1; next }
+    { print }
+  ' "$HYPERPAPER_CONF" >"$tmp"
+  mv "$tmp" "$HYPERPAPER_CONF"
+
+  if command -v hyprpaper >/dev/null 2>&1 &&
+     command -v hyprctl >/dev/null 2>&1 &&
+     command -v pkill >/dev/null 2>&1 &&
+     pkill -0 -x hyprpaper >/dev/null 2>&1; then
+    pkill -x hyprpaper || true
+    for _ in 1 2 3 4 5; do
+      pkill -0 -x hyprpaper >/dev/null 2>&1 || break
+      sleep 0.1
+    done
+    hyprctl dispatch exec hyprpaper >/dev/null 2>&1 || true
+  fi
+fi
+
+# system color scheme: GTK apps and Brave (appearance mode "GTK") follow this
+# live via xdg-desktop-portal (org.freedesktop.appearance).
+if command -v gsettings >/dev/null 2>&1; then
+  case "$mode" in
+    light) gsettings set org.gnome.desktop.interface color-scheme prefer-light
+      gsettings set org.gnome.desktop.interface gtk-theme Adwaita ;;
+    dark) gsettings set org.gnome.desktop.interface color-scheme prefer-dark
+      gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark ;;
+  esac
+fi
+
+# process-compose: theme applies on next launch (no live reload API).
+# Dark -> Catppuccin Mocha, light -> Catppuccin Latte. Preserve sort block.
+PC_SETTINGS="${XDG_CONFIG_HOME:-$HOME/.config}/process-compose/settings.yaml"
+case "$mode" in
+light) pc_theme='Catppuccin Latte' ;;
+dark) pc_theme='Catppuccin Mocha' ;;
+esac
+if [ -f "$PC_SETTINGS" ]; then
+  tmp="$(mktemp "${PC_SETTINGS}.XXXXXX")"
+  awk -v theme="$pc_theme" '
+    /^theme:/ && !updated { print "theme: " theme; updated = 1; next }
+    { print }
+    END { if (!updated) print "theme: " theme }
+  ' "$PC_SETTINGS" >"$tmp"
+  mv "$tmp" "$PC_SETTINGS"
+fi
+
+# emacs: push the theme into any running server; silently skip otherwise.
+if command -v emacsclient >/dev/null 2>&1; then
+  emacsclient -a false -e "(my/set-theme \"${mode}\")" >/dev/null 2>&1 || true
+fi
+
+# omp (Oh My Pi): SIGWINCH makes running TUI instances re-query the terminal
+# background and re-render with the matching dark/light theme slot.
+if command -v pkill >/dev/null 2>&1; then
+  pkill -WINCH -x omp >/dev/null 2>&1 || true
+fi
 "$SCRIPT_DIR/my-ghostty" --write-config-only
+# ghostty: running instances re-read the rewritten config on SIGUSR2.
+if command -v pkill >/dev/null 2>&1; then
+  pkill -USR2 -f '/bin/ghostty( |$)' >/dev/null 2>&1 || true
+fi
 "$SCRIPT_DIR/my-alacritty" --write-config-only
 "$SCRIPT_DIR/my-starship" >/dev/null
 

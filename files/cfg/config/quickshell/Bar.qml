@@ -130,7 +130,43 @@ Scope {
               // }
             }
 
-            Item { Layout.fillWidth: true }
+            Item {
+              id: ghosttyArea
+              Layout.fillWidth: true
+              Layout.fillHeight: true
+              Layout.minimumWidth: 0
+              clip: true
+
+              Chip {
+                id: ghosttyChip
+                visible: BarData.ghostty.focused
+                anchors.centerIn: parent
+                width: Math.min(320, parent.width)
+                fill: Theme.chipBlue
+                clip: true
+
+                Text {
+                  color: Theme.text
+                  text: "\uF120"
+                  font.pixelSize: Theme.fontSize
+                  font.family: Theme.iconFont
+                }
+                Text {
+                  color: Theme.text
+                  text: BarData.ghostty.cwd || "~"
+                  width: 220
+                  elide: Text.ElideMiddle
+                  font.pixelSize: Theme.fontSize
+                  font.family: Theme.fontFamily
+                }
+                Text {
+                  color: Theme.text
+                  text: "tabs " + String(BarData.ghostty.tab_count || 0)
+                  font.pixelSize: Theme.fontSize
+                  font.family: Theme.fontFamily
+                }
+              }
+            }
 
             Row {
               spacing: Theme.chipGap

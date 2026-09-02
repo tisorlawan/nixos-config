@@ -1,8 +1,13 @@
 #!/bin/sh
 
-DIR="$HOME/.rice/wallpaper"
-IMG=$(find "$DIR" -type f | shuf -n 1)
+mode="$(cat "$HOME/.color" 2>/dev/null || printf 'dark')"
+case "$mode" in
+    dark|light) ;;
+    *) mode=dark ;;
+esac
 
-# hyprctl hyprpaper unload all
-hyprctl hyprpaper preload "$IMG"
-hyprctl hyprpaper wallpaper ",$IMG"
+DIR="$HOME/.rice/wallpaper/$mode"
+IMG="$(find "$DIR" -type f | shuf -n 1)"
+
+[ -n "$IMG" ] || exit 0
+hyprctl hyprpaper wallpaper ",$IMG,cover"

@@ -108,6 +108,7 @@ alias gcloudc="gcloud auth print-access-token | tr -d '\n' | clip"
 # alias codex="npx @openai/codex@latest -s danger-full-access"
 alias codex="codex -s danger-full-access"
 alias gemini="npx https://github.com/google-gemini/gemini-cli"
+alias ccy="command-code --yolo"
 # alias opencode="my-opencode"
 
 function poetry-glsdk

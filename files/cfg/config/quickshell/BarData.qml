@@ -18,6 +18,29 @@ Singleton {
     down_kb: 0,
     up_kb: 0
   })
+  property var ghostty: ({
+    focused: false,
+    cwd: "",
+    tab_count: 0
+  })
+
+  Process {
+    id: ghosttyProc
+    command: ["sh", "-c", "while :; do $HOME/.scripts/quickshell-ghostty-status; sleep 0.5; done"]
+    running: true
+
+    stdout: SplitParser {
+      onRead: data => {
+        try {
+          root.ghostty = JSON.parse(data);
+        } catch (err) {
+          console.warn("failed to parse quickshell-ghostty-status", err);
+        }
+      }
+    }
+
+    onRunningChanged: if (!running) running = true
+  }
 
   property string submapText: ""
   property var occupiedWorkspaceIds: ({})

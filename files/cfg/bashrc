@@ -131,3 +131,4 @@ if [[ "${INSIDE_EMACS%%,*}" = 'ghostel' ]]; then
     # Open magit for the current directory
     gst() { ghostel_cmd magit-status-setup-buffer "$(pwd)"; }
 fi
+export PATH="/home/agung-b-sorlawan/.bend/bin:$PATH"

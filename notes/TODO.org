@@ -1,9 +1,8 @@
-* 21 September 2026
+* 05 October 2026
+** TODO Remove authors from NER
+** TODO Update summarization https://github.com/GDP-ADMIN/meemo/issues/1756
 ** NER
 *** TODO [GLChat NER] 2 findings - DAST scan #395
-*** TODO Update NER model and deployment
-**** DONE feat(ner): detect BRAND_NAME entities and upgrade model to v1-01 https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/215 
-**** TODO Update docs and version tracker
 *** TODO PERSON dipisah tab https://chat.google.com/room/AAQAYtQZtE0/a1sjC6GY-Ws/_okEaa3tb9s?cls=10
 *** TODO Make so that InvalidClientException is not recorded in sentry maybe (https://sentry.obrol.id/organizations/sentry-gdplabs/issues/159013/?environment=staging&project=16&query=is%3Aunresolved%20issue.priority%3A%5Bhigh%2C%20medium%5D&referrer=issue-stream)
 *** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
@@ -14,11 +13,10 @@
 *** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
 *** TODO fix tab between person name
 *** TODO fix URL 'Text: Parag Agrawal (Former CEO/CTO of Twitter), email aku agung.b.sorlawan@gdplabs.id'
-** MAB
 *** TODO Review PRs
-**** feat(benchmark): add smart mode router benchmark https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1088
-**** DONE fix(llm-judge): stop groundedness crash on refusal rows https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1087
-*** TODO Run LLM As Judge Model (google/gemini-3.1-flash-lite, https://github.com/GDP-ADMIN/gl-sdk/issues/5961, https://chat.google.com/room/AAQAE-LjMvQ/9vuutw76Y-0/HXXTRJaiTrs?cls=10)
+** MAB
+*** OpenJEV 
+*** TODO <PA Item> feat: add per-task performance benchmark (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1090)
 *** TODO Create LLM recommendation in MAB FE
 *** TODO ZDR seed
 *** TODO Performance benchmark seed
@@ -46,6 +44,34 @@
 *** TODO Explore and give recommendation for provider replacement
 *** TODO [BACKLOG] calibrate semua benchmark
 *** TODO [BACKLOG] create skill to update code review leaderboard
+
+* 28 September 2026
+** DONE Qodana stuff https://chat.google.com/room/AAQA-yhQs0Y/Wx_EIGORiig/Wx_EIGORiig?cls=10
+** Meemo 
+*** DONE Help DD Team iterating on Meemo Summarization Prompt Improvement
+*** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1134/ 
+** NER
+*** DONE https://github.com/GDP-ADMIN/glchat/issues/14886
+**** DONE fix(gllm-privacy): prevent chunking failures on mixed-language text (https://github.com/GDP-ADMIN/gl-sdk/pull/7017)
+*** DONE  Qodana in NER
+**** DONE https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/221 
+*** DONE Update docs and version tracker
+** GLLM Evals
+*** DONE Review PRs 
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/6745 
+** MAB
+*** DONE Benchmarking OpenJEV Models (https://docs.google.com/spreadsheets/d/1sZZbiD0RL15zvscg32auxldkXNy2KGq-bZbvuzoVNPo/edit?gid=493352837#gid=493352837&range=A1:A2)
+*** DONE Run LLM As Judge Model (google/gemini-3.1-flash-lite, https://github.com/GDP-ADMIN/gl-sdk/issues/5961, https://chat.google.com/room/AAQAE-LjMvQ/9vuutw76Y-0/HXXTRJaiTrs?cls=10)
+*** DONE Run reference formatter
+
+* 21 September 2026
+** NER
+*** DONE Update NER model and deployment
+**** DONE feat(ner): detect BRAND_NAME entities and upgrade model to v1-01 https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/215 
+** MAB
+*** DONE Review PRs related to JEV implementation
+*** DONE Run Jev model for several benchmarks
+*** DONE Benchmark new models: gpt-6-luna, gpt-6-sol, opus-5.5
 
 * 14 September 2026
 ** DONE Migrate MSCDX from Gemini to Vertex AI https://github.com/GDP-ADMIN/dummy-gl-sdk/issues/3402

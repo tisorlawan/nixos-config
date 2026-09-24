@@ -6,6 +6,10 @@ history.txt
 repomix*
 files/cfg/config/starship.toml
 files/cfg/config/rclone/rclone.conf
+
+# CLIProxyAPI: holds the client API key and the hashed management key.
+# config.example.yaml is the committed template.
+files/cfg/config/cliproxyapi/config.yaml
 *~
 *#
 *.eld
@@ -15,3 +19,5 @@ secrets.org
 emacs/tree-sitter/*.so
 /.agent-shell/
 .commandcode
+/.agents/skills/synced
+/.agents/skills/.system/

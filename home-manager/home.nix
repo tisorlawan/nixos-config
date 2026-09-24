@@ -156,6 +156,7 @@ in
         postman
         rclone
         foliate
+        anki-bin
       ];
 
       # General CLI helpers and editors

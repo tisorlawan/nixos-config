@@ -346,9 +346,18 @@ vim.diagnostic.config({
 	update_in_insert = false,
 })
 
-local function sync_diagnostics_for_modified(event)
-	vim.diagnostic.enable(not vim.bo[event.buf].modified, { bufnr = event.buf })
+local diagnostics_enabled = true
+local function sync_diagnostics(bufnr)
+	vim.diagnostic.enable(diagnostics_enabled and not vim.bo[bufnr].modified, { bufnr = bufnr })
 end
+vim.keymap.set("n", "<leader>td", function()
+	diagnostics_enabled = not diagnostics_enabled
+	vim.diagnostic.enable(diagnostics_enabled)
+	for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+		sync_diagnostics(bufnr)
+	end
+	vim.notify("Diagnostics " .. (diagnostics_enabled and "on" or "off"))
+end, { desc = "Toggle diagnostics" })
 vim.api.nvim_create_autocmd({
 	"BufReadPost",
 	"BufWritePost",
@@ -357,14 +366,18 @@ vim.api.nvim_create_autocmd({
 	"TextChangedI",
 	"TextChangedP",
 }, {
-	callback = sync_diagnostics_for_modified,
+	callback = function(event)
+		sync_diagnostics(event.buf)
+	end,
 	desc = "Hide diagnostics while a buffer has unsaved changes",
 })
 -- `BufModifiedSet` was removed; `OptionSet` with pattern `modified` is its
 -- replacement (deferred when triggered by `modified`).
 vim.api.nvim_create_autocmd("OptionSet", {
 	pattern = "modified",
-	callback = sync_diagnostics_for_modified,
+	callback = function(event)
+		sync_diagnostics(event.buf)
+	end,
 	desc = "Hide diagnostics while a buffer has unsaved changes",
 })
 
@@ -405,8 +418,23 @@ end, { desc = "Write buffer" })
 vim.keymap.set("n", "<leader>w", "<cmd>write<CR>", { desc = "Write buffer" })
 vim.keymap.set("n", "<leader><Tab>", "<cmd>buffer #<CR>", { desc = "Toggle alternate buffer" })
 vim.keymap.set("n", "<leader>pl", "<cmd>checkhealth vim.lsp<CR>", { desc = "LSP info" })
+
+-- `SPC y p` yanks the buffer path relative to the cwd, `SPC y P` the absolute path.
+local function yank_buffer_path(modifier)
+	return function()
+		local path = vim.fn.expand("%" .. modifier)
+		if path == "" then
+			vim.notify("Buffer has no file path", vim.log.levels.WARN)
+			return
+		end
+		vim.fn.setreg("+", path)
+		vim.notify("Yanked " .. path)
+	end
+end
+vim.keymap.set("n", "<leader>yp", yank_buffer_path(":."), { desc = "Yank relative path" })
+vim.keymap.set("n", "<leader>yP", yank_buffer_path(":p"), { desc = "Yank absolute path" })
 vim.keymap.set("n", "gl", function()
-	if vim.bo.modified then
+	if not diagnostics_enabled or vim.bo.modified then
 		return
 	end
 	vim.diagnostic.open_float({ scope = "line" })
@@ -611,6 +639,7 @@ vim.pack.add({
 	"https://github.com/echasnovski/mini.icons",
 	"https://github.com/windwp/nvim-autopairs",
 	"https://github.com/aktersnurra/no-clown-fiesta.nvim",
+	"https://github.com/folke/trouble.nvim",
 })
 -- One icon backend for both the snacks picker and neo-tree. `setup` defines the
 -- `MiniIcons` global that snacks reads, and `mock_nvim_web_devicons` answers the
@@ -781,6 +810,17 @@ vim.g.fff = {
 	hl = {
 		border = "FFFBorder",
 		title = "FFFTitle",
+		-- fff pins `CursorLine` on the preview's match line (location_utils.lua
+		-- sets `line_hl_group`, at any priority), and Neovim paints a line
+		-- highlight's background over the backgrounds of cell highlights on
+		-- that line. The match therefore keeps only the IncSearch foreground
+		-- over the band, which leaves dark ink on a dark band, 1.1:1. Keep the
+		-- band and give the matched text the accent the theme already pairs
+		-- with it: `FFFPreviewMatch` below copies CursorLineNr, the colour of
+		-- the line number that marks the same match line.
+		winhl = {
+			preview = "Normal:NormalFloat,FloatBorder:FloatBorder,FloatTitle:Title,IncSearch:FFFPreviewMatch",
+		},
 	},
 	keymaps = {
 		close = { "<Esc>", "<C-c>", "<C-g>" },
@@ -944,6 +984,10 @@ require("snacks").setup({
 		},
 	},
 })
+require("trouble").setup()
+vim.keymap.set("n", "<leader>xx", function()
+	require("trouble").open({ buf = 0, mode = "diagnostics" })
+end, { desc = "Buffer diagnostics" })
 vim.keymap.set("n", "<C-n>", function()
 	Snacks.picker.buffers()
 end)
@@ -1327,11 +1371,26 @@ local function apply_color_mode()
 	if vim.o.background == "light" then
 		-- Monochrome light: gray borders instead of DiagnosticInfo blue.
 		vim.api.nvim_set_hl(0, "FloatBorder", { link = "Comment" })
+		-- kanagawa-lotus pairs IncSearch's reversed ink (#dcd7ba, lotusGray)
+		-- with the warning orange (#e98a00). Both are light, about 1.8:1, so
+		-- every match reads as a washed-out block: `/`, `:s///c`, and fff's
+		-- match highlight all use this group. Keep the scheme's background and
+		-- put the light scheme's ink on it.
+		local incsearch = vim.api.nvim_get_hl(0, { name = "IncSearch", link = false })
+		vim.api.nvim_set_hl(0, "IncSearch", { fg = "#1f1f24", bg = incsearch.bg })
 	else
 		vim.api.nvim_set_hl(0, "FloatBorder", { link = "DiagnosticInfo" })
 	end
 	vim.api.nvim_set_hl(0, "FFFBorder", { link = "FloatBorder" })
 	vim.api.nvim_set_hl(0, "FFFTitle", { link = "Title" })
+	-- Target of the preview `winhl` above. CursorLineNr is the theme's accent
+	-- for text sitting on `CursorLine`'s background, which is the band fff
+	-- pins on the preview's match line, so it is legible there by design. Bold
+	-- keeps the match distinct now that the band, not the match, owns the
+	-- background. `link = false` resolves the chain: a linked group reports no
+	-- foreground of its own.
+	local line_accent = vim.api.nvim_get_hl(0, { name = "CursorLineNr", link = false }).fg
+	vim.api.nvim_set_hl(0, "FFFPreviewMatch", { fg = line_accent, bold = true })
 	apply_org_highlights()
  end
 
@@ -1340,6 +1399,9 @@ vim.keymap.set("n", "<leader>tt", function()
 	opaque_bg = not opaque_bg
 	apply_color_mode()
 end, { desc = "Toggle background transparency" })
+vim.keymap.set("n", "<leader>tw", function()
+	vim.wo.wrap = not vim.wo.wrap
+end, { desc = "Toggle line wrap" })
 
 -- Re-apply the colorscheme when ~/.color changes (see ~/.scripts/set-color).
 -- One persistent handle: a write can queue several inotify events, so apply

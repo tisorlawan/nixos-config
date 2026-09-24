@@ -1,0 +1,2 @@
+#!/bin/sh
+docker run --rm -v "$PWD":/src -w /src aquasec/trivy:latest fs --scanners vuln --severity MEDIUM,HIGH,CRITICAL --ignorefile .trivyignore . 2>&1 | tail -40

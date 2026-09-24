@@ -109,7 +109,9 @@ alias gcloudc="gcloud auth print-access-token | tr -d '\n' | clip"
 alias codex="codex -s danger-full-access"
 alias gemini="npx https://github.com/google-gemini/gemini-cli"
 alias ccy="command-code --yolo"
+alias opencode="opencode2"
 # alias opencode="my-opencode"
+alias usage="python3 ~/tools/opencode-usage/build.py"
 
 function poetry-glsdk
     set -gx POETRY_HTTP_BASIC_GEN_AI_INTERNAL_USERNAME "oauth2accesstoken"

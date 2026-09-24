@@ -133,3 +133,27 @@ mount -t nfs 10.181.131.253:/mnt/DATA2/text /srv/nas_data2/text
 /turn off aws ec2 glair-shared-vllm 708914600472 us-east-1
 /turn status aws ec2 glair-shared-vllm 708914600472 us-east-1
 Script example usage: https://drive.google.com/file/d/1ya07-EtimohwILyy_EPzBVduWEEtj0yi/view?usp=drive_link
+
+* Emails
+** WFH
+[WFH: Agung Baptiso Sorlawan] <DD> <Month> <YYYY>
+[to: kevin, ai@gdplabs]
+[cc: HR@gdplabs.id, bandung]
+
+Dear Team,
+
+I will work from home today due to feeling unwell.
+
+Thank you
+
+** CUTI
+[Annual Leave: Agung Baptiso Sorlawan] 28 - 29 September 2026
+[to: kevin, ai@gdplabs]
+[cc: HR@gdplabs.id]
+
+Dear Team,
+
+I'm going to take annual leave on 28 - 29 September 2026.
+
+Thank you.
+

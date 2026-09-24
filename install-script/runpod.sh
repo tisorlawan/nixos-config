@@ -4,7 +4,7 @@
 set -euo pipefail
 
 push() {
-  export HOST=ner
+  export HOST=jev
   export TMP=/workspace/tmp
   ssh "$HOST" "mkdir -p /workspace/.cache /workspace/.config/nvim /workspace/.local $TMP"
   gpg --yes --output - \

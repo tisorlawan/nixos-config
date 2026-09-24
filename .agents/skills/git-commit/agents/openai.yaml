@@ -1,4 +1,0 @@
-interface:
-  display_name: "Git Commit"
-  short_description: "Generate a repository-style commit message"
-  default_prompt: "Use $git-commit to generate a commit message for the staged changes."

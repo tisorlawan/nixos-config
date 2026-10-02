@@ -25,7 +25,26 @@ python3 serve.py /path/to/codex-home --claude-home /path/to/claude-home
 
 Codex homes contain `sessions/`; Claude homes contain `projects/`.
 This reads all local usage in those homes, including CLI sessions outside T3
-and Claude subagents. No proxy key or management API is needed.
+and Claude subagents. Token counts need no proxy key or management API.
+
+## Plan limits
+
+`/api/quota` reports percent used for the 5-hour and weekly limits of each Claude and Codex account (the page shows percent remaining)
+stored by CLIProxyAPI (`~/.cli-proxy-api/*.json`, or `CLI_PROXY_AUTH_DIR`). It calls
+Anthropic's `/api/oauth/usage` and ChatGPT's `/backend-api/wham/usage` with each
+account's stored access token. Both endpoints are undocumented and may change.
+
+Codex accounts also show their banked reset credits. "Use reset" asks for
+confirmation, then `POST /api/quota/reset` spends the earliest-expiring credit through
+ChatGPT's `/wham/rate-limit-reset-credits/consume`. This cannot be undone. The server
+refuses requests that are not same-origin JSON with `confirm: true`, and every failure
+(expired sign-in, no credit, nothing to reset, rate limit, unreachable provider) is shown
+on the account row. Claude has no reset; its limits clear when the window ends.
+
+Tokens are only read, never refreshed, because the proxy owns refresh-token
+rotation. An expired token shows "Sign-in expired" for that account until a request
+goes through the proxy. Results are cached for 60 seconds. The browser never sees a
+token.
 
 ## User service
 
@@ -64,9 +83,6 @@ script to relink and restart without reinstalling dependencies or rebuilding.
   separately; they are not cache hits. Output includes reported reasoning.
 - Synthetic Claude messages, zero-token events, malformed timestamps and partial
   JSONL writes are skipped. Session logs remain the source of history.
-
-The older `render.py`, `template.html` and generated `stats.html` are archived
-snapshot tools; the service no longer uses them.
 
 ## Develop and verify
 

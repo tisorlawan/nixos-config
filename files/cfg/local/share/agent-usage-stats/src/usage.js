@@ -29,3 +29,18 @@ export function byDay(rows) {
 
 export const formatNumber = value => (value || 0).toLocaleString('en-US');
 export const cacheRate = (cached, input) => input ? `${(100 * cached / input).toFixed(1)}%` : '—';
+
+export function untilExpiry(expiresAt, now = Date.now()) {
+  if (!expiresAt) return 'no expiry';
+  const text = untilReset(expiresAt, now);
+  return text === 'resetting' ? 'expired' : text.replace('resets ', '');
+}
+
+export function untilReset(resetsAt, now = Date.now()) {
+  if (!resetsAt) return 'no active window';
+  const minutes = Math.ceil((new Date(resetsAt) - now) / 60_000);
+  if (!(minutes > 0)) return 'resetting';
+  const days = Math.floor(minutes / 1440), hours = Math.floor(minutes % 1440 / 60);
+  if (days) return `resets in ${days}d ${hours}h`;
+  return `resets in ${hours ? `${hours}h ` : ''}${minutes % 60}m`;
+}

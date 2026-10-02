@@ -7,7 +7,7 @@ Minimal status bar for Hyprland using [Quickshell](https://quickshell.outfoxxed.
 | File | Purpose |
 |------|---------|
 | `shell.qml` | Entry point. Must have `//@ pragma UseQApplication` for system tray support. |
-| `Bar.qml` | Bar layout — workspaces, media, stats, systray, clock. |
+| `Bar.qml` | Bar layout: workspaces, media, stats, systray, clock. |
 | `Clock.qml` | Standalone top-right clock window with its own visibility toggle. |
 | `BarData.qml` | Singleton providing all data: stats polling, media (Mpris), battery (UPower), clock. |
 | `Chip.qml` | Reusable pill/chip component. |
@@ -15,10 +15,11 @@ Minimal status bar for Hyprland using [Quickshell](https://quickshell.outfoxxed.
 
 ## External dependency
 
-`~/.scripts/quickshell-bar-stats` — bash script that outputs one JSON line per second with cpu, memory, backlight, audio, and network info. Source: `../../scripts/quickshell-bar-stats`.
+The bar calls three scripts from `~/.scripts`. Their sources are in `files/cfg/scripts/`.
 
-`~/.scripts/quickshell-clock-toggle` — toggles the standalone top-right clock by writing a state file under `~/.local/state/quickshell-clock-toggle`.
-`~/.scripts/quickshell-ghostty-status` — reports the focused Ghostty window's working directory and terminal-surface count as JSON.
+- `quickshell-bar-stats` prints one JSON line per second with CPU, memory, backlight, audio, and network data.
+- `quickshell-clock-toggle` shows or hides the standalone top-right clock by writing a state file under `~/.local/state/quickshell-clock-toggle`.
+- `quickshell-ghostty-status` prints the focused Ghostty window's working directory and terminal-surface count as JSON.
 
 ## Gotchas
 
@@ -27,12 +28,12 @@ On non-NixOS with home-manager, quickshell needs `nixGLIntel` wrapping in the sy
 
 ### SplitParser signal syntax
 ```qml
-// WRONG — declares a JS function, does NOT connect to the read signal
+// Wrong: declares a JS function and does not connect to the read signal
 stdout: SplitParser {
   function onRead(data) { ... }
 }
 
-// CORRECT — connects to the read(data) signal
+// Right: connects to the read(data) signal
 stdout: SplitParser {
   onRead: data => { ... }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { byDay, cacheRate, formatNumber as fmt, selectRows, sumUsage } from './usage.js';
+import { byDay, cacheRate, formatNumber as fmt, selectRows, sumUsage, untilExpiry, untilReset } from './usage.js';
 
 const clientName = client => client === 'claude' ? 'Claude' : 'Codex';
 const time = value => new Intl.DateTimeFormat('en-GB', {
@@ -52,6 +52,126 @@ function useUsage() {
   return { data, error, busy, refresh: () => setRevision(value => value + 1) };
 }
 
+function useQuota() {
+  const [quota, setQuota] = useState(null);
+  const [revision, setRevision] = useState(0);
+  useEffect(() => {
+    let stopped = false, timer;
+    async function load() {
+      if (!document.hidden) {
+        try {
+          const response = await fetch('/api/quota', { cache: 'no-store' });
+          if (response.ok && !stopped) setQuota(await response.json());
+        } catch { /* keep the last reading */ }
+      }
+      if (!stopped) timer = setTimeout(load, 60_000);
+    }
+    load();
+    return () => { stopped = true; clearTimeout(timer); };
+  }, [revision]);
+  return { quota, reload: () => setRevision(value => value + 1) };
+}
+
+const expiry = value => new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Jakarta', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit',
+}).format(new Date(value));
+
+function Resets({ account, reload }) {
+  const [open, setOpen] = useState(false);
+  const [list, setList] = useState({ credits: null, error: '' });
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+  const closeTimer = useRef();
+  const { available } = account.resets;
+  useEffect(() => () => clearTimeout(closeTimer.current), []);
+
+  async function load() {
+    setList({ credits: null, error: '' });
+    try {
+      const response = await fetch(`/api/quota/resets?account=${encodeURIComponent(account.id)}`, { cache: 'no-store' });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Could not read the reset list.');
+      setList({ credits: result.credits, error: '' });
+    } catch (failure) {
+      setList({ credits: null, error: failure instanceof TypeError
+        ? 'Could not reach the dashboard service.' : failure.message });
+    }
+  }
+  function show() {
+    clearTimeout(closeTimer.current);
+    if (open || busy || !available) return;
+    setOpen(true);
+    load();
+  }
+  function hide() {
+    clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setOpen(false), 150);
+  }
+  async function use(credit) {
+    setOpen(false);
+    setBusy(true);
+    setError('');
+    try {
+      const response = await fetch('/api/quota/reset', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ account: account.id, credit: credit.id, confirm: true }),
+      });
+      const result = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(result.error || 'Reset failed. Refresh to check the account.');
+      reload();
+    } catch (failure) {
+      setError(failure instanceof TypeError
+        ? 'Could not reach the dashboard service. Refresh to check whether the reset was used.'
+        : failure.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return <div className="resets">
+    <div className="resets-wrap" onMouseEnter={show} onMouseLeave={hide} onFocus={show}
+      onBlur={event => { if (!event.currentTarget.contains(event.relatedTarget)) hide(); }}
+      onKeyDown={event => { if (event.key === 'Escape') setOpen(false); }}>
+      {available > 0
+        ? <button aria-haspopup="menu" aria-expanded={open} disabled={busy} onClick={show}>
+          {busy ? 'Resetting…' : `${available} ${available === 1 ? 'reset' : 'resets'} available ▾`}</button>
+        : <span>No resets available</span>}
+      {open && <div className="resets-menu" role="menu" aria-label={`Resets for ${account.name}`}>
+        {list.error ? <p role="alert" className="source-error">{list.error}</p>
+          : !list.credits ? <p>Loading…</p>
+            : !list.credits.length ? <p>No usable resets.</p>
+              : list.credits.map(credit => <button role="menuitem" key={credit.id} onClick={() => use(credit)}>
+                <span>{credit.title || 'Reset'}</span>
+                <small>{credit.expires_at ? `Expires ${expiry(credit.expires_at)} WIB` : 'No expiry'} · {untilExpiry(credit.expires_at)}</small>
+              </button>)}
+      </div>}
+    </div>
+    {error && <p role="alert" className="source-error">{error}</p>}
+  </div>;
+}
+
+function Limits({ accounts, reload }) {
+  return <section className="limits" aria-labelledby="limits-title">
+    <div className="section-header"><h2 id="limits-title">Plan limits <small>percent remaining</small></h2></div>
+    {accounts.map((account, index) => <div className="account" key={`${account.provider}-${account.name}-${index}`}>
+      <div className="account-name"><strong>{account.name}</strong>
+        <span>{clientName(account.provider)}{account.plan ? ` ${account.plan}` : ''}</span>
+        {account.resets && <Resets account={account} reload={reload} />}</div>
+      {account.error ? <p className="source-error">{account.error}</p>
+        : <div className="limit-bars">{account.windows.map(item => {
+          const left = Math.min(100, Math.max(0, Math.round(100 - item.percent)));
+          return <div className={`limit ${left <= 10 ? 'high' : ''}`} key={item.label}>
+            <div className="limit-head"><span>{item.label}</span>
+              <span>{left === 0 ? 'Limit reached' : `${left}% left`}</span></div>
+            <div className="meter" role="progressbar" aria-label={`${account.name} ${item.label} remaining`}
+              aria-valuemin="0" aria-valuemax="100" aria-valuenow={left}>
+              <i style={{ width: `${left}%` }} /></div>
+            <small>{untilReset(item.resets_at)}</small>
+          </div>;
+        })}</div>}
+    </div>)}
+  </section>;
+}
+
 function exportCsv(rows) {
   const fields = ['day', 'model', 'requests', 'threads', 'cached_input_tokens',
     'cache_write_input_tokens', 'uncached_input_tokens', 'input_tokens',
@@ -101,6 +221,7 @@ function Sources({ sources }) {
 
 export default function App() {
   const { data, error, busy, refresh } = useUsage();
+  const { quota, reload: reloadQuota } = useQuota();
   const [filters, setFilters] = useState({ client: 'all', model: 'all', from: '', to: '' });
   const [sort, setSort] = useState('recent');
   const invalidRange = !!(filters.from && filters.to && filters.from > filters.to);
@@ -148,6 +269,8 @@ export default function App() {
       {error && <div role="alert" className="error">{error}
         {data && <span>Showing the last successful refresh.</span>}
       </div>}
+
+      {quota?.accounts.length > 0 && <Limits accounts={quota.accounts} reload={reloadQuota} />}
 
       <div className="toolbar" aria-label="Usage filters">
         <label>Agent<select value={filters.client} onChange={event => {

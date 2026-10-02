@@ -1,182 +1,82 @@
 #!/usr/bin/env bash
+# Symlink this repository into $HOME. Safe to rerun, and safe to run from any directory.
+# Each destination is deleted and relinked, so local edits to a linked file are lost.
+set -euo pipefail
 
-rm -rf ~/.config/alacritty.toml
-ln -srf files/cfg/config/alacritty.toml ~/.config/alacritty.toml
+cd -- "$(dirname -- "${BASH_SOURCE[0]}")"
 
-rm -rf ~/.config/nvim
-ln -srf files/cfg/config/nvim ~/.config/nvim
-rm -rf ~/.config/nvim-minimal
-ln -srf files/cfg/config/nvim-minimal ~/.config/nvim-minimal
+CFG=files/cfg
+CONFIG=$CFG/config
 
-rm -rf ~/.config/kittty
-ln -srf files/cfg/config/kitty ~/.config/kitty
+# link SOURCE DESTINATION: replace DESTINATION with a relative symlink to SOURCE.
+# Fails before deleting anything if SOURCE does not exist.
+link() {
+  local source="$1" destination="$2"
+  if [[ ! -e "$source" ]]; then
+    printf 'links.sh: missing source %s\n' "$source" >&2
+    return 1
+  fi
+  rm -rf -- "$destination"
+  mkdir -p -- "$(dirname -- "$destination")"
+  ln -sr -- "$source" "$destination"
+}
 
-rm -rf ~/.config/btop/btop.conf
-mkdir -p ~/.config/btop
-ln -srf files/cfg/config/btop/btop.conf ~/.config/btop/btop.conf
+# ~/.config entries that have the same name as their directory under files/cfg/config.
+for name in \
+  alacritty.toml bspwm dunst eww fish greenclip.toml gtk-3.0 gtk-4.0 hypr kitty \
+  lazygit mako mpd mpv nix nushell nvim nvim-minimal picom quickshell redshift \
+  rofi swappy sxhkd user-dirs.dirs waybar wezterm yazi zellij; do
+  link "$CONFIG/$name" "$HOME/.config/$name"
+done
 
-rm -rf ~/.config/copyq/copyq.conf
-mkdir -p ~/.config/copyq
-ln -srf files/cfg/config/copyq/copyq.conf ~/.config/copyq/copyq.conf
+# Single files inside a ~/.config directory that other programs also write to.
+link "$CONFIG/btop/btop.conf" "$HOME/.config/btop/btop.conf"
+link "$CONFIG/copyq/copyq.conf" "$HOME/.config/copyq/copyq.conf"
+link "$CONFIG/pudb/pudb.cfg" "$HOME/.config/pudb/pudb.cfg"
+link "$CONFIG/opencode/opencode.json" "$HOME/.config/opencode/opencode.json"
 
-rm -rf ~/.config/pudb/pudb.cfg
-mkdir -p ~/.config/pudb
-ln -srf files/cfg/config/pudb/pudb.cfg ~/.config/pudb/pudb.cfg
+link emacs "$HOME/.config/emacs"
 
-rm -rf ~/.vimrc
-ln -srf files/cfg/vimrc ~/.vimrc
+# Dotfiles in $HOME.
+link "$CFG/bashrc" "$HOME/.bashrc"
+link "$CFG/clang-format" "$HOME/.clang-format"
+link "$CFG/gitconfig" "$HOME/.gitconfig"
+link "$CFG/tmux.conf" "$HOME/.tmux.conf"
+link "$CFG/vimrc" "$HOME/.vimrc"
+link "$CFG/images" "$HOME/.images"
+link "$CFG/scripts" "$HOME/.scripts"
 
-rm -rf ~/.config/fish
-ln -srf files/cfg/config/fish ~/.config/fish
+# Agent instructions and skills are shared by Claude Code, Codex, and opencode.
+link .agents/AGENTS.md "$HOME/.claude/CLAUDE.md"
+link .agents/AGENTS.md "$HOME/.codex/AGENTS.md"
+link .agents/AGENTS.md "$HOME/.config/opencode/AGENTS.md"
+link .agents/commands "$HOME/.claude/commands"
+for dir in .claude .codex .agents .config/opencode; do
+  link .agents/skills "$HOME/$dir/skills"
+done
 
-rm -rf ~/.config/rofi
-ln -srf files/cfg/config/rofi ~/.config/rofi
+# The my-ghostty script generates ~/.config/ghostty, so start from an empty directory.
+rm -rf -- "$HOME/.config/ghostty"
+mkdir -p -- "$HOME/.config/ghostty"
 
-rm -rf ~/.config/greenclip.toml
-ln -srf ./files/cfg/config/greenclip.toml ~/.config/greenclip.toml
+# rclone.conf holds credentials and is gitignored, so it is copied, not linked.
+# Skip the copy when the source is missing so an existing config survives.
+if [[ -d $CONFIG/rclone ]]; then
+  rm -rf -- "$HOME/.config/rclone"
+  cp -r -- "$CONFIG/rclone" "$HOME/.config/rclone"
+fi
 
-rm -rf ~/.config/lazygit
-ln -srf ./files/cfg/config/lazygit ~/.config/lazygit
+# T3 Code Nightly: the wrapper unsets the Nix Mesa env vars so Chromium keeps GPU rendering.
+# Not linked: com.t3tools.T3Code.desktop, which T3 regenerates on every launch.
+link "$CFG/local/bin/t3code-nightly" "$HOME/.local/bin/t3code-nightly"
+link "$CFG/local/share/applications/t3code-nightly.desktop" \
+  "$HOME/.local/share/applications/t3code-nightly.desktop"
 
-rm -rf ~/.config/user-dirs.dirs
-ln -srf ./files/cfg/config/user-dirs.dirs ~/.config/user-dirs.dirs
-
-rm -rf ~/.config/bspwm
-ln -srf ./files/cfg/config/bspwm ~/.config/bspwm
-
-rm -rf ~/.config/dunst
-ln -srf ./files/cfg/config/dunst ~/.config/dunst
-
-rm -rf ~/.config/picom
-ln -srf ./files/cfg/config/picom ~/.config/picom
-
-rm -rf ~/.config/polybar
-ln -srf ./files/cfg/config/polybar ~/.config/polybar
-
-rm -rf ~/.config/sxhkd
-ln -srf ./files/cfg/config/sxhkd ~/.config/sxhkd
-
-rm -rf ~/.config/redshift
-ln -srf ./files/cfg/config/redshift ~/.config/redshift
-
-rm -rf ~/.config/wezterm
-ln -srf ./files/cfg/config/wezterm ~/.config/wezterm
-
-rm -rf ~/.config/nushell
-ln -srf ./files/cfg/config/nushell ~/.config/nushell
-
-rm -rf ~/.config/yazi
-ln -srf ./files/cfg/config/yazi ~/.config/yazi
-
-rm -rf ~/.config/quickshell
-ln -srf ./files/cfg/config/quickshell ~/.config/quickshell
-
-rm -rf ~/.config/mpd
-ln -srf ./files/cfg/config/mpd ~/.config/mpd
-
-rm -rf ~/.config/mpv
-ln -srf ./files/cfg/config/mpv ~/.config/mpv
-
-rm -rf ~/.config/eww
-ln -srf files/cfg/config/eww ~/.config/eww
-
-rm -rf ~/.config/zellij
-ln -srf files/cfg/config/zellij ~/.config/zellij
-
-rm -rf ~/.images
-ln -srf ./files/cfg/images ~/.images
-
-rm -rf ~/.gitconfig
-ln -srf ./files/cfg/gitconfig ~/.gitconfig
-
-rm -rf ~/.clang-format
-ln -srf ./files/cfg/clang-format ~/.clang-format
-
-rm -rf ~/.tmux.conf
-ln -srf ./files/cfg/tmux.conf ~/.tmux.conf
-
-rm -rf ~/.scripts
-ln -srf ./files/cfg/scripts ~/.scripts
-
-rm -rf ~/.doom.d/
-ln -srf files/cfg/doom.d/ ~/.doom.d
-
-mkdir -p ~/.claude
-mkdir -p ~/.codex
-rm -rf ~/.claude/commands
-ln -srf .agents/commands/ ~/.claude/commands
-rm -rf ~/.claude/skills
-ln -srf .agents/skills/ ~/.claude/skills
-rm -rf ~/.codex/skills
-ln -srf .agents/skills/ ~/.codex/skills
-ln -srf .agents/AGENTS.md ~/.codex/AGENTS.md
-ln -srf .agents/AGENTS.md ~/.claude/CLAUDE.md
-
-mkdir -p ~/.agents
-rm -rf ~/.agents/skills
-ln -srf .agents/skills/ ~/.agents/skills
-
-mkdir -p ~/.config/opencode
-rm -rf ~/.config/opencode/AGENTS.md
-ln -srf .agents/AGENTS.md ~/.config/opencode/AGENTS.md
-
-rm -rf ~/.config/opencode/opencode.json
-ln -srf ./files/cfg/config/opencode/opencode.json ~/.config/opencode/opencode.json
-
-rm -rf ~/.config/opencode/skills
-ln -srf .agents/skills/ ~/.config/opencode/skills
-
+# CLIProxyAPI: install, then replace its config with the one in this repository.
 curl -fsSL https://raw.githubusercontent.com/router-for-me/cliproxyapi-installer/refs/heads/master/cliproxyapi-installer | bash
-rm -rf ~/cliproxyapi/config.yaml
-ln -srf ./files/cfg/cli-proxy-api/config.yaml ~/cliproxyapi/config.yaml
+link "$CFG/cli-proxy-api/config.yaml" "$HOME/cliproxyapi/config.yaml"
 systemctl --user enable cliproxyapi.service
 systemctl --user restart cliproxyapi.service
 
-rm -rf ~/.config/ghostty
-mkdir ~/.config/ghostty
-
-rm -rf ~/.config/gtk-3.0
-ln -srf files/cfg/config/gtk-3.0 ~/.config/gtk-3.0
-
-rm -rf ~/.config/gtk-4.0
-ln -srf files/cfg/config/gtk-4.0 ~/.config/gtk-4.0
-
-rm -rf ~/.config/hypr
-ln -srf files/cfg/config/hypr ~/.config/hypr
-
-rm -rf ~/.config/mako
-ln -srf files/cfg/config/mako ~/.config/mako
-
-rm -rf ~/.config/rclone
-cp -r files/cfg/config/rclone ~/.config/rclone
-
-mkdir -p ~/.config/systemd/user
-
-rm -rf ~/.config/nix
-ln -srf files/cfg/config/nix ~/.config/nix
-
-rm -rf ~/.config/nix
-ln -srf files/cfg/config/nix ~/.config/nix
-
-rm -rf ~/.config/swappy
-ln -srf files/cfg/config/swappy ~/.config/swappy
-
-rm -rf ~/.config/waybar
-ln -srf files/cfg/config/waybar ~/.config/waybar
-
-rm -rf ~/.bashrc
-ln -srf ./files/cfg/bashrc ~/.bashrc
-
-rm -rf ~/.config/emacs
-ln -srf emacs ~/.config/emacs
-
-# T3 Code Nightly: wrapper unsets the Nix Mesa env vars so Chromium keeps GPU rendering
-mkdir -p ~/.local/bin ~/.local/share/applications
-rm -rf ~/.local/bin/t3code-nightly
-ln -srf files/cfg/local/bin/t3code-nightly ~/.local/bin/t3code-nightly
-rm -rf ~/.local/share/applications/t3code-nightly.desktop
-ln -srf files/cfg/local/share/applications/t3code-nightly.desktop ~/.local/share/applications/t3code-nightly.desktop
-# not linked: com.t3tools.T3Code.desktop is regenerated by T3 on every launch (protocol handler)
-
-# Codex/Claude usage: links the app and service, builds React and starts the dashboard.
-bash "$(dirname -- "${BASH_SOURCE[0]}")/install-script/setup-agent-usage-stats.sh"
+# Agent usage dashboard: link the app and unit, build the React app, start the service.
+bash install-script/setup-agent-usage-stats.sh

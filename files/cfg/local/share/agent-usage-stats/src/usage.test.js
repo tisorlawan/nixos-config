@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { byDay, selectRows, sumUsage, cacheRate } from './usage.js';
+import { byDay, selectRows, sumUsage, cacheRate, untilReset, untilExpiry } from './usage.js';
 
 const rows = [{ day: '2026-10-03', model: 'shared', input_tokens: 150,
   cached_input_tokens: 100, requests: 3, clients: ['codex', 'claude'],
@@ -29,4 +29,20 @@ test('daily cache rate is weighted by tokens and newest dates come first', () =>
   assert.equal(days[0].requests, 4);
   assert.equal(cacheRate(days[0].cached_input_tokens, days[0].input_tokens), '50.0%');
   assert.equal(cacheRate(0, 0), '—');
+});
+
+test('reset countdown uses the largest two units and handles idle or past windows', () => {
+  const now = Date.parse('2026-10-03T00:00:00Z');
+  assert.equal(untilReset('2026-10-03T00:45:00Z', now), 'resets in 45m');
+  assert.equal(untilReset('2026-10-03T03:10:00Z', now), 'resets in 3h 10m');
+  assert.equal(untilReset('2026-10-05T04:00:00Z', now), 'resets in 2d 4h');
+  assert.equal(untilReset('2026-10-02T23:00:00Z', now), 'resetting');
+  assert.equal(untilReset(null, now), 'no active window');
+});
+
+test('credit expiry reads as a countdown, with no expiry and past dates called out', () => {
+  const now = Date.parse('2026-10-03T00:00:00Z');
+  assert.equal(untilExpiry('2026-10-22T12:00:00Z', now), 'in 19d 12h');
+  assert.equal(untilExpiry(null, now), 'no expiry');
+  assert.equal(untilExpiry('2026-10-02T00:00:00Z', now), 'expired');
 });

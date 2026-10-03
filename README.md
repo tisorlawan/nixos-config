@@ -8,7 +8,7 @@ Dotfiles, scripts, and Nix configuration for my machines. Clone this repository 
 |------|----------|
 | `files/cfg/config/` | Per-program configs, linked into `~/.config` (nvim, kitty, hypr, fish, mpv, and others). |
 | `files/cfg/scripts/` | Shell and Python helpers, linked to `~/.scripts`. |
-| `files/cfg/local/` | `~/.local` content: the `t3code-nightly` launcher and the agent usage dashboard. |
+| `files/cfg/local/` | `~/.local` content: the `t3code`, `t3code-nightly` and `t3code-main` launchers and the agent usage dashboard. |
 | `files/cfg/` | Dotfiles for `$HOME`: `bashrc`, `gitconfig`, `tmux.conf`, `vimrc`, and similar. |
 | `emacs/` | Emacs config, linked to `~/.config/emacs`. Build output is gitignored. |
 | `.agents/` | `AGENTS.md`, commands, and skills shared by Claude Code, Codex, and opencode. |
@@ -23,12 +23,18 @@ Dotfiles, scripts, and Nix configuration for my machines. Clone this repository 
 
 | Task | Command |
 |------|---------|
-| Link configs into `$HOME` | `./links.sh` |
+| Link configs into `$HOME` | `./links.sh all`, or `./links.sh nvim codex` for specific targets |
 | Rebuild NixOS | `./rebuild.sh` |
 | Rebuild home-manager | `cd home-manager && ./update.sh` (add `--upgrade` to update flake inputs first) |
 | Set up the usage dashboard only | `install-script/setup-agent-usage-stats.sh` |
 
-`links.sh` deletes each destination before it links, so a file that already exists in `$HOME` is replaced. It also installs CLIProxyAPI and builds the usage dashboard. See [SETUP.md](SETUP.md) for the one-time install steps.
+`links.sh` deletes each destination before it links, so a file that already exists in `$HOME` is replaced. The `cliproxyapi` and `agent-usage-stats` targets also install CLIProxyAPI and build the usage dashboard. Run `./links.sh` with no arguments to list the targets. See [SETUP.md](SETUP.md) for the one-time install steps.
+
+## Account priority
+
+When CLIProxyAPI has several Codex or Claude logins, `files/cfg/cli-proxy-api/account_reset_priority.py` steers new sessions to the account whose weekly quota resets soonest, so that quota is used before it expires. It reads each account's reset times from the ChatGPT and Anthropic usage endpoints and writes a `priority` field into the auth files in `~/.cli-proxy-api`. The proxy reloads them without a restart and compares priority only between accounts of the same provider. Accounts at their 5-hour or weekly limit drop to priority 0.
+
+The `account-reset-priority.timer` user unit runs it every 10 minutes. `links.sh` links the script to `~/cliproxyapi/` and the units to `~/.config/systemd/user/`, then enables the timer. Run the script with `--dry-run` to see the ranking without writing, or `--provider claude` to limit it to one provider. Check past runs with `journalctl --user -u account-reset-priority`.
 
 ## Agent usage dashboard
 

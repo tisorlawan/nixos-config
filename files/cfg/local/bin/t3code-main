@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# Drop the Nix Mesa overrides: they make Mesa fall back to llvmpipe, so Chromium disables GL
+# and T3 renders on the CPU. Without them it uses the system Mesa and the Intel GPU.
+exec env -u LD_LIBRARY_PATH -u LIBGL_DRIVERS_PATH -u __EGL_VENDOR_LIBRARY_FILENAMES -u GBM_BACKENDS_PATH \
+  /home/agung-b-sorlawan/.local/lib/t3code-main/T3-Code-Main.AppImage "$@"

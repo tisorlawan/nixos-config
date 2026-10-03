@@ -58,7 +58,7 @@ class Handler(SimpleHTTPRequestHandler):
             credit = request.get("credit")
             if credit is not None and not isinstance(credit, str):
                 raise quota.ResetError("Unknown reset.", 400)
-            self.send_json(200, quota.reset_codex(request.get("account"), credit))
+            self.send_json(200, quota.reset_credit(request.get("account"), credit))
         except quota.ResetError as failure:
             self.send_json(failure.status, {"error": str(failure)})
         except Exception:

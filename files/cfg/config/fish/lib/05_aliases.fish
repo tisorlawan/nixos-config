@@ -109,7 +109,7 @@ alias gcloudc="gcloud auth print-access-token | tr -d '\n' | clip"
 alias codex="codex -s danger-full-access"
 alias gemini="npx https://github.com/google-gemini/gemini-cli"
 alias ccy="command-code --yolo"
-alias opencode="opencode2"
+alias opencode="/opt/OpenCode/resources/opencode-cli"
 # alias opencode="my-opencode"
 alias usage="python3 ~/tools/opencode-usage/build.py"
 

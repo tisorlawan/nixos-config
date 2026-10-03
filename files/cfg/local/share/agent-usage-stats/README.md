@@ -34,12 +34,17 @@ stored by CLIProxyAPI (`~/.cli-proxy-api/*.json`, or `CLI_PROXY_AUTH_DIR`). It c
 Anthropic's `/api/oauth/usage` and ChatGPT's `/backend-api/wham/usage` with each
 account's stored access token. Both endpoints are undocumented and may change.
 
-Codex accounts also show their banked reset credits. "Use reset" asks for
+Codex accounts, and Claude accounts holding a limit-reset grant, also show their banked reset credits. "Use reset" asks for
 confirmation, then `POST /api/quota/reset` spends the earliest-expiring credit through
-ChatGPT's `/wham/rate-limit-reset-credits/consume`. This cannot be undone. The server
+ChatGPT's `/wham/rate-limit-reset-credits/consume`; for Claude it posts the grant to
+`/api/organizations/<organization_uuid>/reset_rate_limits` (program `cedar_ember`). Claude's
+reset endpoints are private and were read from third-party notes, and Anthropic only
+answers them for the Claude Code CLI user agent, so the server sends `claude-cli/<installed
+version>`. Anthropic refuses a Claude reset while no limit is in use. This cannot be undone. The server
 refuses requests that are not same-origin JSON with `confirm: true`, and every failure
 (expired sign-in, no credit, nothing to reset, rate limit, unreachable provider) is shown
-on the account row. Claude has no reset; its limits clear when the window ends.
+on the account row. Claude accounts without a grant show no reset button; their limits
+clear when the window ends.
 
 Tokens are only read, never refreshed, because the proxy owns refresh-token
 rotation. An expired token shows "Sign-in expired" for that account until a request

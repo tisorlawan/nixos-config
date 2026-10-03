@@ -105,12 +105,13 @@ When a rule makes a sentence worse, rewrite the sentence another way. A sentence
 ### Sentences
 
 - Put one instruction in each sentence. Split instructions over about 20 words and other sentences over about 25 when it helps.
+- Write paragraphs of at most six sentences. Fewer is fine.
 - Put the condition before the instruction: "To delete the document, click Delete." Put the common case before exceptions.
 - Use the active voice when the actor matters. Catch "is/are/was/were" plus a past participle and name the actor: "queries are validated" becomes "the compiler validates queries". Passive is fine when the actor is unknown.
 - Use the present tense for current behavior. Use "will" only for later events, and do not pre-announce features.
 - Keep "the" and "a". "Remove backup file" reads two ways. Repeat the article in a series when it separates two things: "the client and the host".
 - Keep "only" and "not" next to the word they change. "Only fails on growth" and "fails only on growth" differ.
-- Break noun strings. "The proto import budget check script" becomes "the script that checks the proto-import budget".
+- Break noun strings of more than three nouns. "The proto import budget check script" becomes "the script that checks the proto-import budget".
 - Give every pronoun one referent. Do not use "this" or "which" for a whole clause.
 - Keep every clause's verb. "Phase 1 moves the converters and Phase 2 the runtime" leaves Phase 2 without one.
 - Use one name per concept, and do not reword an unchanged sentence between edits.

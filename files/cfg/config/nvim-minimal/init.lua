@@ -634,12 +634,14 @@ vim.pack.add({
 	},
 	"https://github.com/nvim-lua/plenary.nvim",
 	"https://github.com/NeogitOrg/neogit",
+	"https://github.com/lewis6991/gitsigns.nvim",
 	"https://github.com/nvim-neo-tree/neo-tree.nvim",
 	"https://github.com/MunifTanjim/nui.nvim",
 	"https://github.com/echasnovski/mini.icons",
 	"https://github.com/windwp/nvim-autopairs",
 	"https://github.com/aktersnurra/no-clown-fiesta.nvim",
 	"https://github.com/folke/trouble.nvim",
+	"https://github.com/hedyhli/outline.nvim",
 })
 -- One icon backend for both the snacks picker and neo-tree. `setup` defines the
 -- `MiniIcons` global that snacks reads, and `mock_nvim_web_devicons` answers the
@@ -688,6 +690,17 @@ require("org-bullets").setup({
 -- Magit-style git interface.
 vim.cmd.packadd("neogit")
 require("neogit").setup({ picker = "snacks" })
+-- Gutter signs for added/changed/deleted lines, plus hunk navigation.
+vim.cmd.packadd("gitsigns.nvim")
+require("gitsigns").setup({
+	current_line_blame = false,
+})
+vim.keymap.set("n", "]h", function()
+	require("gitsigns").nav_hunk("next", { target = "all" })
+end, { desc = "Next git hunk" })
+vim.keymap.set("n", "[h", function()
+	require("gitsigns").nav_hunk("prev", { target = "all" })
+end, { desc = "Previous git hunk" })
 -- Key-hint popup driven by the `desc` annotations on the mappings below.
 vim.cmd.packadd("which-key.nvim")
 require("which-key").setup({})
@@ -985,6 +998,8 @@ require("snacks").setup({
 	},
 })
 require("trouble").setup()
+require("outline").setup()
+vim.keymap.set("n", "<leader>oo", "<cmd>Outline<CR>", { desc = "Toggle outline" })
 vim.keymap.set("n", "<leader>xx", function()
 	require("trouble").open({ buf = 0, mode = "diagnostics" })
 end, { desc = "Buffer diagnostics" })

@@ -5,8 +5,11 @@ Tokens are only read, never refreshed: the proxy owns refresh-token rotation.
 """
 from __future__ import annotations
 import datetime as dt
+import functools
 import json
 import os
+import re
+import subprocess
 import threading
 import time
 import urllib.error
@@ -15,7 +18,10 @@ import uuid
 from pathlib import Path
 
 AUTH_DIR = Path(os.environ.get("CLI_PROXY_AUTH_DIR", "~/.cli-proxy-api")).expanduser()
-CLAUDE_URL = "https://api.anthropic.com/api/oauth/usage"
+CLAUDE_BASE = "https://api.anthropic.com/api"
+# cedar_ember asks for the banked usage-limit resets; skip_spend leaves out the dollar spend.
+CLAUDE_URL = f"{CLAUDE_BASE}/oauth/usage?cedar_ember=1&skip_spend=1"
+CLAUDE_FALLBACK_VERSION = "2.1.288"
 CODEX_BASE = "https://chatgpt.com/backend-api/wham"
 CODEX_URL = f"{CODEX_BASE}/usage"
 CODEX_RESETS_URL = f"{CODEX_BASE}/rate-limit-reset-credits"
@@ -25,6 +31,11 @@ RESET_MESSAGES = {
     "no_credit": "No reset credits left on this account.",
     "nothing_to_reset": "Nothing to reset: no limit is in use right now.",
     "already_redeemed": "That reset was already used. Refresh to see the current limits.",
+    "not_limited": "Nothing to reset: no limit is in use right now.",
+    "already_used": "That reset was already used. Refresh to see the current limits.",
+    "cooldown": "A reset was used recently. Try again after the cooldown.",
+    "ineligible": "This account is not eligible for that reset.",
+    "unavailable": "Resets are unavailable right now. Try again later.",
 }
 
 CLAUDE_WINDOWS = (
@@ -32,6 +43,28 @@ CLAUDE_WINDOWS = (
     ("seven_day_opus", "Weekly Opus"), ("seven_day_sonnet", "Weekly Sonnet"),
 )
 CODEX_LABELS = {18000: "5 hours", 604800: "Weekly"}
+
+
+@functools.lru_cache(maxsize=1)
+def claude_user_agent() -> str:
+    """Anthropic only sends the reset block to the Claude Code CLI, so identify as it."""
+    try:
+        version = subprocess.run(["claude", "--version"], capture_output=True, text=True,
+            timeout=5).stdout.split()[0]
+    except (OSError, subprocess.SubprocessError, IndexError):
+        version = ""
+    if not re.fullmatch(r"\d+\.\d+\.\d+", version):
+        version = CLAUDE_FALLBACK_VERSION
+    return f"claude-cli/{version} (external, cli)"
+
+
+def claude_headers(auth: dict) -> dict:
+    return {"Authorization": f"Bearer {auth.get('access_token')}", "anthropic-beta": "oauth-2025-04-20",
+        "User-Agent": claude_user_agent()}
+
+
+def codex_headers(auth: dict) -> dict:
+    return {"Authorization": f"Bearer {auth.get('access_token')}", "chatgpt-account-id": auth.get("account_id", "")}
 
 
 def http_get(url: str, headers: dict) -> dict:
@@ -87,12 +120,13 @@ def read_account(auth: dict, fetch) -> dict:
         return account
     try:
         if kind == "claude":
-            payload = fetch(CLAUDE_URL, {"Authorization": f"Bearer {token}",
-                "anthropic-beta": "oauth-2025-04-20"})
+            payload = fetch(CLAUDE_URL, claude_headers(auth))
             account["windows"] = claude_windows(payload)
+            credits = claude_credits(payload)
+            if credits:
+                account["resets"] = {"available": sum(item["resets_left"] for item in credits)}
         else:
-            payload = fetch(CODEX_URL, {"Authorization": f"Bearer {token}",
-                "chatgpt-account-id": auth.get("account_id", "")})
+            payload = fetch(CODEX_URL, codex_headers(auth))
             account["windows"] = codex_windows(payload)
             account["plan"] = payload.get("plan_type") or auth.get("plan_type")
             credits = payload.get("rate_limit_reset_credits") or {}
@@ -149,6 +183,34 @@ def usable_credits(listing) -> list[dict]:
     return usable
 
 
+def grant_is_open(grant: dict, now: dt.datetime) -> bool:
+    try:
+        start = dt.datetime.fromisoformat(grant["starts_at"]) if grant.get("starts_at") else None
+        end = dt.datetime.fromisoformat(grant["ends_at"]) if grant.get("ends_at") else None
+        return (start is None or start <= now) and (end is None or now < end)
+    except (TypeError, ValueError):
+        return False
+
+
+def claude_credits(payload) -> list[dict]:
+    """Claude's banked limit resets (the cedar_ember program), earliest expiry first.
+
+    A grant counts when it is not paused, has resets left and is inside its dates.
+    Whether it can be spent right now is left to Anthropic, which refuses a reset
+    while no limit is in use.
+    """
+    block = payload.get("cedar_ember") if isinstance(payload, dict) else None
+    if not isinstance(block, dict) or block.get("eligible") is not True:
+        return []
+    now = dt.datetime.now(dt.timezone.utc)
+    usable = [{"id": grant["id"], "title": grant.get("label"), "granted_at": grant.get("starts_at"),
+        "expires_at": grant.get("ends_at"), "resets_left": count(grant.get("resets_left"))}
+        for grant in block.get("grants") or [] if isinstance(grant, dict) and grant.get("id")
+        and not grant.get("paused") and count(grant.get("resets_left")) > 0 and grant_is_open(grant, now)]
+    usable.sort(key=lambda item: (item["expires_at"] is None, item["expires_at"] or ""))
+    return usable
+
+
 def load_auth(auth_dir: Path, account_id) -> dict:
     # The id is a file stem, so anything that could leave the auth folder is unknown.
     if not isinstance(account_id, str) or not account_id or Path(account_id).name != account_id \
@@ -160,42 +222,60 @@ def load_auth(auth_dir: Path, account_id) -> dict:
         raise ResetError("Unknown account.", 404) from None
 
 
-def codex_headers(auth_dir: Path, account_id) -> dict:
+def reset_account(auth_dir: Path, account_id) -> dict:
     auth = load_auth(auth_dir, account_id)
-    if auth.get("type") != "codex" or auth.get("disabled"):
-        raise ResetError("Only Codex accounts have resets. Claude limits clear when their window ends.", 400)
-    token = auth.get("access_token")
-    if not token:
+    if auth.get("type") not in ("claude", "codex") or auth.get("disabled"):
+        raise ResetError("This account has no resets.", 400)
+    if not auth.get("access_token"):
         raise ResetError(EXPIRED, 401)
-    return {"Authorization": f"Bearer {token}", "chatgpt-account-id": auth.get("account_id", "")}
+    return auth
+
+
+def provider_credits(auth: dict, fetch) -> list[dict]:
+    try:
+        if auth["type"] == "claude":
+            return claude_credits(fetch(CLAUDE_URL, claude_headers(auth)))
+        return usable_credits(fetch(CODEX_RESETS_URL, codex_headers(auth)))
+    except (OSError, ValueError) as failure:
+        raise provider_failure(failure, "listing reset credits") from None
+
+
+def consume_credit(auth: dict, credit_id: str, post) -> str | None:
+    """Ask the provider to spend one credit; returns its answer code."""
+    request_id = str(uuid.uuid4())
+    if auth["type"] == "claude":
+        try:
+            organization = str(uuid.UUID(str(auth.get("organization_uuid"))))
+        except ValueError:
+            raise ResetError("This Claude account has no organization to reset. Sign in again through the proxy.",
+                409) from None
+        outcome = post(f"{CLAUDE_BASE}/organizations/{organization}/reset_rate_limits", claude_headers(auth),
+            {"program": "cedar_ember", "grant_id": credit_id, "request_id": request_id})
+        return outcome.get("result") if isinstance(outcome, dict) else None
+    outcome = post(f"{CODEX_RESETS_URL}/consume", codex_headers(auth),
+        {"redeem_request_id": request_id, "credit_id": credit_id})
+    return outcome.get("code") if isinstance(outcome, dict) else None
 
 
 def list_resets(account_id, auth_dir: Path = AUTH_DIR, fetch=http_get) -> dict:
     """The credits a reset can spend, read-only."""
-    headers = codex_headers(auth_dir, account_id)
-    try:
-        listing = fetch(CODEX_RESETS_URL, headers)
-    except (OSError, ValueError) as failure:
-        raise provider_failure(failure, "listing reset credits") from None
+    credits = provider_credits(reset_account(auth_dir, account_id), fetch)
     return {"credits": [{key: item.get(key) for key in ("id", "title", "granted_at", "expires_at")}
-        for item in usable_credits(listing)]}
+        for item in credits]}
 
 
 _reset_lock = threading.Lock()
 
 
-def reset_codex(account_id, credit_id=None, auth_dir: Path = AUTH_DIR, fetch=http_get, post=http_post) -> dict:
+def reset_credit(account_id, credit_id=None, auth_dir: Path = AUTH_DIR, fetch=http_get, post=http_post) -> dict:
     """Spend one banked reset credit: `credit_id`, or the earliest-expiring when omitted.
 
     Irreversible; the caller must have the user's consent. Raises ResetError for every
     refusal or failure, so nothing is spent silently.
     """
     with _reset_lock:
-        headers = codex_headers(auth_dir, account_id)
-        try:
-            usable = usable_credits(fetch(CODEX_RESETS_URL, headers))
-        except (OSError, ValueError) as failure:
-            raise provider_failure(failure, "listing reset credits") from None
+        auth = reset_account(auth_dir, account_id)
+        usable = provider_credits(auth, fetch)
         if not usable:
             raise ResetError(RESET_MESSAGES["no_credit"], 409)
         if credit_id is None:
@@ -203,11 +283,9 @@ def reset_codex(account_id, credit_id=None, auth_dir: Path = AUTH_DIR, fetch=htt
         elif credit_id not in {item["id"] for item in usable}:
             raise ResetError("That reset is no longer available. Reopen the list to see the current ones.", 409)
         try:
-            outcome = post(f"{CODEX_RESETS_URL}/consume", headers,
-                {"redeem_request_id": str(uuid.uuid4()), "credit_id": credit_id})
+            code = consume_credit(auth, credit_id, post)
         except (OSError, ValueError) as failure:
             raise provider_failure(failure, "using the reset", confirmed=False) from None
-        code = outcome.get("code") if isinstance(outcome, dict) else None
         if code != "reset":
             if code in RESET_MESSAGES:
                 raise ResetError(RESET_MESSAGES[code], 409)

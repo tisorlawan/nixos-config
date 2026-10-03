@@ -160,11 +160,11 @@ function Limits({ accounts, reload }) {
         : <div className="limit-bars">{account.windows.map(item => {
           const left = Math.min(100, Math.max(0, Math.round(100 - item.percent)));
           return <div className={`limit ${left <= 10 ? 'high' : ''}`} key={item.label}>
-            <div className="limit-head"><span>{item.label}</span>
-              <span>{left === 0 ? 'Limit reached' : `${left}% left`}</span></div>
+            <span className="limit-label">{item.label}</span>
             <div className="meter" role="progressbar" aria-label={`${account.name} ${item.label} remaining`}
               aria-valuemin="0" aria-valuemax="100" aria-valuenow={left}>
               <i style={{ width: `${left}%` }} /></div>
+            <span className="limit-left">{left === 0 ? 'Limit reached' : `${left}% left`}</span>
             <small>{untilReset(item.resets_at)}</small>
           </div>;
         })}</div>}

@@ -1,0 +1,7 @@
+[Unit]
+Description=Prefer the CLIProxyAPI account (Codex, Claude) whose weekly quota resets soonest
+After=network-online.target cliproxyapi.service
+
+[Service]
+Type=oneshot
+ExecStart=%h/cliproxyapi/account_reset_priority.py

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=T3 Code
+Comment=Desktop coding agent workspace
+Exec="/home/agung-b-sorlawan/.local/bin/t3code" %U
+Icon=applications-development
+Terminal=false
+Categories=Development;

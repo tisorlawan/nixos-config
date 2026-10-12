@@ -1,1 +1,0 @@
-../skills/complexity/SKILL.md

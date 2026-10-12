@@ -1,25 +1,22 @@
-* 05 October 2026
-** TODO Remove authors from NER
-** TODO Update summarization https://github.com/GDP-ADMIN/meemo/issues/1756
-** NER
+* 12 October 2026
+** TODO recommendation 
+*** Separate DM and SLM for LAJ (https://chat.google.com/room/AAQAE-LjMvQ/UTPGHoiZ470/Xe8pkz74LvY?cls=10) 
+*** DONE Add pplx-decider-v1.1-27b recommendation (https://chat.google.com/room/AAAA4wgSydA/MtnjLVW9nKw/ZsqVywMLvtc?cls=10)
+** TODO Error handling MAB https://chat.google.com/room/AAQAAFd5mQk/sNGQNH9nK3I/JGbmvpoUqOg?cls=10
+*** Incorporate https://github.com/GDP-ADMIN/gl-sdk/pull/7360 
+   https://chat.google.com/room/AAQA-yhQs0Y/pryXn7A6LQo/pryXn7A6LQo?cls=10
+   https://chat.google.com/room/AAQA-yhQs0Y/2kU3FowEx1A/2kU3FowEx1A?cls=10
+   See: https://github.com/GDP-ADMIN/gl-sdk/pull/7224
+** NER 
+*** TODO release the image so it apply the tracing reduction  (https://chat.google.com/room/AAQALJ1PW8g/cyCyDrOKR8w/cyCyDrOKR8w?cls=10 )
 *** TODO [GLChat NER] 2 findings - DAST scan #395
 *** TODO PERSON dipisah tab https://chat.google.com/room/AAQAYtQZtE0/a1sjC6GY-Ws/_okEaa3tb9s?cls=10
 *** TODO Make so that InvalidClientException is not recorded in sentry maybe (https://sentry.obrol.id/organizations/sentry-gdplabs/issues/159013/?environment=staging&project=16&query=is%3Aunresolved%20issue.priority%3A%5Bhigh%2C%20medium%5D&referrer=issue-stream)
 *** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
 *** TODO fix tab between person name
-** GLLM Privacy
-*** TODO Partial match https://chat.google.com/dm/kVRRkyAAAAE/HR0oKY3CR2Y/HR0oKY3CR2Y?cls=10
-*** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
-*** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
-*** TODO fix tab between person name
-*** TODO fix URL 'Text: Parag Agrawal (Former CEO/CTO of Twitter), email aku agung.b.sorlawan@gdplabs.id'
-*** TODO Review PRs
 ** MAB
-*** OpenJEV 
 *** TODO <PA Item> feat: add per-task performance benchmark (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1090)
 *** TODO Create LLM recommendation in MAB FE
-*** TODO ZDR seed
-*** TODO Performance benchmark seed
 *** TODO LLM Recommendations 
 *** TODO Recommendations
 **** TODO Tiered recommendation 
@@ -44,6 +41,34 @@
 *** TODO Explore and give recommendation for provider replacement
 *** TODO [BACKLOG] calibrate semua benchmark
 *** TODO [BACKLOG] create skill to update code review leaderboard
+** GLLM Privacy
+*** TODO Partial match https://chat.google.com/dm/kVRRkyAAAAE/HR0oKY3CR2Y/HR0oKY3CR2Y?cls=10
+*** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
+*** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
+*** TODO fix tab between person name
+*** TODO fix URL 'Text: Parag Agrawal (Former CEO/CTO of Twitter), email aku agung.b.sorlawan@gdplabs.id'
+*** TODO Review PRs
+  
+* 05 October 2026
+** DONE Benchmarks: Claude Haiku 5.5, GPT 6 Luna (jev), Mistral 4 Large, Mistral 4 Small
+** DONE Remove authors from NER
+*** DONE chore: remove authors from NER docs (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/223)
+** DONE Update summarization https://github.com/GDP-ADMIN/meemo/issues/1756
+*** DONE feat: update prompt to enhance_generate_summary_25 (https://github.com/GDP-ADMIN/services-llm-service/pull/42)
+** DONE Error handling MAB https://chat.google.com/room/AAQAAFd5mQk/sNGQNH9nK3I/JGbmvpoUqOg?cls=10
+   https://chat.google.com/room/AAQA-yhQs0Y/pryXn7A6LQo/pryXn7A6LQo?cls=10
+   https://chat.google.com/room/AAQA-yhQs0Y/2kU3FowEx1A/2kU3FowEx1A?cls=10
+   See: https://github.com/GDP-ADMIN/gl-sdk/pull/7224
+*** DONE feat(gllm-privacy): add BasePrivacyError and stable GLLM-PRIV error codes https://github.com/GDP-ADMIN/gl-sdk/pull/7374 
+** NER
+*** DONE NER reduce trace https://chat.google.com/room/AAQALJ1PW8g/cyCyDrOKR8w/cyCyDrOKR8w?cls=10 
+**** DONE fix: reduce anonymize tracing (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/224)
+** MAB
+*** DONE <PA Item> OpenJEV Opensource Experiment
+*** DONE OpenJEV Opensource Calibration and Repeatibility Experiment
+*** DONE Jev for MAB judges
+**** DONE feat(evaluation): judge GEval-only text benchmarks with Jev (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1146)
+*** DONE ZDR seed
 
 * 28 September 2026
 ** DONE Qodana stuff https://chat.google.com/room/AAQA-yhQs0Y/Wx_EIGORiig/Wx_EIGORiig?cls=10

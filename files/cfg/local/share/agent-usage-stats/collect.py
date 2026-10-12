@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read Codex and Claude JSONL; aggregate requests by model and WIB day."""
+"""Read Codex, Claude, and omp JSONL; aggregate requests by model and WIB day."""
 from __future__ import annotations
 import argparse
 import datetime as dt
@@ -45,12 +45,19 @@ def normalize_usage(usage: dict, client: str) -> dict[str, int]:
             "uncached_input_tokens", "cached_input_tokens", "cache_write_input_tokens"))
         details = usage.get("output_tokens_details") or {}
         result["reasoning_output_tokens"] = tokens(details.get("thinking_tokens"))
+    elif client == "omp":
+        result["uncached_input_tokens"] = tokens(usage.get("input"))
+        result["cached_input_tokens"] = tokens(usage.get("cacheRead"))
+        result["cache_write_input_tokens"] = tokens(usage.get("cacheWrite"))
+        result["input_tokens"] = sum(result[k] for k in (
+            "uncached_input_tokens", "cached_input_tokens", "cache_write_input_tokens"))
+        result["reasoning_output_tokens"] = tokens(usage.get("reasoningTokens"))
     else:
         for field in USAGE_FIELDS:
             result[field] = tokens(usage.get(field))
         result["uncached_input_tokens"] = max(0, result["input_tokens"]
             - result["cached_input_tokens"] - result["cache_write_input_tokens"])
-    result["output_tokens"] = tokens(usage.get("output_tokens"))
+    result["output_tokens"] = tokens(usage.get("output" if client == "omp" else "output_tokens"))
     result["total_tokens"] = result["input_tokens"] + result["output_tokens"]
     return result
 
@@ -132,6 +139,25 @@ def read_claude(path: Path) -> list[Record]:
     return records
 
 
+def read_omp(path: Path) -> list[Record]:
+    records, thread = [], path.stem
+    for index, event in events(path):
+        if event.get("type") == "session":
+            thread = event.get("id") or thread
+            continue
+        message = event.get("message")
+        if event.get("type") != "message" or not isinstance(message, dict):
+            continue
+        if message.get("role") != "assistant" or not isinstance(message.get("usage"), dict):
+            continue
+        provider = message.get("provider") or "unknown"
+        identity = ("omp", provider, message["responseId"]) if message.get("responseId") else (
+            "omp", thread, event.get("id") or index)
+        records.append(Record(identity, event.get("timestamp"), message.get("model") or "unknown",
+            "omp", provider, thread, normalize_usage(message["usage"], "omp")))
+    return records
+
+
 def unique_roots(roots: list[Path], subdir: str) -> list[Path]:
     """T3 shadow homes often symlink the same sessions; scan each target once."""
     seen, result = set(), []
@@ -156,6 +182,14 @@ def default_homes() -> tuple[list[Path], list[Path]]:
     return unique_roots(codex, "sessions"), unique_roots(claude, "projects")
 
 
+def default_omp_homes() -> list[Path]:
+    root = Path.home() / ".omp"
+    homes = [root / "agent", *(root / "profiles").glob("*/agent")]
+    if os.environ.get("PI_CODING_AGENT_DIR"):
+        homes.append(Path(os.environ["PI_CODING_AGENT_DIR"]))
+    return unique_roots(homes, "sessions")
+
+
 def bucket():
     return {"usage": empty_usage(), "requests": 0, "threads": set(), "providers": set()}
 
@@ -174,15 +208,18 @@ def summarize(target: dict) -> dict:
 
 
 def collect_document(codex_homes: list[Path] | None = None,
-                     claude_homes: list[Path] | None = None) -> dict:
+                     claude_homes: list[Path] | None = None,
+                     omp_homes: list[Path] | None = None) -> dict:
     default_codex, default_claude = default_homes()
     codex_homes = unique_roots(default_codex if codex_homes is None else codex_homes, "sessions")
     claude_homes = unique_roots(default_claude if claude_homes is None else claude_homes, "projects")
+    omp_homes = unique_roots(default_omp_homes() if omp_homes is None else omp_homes, "sessions")
     records: dict[tuple, Record] = {}
     sources = []
     for client, homes, directory, pattern, reader in (
         ("codex", codex_homes, "sessions", "rollout-*.jsonl", read_codex),
         ("claude", claude_homes, "projects", "*.jsonl", read_claude),
+        ("omp", omp_homes, "sessions", "*.jsonl", read_omp),
     ):
         for home in homes:
             root = home / directory
@@ -233,21 +270,23 @@ def collect_document(codex_homes: list[Path] | None = None,
     now = dt.datetime.now(WIB)
     return {"timezone": "WIB (UTC+7)", "today": now.date().isoformat(),
         "generated_at": now.isoformat(timespec="seconds"), "rows": rows, "sources": sources,
-        "homes": [str(h) for h in codex_homes], "claude_homes": [str(h) for h in claude_homes]}
+        "homes": [str(h) for h in codex_homes], "claude_homes": [str(h) for h in claude_homes],
+        "omp_homes": [str(h) for h in omp_homes]}
 
 
 def collect(home: Path) -> list[dict]:
     """Compatibility for callers collecting one Codex home."""
-    return collect_document([home], [])['rows']
+    return collect_document([home], [], [])['rows']
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("homes", nargs="*", type=Path, help="Codex homes (default: auto-discover)")
     parser.add_argument("--claude-home", action="append", type=Path, help="Claude config root; repeatable")
+    parser.add_argument("--omp-home", action="append", type=Path, help="omp agent directory; repeatable")
     parser.add_argument("-o", "--output", type=Path)
     args = parser.parse_args()
-    document = collect_document(args.homes or None, args.claude_home)
+    document = collect_document(args.homes or None, args.claude_home, args.omp_home)
     payload = json.dumps(document, indent=2) + "\n"
     if args.output:
         args.output.write_text(payload, encoding="utf-8")

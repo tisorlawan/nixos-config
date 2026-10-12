@@ -1,0 +1,110 @@
+# STE approved words - software and AI extensions
+
+This list is an extension of the STE word list for software and AI documentation.
+The words here are not in the ASD-STE100 dictionary (Issue 7).
+The `ste_check.py` script merges this list with `word-list.md` automatically.
+This file is not part of the ASD-STE100 specification. Add words only infrequently.
+Do not put these words in `word-list.md`. That file gives the words of ASD only.
+
+Format: `WORD (part of speech) [approved forms]`
+
+Parts of speech: v = verb, n = noun, adj = adjective, adv = adverb.
+
+## Verbs
+
+ANALYZE (v) [ANALYZES, ANALYZED, ANALYZED]
+ANONYMIZE (v) [ANONYMIZES, ANONYMIZED, ANONYMIZED]
+DETECT (v) [DETECTS, DETECTED, DETECTED] - descriptive text only. In a procedure, write "find".
+EXTRACT (v) [EXTRACTS, EXTRACTED, EXTRACTED]
+GENERATE (v) [GENERATES, GENERATED, GENERATED]
+INITIALIZE (v) [INITIALIZES, INITIALIZED, INITIALIZED]
+MERGE (v) [MERGES, MERGED, MERGED]
+PARSE (v) [PARSES, PARSED, PARSED]
+RETRY (v) [RETRIES, RETRIED, RETRIED]
+TOKENIZE (v) [TOKENIZES, TOKENIZED, TOKENIZED]
+TRUNCATE (v) [TRUNCATES, TRUNCATED, TRUNCATED]
+VALIDATE (v) [VALIDATES, VALIDATED, VALIDATED]
+
+## Nouns
+
+ANALYSIS (n) [ANALYSES]
+ANONYMIZATION (n) [ANONYMIZATIONS]
+BATCH (n) [BATCHES]
+BATCH (v) [BATCHES, BATCHED, BATCHED]
+CACHE (n) [CACHES]
+CHUNK (n) [CHUNKS]
+CHUNK (v) [CHUNKS, CHUNKED, CHUNKED]
+CLIENT (n) [CLIENTS]
+CONFIG (n) [CONFIGS]
+CONFIGURATION (n) [CONFIGURATIONS]
+DATASET (n) [DATASETS]
+ENDPOINT (n) [ENDPOINTS]
+FALLBACK (n) [FALLBACKS]
+FORMAT (n) [FORMATS]
+IDENTIFIER (n) [IDENTIFIERS]
+INITIALIZATION (n) [INITIALIZATIONS]
+LOG (n) [LOGS]
+LOG (v) [LOGS, LOGGED, LOGGED]
+MIGRATION (n) [MIGRATIONS]
+OFFSET (n) [OFFSETS]
+PIPELINE (n) [PIPELINES]
+QUEUE (n) [QUEUES]
+QUEUE (v) [QUEUES, QUEUED, QUEUED]
+REQUEST (n) [REQUESTS]
+RESPONSE (n) [RESPONSES]
+RETRY (n) [RETRIES]
+SERVER (n) [SERVERS]
+THRESHOLD (n) [THRESHOLDS]
+TOKEN (n) [TOKENS]
+TOKENIZATION (n) [TOKENIZATIONS]
+WORKER (n) [WORKERS]
+CONCURRENCY (n) [CONCURRENCIES]
+WHITELIST (n) [WHITELISTS]
+WHITELIST (v) [WHITELISTS, WHITELISTED, WHITELISTED]
+OUR (pron)
+
+## Adjectives
+
+IDEMPOTENT (adj)
+VALID (adj)
+
+## Tier 2: common writing words that the ASD list does not give
+
+These words are plain English that the ASD-STE100 dictionary (aviation vocabulary) does not
+approve. Software documentation uses them every day. Add words here only when the main list
+does not have them and the word is not ambiguous.
+
+CREATE (v) [CREATES, CREATED, CREATED]
+RUN (n) [RUNS]
+RUN (v) [RUNS, RAN, RUN]
+RETURN (v) [RETURNS, RETURNED, RETURNED]
+RETURN (n) [RETURNS]
+SUPPORT (v) [SUPPORTS, SUPPORTED, SUPPORTED]
+SUPPORT (n) [SUPPORTS]
+NEED (v) [NEEDS, NEEDED, NEEDED]
+LIST (n) [LISTS]
+LIST (v) [LISTS, LISTED, LISTED]
+NOTE (n) [NOTES]
+STILL (adv)
+ALREADY (adv)
+ORIGINAL (adj)
+CONFIGURE (v) [CONFIGURES, CONFIGURED, CONFIGURED]
+DOCUMENT (n) [DOCUMENTS]
+REFERENCE (n) [REFERENCES]
+VERSION (n) [VERSIONS]
+APPLICATION (n) [APPLICATIONS]
+REPOSITORY (n) [REPOSITORIES]
+DEPENDENCY (n) [DEPENDENCIES]
+MANAGEMENT (n)
+DATABASE (n) [DATABASES]
+ENVIRONMENT (n) [ENVIRONMENTS]
+MODEL (n) [MODELS]
+PATH (n) [PATHS]
+SECRET (n) [SECRETS]
+HEADER (n) [HEADERS]
+ENCRYPT (v) [ENCRYPTS, ENCRYPTED, ENCRYPTED]
+DECRYPT (v) [DECRYPTS, DECRYPTED, DECRYPTED]
+ENCRYPTION (n) [ENCRYPTIONS]
+DECRYPTION (n) [DECRYPTIONS]
+TRUNCATION (n) [TRUNCATIONS]
+DEPLOYMENT (n) [DEPLOYMENTS]

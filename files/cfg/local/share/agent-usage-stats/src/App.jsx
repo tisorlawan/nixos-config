@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { byDay, cacheRate, formatNumber as fmt, selectRows, sumUsage, untilExpiry, untilReset } from './usage.js';
 
-const clientName = client => client === 'claude' ? 'Claude' : 'Codex';
+const clientName = client => ({ claude: 'Claude', codex: 'Codex', omp: 'omp' })[client] ?? client;
 const time = value => new Intl.DateTimeFormat('en-GB', {
   timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', second: '2-digit',
 }).format(new Date(value));
@@ -275,7 +275,7 @@ export default function App() {
       <div className="toolbar" aria-label="Usage filters">
         <label>Agent<select value={filters.client} onChange={event => {
           setFilters(current => ({ ...current, client: event.target.value, model: 'all' }));
-        }}><option value="all">All agents</option><option value="codex">Codex</option><option value="claude">Claude</option></select></label>
+        }}><option value="all">All agents</option><option value="codex">Codex</option><option value="claude">Claude</option><option value="omp">omp</option></select></label>
         <label className="model-filter">Model<select value={filters.model} onChange={event => update('model', event.target.value)}>
           <option value="all">All models</option>{availableModels.map(model => <option key={model}>{model}</option>)}
         </select></label>

@@ -3,7 +3,7 @@
 React + Vite frontend, with a Python standard-library server serving the built
 SPA and the live `/api/usage` endpoint on http://127.0.0.1:8770.
 
-The dashboard reads Codex and Claude session logs. It groups requests by model
+The dashboard reads Codex, Claude, and omp session logs. It groups requests by model
 and calendar day in **WIB (Asia/Jakarta, UTC+7)**. Refresh reads the current logs;
 the frontend also refreshes every 15 seconds while visible.
 
@@ -12,20 +12,23 @@ the frontend also refreshes every 15 seconds while visible.
 ```sh
 npm ci
 npm run build
-python3 serve.py
+uv run --no-project python serve.py
 ```
 
 Default sources are `~/.config/codex-cpa`, `~/.codex`, T3's Codex shadow homes,
-and `~/.claude`. The server also respects `CODEX_HOME` and `CLAUDE_CONFIG_DIR`.
-Symlinked session folders are scanned once. To use explicit homes:
+`~/.claude`, `~/.omp/agent`, and named omp profiles under `~/.omp/profiles/*/agent`.
+The server also respects `CODEX_HOME`, `CLAUDE_CONFIG_DIR`, and `PI_CODING_AGENT_DIR`.
+The collector scans each symlink target once. To use explicit homes:
 
 ```sh
-python3 serve.py /path/to/codex-home --claude-home /path/to/claude-home
+uv run --no-project python serve.py /path/to/codex-home --claude-home /path/to/claude-home --omp-home /path/to/omp-agent
 ```
 
-Codex homes contain `sessions/`; Claude homes contain `projects/`.
-This reads all local usage in those homes, including CLI sessions outside T3
-and Claude subagents. Token counts need no proxy key or management API.
+Codex and omp homes contain `sessions/`. Claude homes contain `projects/`.
+The collector includes nested subagent logs. Token counts need no proxy key or management API.
+The Agent filter includes omp, with separate counters when clients share a model.
+omp requests through CLIProxy appear with provider `cliproxy`. Other omp providers also appear.
+Requests without saved session logs, including `omp --no-session`, do not appear in the dashboard.
 
 ## Plan limits
 
@@ -84,6 +87,9 @@ script to relink and restart without reinstalling dependencies or rebuilding.
   repeated streaming blocks. Turn and thread cumulative totals are not summed.
 - Claude `input_tokens` describes fresh input only. Total input is fresh input
   plus `cache_read_input_tokens` plus `cache_creation_input_tokens`.
+- omp uses assistant `message.usage` records. Total input is `input` plus `cacheRead` plus `cacheWrite`.
+- omp `output` includes `reasoningTokens`. The collector reports reasoning separately but does not add it again.
+- omp response IDs deduplicate copied and forked responses within a provider. Records without response IDs use the session and entry IDs.
 - Cache share is cache reads divided by total input. Cache writes are reported
   separately; they are not cache hits. Output includes reported reasoning.
 - Synthetic Claude messages, zero-token events, malformed timestamps and partial
@@ -95,7 +101,7 @@ Run the Python server, then `npm run dev` for Vite's frontend on port 5173.
 Vite proxies `/api` to port 8770.
 
 ```sh
-python3 -m unittest -v test_collect.py test_usage.py
+uv run --no-project python -m unittest -v test_collect.py test_usage.py test_omp.py test_quota.py
 npm test
 npm run build
 ```

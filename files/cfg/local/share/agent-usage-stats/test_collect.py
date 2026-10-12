@@ -133,7 +133,7 @@ class TestCollect(unittest.TestCase):
                             [{"input_tokens": 10, "cached_input_tokens": cached, "output_tokens": 1}]),
                 )
 
-            rows = collect.collect_document([home_a, home_b], [])['rows']
+            rows = collect.collect_document([home_a, home_b], [], [])['rows']
 
             self.assertEqual(len(rows), 1)
             self.assertEqual(rows[0]['cached_input_tokens'], 14)

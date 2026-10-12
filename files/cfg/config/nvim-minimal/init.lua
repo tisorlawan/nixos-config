@@ -55,7 +55,7 @@ vim.api.nvim_create_autocmd("BufReadPost", {
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = editing_feedback,
 	callback = function()
-		vim.highlight.on_yank({ higroup = "IncSearch", timeout = 200 })
+		vim.hl.hl_op({ higroup = "IncSearch", timeout = 200 })
 	end,
 	desc = "Highlight yanked text",
 })
@@ -250,15 +250,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 		map("gd", vim.lsp.buf.definition, "Goto definition")
 		map("gD", vim.lsp.buf.declaration, "Goto declaration")
-		map("K", function()
-			vim.lsp.buf.hover({
-				border = "rounded",
-				max_width = 72,
-				max_height = 18,
-				title = " Documentation ",
-				title_pos = "center",
-			})
-		end, "Show hover documentation")
 		map("<leader>k", function()
 			vim.lsp.buf.signature_help({ border = "rounded" })
 		end, "Signature help")
@@ -694,6 +685,10 @@ require("neogit").setup({ picker = "snacks" })
 vim.cmd.packadd("gitsigns.nvim")
 require("gitsigns").setup({
 	current_line_blame = false,
+	-- The stock hunk preview draws borderless and reads as part of the buffer
+	-- underneath; match the diagnostic float instead. Deep-merged over the
+	-- stock `{ style = 'minimal', relative = 'cursor', row = 0, col = 1 }`.
+	preview_config = { border = "single" },
 })
 vim.keymap.set("n", "]h", function()
 	require("gitsigns").nav_hunk("next", { target = "all" })
@@ -701,6 +696,41 @@ end, { desc = "Next git hunk" })
 vim.keymap.set("n", "[h", function()
 	require("gitsigns").nav_hunk("prev", { target = "all" })
 end, { desc = "Previous git hunk" })
+-- Gitsigns' map wrapper seeds the function call on setup, so a plain
+-- `require("gitsigns").preview_hunk` here would stay a no-op forever.
+vim.keymap.set("n", "<leader>hp", function()
+	require("gitsigns").preview_hunk()
+end, { desc = "Preview git hunk" })
+-- `K` focuses the open hunk preview (its window carries gitsigns' `hunk`
+-- marker; `q` closes it). Otherwise the usual K: hover in LSP buffers,
+-- `keywordprg` everywhere else, reached as the unmapped `normal! K`.
+local function focus_hunk_preview()
+	for _, win in ipairs(vim.api.nvim_list_wins()) do
+		if vim.w[win].gitsigns_preview == "hunk" then
+			vim.api.nvim_set_current_win(win)
+			return true
+		end
+	end
+	return false
+end
+local function hover()
+	vim.lsp.buf.hover({
+		border = "rounded",
+		max_width = 72,
+		max_height = 18,
+		title = " Documentation ",
+		title_pos = "center",
+	})
+end
+vim.keymap.set("n", "K", function()
+	if not focus_hunk_preview() then
+		if vim.lsp.get_clients({ bufnr = 0 })[1] then
+			hover()
+		else
+			vim.cmd("normal! K")
+		end
+	end
+end, { desc = "Hover docs, or focus the hunk preview" })
 -- Key-hint popup driven by the `desc` annotations on the mappings below.
 vim.cmd.packadd("which-key.nvim")
 require("which-key").setup({})
@@ -1206,7 +1236,6 @@ local function toggle_zen()
 	end
 end
 vim.keymap.set("n", "<leader>zz", toggle_zen, { desc = "Toggle zen mode" })
-toggle_zen()
 
 vim.keymap.set("n", "<M-x>", ":")
 vim.keymap.set("n", "cq", "<cmd>cclose<CR><cmd>lclose<CR>")
@@ -1229,6 +1258,13 @@ end)
 local opaque_bg = false
 vim.cmd.packadd("kanagawa.nvim")
 vim.cmd.packadd("no-clown-fiesta.nvim")
+vim.pack.add({
+  {
+    src = 'https://github.com/oxidescheme/nvim',
+    name = 'oxide',
+  },
+})
+
 require("kanagawa").setup({
 	transparent = true,
 	colors = {
@@ -1379,7 +1415,8 @@ local function apply_color_mode()
 		-- `:colorscheme` would have run.
 		-- require("no-clown-fiesta").load({ theme = "dark", transparent = not opaque_bg })
 		-- vim.api.nvim_exec_autocmds("ColorScheme", { pattern = "no-clown-fiesta" })
-		vim.cmd.colorscheme("kanagawa-wave")
+		-- vim.cmd.colorscheme("kanagawa-wave")
+    vim.cmd.colorscheme("oxide")
 	end
 	-- :colorscheme wipes user highlight links, so (re)apply them here, after
 	-- the theme, rather than once at startup.

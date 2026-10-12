@@ -1,1 +1,0 @@
-../skills/git-commit/SKILL.md

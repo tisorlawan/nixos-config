@@ -1,4 +1,4 @@
-# Set up CLIProxyAPI, Codex, and Claude Code
+# Set up CLIProxyAPI, omp, Codex, and Claude Code
 
 Run these steps once on a new machine. `links.sh` repeats the CLIProxyAPI install and config link, so you can skip steps 2 and 3 if you run it.
 
@@ -56,3 +56,52 @@ ANTHROPIC_MODEL=claude-opus-5-5
 ```
 
 Never commit the token. `files/cfg/cli-proxy-api/config.yaml` already contains the client keys, so treat this repository as private.
+
+## 6. Use CLIProxyAPI, OpenCode Go, and Command Code in omp
+
+The global omp configuration uses these files:
+
+- `~/.omp/agent/models.yml` defines `cliproxy` at `http://127.0.0.1:8317/v1` with a fixed list of five models.
+- Its command-backed `apiKey` reads the first client key from `~/cliproxyapi/config.yaml` through Bun. Do not copy the key into the omp configuration.
+- Its `models` selects `anthropic-messages` for Claude and `openai-responses` for GPT. Automatic model discovery is disabled.
+- `~/.omp/agent/config.yml` sets `modelRoles.default` to `cliproxy/gpt-6.1-sol`.
+- `enabledModels` contains the five CLIProxy selectors below, two OpenCode Go selectors, and Glyph Cluster Free from Command Code.
+- `disabledProviders` excludes the other installed providers, including local engines.
+
+The CLIProxy models are:
+
+- `claude-sonnet-5-5`
+- `claude-opus-5-5`
+- `claude-haiku-5-5`
+- `gpt-6.1-sol`
+- `gpt-6-luna`
+
+OpenCode Go uses its existing omp credential. On a new machine, run `omp login opencode-go` to supply its API key.
+
+The other enabled chat models are:
+
+- `opencode-go/glm-5.3-flash`
+- `opencode-go/deepseek-v4.1-flash`
+- `commandcode/stealth/glyph-cluster:free`
+
+Command Code uses its existing omp credential. On a new machine, run `omp login commandcode` to supply its API key.
+
+`enabledProviders` controls external configuration discovery, not model availability. Do not use it as a model allowlist.
+
+To change the CLIProxy list, update both `models.yml` and `enabledModels`. After an omp update, add new providers to `disabledProviders`.
+Project configuration arrays replace global arrays. A project that sets `disabledProviders` or `enabledModels` must include the complete restriction.
+
+Refresh the model catalog and verify the providers:
+
+```sh
+omp models refresh cliproxy
+omp models --json --kind all
+omp --print --no-session --no-tools --no-title --thinking low 'Reply with exactly: CLIPROXY_OK'
+omp --print --no-session --no-tools --no-title --model opencode-go/glm-5.3-flash --thinking low 'Reply with exactly: OPENCODE_GO_OK'
+omp --print --no-session --no-tools --no-title --model opencode-go/deepseek-v4.1-flash --thinking low 'Reply with exactly: DEEPSEEK_OK'
+omp --print --no-session --no-tools --no-title --model commandcode/stealth/glyph-cluster:free --thinking off 'Reply with exactly: GLYPH_OK'
+```
+
+The available providers must be `cliproxy`, `opencode-go`, and `commandcode`. The chat model scope must contain the eight selectors above.
+Start a new omp session to use the default model.
+

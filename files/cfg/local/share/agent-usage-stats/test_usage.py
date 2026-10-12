@@ -48,7 +48,7 @@ class UsageRegression(unittest.TestCase):
         write_claude(self.home, 'session.jsonl', [assistant(input_tokens=2,
             cache_read_input_tokens=100, cache_creation_input_tokens=30, output_tokens=9,
             output_tokens_details={'thinking_tokens': 4})])
-        row = collect.collect_document([], [self.home])['rows'][0]
+        row = collect.collect_document([], [self.home], [])['rows'][0]
         self.assertEqual(row['day'], '2026-10-03')
         self.assertEqual(row['input_tokens'], 132)
         self.assertEqual(row['uncached_input_tokens'], 2)
@@ -63,7 +63,7 @@ class UsageRegression(unittest.TestCase):
             assistant(input_tokens=2, cache_read_input_tokens=100, output_tokens=9),
         ])
         shutil.copyfile(path, path.with_name('copied.jsonl'))
-        row = collect.collect_document([], [self.home])['rows'][0]
+        row = collect.collect_document([], [self.home], [])['rows'][0]
         self.assertEqual(row['requests'], 1)
         self.assertEqual(row['cached_input_tokens'], 100)
         self.assertEqual(row['output_tokens'], 9)
@@ -75,7 +75,7 @@ class UsageRegression(unittest.TestCase):
             assistant('real', input_tokens=3, output_tokens=1)])
         with path.open('a') as handle:
             handle.write('{"type":"assistant"')
-        rows = collect.collect_document([], [self.home])['rows']
+        rows = collect.collect_document([], [self.home], [])['rows']
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0]['requests'], 1)
 
@@ -86,7 +86,7 @@ class UsageRegression(unittest.TestCase):
         body = ''.join(json.dumps(e) + '\n' for e in events)
         for root in [self.home / 'a', self.home / 'b']:
             write_session(root, '2026/10/02', 'rollout-copy.jsonl', body)
-        row = collect.collect_document([self.home / 'a', self.home / 'b'], [])['rows'][0]
+        row = collect.collect_document([self.home / 'a', self.home / 'b'], [], [])['rows'][0]
         self.assertEqual(row['requests'], 1)
         self.assertEqual(row['input_tokens'], 20)
 
@@ -96,7 +96,7 @@ class UsageRegression(unittest.TestCase):
         shadow = self.home / 'shadow'
         shadow.mkdir()
         (shadow / 'sessions').symlink_to(self.home / 'sessions', target_is_directory=True)
-        doc = collect.collect_document([self.home, shadow], [])
+        doc = collect.collect_document([self.home, shadow], [], [])
         self.assertEqual(len(doc['sources']), 1)
         self.assertEqual(doc['rows'][0]['requests'], 1)
 
@@ -124,7 +124,7 @@ class UsageRegression(unittest.TestCase):
             rollout({'session_id': 'codex'}, {'model': 'claude-opus-5-5'}, [{'input_tokens': 20}]))
         write_claude(self.home, 'session.jsonl', [assistant(timestamp='2026-10-02T16:01:00Z',
             input_tokens=3, cache_read_input_tokens=5, output_tokens=1)])
-        rows = collect.collect_document([self.home], [self.home])['rows']
+        rows = collect.collect_document([self.home], [self.home], [])['rows']
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0]['input_tokens'], 28)
         self.assertEqual(rows[0]['by_client']['claude']['input_tokens'], 8)
@@ -133,12 +133,13 @@ class UsageRegression(unittest.TestCase):
     def test_invalid_timestamp_does_not_break_collection(self):
         write_claude(self.home, 'session.jsonl', [assistant(timestamp='invalid', input_tokens=1),
             assistant('valid', input_tokens=3)])
-        self.assertEqual(collect.collect_document([], [self.home])['rows'][0]['requests'], 1)
+        self.assertEqual(collect.collect_document([], [self.home], [])['rows'][0]['requests'], 1)
 
     def test_api_reads_newly_appended_usage_and_old_url_redirects(self):
         class TestHandler(Handler):
             codex_homes = []
             claude_homes = [self.home]
+            omp_homes = []
 
             def log_message(self, *args):
                 pass

@@ -1415,8 +1415,8 @@ local function apply_color_mode()
 		-- `:colorscheme` would have run.
 		-- require("no-clown-fiesta").load({ theme = "dark", transparent = not opaque_bg })
 		-- vim.api.nvim_exec_autocmds("ColorScheme", { pattern = "no-clown-fiesta" })
-		-- vim.cmd.colorscheme("kanagawa-wave")
-    vim.cmd.colorscheme("oxide")
+		vim.cmd.colorscheme("kanagawa-wave")
+    -- vim.cmd.colorscheme("oxide")
 	end
 	-- :colorscheme wipes user highlight links, so (re)apply them here, after
 	-- the theme, rather than once at startup.

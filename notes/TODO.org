@@ -1,12 +1,4 @@
-* 12 October 2026
-** TODO recommendation 
-*** Separate DM and SLM for LAJ (https://chat.google.com/room/AAQAE-LjMvQ/UTPGHoiZ470/Xe8pkz74LvY?cls=10) 
-*** DONE Add pplx-decider-v1.1-27b recommendation (https://chat.google.com/room/AAAA4wgSydA/MtnjLVW9nKw/ZsqVywMLvtc?cls=10)
-** TODO Error handling MAB https://chat.google.com/room/AAQAAFd5mQk/sNGQNH9nK3I/JGbmvpoUqOg?cls=10
-*** Incorporate https://github.com/GDP-ADMIN/gl-sdk/pull/7360 
-   https://chat.google.com/room/AAQA-yhQs0Y/pryXn7A6LQo/pryXn7A6LQo?cls=10
-   https://chat.google.com/room/AAQA-yhQs0Y/2kU3FowEx1A/2kU3FowEx1A?cls=10
-   See: https://github.com/GDP-ADMIN/gl-sdk/pull/7224
+* 19 October 2026
 ** NER 
 *** TODO release the image so it apply the tracing reduction  (https://chat.google.com/room/AAQALJ1PW8g/cyCyDrOKR8w/cyCyDrOKR8w?cls=10 )
 *** TODO [GLChat NER] 2 findings - DAST scan #395
@@ -14,7 +6,17 @@
 *** TODO Make so that InvalidClientException is not recorded in sentry maybe (https://sentry.obrol.id/organizations/sentry-gdplabs/issues/159013/?environment=staging&project=16&query=is%3Aunresolved%20issue.priority%3A%5Bhigh%2C%20medium%5D&referrer=issue-stream)
 *** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
 *** TODO fix tab between person name
+** GLLM Privacy
+*** TODO Partial match https://chat.google.com/dm/kVRRkyAAAAE/HR0oKY3CR2Y/HR0oKY3CR2Y?cls=10
+*** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
+*** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
+*** TODO fix tab between person name
+*** TODO fix URL 'Text: Parag Agrawal (Former CEO/CTO of Twitter), email aku agung.b.sorlawan@gdplabs.id'
+*** TODO Review PRs
 ** MAB
+*** TODO rerun botanica_embedding after debugging done by DD
+*** TODO Korikachat Beta Token usage
+*** TODO Implement MAB skill
 *** TODO <PA Item> feat: add per-task performance benchmark (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1090)
 *** TODO Create LLM recommendation in MAB FE
 *** TODO LLM Recommendations 
@@ -41,13 +43,27 @@
 *** TODO Explore and give recommendation for provider replacement
 *** TODO [BACKLOG] calibrate semua benchmark
 *** TODO [BACKLOG] create skill to update code review leaderboard
-** GLLM Privacy
-*** TODO Partial match https://chat.google.com/dm/kVRRkyAAAAE/HR0oKY3CR2Y/HR0oKY3CR2Y?cls=10
-*** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
-*** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
-*** TODO fix tab between person name
-*** TODO fix URL 'Text: Parag Agrawal (Former CEO/CTO of Twitter), email aku agung.b.sorlawan@gdplabs.id'
-*** TODO Review PRs
+** Meemo
+*** TODO End to end testing for summarization -> actually calling model
+ 
+* 12 October 2026
+** DONE Error handling GLLM Privacy, Meemo Summarization and NER
+*** DONE fix(gllm-privacy): make default error messages safe for end users (https://github.com/GDP-ADMIN/gl-sdk/pull/7458)
+*** DONE docs(gllm-privacy): document GLLM-PRIV error codes and fix PII masking tutorial (https://github.com/GDP-ADMIN/gl-sdk/pull/7459)
+*** DONE feat: adopt gllm-privacy typed errors and a public error contract (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/225)
+*** DONE fix: close NER error-handling report gaps (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/227)
+*** DONE fix: close Meemo Summarization error-handling gaps (https://github.com/GDP-ADMIN/services-llm-service/pull/45)
+*** DONE Create Report
+**** DONE GLLM Privacy (https://docs.google.com/document/d/1aYvBD-jymIT8UG4XO2Fwe0oTFufLGz_tvm814EvMkpY)
+**** DONE Meemo Summarization (https://docs.google.com/document/d/14Huqh2oyFUsq1hGWnCvA11GSJ5vNdWVQ28hhXjRnsp0)
+**** DONE NER (https://docs.google.com/document/d/1YrrT6YhsBZYTQwYjRh7RkdrE23bI0OLnGvSOV-NpeG8)
+** MAB
+*** DONE recommendation 
+**** DONE Separate DM and SLM for LAJ (https://chat.google.com/room/AAQAE-LjMvQ/UTPGHoiZ470/Xe8pkz74LvY?cls=10) 
+**** DONE Add pplx-decider-v1.1-27b recommendation (https://chat.google.com/room/AAAA4wgSydA/MtnjLVW9nKw/ZsqVywMLvtc?cls=10)
+*** DONE benchmark https://openrouter.ai/nace-ai/drex-v2.0 
+    NOTE: guardrail fails because max questions is 16
+*** DONE benchmark https://openrouter.ai/microsoft/microsoft-decision-1
   
 * 05 October 2026
 ** DONE Benchmarks: Claude Haiku 5.5, GPT 6 Luna (jev), Mistral 4 Large, Mistral 4 Small

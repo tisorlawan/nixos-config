@@ -132,3 +132,4 @@ if [[ "${INSIDE_EMACS%%,*}" = 'ghostel' ]]; then
     gst() { ghostel_cmd magit-status-setup-buffer "$(pwd)"; }
 fi
 export PATH="/home/agung-b-sorlawan/.bend/bin:$PATH"
+export PATH="/home/agung-b-sorlawan/.bun/bin:$PATH"

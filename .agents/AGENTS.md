@@ -1,5 +1,10 @@
 # Working rules
 
+- For file searches and grep in the current repository, use the fff MCP tools first.
+- Use `find_files` for paths, `grep` for file contents, and `multi_grep` for multiple identifiers in one call.
+- Read the relevant files after the search. Check exact matches before you use fuzzy results as evidence.
+- If fff is unavailable or the search needs files outside its index, use `rg` or `rg --files`.
+
 Start each task by restating my goal and the problem I am solving in your own words.
 For writing, use simplified-technical-english skill.
 

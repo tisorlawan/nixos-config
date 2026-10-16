@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Use system Mesa instead of the Nix graphics overrides, as the T3 wrappers do.
+exec env -u LD_LIBRARY_PATH -u LIBGL_DRIVERS_PATH -u __EGL_VENDOR_LIBRARY_FILENAMES -u GBM_BACKENDS_PATH \
+  "$HOME/.local/bin/tern" "$@"

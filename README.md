@@ -8,7 +8,7 @@ Dotfiles, scripts, and Nix configuration for my machines. Clone this repository 
 |------|----------|
 | `files/cfg/config/` | Per-program configs, linked into `~/.config` (nvim, kitty, hypr, fish, mpv, and others). |
 | `files/cfg/scripts/` | Shell and Python helpers, linked to `~/.scripts`. |
-| `files/cfg/local/` | `~/.local` content: the `t3code`, `t3code-nightly` and `t3code-main` launchers and the agent usage dashboard. |
+| `files/cfg/local/` | `~/.local` content: the T3 launchers, the `my-tern` wrapper and its desktop entry, and the agent usage dashboard. |
 | `files/cfg/` | Dotfiles for `$HOME`: `bashrc`, `gitconfig`, `tmux.conf`, `vimrc`, and similar. |
 | `emacs/` | Emacs config, linked to `~/.config/emacs`. Build output is gitignored. |
 | `.agents/` | `AGENTS.md`, commands, and skills shared by Claude Code, Codex, and opencode. |
@@ -29,6 +29,19 @@ Dotfiles, scripts, and Nix configuration for my machines. Clone this repository 
 | Set up the usage dashboard only | `install-script/setup-agent-usage-stats.sh` |
 
 `links.sh` deletes each destination before it links, so a file that already exists in `$HOME` is replaced. The `cliproxyapi` and `agent-usage-stats` targets also install CLIProxyAPI and build the usage dashboard. Run `./links.sh` with no arguments to list the targets. See [SETUP.md](SETUP.md) for the one-time install steps.
+
+## Tern launcher
+
+Install Tern at `~/.local/bin/tern`, then link the wrapper and desktop entry:
+
+```sh
+./links.sh tern
+```
+
+Select **Tern (System Mesa)** in Rofi. The `my-tern` wrapper removes `LD_LIBRARY_PATH`, `LIBGL_DRIVERS_PATH`, `__EGL_VENDOR_LIBRARY_FILENAMES`, and `GBM_BACKENDS_PATH`, as the T3 wrappers do. It preserves command arguments and leaves the Tern binary unchanged.
+
+The Hyprland shortcut **Super+Shift+Return** uses the same wrapper. Tern rewrites its own `so.stencil.tern*.desktop` files on launch, so `links.sh` uses a separate `tern.desktop` file. The original **Tern** entry still launches the binary without the wrapper.
+
 
 ## Account priority
 

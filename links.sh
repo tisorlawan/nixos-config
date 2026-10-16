@@ -26,7 +26,7 @@ TARGETS=(
   bash clang-format git tmux vim images scripts
   claude codex agents
   ghostty rclone
-  t3code t3code-nightly t3code-main
+  t3code t3code-nightly t3code-main tern
   cliproxyapi account-reset-priority agent-usage-stats
 )
 
@@ -114,6 +114,12 @@ run_target() {
     t3code | t3code-nightly | t3code-main)
       link "$CFG/local/bin/$name" "$HOME/.local/bin/$name"
       link "$CFG/local/share/applications/$name.desktop" "$HOME/.local/share/applications/$name.desktop"
+      ;;
+
+    # Preserve the Tern binary and its generated desktop files. Use a separate Mesa wrapper and desktop entry.
+    tern)
+      link "$CFG/local/bin/my-tern" "$HOME/.local/bin/my-tern"
+      link "$CFG/local/share/applications/tern.desktop" "$HOME/.local/share/applications/tern.desktop"
       ;;
 
     # CLIProxyAPI: install, then replace its config with the one in this repository.

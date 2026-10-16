@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Tern (System Mesa)
+Exec="/home/agung-b-sorlawan/.local/bin/my-tern"
+Icon=so.stencil.tern
+StartupWMClass=so.stencil.tern
+Terminal=false
+Categories=System;TerminalEmulator;
+X-TerminalArgExec=-e

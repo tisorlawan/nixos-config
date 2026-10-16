@@ -1,42 +1,59 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "policies": [
+    {
+      "effect": "allow",
+      "action": "provider.use",
+      "resource": "*"
+    },
+    {
+      "effect": "allow",
+      "action": "provider.use",
+      "resource": "opencode-go"
+    },
+    {
+      "effect": "allow",
+      "action": "provider.use",
+      "resource": "cliproxyapi"
+    }
+  ],
   "providers": {
-    "commandcode": {
-      "name": "Command Code",
+    "cliproxyapi": {
+      "name": "CLIProxyAPI",
       "env": [
-        "CMD_API_KEY"
+        "CLIPROXYAPI_API_KEY"
       ],
-      "package": "@opencode/ai/providers/openai-compatible",
+      "package": "@opencode/ai/providers/openai-compatible/responses",
       "settings": {
-        "baseURL": "https://api.commandcode.ai/provider/v1"
+        "baseURL": "http://127.0.0.1:8317/v1"
       },
       "models": {
-        "glm-5.3-flash": {
-          "name": "GLM 5.3 Flash",
-          "modelID": "z-ai/glm-5.3-flash",
+        "claude-opus-5-5": {
+          "name": "Claude Opus 5.5",
+          "package": "@opencode/ai/providers/anthropic-compatible",
           "limit": {
-            "context": 1048576
+            "context": 200000
           }
         },
-        "space-bunny-alpha": {
-          "name": "Space Bunny Alpha",
-          "modelID": "stealth/space-bunny-alpha",
+        "claude-haiku-5-5": {
+          "name": "Claude Haiku 5.5",
+          "package": "@opencode/ai/providers/anthropic-compatible",
           "limit": {
-            "context": 1000000
+            "context": 200000
           }
         },
-        "deepseek-v4.1-flash": {
-          "name": "DeepSeek V4.1 Flash",
-          "modelID": "deepseek/deepseek-v4.1-flash",
+        "gpt-6.1-sol": {
+          "name": "GPT 6.1 Sol",
           "limit": {
-            "context": 1000000
+            "context": 272000
+          }
+        },
+        "gpt-6-luna": {
+          "name": "GPT 6 Luna",
+          "limit": {
+            "context": 272000
           }
         }
-      }
-    },
-    "vllm": {
-      "settings": {
-        "baseURL": "http://127.0.0.1:8901/v1"
       }
     }
   }

@@ -28,7 +28,7 @@ class OmpUsage(unittest.TestCase):
         self.home = Path(self.temp.name)
 
     def document(self):
-        return collect.collect_document([], [], [self.home])
+        return collect.collect_document([], [], [self.home], [])
 
     def test_fresh_input_cache_and_reasoning_are_not_double_counted(self):
         write_omp(self.home, 'session.jsonl', [omp_message(input=2, cacheRead=100,
@@ -91,7 +91,7 @@ class OmpUsage(unittest.TestCase):
         write_session(self.home, 'repo', 'rollout-a.jsonl',
             rollout({'session_id': 'codex'}, {'model': 'gpt-6.1-sol'}, [{'input_tokens': 20}]))
         write_omp(self.home, 'omp.jsonl', [omp_message(timestamp='2026-10-02T16:00:00Z', input=3)])
-        row = collect.collect_document([self.home], [], [self.home])['rows'][0]
+        row = collect.collect_document([self.home], [], [self.home], [])['rows'][0]
         self.assertEqual(row['input_tokens'], 23)
         self.assertEqual(row['requests'], 2)
         self.assertEqual(row['by_client']['codex']['input_tokens'], 20)

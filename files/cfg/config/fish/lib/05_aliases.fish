@@ -131,3 +131,5 @@ function uv-glsdk
 end
 
 alias cdls='cd $(zoxide query --list | fzf --header "Choose directory:")'
+
+alias n='nvim'

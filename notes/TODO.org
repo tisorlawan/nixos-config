@@ -1,4 +1,9 @@
 * 19 October 2026
+** TODO help MSCDX 
+** MODEL
+*** Add VLM - Image Captioning Category - Cost optimized 1, 2
+*** Add VLM
+*** https://github.com/GDP-ADMIN/dummy-gl-sdk/issues/3637
 ** NER 
 *** TODO release the image so it apply the tracing reduction  (https://chat.google.com/room/AAQALJ1PW8g/cyCyDrOKR8w/cyCyDrOKR8w?cls=10 )
 *** TODO [GLChat NER] 2 findings - DAST scan #395
@@ -14,6 +19,10 @@
 *** TODO fix URL 'Text: Parag Agrawal (Former CEO/CTO of Twitter), email aku agung.b.sorlawan@gdplabs.id'
 *** TODO Review PRs
 ** MAB
+*** TODO Create Gemini Developer API, Vertex AI, and OpenRouter: which to use (https://docs.google.com/document/d/1O1p3Uiq8nK0n3aNHkNvjGhPJHiQyxDWFn_tCsSxzOBg/edit?tab=t.0#heading=h.svymgysppfb6)
+*** TODO GenAI cruise (https://github.com/GDP-ADMIN/gen-ai-cruise/pull/94)
+*** TODO VLM and Image Captioning benchmarks 
+*** TODO Benchmark Reflection BEAM Model (https://github.com/GDP-ADMIN/dummy-gl-sdk/issues/3637)
 *** TODO rerun botanica_embedding after debugging done by DD
 *** TODO Korikachat Beta Token usage
 *** TODO Implement MAB skill

@@ -81,9 +81,6 @@ git clone https://$GITHUB_ACCESS_TOKEN@github.com/tisorlawan/nixos-config.git ~/
 mkdir ~/.config
 rm -f ~/.config/nvim
 mv .rice/files/cfg/config/nvim ~/.config/nvim
-cp ~/.config/nvim/plugins.example ~/.config/nvim/plugins
-nvim ~/.config/nvim/plugins
-nvim ~/.config/nvim/lua/plugins/fzf.lua
 
 ## --- Python --- ##
 curl -LsSf https://astral.sh/uv/install.sh | sh

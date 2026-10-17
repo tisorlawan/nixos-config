@@ -18,6 +18,7 @@ class Handler(SimpleHTTPRequestHandler):
     codex_homes = None
     claude_homes = None
     omp_homes = None
+    pi_homes = None
 
     def end_headers(self):
         self.send_header("Cache-Control", "no-store")
@@ -70,7 +71,8 @@ class Handler(SimpleHTTPRequestHandler):
         path = urlsplit(self.path).path
         if path in ("/api/usage", "/data.json"):
             try:
-                document = collect.collect_document(self.codex_homes, self.claude_homes, self.omp_homes)
+                document = collect.collect_document(
+                    self.codex_homes, self.claude_homes, self.omp_homes, self.pi_homes)
                 body = json.dumps(document).encode("utf-8")
             except Exception:
                 traceback.print_exc()
@@ -110,6 +112,7 @@ def main():
     parser.add_argument("homes", nargs="*", type=Path)
     parser.add_argument("--claude-home", action="append", type=Path)
     parser.add_argument("--omp-home", action="append", type=Path)
+    parser.add_argument("--pi-home", action="append", type=Path)
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8770)
     parser.add_argument("--dist", type=Path, default=HERE / "dist")
@@ -119,6 +122,7 @@ def main():
     Handler.codex_homes = args.homes or None
     Handler.claude_homes = args.claude_home
     Handler.omp_homes = args.omp_home
+    Handler.pi_homes = args.pi_home
     server = ThreadingHTTPServer((args.host, args.port), partial(Handler, directory=str(args.dist)))
     print(f"Agent usage: http://{args.host}:{args.port}/", flush=True)
     try:

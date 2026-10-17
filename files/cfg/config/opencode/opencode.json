@@ -17,6 +17,7 @@
       "resource": "cliproxyapi"
     }
   ],
+  "plugins": ["*", "-opencode.provider.vllm"],
   "providers": {
     "cliproxyapi": {
       "name": "CLIProxyAPI",

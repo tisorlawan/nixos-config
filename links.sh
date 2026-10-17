@@ -15,7 +15,7 @@ CONFIG=$CFG/config
 # ~/.config entries that have the same name as their directory under files/cfg/config.
 CONFIG_ENTRIES=(
   alacritty.toml bspwm dunst eww fish greenclip.toml gtk-3.0 gtk-4.0 hypr kitty
-  lazygit mako mpd mpv nix nushell nvim nvim-minimal picom quickshell redshift
+  lazygit mako mpd mpv nix nushell nvim picom quickshell redshift
   rofi swappy sxhkd user-dirs.dirs waybar wezterm yazi zellij
 )
 

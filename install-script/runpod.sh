@@ -13,7 +13,7 @@ push() {
     ssh "$HOST" "cat > $TMP/agung.b.sorlawan_id_ed25519.gpg"
   scp backup.sh "$(readlink -f "${BASH_SOURCE[0]}")" "$HOST:$TMP/"
   scp ~/.gitconfig "$HOST:$TMP/.gitconfig"
-  scp files/cfg/config/nvim-minimal/init.lua "$HOST:/workspace/.config/nvim/init.lua"
+  scp files/cfg/config/nvim/init.lua "$HOST:/workspace/.config/nvim/init.lua"
 }
 
 setup() {

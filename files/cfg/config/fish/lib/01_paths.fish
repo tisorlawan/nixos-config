@@ -17,5 +17,6 @@ set -x PATH "$PATH" "$ANDROID_HOME/platform-tools"
 set -x JAVA_HOME /usr/lib/jvm/java-17-openjdk-amd64
 set -x PATH $JAVA_HOME/bin $PATH
 
+source $HOME/.elan/env
 
 # set -x PATH "$HOME/.cache/npm/global/bin" $PATH

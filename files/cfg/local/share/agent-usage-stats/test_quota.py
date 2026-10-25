@@ -6,6 +6,7 @@ import urllib.error
 from pathlib import Path
 
 import quota
+from quota_cache import UsageCache
 
 CLAUDE = {"five_hour": {"utilization": 0.0, "resets_at": None},
     "seven_day": {"utilization": 100.0, "resets_at": "2026-10-03T07:59:59+00:00"},
@@ -30,6 +31,41 @@ def auth_dir(*accounts):
 
 
 class Quota(unittest.TestCase):
+    def test_cached_usage_keeps_the_last_windows_and_reports_the_cooldown(self):
+        temp = auth_dir({'type': 'claude', 'email': 'a@example.com', 'access_token': 't', 'priority': 20})
+        self.addCleanup(temp.cleanup)
+        now = [0]
+        cache = UsageCache(lambda: now[0])
+        first = quota.collect_quota(temp.name, lambda *args: CLAUDE, cache)['accounts'][0]
+        now[0] = 300
+
+        def fetch(*args):
+            raise urllib.error.HTTPError('https://provider.invalid/usage', 429, 'limited', {'Retry-After': '900'}, None)
+
+        with self.assertLogs('quota_cache', level='WARNING'):
+            account = quota.collect_quota(temp.name, fetch, cache)['accounts'][0]
+        self.assertEqual(account['windows'], first['windows'])
+        self.assertEqual(account['updated_at'], first['updated_at'])
+        self.assertEqual(account['priority'], 20)
+        self.assertTrue(account['retry_at'])
+        self.assertIn('Rate limited.', account['error'])
+        self.assertIn('out of date', account['error'])
+
+    def test_provider_availability_survives_the_shared_api(self):
+        codex = {**CODEX, 'rate_limit': {**CODEX['rate_limit'], 'allowed': False}}
+        account = quota.read_account({'type': 'codex', 'access_token': 't'}, lambda *args: codex)
+        self.assertFalse(account['available'])
+        claude = {**CLAUDE, 'five_hour': {**CLAUDE['five_hour'], 'locked_reason': 'blocked'}}
+        account = quota.read_account({'type': 'claude', 'access_token': 't'}, lambda *args: claude)
+        self.assertFalse(account['available'])
+
+    def test_priority_is_the_stored_integer_even_when_sign_in_expires(self):
+        for priority, expected in ((20, 20), (0, 0), (-10, -10), (None, None), ("20", None), (True, None)):
+            with self.subTest(priority=priority):
+                account = quota.read_account({"type": "codex", "priority": priority}, None)
+                self.assertEqual(account["priority"], expected)
+                self.assertEqual(account["error"], quota.EXPIRED)
+
     def test_claude_windows_skip_missing_limits_and_keep_idle_reset_empty(self):
         windows = quota.claude_windows(CLAUDE)
         self.assertEqual([item["label"] for item in windows], ["5 hours", "Weekly"])

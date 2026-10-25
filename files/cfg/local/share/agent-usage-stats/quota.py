@@ -16,6 +16,7 @@ import urllib.error
 import urllib.request
 import uuid
 from pathlib import Path
+from quota_cache import UsageCache
 
 AUTH_DIR = Path(os.environ.get("CLI_PROXY_AUTH_DIR", "~/.cli-proxy-api")).expanduser()
 CLAUDE_BASE = "https://api.anthropic.com/api"
@@ -26,6 +27,7 @@ CODEX_BASE = "https://chatgpt.com/backend-api/wham"
 CODEX_URL = f"{CODEX_BASE}/usage"
 CODEX_RESETS_URL = f"{CODEX_BASE}/rate-limit-reset-credits"
 CACHE_SECONDS = 60
+_usage_cache = UsageCache()
 EXPIRED = "Sign-in expired. Send a request through the proxy to refresh it."
 RESET_MESSAGES = {
     "no_credit": "No reset credits left on this account.",
@@ -113,7 +115,9 @@ def codex_windows(payload: dict) -> list[dict]:
 
 def read_account(auth: dict, fetch) -> dict:
     kind = auth.get("type")
-    account = {"provider": kind, "name": auth.get("email") or kind, "windows": [], "error": ""}
+    priority = auth.get("priority")
+    account = {"provider": kind, "name": auth.get("email") or kind, "windows": [], "error": "",
+        "priority": priority if type(priority) is int else None, "available": None}
     token = auth.get("access_token")
     if not token:
         account["error"] = EXPIRED
@@ -122,12 +126,16 @@ def read_account(auth: dict, fetch) -> dict:
         if kind == "claude":
             payload = fetch(CLAUDE_URL, claude_headers(auth))
             account["windows"] = claude_windows(payload)
+            account["available"] = all(not payload[key].get("locked_reason")
+                for key in ("five_hour", "seven_day") if isinstance(payload.get(key), dict))
             credits = claude_credits(payload)
             if credits:
                 account["resets"] = {"available": sum(item["resets_left"] for item in credits)}
         else:
             payload = fetch(CODEX_URL, codex_headers(auth))
             account["windows"] = codex_windows(payload)
+            limit = payload.get("rate_limit") or {}
+            account["available"] = bool(limit.get("allowed", True)) and not limit.get("limit_reached", False)
             account["plan"] = payload.get("plan_type") or auth.get("plan_type")
             credits = payload.get("rate_limit_reset_credits") or {}
             account["resets"] = {"available": count(credits.get("available_count")),
@@ -139,7 +147,22 @@ def read_account(auth: dict, fetch) -> dict:
     return account
 
 
-def collect_quota(auth_dir: Path = AUTH_DIR, fetch=http_get) -> dict:
+def iso_time(timestamp) -> str | None:
+    return dt.datetime.fromtimestamp(timestamp, dt.timezone.utc).isoformat() if timestamp is not None else None
+
+
+def usage_error(snapshot) -> str:
+    if snapshot.status == 429:
+        when = dt.datetime.fromtimestamp(snapshot.retry_at).astimezone().strftime("%H:%M")
+        return f"Rate limited. Next quota check at {when}."
+    if snapshot.status in (401, 403):
+        return EXPIRED
+    if snapshot.status is not None:
+        return f"Provider returned HTTP {snapshot.status}."
+    return "Provider unreachable."
+
+
+def collect_quota(auth_dir: Path = AUTH_DIR, fetch=http_get, cache=None) -> dict:
     accounts = []
     for path in sorted(Path(auth_dir).glob("*.json")):
         try:
@@ -148,7 +171,24 @@ def collect_quota(auth_dir: Path = AUTH_DIR, fetch=http_get) -> dict:
             continue
         if auth.get("type") not in ("claude", "codex") or auth.get("disabled"):
             continue
-        accounts.append({"id": path.stem, **read_account(auth, fetch)})
+        snapshot = None
+
+        def cached_fetch(url, headers):
+            nonlocal snapshot
+            snapshot = cache.read(auth["type"], path.stem, lambda: fetch(url, headers))
+            if snapshot.payload is None:
+                raise OSError("No usage data.")
+            return snapshot.payload
+
+        account = {"id": path.stem, **read_account(auth, cached_fetch if cache is not None else fetch)}
+        account["updated_at"] = iso_time(snapshot.updated_at) if snapshot else (
+            dt.datetime.now(dt.timezone.utc).isoformat() if not account["error"] else None)
+        account["retry_at"] = iso_time(snapshot.retry_at) if snapshot and snapshot.failed else None
+        if snapshot and snapshot.failed:
+            account["error"] = usage_error(snapshot)
+            if snapshot.updated_at is not None:
+                account["error"] += " Quota is out of date."
+        accounts.append(account)
     return {"generated_at": dt.datetime.now(dt.timezone.utc).isoformat(), "accounts": accounts}
 
 
@@ -259,7 +299,14 @@ def consume_credit(auth: dict, credit_id: str, post) -> str | None:
 
 def list_resets(account_id, auth_dir: Path = AUTH_DIR, fetch=http_get) -> dict:
     """The credits a reset can spend, read-only."""
-    credits = provider_credits(reset_account(auth_dir, account_id), fetch)
+    auth = reset_account(auth_dir, account_id)
+    if auth["type"] == "claude":
+        snapshot = _usage_cache.read("claude", account_id, lambda: fetch(CLAUDE_URL, claude_headers(auth)))
+        if snapshot.failed:
+            raise ResetError(usage_error(snapshot), snapshot.status or 502)
+        credits = claude_credits(snapshot.payload)
+    else:
+        credits = provider_credits(auth, fetch)
     return {"credits": [{key: item.get(key) for key in ("id", "title", "granted_at", "expires_at")}
         for item in credits]}
 
@@ -290,7 +337,7 @@ def reset_credit(account_id, credit_id=None, auth_dir: Path = AUTH_DIR, fetch=ht
             if code in RESET_MESSAGES:
                 raise ResetError(RESET_MESSAGES[code], 409)
             raise ResetError("Unexpected response from the provider. Refresh to check the account before retrying.")
-        invalidate()
+        invalidate(account_id)
         return {"ok": True}
 
 
@@ -298,15 +345,16 @@ _cache = {"at": 0.0, "value": None}
 _lock = threading.Lock()
 
 
-def invalidate() -> None:
+def invalidate(account_id=None) -> None:
     with _lock:
         _cache["value"] = None
+        _usage_cache.invalidate(account_id)
 
 
 def cached_quota(**kwargs) -> dict:
     """Share one provider read across browser tabs and refreshes."""
     with _lock:
         if _cache["value"] is None or time.monotonic() - _cache["at"] > CACHE_SECONDS:
-            _cache["value"] = collect_quota(**kwargs)
+            _cache["value"] = collect_quota(cache=_usage_cache, **kwargs)
             _cache["at"] = time.monotonic()
         return _cache["value"]

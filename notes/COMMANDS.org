@@ -124,6 +124,10 @@ export IMAGE=654654411542.dkr.ecr.ap-southeast-3.amazonaws.com/mscdx-api:0.1.14
 docker build --secret id=gcloud_token,src=gcloud_token.txt -t $IMAGE .
 docker push $IMAGE
 
+aws ssm start-session --target i-02d8c8c5baad32222 --region ap-southeast-1 --profile role-dev-mscdx
+
+aws ssm start-session --target i-02d8c8c5baad32222 --region ap-southeast-1 --profile role-dev-mscdx
+
 * Mount nas-data 2 Prosa Server
 mount -t nfs 10.181.131.253:/mnt/DATA2/text /srv/nas_data2/text
 

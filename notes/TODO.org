@@ -1,36 +1,27 @@
-* 19 October 2026
-** TODO help MSCDX 
-** MODEL
-*** Add VLM - Image Captioning Category - Cost optimized 1, 2
-*** Add VLM
-*** https://github.com/GDP-ADMIN/dummy-gl-sdk/issues/3637
-** NER 
+* 2 November 2026
+** TODO NER Report By Project Team
+** GLLM Evals
+*** TODO fix(gllm-evals): validate inputs and preserve results after judge failures (https://github.com/GDP-ADMIN/gl-sdk/pull/7920)
+**** https://github.com/GDP-ADMIN/gl-sdk/issues/7886
+**** https://github.com/GDP-ADMIN/gl-sdk/issues/7900
+**** https://claude.ai/artifact/ADCfBWXXgEt5nXVqhKuGrk
+**** https://github.com/GDP-ADMIN/gl-sdk/issues/7903
+** NER
 *** TODO release the image so it apply the tracing reduction  (https://chat.google.com/room/AAQALJ1PW8g/cyCyDrOKR8w/cyCyDrOKR8w?cls=10 )
 *** TODO [GLChat NER] 2 findings - DAST scan #395
 *** TODO PERSON dipisah tab https://chat.google.com/room/AAQAYtQZtE0/a1sjC6GY-Ws/_okEaa3tb9s?cls=10
 *** TODO Make so that InvalidClientException is not recorded in sentry maybe (https://sentry.obrol.id/organizations/sentry-gdplabs/issues/159013/?environment=staging&project=16&query=is%3Aunresolved%20issue.priority%3A%5Bhigh%2C%20medium%5D&referrer=issue-stream)
 *** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
 *** TODO fix tab between person name
-** GLLM Privacy
-*** TODO Partial match https://chat.google.com/dm/kVRRkyAAAAE/HR0oKY3CR2Y/HR0oKY3CR2Y?cls=10
-*** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
-*** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
-*** TODO fix tab between person name
-*** TODO fix URL 'Text: Parag Agrawal (Former CEO/CTO of Twitter), email aku agung.b.sorlawan@gdplabs.id'
-*** TODO Review PRs
 ** MAB
-*** TODO Create Gemini Developer API, Vertex AI, and OpenRouter: which to use (https://docs.google.com/document/d/1O1p3Uiq8nK0n3aNHkNvjGhPJHiQyxDWFn_tCsSxzOBg/edit?tab=t.0#heading=h.svymgysppfb6)
-*** TODO GenAI cruise (https://github.com/GDP-ADMIN/gen-ai-cruise/pull/94)
-*** TODO VLM and Image Captioning benchmarks 
-*** TODO Benchmark Reflection BEAM Model (https://github.com/GDP-ADMIN/dummy-gl-sdk/issues/3637)
 *** TODO rerun botanica_embedding after debugging done by DD
 *** TODO Korikachat Beta Token usage
 *** TODO Implement MAB skill
 *** TODO <PA Item> feat: add per-task performance benchmark (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1090)
 *** TODO Create LLM recommendation in MAB FE
-*** TODO LLM Recommendations 
+*** TODO LLM Recommendations
 *** TODO Recommendations
-**** TODO Tiered recommendation 
+**** TODO Tiered recommendation
 **** TODO Impact kalo RAG cuma 2
 **** TODO cm fallback kita jadi beberapa ya
      Di tier yg sama bisa ada
@@ -54,7 +45,43 @@
 *** TODO [BACKLOG] create skill to update code review leaderboard
 ** Meemo
 *** TODO End to end testing for summarization -> actually calling model
- 
+** GLLM Privacy
+*** TODO Partial match https://chat.google.com/dm/kVRRkyAAAAE/HR0oKY3CR2Y/HR0oKY3CR2Y?cls=10
+*** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
+*** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
+*** TODO fix tab between person name
+*** TODO fix URL 'Text: Parag Agrawal (Former CEO/CTO of Twitter), email aku agung.b.sorlawan@gdplabs.id'
+*** TODO Review PRs
+
+* 26 October 2026
+** DONE Engineer Workflow (https://docs.google.com/document/d/1S_bVH_xVtizRApMUv2GOfEtvSmUBbtCnyr1dn_Hd3CY/edit?tab=t.0#heading=h.552bmrcj3x3y)
+** DONE Help MSCDX Migrate to Prod Environment
+** DONE Create MSCDX Migration document
+** GLLM Evals
+*** DONE [gllm-evals] Remove the deprecated evaluate() helper and every example of it, in the SDK, the GitBook and the cookbook. https://github.com/GDP-ADMIN/gl-sdk/issues/7998
+**** DONE https://github.com/gdplabs/gen-ai-sdk-cookbook/pull/168
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/7999
+** MAB
+*** DONE Recommendation
+**** DONE Add decision model cost optimized 2
+**** DONE Update VLM recommendation to deepseek/deepseek-v4.1-flash (coreweave) (https://chat.google.com/room/AAQAJPzNBaI/21JGTFyn7uI/21JGTFyn7uI?cls=10)
+*** DONE Run models for AWS Bedrock recommendation
+*** DONE Help creating BCA Syariah Model Recommendation (https://docs.google.com/document/d/1EZ1yUpuytjbprar8-ri-AYvjcimE0GCTR_UxAKbwSQk/edit?tab=t.qxt41vkd63hx#heading=h.8hcmaipqhjj4)
+
+* 19 October 2026
+** GLLM Privacy
+*** DONE fix(gllm-privacy): upgrade Pillow and certifi for security fixes (https://github.com/GDP-ADMIN/gl-sdk/pull/7774)
+*** DONE fix(gllm-privacy): deprecate OrganizationNameRecognizer and use NER for organizations (https://github.com/GDP-ADMIN/gl-sdk/pull/7721)
+** GLLM Evals
+*** DONE GenAI cruise (https://github.com/GDP-ADMIN/gen-ai-cruise/pull/94)
+** MAB
+*** DONE LLM Recommendation Table
+**** Add VLM - Image Captioning Category - Cost optimized 1, 2
+**** Add VLM QA and Rewrite
+*** DONE Benchmark and assess Beam Model (https://github.com/GDP-ADMIN/dummy-gl-sdk/issues/3637)
+*** DONE Create Gemini Developer API, Vertex AI, and OpenRouter: which to use (https://docs.google.com/document/d/1O1p3Uiq8nK0n3aNHkNvjGhPJHiQyxDWFn_tCsSxzOBg/edit?tab=t.0#heading=h.svymgysppfb6)
+*** DONE VLM and Image Captioning benchmarks
+
 * 12 October 2026
 ** DONE Error handling GLLM Privacy, Meemo Summarization and NER
 *** DONE fix(gllm-privacy): make default error messages safe for end users (https://github.com/GDP-ADMIN/gl-sdk/pull/7458)
@@ -67,13 +94,13 @@
 **** DONE Meemo Summarization (https://docs.google.com/document/d/14Huqh2oyFUsq1hGWnCvA11GSJ5vNdWVQ28hhXjRnsp0)
 **** DONE NER (https://docs.google.com/document/d/1YrrT6YhsBZYTQwYjRh7RkdrE23bI0OLnGvSOV-NpeG8)
 ** MAB
-*** DONE recommendation 
-**** DONE Separate DM and SLM for LAJ (https://chat.google.com/room/AAQAE-LjMvQ/UTPGHoiZ470/Xe8pkz74LvY?cls=10) 
+*** DONE recommendation
+**** DONE Separate DM and SLM for LAJ (https://chat.google.com/room/AAQAE-LjMvQ/UTPGHoiZ470/Xe8pkz74LvY?cls=10)
 **** DONE Add pplx-decider-v1.1-27b recommendation (https://chat.google.com/room/AAAA4wgSydA/MtnjLVW9nKw/ZsqVywMLvtc?cls=10)
-*** DONE benchmark https://openrouter.ai/nace-ai/drex-v2.0 
+*** DONE benchmark https://openrouter.ai/nace-ai/drex-v2.0
     NOTE: guardrail fails because max questions is 16
 *** DONE benchmark https://openrouter.ai/microsoft/microsoft-decision-1
-  
+
 * 05 October 2026
 ** DONE Benchmarks: Claude Haiku 5.5, GPT 6 Luna (jev), Mistral 4 Large, Mistral 4 Small
 ** DONE Remove authors from NER
@@ -84,9 +111,9 @@
    https://chat.google.com/room/AAQA-yhQs0Y/pryXn7A6LQo/pryXn7A6LQo?cls=10
    https://chat.google.com/room/AAQA-yhQs0Y/2kU3FowEx1A/2kU3FowEx1A?cls=10
    See: https://github.com/GDP-ADMIN/gl-sdk/pull/7224
-*** DONE feat(gllm-privacy): add BasePrivacyError and stable GLLM-PRIV error codes https://github.com/GDP-ADMIN/gl-sdk/pull/7374 
+*** DONE feat(gllm-privacy): add BasePrivacyError and stable GLLM-PRIV error codes https://github.com/GDP-ADMIN/gl-sdk/pull/7374
 ** NER
-*** DONE NER reduce trace https://chat.google.com/room/AAQALJ1PW8g/cyCyDrOKR8w/cyCyDrOKR8w?cls=10 
+*** DONE NER reduce trace https://chat.google.com/room/AAQALJ1PW8g/cyCyDrOKR8w/cyCyDrOKR8w?cls=10
 **** DONE fix: reduce anonymize tracing (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/224)
 ** MAB
 *** DONE <PA Item> OpenJEV Opensource Experiment
@@ -97,18 +124,18 @@
 
 * 28 September 2026
 ** DONE Qodana stuff https://chat.google.com/room/AAQA-yhQs0Y/Wx_EIGORiig/Wx_EIGORiig?cls=10
-** Meemo 
+** Meemo
 *** DONE Help DD Team iterating on Meemo Summarization Prompt Improvement
-*** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1134/ 
+*** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1134/
 ** NER
 *** DONE https://github.com/GDP-ADMIN/glchat/issues/14886
 **** DONE fix(gllm-privacy): prevent chunking failures on mixed-language text (https://github.com/GDP-ADMIN/gl-sdk/pull/7017)
 *** DONE  Qodana in NER
-**** DONE https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/221 
+**** DONE https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/221
 *** DONE Update docs and version tracker
 ** GLLM Evals
-*** DONE Review PRs 
-**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/6745 
+*** DONE Review PRs
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/6745
 ** MAB
 *** DONE Benchmarking OpenJEV Models (https://docs.google.com/spreadsheets/d/1sZZbiD0RL15zvscg32auxldkXNy2KGq-bZbvuzoVNPo/edit?gid=493352837#gid=493352837&range=A1:A2)
 *** DONE Run LLM As Judge Model (google/gemini-3.1-flash-lite, https://github.com/GDP-ADMIN/gl-sdk/issues/5961, https://chat.google.com/room/AAQAE-LjMvQ/9vuutw76Y-0/HXXTRJaiTrs?cls=10)
@@ -117,7 +144,7 @@
 * 21 September 2026
 ** NER
 *** DONE Update NER model and deployment
-**** DONE feat(ner): detect BRAND_NAME entities and upgrade model to v1-01 https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/215 
+**** DONE feat(ner): detect BRAND_NAME entities and upgrade model to v1-01 https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/215
 ** MAB
 *** DONE Review PRs related to JEV implementation
 *** DONE Run Jev model for several benchmarks
@@ -132,7 +159,7 @@
 *** DONE feat(gllm-privacy): support brand-name anonymization (https://github.com/GDP-ADMIN/gl-sdk/pull/6817)
 ** MAB
 *** DONE show build version in the MAB FE (already implemented in branch f/show-build-version)
-*** TODO LLM Recommendations 
+*** TODO LLM Recommendations
 **** DONE Create docs explaining the AIP selection tiered
 **** DONE Create Cost/task
 **** DONE ZDR recommendations that use 'openrouter (azure)' is changed to direct openai
@@ -144,7 +171,7 @@
 * 7 September 2026
 ** MEEMO
 *** DONE Test Deepseek, GLM 5.3 Flash for Meemo
-**** DONE re-run summarization data for evaluations 
+**** DONE re-run summarization data for evaluations
 *** DONE Migrate Meemo Summarization to GLM 5.3 Flash
 **** feat: migrate LLM default routing to OpenRouter (https://github.com/GDP-ADMIN/services-llm-service/pull/41)
 ** NER
@@ -166,7 +193,7 @@
 ** MAB
 *** DONE fix(leaderboard): append missing spreadsheet columns without rewriting rows (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1033)
 *** DONE Re-run GLM 5.3 Flash.
-*** DONE Create code review recommendation 
+*** DONE Create code review recommendation
 *** DONE Create AIP Fallback recommendation
 *** DONE feat(evals): score every benchmark row with gllm-evals evaluate_suites https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1000
 *** DONE Update TTFT Latency untuk pakai 10 CR

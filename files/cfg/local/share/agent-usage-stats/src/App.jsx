@@ -156,8 +156,8 @@ function Limits({ accounts, reload }) {
       <div className="account-name"><strong>{account.name}</strong>
         <span>{clientName(account.provider)}{account.plan ? ` ${account.plan}` : ''}</span>
         {account.resets && <Resets account={account} reload={reload} />}</div>
-      {account.error ? <p className="source-error">{account.error}</p>
-        : <div className="limit-bars">{account.windows.map(item => {
+      {account.error && <p className="source-error">{account.error}</p>}
+      <div className="limit-bars">{account.windows.map(item => {
           const left = Math.min(100, Math.max(0, Math.round(100 - item.percent)));
           return <div className={`limit ${left <= 10 ? 'high' : ''}`} key={item.label}>
             <span className="limit-label">{item.label}</span>
@@ -167,7 +167,7 @@ function Limits({ accounts, reload }) {
             <span className="limit-left">{left === 0 ? 'Limit reached' : `${left}% left`}</span>
             <small>{untilReset(item.resets_at)}</small>
           </div>;
-        })}</div>}
+        })}</div>
     </div>)}
   </section>;
 }

@@ -188,6 +188,51 @@ for index, mode in ipairs({ "right", "below", "float", "full" }) do
 	hide()
 end
 
+-- The conditional layout keeps successful commands hidden and retains output.
+selection = 5
+mapped("rf")
+eq("background", read_state("layout"))
+answer = "sleep 0.1; printf runner-hidden-success"
+mapped("rc")
+eq(1, #vim.api.nvim_list_wins())
+eq(source_win, vim.api.nvim_get_current_win())
+assert(finished():find("runner%-hidden%-success"))
+eq(1, #vim.api.nvim_list_wins())
+eq(source_win, vim.api.nvim_get_current_win())
+mapped("ro")
+eq(terminal(), vim.api.nvim_get_current_buf())
+assert(vim.api.nvim_win_get_position(0)[2] > 0, "Expected a right split for hidden output")
+hide()
+
+-- A failed repeat opens its captured output only after the command exits.
+answer = "sleep 0.1; printf runner-hidden-error; exit 7"
+mapped("re")
+mapped("rr")
+eq(1, #vim.api.nvim_list_wins())
+eq(source_win, vim.api.nvim_get_current_win())
+assert(finished(7):find("runner%-hidden%-error"))
+eq(2, #vim.api.nvim_list_wins())
+eq(terminal(), vim.api.nvim_get_current_buf())
+assert(vim.api.nvim_win_get_position(0)[2] > 0, "Expected a right split after failure")
+hide()
+
+-- Explicit background execution stays hidden even when the command fails.
+mapped("rb")
+assert(finished(7):find("runner%-hidden%-error"))
+eq(1, #vim.api.nvim_list_wins())
+eq(source_win, vim.api.nvim_get_current_win())
+
+-- A later layout selection cannot change an active run's split-on-error policy.
+mapped("rr")
+selection = 3
+mapped("rf")
+finished(7)
+eq(2, #vim.api.nvim_list_wins())
+assert(vim.api.nvim_win_get_position(0)[2] > 0, "Expected a right split after a layout change")
+hide()
+answer = "printf runner-edited"
+mapped("re")
+
 -- Each split remembers its own ratio after a manual resize and reopen.
 selection = 1
 mapped("rf")

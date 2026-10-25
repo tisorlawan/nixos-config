@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Name=ChatGPT (Codex)
+Comment=OpenAI desktop workspace with Codex; system Mesa graphics
+Exec="/home/agung-b-sorlawan/.local/bin/codex-desktop" %U
+Icon=/home/agung-b-sorlawan/.local/lib/codex-desktop/current/usr/share/pixmaps/chatgpt.png
+Terminal=false
+Categories=Development;
+Keywords=Codex;ChatGPT;OpenAI;
+MimeType=x-scheme-handler/codex;
+StartupNotify=true

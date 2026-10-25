@@ -171,6 +171,10 @@ Scope {
             Row {
               spacing: Theme.chipGap
 
+              QuotaWidget {
+                barWindow: panel
+              }
+
               Rectangle {
                 width: 130
                 height: Theme.chipHeight

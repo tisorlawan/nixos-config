@@ -8,11 +8,9 @@ configuration {
 
 @theme "/dev/null"
 
-* {
-	bg:				#171720;
-	fg:				#dcd7ba;
-	button:			#25324d;
+@import "colors.rasi"
 
+* {
 	background-color:		@bg;
 	text-color:			@fg;
 }

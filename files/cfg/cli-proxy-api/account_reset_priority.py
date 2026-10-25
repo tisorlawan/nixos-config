@@ -4,7 +4,7 @@
 CLIProxyAPI reads a top-level "priority" from each auth JSON (higher wins; the
 highest available tier is used until it is in cooldown). Priority is compared
 only between accounts of the same provider. For each supported provider this
-script asks the provider's usage endpoint for every OAuth account's quota and
+script reads the local dashboard's shared quota API and
 rewrites "priority" so that:
 
   * usable accounts are ranked by weekly reset time, soonest first, with the
@@ -12,8 +12,7 @@ rewrites "priority" so that:
   * accounts at their 5-hour or weekly limit drop to priority 0;
   * accounts whose usage lookup fails keep their current priority.
 
-Supported providers: Codex (chatgpt.com/backend-api/wham/usage) and Claude
-(api.anthropic.com/api/oauth/usage). Both endpoints are undocumented.
+Supported providers: Codex and Claude. The dashboard owns provider reads and cooldowns.
 
 Files are only rewritten when the value changes. Each write is an atomic
 replace guarded by a re-read, so a concurrent token refresh by the proxy is
@@ -25,21 +24,23 @@ Usage: account_reset_priority.py [--dry-run] [--auth-dir DIR] [--provider NAME .
 import argparse
 import glob
 import json
+import math
 import os
 import sys
 import tempfile
 import time
-import urllib.error
 import urllib.request
 from datetime import datetime
 
 PRIORITY_STEP = 10
+MAX_QUOTA_AGE = 600
+QUOTA_URL = "http://127.0.0.1:8770/api/quota"
 NEVER = float("inf")
 
 
-def http_json(url, headers):
-    req = urllib.request.Request(url, headers={"Accept": "application/json", **headers})
-    with urllib.request.urlopen(req, timeout=20) as resp:
+def http_json(url):
+    req = urllib.request.Request(url, headers={"Accept": "application/json"})
+    with urllib.request.urlopen(req, timeout=55) as resp:
         return json.load(resp)
 
 
@@ -47,55 +48,42 @@ def iso_ts(value):
     return datetime.fromisoformat(value).timestamp() if value else NEVER
 
 
-def codex_usage(auth):
-    usage = http_json(
-        "https://chatgpt.com/backend-api/wham/usage",
-        {
-            "Authorization": "Bearer " + auth["access_token"],
-            "ChatGPT-Account-Id": auth.get("account_id", ""),
-            "User-Agent": "codex_cli_rs/0.50.0",
-        },
-    )
-    rl = usage.get("rate_limit") or {}
-    short = rl.get("primary_window") or {}
-    weekly = rl.get("secondary_window") or {}
+def account_usage(account, now=None):
+    if account.get("error"):
+        raise ValueError(account["error"])
+    now = time.time() if now is None else now
+    updated = iso_ts(account.get("updated_at"))
+    if updated == NEVER or now - updated > MAX_QUOTA_AGE:
+        raise ValueError("quota is out of date")
+    if type(account.get("available")) is not bool:
+        raise ValueError("quota availability is unknown")
+    windows = account.get("windows")
+    if not isinstance(windows, list) or not windows:
+        raise ValueError("quota windows are unavailable")
+    limits = {}
+    for window in windows:
+        if not isinstance(window, dict):
+            raise ValueError("invalid quota window")
+        if window.get("label") not in ("5 hours", "Weekly"):
+            continue
+        percent = window.get("percent")
+        if type(percent) not in (int, float) or not math.isfinite(percent) or percent < 0:
+            raise ValueError("invalid quota percent")
+        limits[window["label"]] = window
+    if not limits:
+        raise ValueError("no supported quota windows")
+    short = limits.get("5 hours", {})
+    weekly = limits.get("Weekly", {})
     return {
-        "usable": bool(rl.get("allowed", True))
-        and not rl.get("limit_reached", False)
-        and (short.get("used_percent") or 0) < 100
-        and (weekly.get("used_percent") or 0) < 100,
-        "weekly_reset": weekly.get("reset_at") or NEVER,
-        "weekly_used": weekly.get("used_percent"),
-        "short_reset": short.get("reset_at") or NEVER,
-        "short_used": short.get("used_percent"),
-    }
-
-
-def claude_usage(auth):
-    usage = http_json(
-        "https://api.anthropic.com/api/oauth/usage",
-        {
-            "Authorization": "Bearer " + auth["access_token"],
-            "anthropic-beta": "oauth-2025-04-20",
-            "User-Agent": "claude-cli/2.1.0 (external, cli)",
-        },
-    )
-    short = usage.get("five_hour") or {}
-    weekly = usage.get("seven_day") or {}
-    return {
-        "usable": (short.get("utilization") or 0) < 100
-        and (weekly.get("utilization") or 0) < 100
-        and not short.get("locked_reason")
-        and not weekly.get("locked_reason"),
+        "usable": account["available"] and all(item["percent"] < 100 for item in limits.values()),
         "weekly_reset": iso_ts(weekly.get("resets_at")),
-        "weekly_used": weekly.get("utilization"),
+        "weekly_used": weekly.get("percent"),
         "short_reset": iso_ts(short.get("resets_at")),
-        "short_used": short.get("utilization"),
+        "short_used": short.get("percent"),
     }
 
 
-# Auth file prefix in the auth dir -> usage fetcher.
-PROVIDERS = {"codex": codex_usage, "claude": claude_usage}
+PROVIDERS = ("claude", "codex")
 
 
 def desired_priorities(stats):
@@ -140,7 +128,7 @@ def fmt(ts, used):
     return f"{when} ({used}% used)"
 
 
-def update_provider(provider, fetch, auth_dir, dry_run):
+def update_provider(provider, accounts, auth_dir, dry_run):
     """Returns (files written or planned, failures)."""
     paths = sorted(glob.glob(os.path.join(auth_dir, f"{provider}-*.json")))
     if not paths:
@@ -158,11 +146,11 @@ def update_provider(provider, fetch, auth_dir, dry_run):
             print(f"{name}: disabled, skipped")
             continue
         try:
-            stats[name] = fetch(auth)
-        except urllib.error.HTTPError as e:
-            failures += 1
-            print(f"{name}: usage lookup failed: HTTP {e.code}; priority left as {current[name]}")
-        except Exception as e:  # network errors, bad JSON
+            account = accounts.get(os.path.splitext(name)[0])
+            if account is None or account.get("provider") != provider:
+                raise ValueError("account is absent from the quota API")
+            stats[name] = account_usage(account)
+        except (TypeError, ValueError) as e:
             failures += 1
             print(f"{name}: usage lookup failed: {e}; priority left as {current[name]}")
 
@@ -194,6 +182,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--auth-dir", default=os.path.expanduser("~/.cli-proxy-api"))
     parser.add_argument("--dry-run", action="store_true", help="print the plan without writing")
+    parser.add_argument("--quota-url", default=QUOTA_URL, help="local dashboard quota API")
     parser.add_argument(
         "--provider",
         action="append",
@@ -202,9 +191,24 @@ def main():
     )
     args = parser.parse_args()
 
+    try:
+        document = http_json(args.quota_url)
+        if not isinstance(document, dict) or not isinstance(document.get("accounts"), list):
+            raise ValueError("invalid quota response")
+        accounts = {}
+        for account in document["accounts"]:
+            if not isinstance(account, dict) or not isinstance(account.get("id"), str) or not account["id"]:
+                raise ValueError("invalid quota account")
+            if account["id"] in accounts:
+                raise ValueError("duplicate quota account")
+            accounts[account["id"]] = account
+    except (OSError, ValueError) as failure:
+        print(f"Quota API unavailable: {failure}; all priorities left unchanged", file=sys.stderr)
+        return 1
+
     failures = 0
     for provider in args.provider or sorted(PROVIDERS):
-        _, failed = update_provider(provider, PROVIDERS[provider], args.auth_dir, args.dry_run)
+        _, failed = update_provider(provider, accounts, args.auth_dir, args.dry_run)
         failures += failed
     return 1 if failures else 0
 

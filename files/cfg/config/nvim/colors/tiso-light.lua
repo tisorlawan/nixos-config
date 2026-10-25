@@ -1,0 +1,1 @@
+require("tiso").load("light")

@@ -45,6 +45,10 @@ stored by CLIProxyAPI (`~/.cli-proxy-api/*.json`, or `CLI_PROXY_AUTH_DIR`). It c
 Anthropic's `/api/oauth/usage` and ChatGPT's `/backend-api/wham/usage` with each
 account's stored access token. Both endpoints are undocumented and may change.
 
+Each account also includes its stored integer `priority`, or `null` when no valid value exists.
+The `account-reset-priority.timer` runs the separate priority script about every 10 minutes.
+The dashboard only reads priority from the auth JSON. It does not calculate or write priority.
+
 Codex accounts, and Claude accounts holding a limit-reset grant, also show their banked reset credits. "Use reset" asks for
 confirmation, then `POST /api/quota/reset` spends the earliest-expiring credit through
 ChatGPT's `/wham/rate-limit-reset-credits/consume`; for Claude it posts the grant to
@@ -59,8 +63,14 @@ clear when the window ends.
 
 Tokens are only read, never refreshed, because the proxy owns refresh-token
 rotation. An expired token shows "Sign-in expired" for that account until a request
-goes through the proxy. Results are cached for 60 seconds. The browser never sees a
-token.
+goes through the proxy. The API caches its response for 60 seconds and reads each account's provider quota at most once every five minutes.
+The priority script reads this API instead of the provider. Claude reset-credit lists use the same cached provider response.
+
+After HTTP 429, the server pauses quota reads for that provider, including its other accounts.
+It respects `Retry-After` in seconds or HTTP date format. Without a longer server delay, the cooldown starts at five minutes and doubles to one hour.
+Repeated refreshes cannot bypass the cooldown. The server keeps the last successful data and reports `updated_at`, `retry_at`, and an error.
+The priority script keeps the current priority when data has an error or is older than 10 minutes.
+The server logs each actual HTTP 429 and the next check time. The browser never sees a token.
 
 ## User service
 

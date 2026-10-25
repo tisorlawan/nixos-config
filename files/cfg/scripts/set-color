@@ -3,7 +3,7 @@
 # Single entrypoint for switching dark/light mode. Every app either reads the
 # state file (~/.color) directly with its own watcher (nvim, quickshell) or is
 # reloaded from here (kitty, hyprland, hyprpaper, emacs, ghostty, alacritty,
-# starship, tmux, brave).
+# starship, tmux, brave). Rofi reads the selected palette on each launch.
 
 set -euo pipefail
 
@@ -24,6 +24,14 @@ esac
 printf '%s\n' "$mode" >"$HOME/.color"
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+
+# rofi: update the shared palette for the next launcher or dmenu invocation.
+ROFI_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/rofi"
+if [ -f "$ROFI_DIR/colors-${mode}.rasi" ]; then
+  tmp="$(mktemp "$ROFI_DIR/colors.rasi.XXXXXX")"
+  cp "$ROFI_DIR/colors-${mode}.rasi" "$tmp"
+  mv "$tmp" "$ROFI_DIR/colors.rasi"
+fi
 
 # kitty: swap the included theme, then hot-reload every running instance.
 KITTY_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty.conf"

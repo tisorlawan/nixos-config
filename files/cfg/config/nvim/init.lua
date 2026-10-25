@@ -8,7 +8,8 @@ vim.opt.relativenumber = true
 vim.opt.cursorline = false
 vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
-vim.opt.scrolloff = 4
+vim.opt.scrolloff = 8
+vim.opt.fillchars:append({ eob = " " })
 
 vim.opt.expandtab = true
 vim.opt.shiftwidth = 2
@@ -43,6 +44,38 @@ end, {
 
 local editing_feedback = vim.api.nvim_create_augroup("editing_feedback", { clear = true })
 
+local function highlight_trailing_whitespace()
+	if vim.w.trailing_whitespace_match then
+		vim.fn.matchdelete(vim.w.trailing_whitespace_match)
+		vim.w.trailing_whitespace_match = nil
+	end
+	if vim.bo.buftype == "" then
+		vim.w.trailing_whitespace_match = vim.fn.matchadd("TrailingWhitespace", [[\s\+$]])
+	end
+end
+vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter" }, {
+	group = editing_feedback,
+	callback = highlight_trailing_whitespace,
+	desc = "Highlight trailing whitespace in file windows",
+})
+vim.api.nvim_create_autocmd("OptionSet", {
+	group = editing_feedback,
+	pattern = "buftype",
+	callback = highlight_trailing_whitespace,
+	desc = "Update trailing whitespace highlights for the buffer type",
+})
+vim.api.nvim_create_autocmd("ColorScheme", {
+	group = editing_feedback,
+	callback = function()
+		local dark = vim.o.background == "dark"
+		vim.api.nvim_set_hl(0, "TrailingWhitespace", {
+			bg = dark and "#3b2222" or "#ead5d5",
+			ctermbg = dark and 52 or 224,
+		})
+	end,
+	desc = "Use a muted red background for trailing whitespace",
+})
+
 vim.api.nvim_create_autocmd("BufReadPost", {
 	group = editing_feedback,
 	callback = function(event)
@@ -61,6 +94,32 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 		vim.hl.hl_op({ higroup = "IncSearch", timeout = 200 })
 	end,
 	desc = "Highlight yanked text",
+})
+
+-- A virtual line marks EOF without adding a blank line to the file.
+local eof_namespace = vim.api.nvim_create_namespace("eof_marker")
+local eof_marker = {
+	id = 1,
+	virt_lines = { { { "[EOF] ----------------", "Comment" } } },
+}
+local function update_eof_marker(event)
+	local buf = event.buf
+	if vim.bo[buf].buftype ~= "" then
+		vim.api.nvim_buf_clear_namespace(buf, eof_namespace, 0, -1)
+		return
+	end
+	vim.api.nvim_buf_set_extmark(buf, eof_namespace, vim.api.nvim_buf_line_count(buf) - 1, 0, eof_marker)
+end
+vim.api.nvim_create_autocmd({ "BufEnter", "TextChanged", "TextChangedI", "TextChangedP" }, {
+	group = editing_feedback,
+	callback = update_eof_marker,
+	desc = "Show EOF below the last line",
+})
+vim.api.nvim_create_autocmd("OptionSet", {
+	group = editing_feedback,
+	pattern = "buftype",
+	callback = update_eof_marker,
+	desc = "Hide EOF in utility buffers",
 })
 
 vim.api.nvim_create_autocmd("FileType", {
@@ -291,6 +350,20 @@ vim.api.nvim_create_autocmd("LspAttach", {
 	desc = "Configure LSP buffer mappings",
 })
 
+vim.api.nvim_create_autocmd("BufWritePre", {
+	group = vim.api.nvim_create_augroup("python_format_on_save", { clear = true }),
+	callback = function(event)
+		if vim.bo[event.buf].filetype ~= "python" then
+			return
+		end
+		if #vim.lsp.get_clients({ bufnr = event.buf, name = "ruff", method = "textDocument/formatting" }) == 0 then
+			return
+		end
+		vim.lsp.buf.format({ bufnr = event.buf, name = "ruff", async = false })
+	end,
+	desc = "Format Python with Ruff before save",
+})
+
 -- Pyright sends hover markdown with `&nbsp;` for indentation and `\_` for
 -- escaped underscores. Both leak into the float as raw text, so clean the
 -- markdown prose before Neovim renders it. Fenced code blocks are left alone.
@@ -316,8 +389,11 @@ end
 -- per-buffer path `:RenderMarkdown buf_enable` uses.
 local open_floating_preview = vim.lsp.util.open_floating_preview
 vim.lsp.util.open_floating_preview = function(contents, syntax, opts)
-	if type(contents) == "table" and syntax == "markdown" then
-		clean_lsp_hover_markdown(contents)
+	if syntax == "markdown" then
+		opts = vim.tbl_extend("keep", opts or {}, { border = "rounded" })
+		if type(contents) == "table" then
+			clean_lsp_hover_markdown(contents)
+		end
 	end
 	local fbuf, fwin = open_floating_preview(contents, syntax, opts)
 	if syntax == "markdown" and fbuf and vim.api.nvim_win_is_valid(fwin) then
@@ -544,6 +620,23 @@ vim.keymap.set("n", "<C-h>", "<cmd>wincmd h<CR>", { desc = "Move left" })
 vim.keymap.set("n", "<C-j>", "<cmd>wincmd j<CR>", { desc = "Move down" })
 vim.keymap.set("n", "<C-k>", "<cmd>wincmd k<CR>", { desc = "Move up" })
 local mc_ns = vim.api.nvim_create_namespace("nvim.multicursor")
+if vim.env.TERM_PROGRAM == "tern" then
+	local function use_grid_cursors()
+		require("vim._core.mcursor").tty_cursors(false)
+	end
+	-- Tern 0.9.5 advertises Kitty cursors but does not display them here.
+	-- Run after Neovim handles the reply, or detection enables them again.
+	vim.api.nvim_create_autocmd("TermResponse", {
+		group = editing_feedback,
+		callback = function(event)
+			if event.data.sequence:match("^\027%[>[%d;]* q$") then
+				vim.schedule(use_grid_cursors)
+			end
+		end,
+		desc = "Use Neovim cursor highlights in Tern",
+	})
+	use_grid_cursors()
+end
 vim.keymap.set("n", "<C-l>", function()
   if #vim.api.nvim_buf_get_extmarks(0, mc_ns, 0, -1, { limit = 1 }) > 0 then
     vim.api.nvim_buf_clear_namespace(0, mc_ns, 0, -1)
@@ -734,7 +827,6 @@ local function focus_hunk_preview()
 end
 local function hover()
 	vim.lsp.buf.hover({
-		border = "rounded",
 		max_width = 72,
 		max_height = 18,
 		title = " Documentation ",
@@ -757,6 +849,9 @@ require("which-key").setup({})
 vim.keymap.set("n", "<leader>gg", function()
 	require("neogit").open()
 end, { desc = "Neogit" })
+vim.keymap.set("n", "<leader>gG", function()
+	Snacks.lazygit()
+end, { desc = "Toggle LazyGit" })
 
 -- Markdown renders in place through treesitter, off until asked for so files
 -- open raw. `SPC u u` matches the full nvim config, but stays buffer-local to
@@ -1016,6 +1111,14 @@ require("snacks").setup({
 	quickfile = { enabled = true },
 	indent = { enabled = false },
 	notifier = { enabled = false },
+	lazygit = {
+		win = {
+			keys = {
+				-- Leave terminal-mode spaces unbound so commit messages have no mapping delay.
+				toggle = { "<leader>gG", "hide", mode = "n", desc = "Toggle LazyGit" },
+			},
+		},
+	},
 	input = {
 		win = {
 			keys = {
@@ -1066,6 +1169,12 @@ end, { desc = "Find files" })
 vim.keymap.set("n", "<leader>fl", function()
 	Snacks.picker.lines()
 end, { desc = "Lines in buffer" })
+vim.keymap.set("n", "<leader>fs", function()
+	Snacks.picker.lsp_symbols()
+end, { desc = "Find symbols in file" })
+vim.keymap.set("n", "<leader>fS", function()
+	Snacks.picker.lsp_workspace_symbols()
+end, { desc = "Find symbols in workspace" })
 vim.keymap.set("n", "<leader>l", function()
 	require("fff").live_grep()
 end, { desc = "Live grep" })
@@ -1256,6 +1365,8 @@ local function toggle_zen()
 	end
 end
 vim.keymap.set("n", "<leader>zz", toggle_zen, { desc = "Toggle zen mode" })
+-- Start in Zen before filetype-specific display settings take effect.
+toggle_zen()
 
 vim.keymap.set("n", "<M-x>", ":")
 vim.keymap.set("n", "cq", "<cmd>cclose<CR><cmd>lclose<CR>")
@@ -1270,14 +1381,9 @@ vim.keymap.set("n", "co", function()
 	vim.cmd.copen()
 end)
 
--- `SPC t t` flips this; `apply_color_mode` re-applies the scheme so kanagawa's
--- `overrides` closure (light) and no-clown-fiesta's `transparent` option (dark)
--- pick the opaque Normal up (or drop it).
--- Starts transparent; kanagawa's `transparent = true` keeps Normal bg NONE
--- and `opaque_bg` only re-adds it when toggled on.
-local opaque_bg = false
-vim.cmd.packadd("kanagawa.nvim")
-vim.cmd.packadd("no-clown-fiesta.nvim")
+-- Both modes start transparent.
+-- `SPC t t` toggles the current mode without changing the other mode.
+local opaque_bg = { dark = false, light = false }
 vim.pack.add({
   {
     src = 'https://github.com/oxidescheme/nvim',
@@ -1285,102 +1391,6 @@ vim.pack.add({
   },
 })
 
-require("kanagawa").setup({
-	undercurl = false, -- Use straight underlines for diagnostics and spelling.
-	transparent = true,
-	colors = {
-		theme = {
-			wave = {
-				syn = {
-					-- Comments in kanagawa's own springGreen instead of the default
-					-- faint gray-green (#727169), so they read as a distinct voice
-					-- against the dark background rather than faded code.
-					-- comment = "#98bb6c", -- italic
-				},
-			},
-			lotus = {
-				ui = {
-					-- High-contrast light mode: lotus's default ink (#545464) is a soft
-					-- blue-gray and its surfaces carry a warm cream tint. Push text to
-					-- near-black and flatten the surface ramp to neutral grays on white.
-					fg = "#1f1f24",
-					fg_dim = "#4b4b52",
-					bg = "#ffffff",
-					bg_dim = "#f5f5f5",
-					bg_gutter = "#ffffff",
-					bg_m1 = "#f2f2f2",
-					bg_m2 = "#eaeaea",
-					bg_m3 = "#d4d4d4", -- also WinSeparator fg: needs a faint visible line on white
-					bg_p1 = "#ececec",
-					bg_p2 = "#e0e0e0",
-					nontext = "#74726c", -- line numbers
-					float = { bg = "#f2f2f2" },
-					bg_visual = "#e4e4e4",
-					bg_search = "#dcdcdc",
-					pmenu = {
-						bg = "#f0f0f0",
-						bg_sel = "#d9d9d9",
-						bg_sbar = "#f0f0f0",
-						bg_thumb = "#d9d9d9",
-					},
-				},
-				syn = {
-					-- Full monochrome: hues are gone, hierarchy comes from tone plus
-					-- kanagawa's baked-in styles (statement bold, keyword and comment
-					-- italic, boolean bold).
-					string = "#5a5a60",
-					number = "#3d3d44",
-					constant = "#3d3d44", -- booleans (bold)
-					parameter = "#3d3d44",
-					fun = "#1f1f24",
-					statement = "#111114",
-					keyword = "#111114", -- italic
-					operator = "#4b4b52",
-					preproc = "#3d3d44",
-					type = "#45454c",
-					regex = "#4b4b52",
-					deprecated = "#8c8c90",
-					comment = "#6f6d66", -- italic
-					punct = "#4b4b52",
-					special1 = "#4b4b52",
-					special2 = "#5a5a60",
-					special3 = "#5a5a60",
-				},
-			},
-		},
-	},
-	overrides = function(colors)
-		local overrides = {
-			NormalFloat = { bg = "NONE" },
-			FloatTitle = { bg = "NONE" },
-			WinBar = { bg = "NONE" },
-			WinBarNC = { bg = "NONE" },
-			StatusLine = { bg = "NONE" },
-			StatusLineNC = { bg = "NONE" },
-			StatusLineTerm = { bg = "NONE" },
-			StatusLineTermNC = { bg = "NONE" },
-			-- Transparent completion windows with a solid selected row for contrast.
-			BlinkCmpMenu = { fg = colors.theme.ui.fg, bg = "NONE" },
-			BlinkCmpMenuBorder = { fg = colors.theme.ui.special, bg = "NONE" },
-			BlinkCmpMenuSelection = { fg = colors.theme.ui.fg, bg = colors.theme.ui.bg_p2, bold = true },
-			BlinkCmpLabelMatch = { fg = colors.theme.syn.fun, bold = true },
-			BlinkCmpLabelDetail = { fg = colors.theme.ui.fg_dim },
-			BlinkCmpLabelDescription = { fg = colors.theme.ui.fg_dim, italic = true },
-			BlinkCmpScrollBarGutter = { bg = "NONE" },
-			BlinkCmpDoc = { fg = colors.theme.ui.fg, bg = "NONE" },
-			BlinkCmpDocBorder = { link = "BlinkCmpMenuBorder" },
-		}
-		if vim.o.background == "light" then
-			-- Kanagawa paints the cursor line number diagnostic-orange; in the
-			-- monochrome light scheme it is plain black bold like other emphasis.
-			overrides.CursorLineNr = { fg = "#111114", bg = "#ffffff", bold = true }
-		end
-		if opaque_bg then
-			overrides.Normal = { bg = colors.theme.ui.bg }
-		end
-		return overrides
-	end,
-})
 local function get_color_mode()
 	local raw = vim.env.COLOR or vim.env.LC_COLOR
 
@@ -1414,15 +1424,10 @@ local function apply_org_highlights()
 		vim.api.nvim_set_hl(0, "@org.drawer", { fg = "#8c8c90", italic = true })
 		vim.api.nvim_set_hl(0, "@org.properties", { fg = "#8c8c90", italic = true })
 		vim.api.nvim_set_hl(0, "@org.block", { fg = "#4b4b52" })
-	else
-		vim.api.nvim_set_hl(0, "@org.keyword.todo", { fg = "#e8a06a", bold = true })
-		vim.api.nvim_set_hl(0, "@org.keyword.done", { fg = "#7a7a85", italic = true })
-		vim.api.nvim_set_hl(0, "@org.checkbox.halfchecked", { fg = "#e8a06a", bold = true })
 	end
 end
 local function apply_color_mode()
-	-- Kanagawa and no-clown-fiesta paint StatusLine with a solid bg; clear it
-	-- on every colorscheme load so the statusline stays transparent.
+	-- Keep the statusline transparent with either theme.
 	vim.api.nvim_create_autocmd("ColorScheme", {
 		group = vim.api.nvim_create_augroup("transparent_statusline", { clear = true }),
 		callback = function()
@@ -1437,33 +1442,15 @@ local function apply_color_mode()
 	})
 	vim.o.background = get_color_mode()
 	if vim.o.background == "light" then
-		vim.cmd.colorscheme("kanagawa-lotus")
+		vim.g.tiso_light_transparent = not opaque_bg.light
+		vim.cmd.colorscheme("tiso-light")
 	else
-		-- The plugin's colors file calls `load()` with no opts, which resets
-		-- its settings to defaults — a prior `setup({ transparent = ... })`
-		-- would be discarded. Load directly to pass `transparent` through for
-		-- the `SPC t t` toggle, then fire the ColorScheme autocmds that
-		-- `:colorscheme` would have run.
-		-- require("no-clown-fiesta").load({ theme = "dark", transparent = not opaque_bg })
-		-- vim.api.nvim_exec_autocmds("ColorScheme", { pattern = "no-clown-fiesta" })
-		vim.cmd.colorscheme("kanagawa-wave")
-    -- vim.cmd.colorscheme("oxide")
+		vim.g.tiso_black_transparent = not opaque_bg.dark
+		-- vim.cmd.colorscheme("tiso-black")
+		vim.cmd.colorscheme("catppuccin")
 	end
 	-- :colorscheme wipes user highlight links, so (re)apply them here, after
 	-- the theme, rather than once at startup.
-	if vim.o.background == "light" then
-		-- Monochrome light: gray borders instead of DiagnosticInfo blue.
-		vim.api.nvim_set_hl(0, "FloatBorder", { link = "Comment" })
-		-- kanagawa-lotus pairs IncSearch's reversed ink (#dcd7ba, lotusGray)
-		-- with the warning orange (#e98a00). Both are light, about 1.8:1, so
-		-- every match reads as a washed-out block: `/`, `:s///c`, and fff's
-		-- match highlight all use this group. Keep the scheme's background and
-		-- put the light scheme's ink on it.
-		local incsearch = vim.api.nvim_get_hl(0, { name = "IncSearch", link = false })
-		vim.api.nvim_set_hl(0, "IncSearch", { fg = "#1f1f24", bg = incsearch.bg })
-	else
-		vim.api.nvim_set_hl(0, "FloatBorder", { link = "DiagnosticInfo" })
-	end
 	vim.api.nvim_set_hl(0, "FFFBorder", { link = "FloatBorder" })
 	vim.api.nvim_set_hl(0, "FFFTitle", { link = "Title" })
 	-- Target of the preview `winhl` above. CursorLineNr is the theme's accent
@@ -1479,7 +1466,8 @@ local function apply_color_mode()
 
 apply_color_mode()
 vim.keymap.set("n", "<leader>tt", function()
-	opaque_bg = not opaque_bg
+	local mode = get_color_mode()
+	opaque_bg[mode] = not opaque_bg[mode]
 	apply_color_mode()
 end, { desc = "Toggle background transparency" })
 vim.keymap.set("n", "<leader>tw", function()

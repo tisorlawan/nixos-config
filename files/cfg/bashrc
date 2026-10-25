@@ -133,3 +133,7 @@ if [[ "${INSIDE_EMACS%%,*}" = 'ghostel' ]]; then
 fi
 export PATH="/home/agung-b-sorlawan/.bend/bin:$PATH"
 export PATH="/home/agung-b-sorlawan/.bun/bin:$PATH"
+export PATH="$HOME/.t3/bin:$PATH"
+
+# AgentField CLI
+export PATH="/home/agung-b-sorlawan/.agentfield/bin:$PATH"

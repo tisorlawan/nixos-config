@@ -104,3 +104,4 @@ let preferred_paths = [
 ]
 
 $env.PATH = ($preferred_paths ++ ($env.PATH | where {|p| $p not-in $preferred_paths }))
+source "~/.cargo/env.nu"

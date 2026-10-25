@@ -5,6 +5,7 @@ local layouts = {
 	{ id = "below", label = "Split below" },
 	{ id = "float", label = "Floating" },
 	{ id = "full", label = "Full window" },
+	{ id = "background", label = "Background (split when error)" },
 }
 local state_dir = vim.fn.stdpath("state") .. "/runner"
 local output
@@ -137,7 +138,7 @@ local function hide()
 	view = nil
 end
 
-function M.show()
+function M.show(mode)
 	if not has_output() then
 		notify("No runner output yet")
 		return
@@ -145,7 +146,10 @@ function M.show()
 	if view and vim.api.nvim_win_is_valid(view.win) and vim.api.nvim_win_get_buf(view.win) == output.buf then
 		vim.api.nvim_set_current_win(view.win)
 	else
-		local mode = layout()
+		mode = mode or layout()
+		if mode == "background" then
+			mode = "right"
+		end
 		local previous = vim.api.nvim_get_current_buf()
 		local win
 		if mode == "float" then
@@ -196,6 +200,7 @@ local function run(command, background, cwd)
 		notify("A runner command is still active. Use <leader>ro to see it.", vim.log.levels.WARN)
 		return
 	end
+	local split_on_error = not background and layout() == "background"
 	local buf = vim.api.nvim_create_buf(true, true)
 	vim.bo[buf].bufhidden = "hide"
 	vim.b[buf].runner_command = command
@@ -210,6 +215,9 @@ local function run(command, background, cwd)
 						if vim.api.nvim_get_current_buf() == buf then
 							vim.cmd.stopinsert()
 						end
+					end
+					if code ~= 0 and split_on_error and has_output() and output.buf == buf then
+						M.show("right")
 					end
 					notify(
 						"Command exited with code " .. code,
@@ -232,7 +240,7 @@ local function run(command, background, cwd)
 	end
 	vim.keymap.set("n", "q", hide, { buffer = buf, desc = "Hide runner terminal" })
 	save_state("command", command)
-	if background then
+	if background or split_on_error then
 		notify("Command started without a terminal window. Use <leader>ro for output.")
 	else
 		M.show()

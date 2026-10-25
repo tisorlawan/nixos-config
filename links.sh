@@ -26,7 +26,7 @@ TARGETS=(
   bash clang-format git tmux vim images scripts
   claude codex agents
   ghostty rclone
-  t3code t3code-nightly t3code-main tern
+  t3code codex-desktop tern
   cliproxyapi account-reset-priority agent-usage-stats
 )
 
@@ -109,9 +109,9 @@ run_target() {
       fi
       ;;
 
-    # T3 Code stable, nightly and main: each wrapper unsets the Nix Mesa env vars so Chromium keeps GPU rendering.
+    # Desktop wrappers use system Mesa instead of the inherited Nix graphics overrides.
     # Not linked: com.t3tools.T3Code.desktop, which T3 regenerates on every launch.
-    t3code | t3code-nightly | t3code-main)
+    t3code | codex-desktop)
       link "$CFG/local/bin/$name" "$HOME/.local/bin/$name"
       link "$CFG/local/share/applications/$name.desktop" "$HOME/.local/share/applications/$name.desktop"
       ;;

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Use system Mesa, not the nixGL libraries inherited from the desktop session.
+unset LD_LIBRARY_PATH LIBGL_DRIVERS_PATH GBM_BACKENDS_PATH
+unset __EGL_VENDOR_LIBRARY_DIRS __EGL_VENDOR_LIBRARY_FILENAMES VK_ICD_FILENAMES
+
+app=$HOME/.local/lib/codex-desktop/current/usr/lib/chatgpt/ChatGPT
+if [[ ! -x $app ]]; then
+  printf 'Codex desktop is not installed. Run ~/tools/codex/install-codex.sh.\n' >&2
+  exit 127
+fi
+args=()
+# XWayland uses llvmpipe on this machine; native Wayland uses the Intel GPU.
+[[ -z ${WAYLAND_DISPLAY:-} ]] || args+=(--ozone-platform=wayland)
+exec "$app" "${args[@]}" "$@"

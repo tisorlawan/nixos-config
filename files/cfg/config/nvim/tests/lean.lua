@@ -107,6 +107,25 @@ assert(vim.bo[buf].modified, "Proof completion must work without save")
 vim.cmd.write()
 assert(vim.diagnostic.is_enabled({ bufnr = buf }), "Lean diagnostics must return after the next save")
 
+vim.api.nvim_set_current_win(source_win)
+vim.api.nvim_win_set_cursor(source_win, { 1, 10 })
+vim.cmd.normal({ "K", bang = false })
+local hover_win
+wait_for("interactive Lean hover", function()
+	for _, window in ipairs(vim.api.nvim_list_wins()) do
+		local config = vim.api.nvim_win_get_config(window)
+		if config.relative ~= "" and vim.bo[vim.api.nvim_win_get_buf(window)].filetype == "markdown" then
+			hover_win = window
+			return true
+		end
+	end
+end)
+local border = vim.api.nvim_win_get_config(hover_win).border
+assert(type(border) == "table" and border[1] == "╭" and border[3] == "╮", "Lean hover needs a rounded border")
+assert(border[5] == "╯" and border[7] == "╰", "Lean hover needs a complete border")
+vim.api.nvim_win_close(hover_win, true)
+vim.api.nvim_set_current_win(source_win)
+
 vim.cmd("hide enew")
 vim.bo.filetype = "text"
 vim.api.nvim_buf_set_lines(0, 0, -1, false, { "unsaved text" })

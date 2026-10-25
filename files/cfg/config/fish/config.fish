@@ -26,6 +26,9 @@ set -q GHCUP_INSTALL_BASE_PREFIX[1]; or set GHCUP_INSTALL_BASE_PREFIX $HOME ; se
 # opencode
 fish_add_path /home/agung-b-sorlawan/.opencode/bin
 
+# T3 Code CLI
+fish_add_path $HOME/.t3/bin
+
 if type -q atuin
     atuin init fish --disable-up-arrow | source
 end

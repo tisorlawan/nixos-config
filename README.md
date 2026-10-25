@@ -30,6 +30,23 @@ Dotfiles, scripts, and Nix configuration for my machines. Clone this repository 
 
 `links.sh` deletes each destination before it links, so a file that already exists in `$HOME` is replaced. The `cliproxyapi` and `agent-usage-stats` targets also install CLIProxyAPI and build the usage dashboard. Run `./links.sh` with no arguments to list the targets. See [SETUP.md](SETUP.md) for the one-time install steps.
 
+## T3 Code stable launcher
+
+Install or update the latest stable release with `~/tools/t3/install-t3.sh`, then
+run `./links.sh t3code` to link its system-Mesa wrapper and desktop entry.
+Select **T3 Code** in Rofi or run `~/.local/bin/t3code`. Only the stable launcher
+is managed; main and nightly targets have been removed. The installer preserves
+the wrapper, and updates leave T3 workspace data in `~/.t3` untouched.
+
+## Codex desktop launcher
+
+Run `~/tools/codex/install-codex.sh` to install or update OpenAI's Linux desktop app.
+The installer uses `./links.sh codex-desktop` to link its system-Mesa wrapper and
+desktop entry. Select **ChatGPT (Codex)** in Rofi, or run `~/.local/bin/codex-desktop`.
+The wrapper selects native Wayland in a Wayland session to use the Intel GPU;
+it does not replace the existing `codex` CLI or change T3. See `~/tools/README.md`
+for signature verification, update behavior, and GPU verification details.
+
 ## Tern launcher
 
 Install Tern at `~/.local/bin/tern`, then link the wrapper and desktop entry:
@@ -38,7 +55,7 @@ Install Tern at `~/.local/bin/tern`, then link the wrapper and desktop entry:
 ./links.sh tern
 ```
 
-Select **Tern (System Mesa)** in Rofi. The `my-tern` wrapper removes `LD_LIBRARY_PATH`, `LIBGL_DRIVERS_PATH`, `__EGL_VENDOR_LIBRARY_FILENAMES`, and `GBM_BACKENDS_PATH`, as the T3 wrappers do. It preserves command arguments and leaves the Tern binary unchanged.
+Select **Tern (System Mesa)** in Rofi. The `my-tern` wrapper removes `LD_LIBRARY_PATH`, `LIBGL_DRIVERS_PATH`, `__EGL_VENDOR_LIBRARY_FILENAMES`, and `GBM_BACKENDS_PATH`, as the T3 wrapper does. It preserves command arguments and leaves the Tern binary unchanged.
 
 The Hyprland shortcut **Super+Shift+Return** uses the same wrapper. Tern rewrites its own `so.stencil.tern*.desktop` files on launch, so `links.sh` uses a separate `tern.desktop` file. The original **Tern** entry still launches the binary without the wrapper.
 

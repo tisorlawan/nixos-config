@@ -81,7 +81,6 @@
 *** DONE Benchmark and assess Beam Model (https://github.com/GDP-ADMIN/dummy-gl-sdk/issues/3637)
 *** DONE Create Gemini Developer API, Vertex AI, and OpenRouter: which to use (https://docs.google.com/document/d/1O1p3Uiq8nK0n3aNHkNvjGhPJHiQyxDWFn_tCsSxzOBg/edit?tab=t.0#heading=h.svymgysppfb6)
 *** DONE VLM and Image Captioning benchmarks
-
 * 12 October 2026
 ** DONE Error handling GLLM Privacy, Meemo Summarization and NER
 *** DONE fix(gllm-privacy): make default error messages safe for end users (https://github.com/GDP-ADMIN/gl-sdk/pull/7458)

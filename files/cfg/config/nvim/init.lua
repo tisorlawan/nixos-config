@@ -1446,8 +1446,8 @@ local function apply_color_mode()
 		vim.cmd.colorscheme("tiso-light")
 	else
 		vim.g.tiso_black_transparent = not opaque_bg.dark
-		-- vim.cmd.colorscheme("tiso-black")
-		vim.cmd.colorscheme("catppuccin")
+		vim.cmd.colorscheme("tiso-black")
+		-- vim.cmd.colorscheme("catppuccin")
 	end
 	-- :colorscheme wipes user highlight links, so (re)apply them here, after
 	-- the theme, rather than once at startup.

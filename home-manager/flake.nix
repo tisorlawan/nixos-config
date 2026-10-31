@@ -13,7 +13,7 @@
       url = "github:outfoxxed/hy3/hl0.54.2";
       inputs.hyprland.follows = "hyprland";
     };
-    ghostty.url = "github:ghostty-org/ghostty/v1.3.1";
+    ghostty.url = "github:ghostty-org/ghostty/tip";
     flake-utils.url = "github:numtide/flake-utils";
     emacs-overlay = {
       url = "github:nix-community/emacs-overlay";

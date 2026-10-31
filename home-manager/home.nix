@@ -89,7 +89,7 @@ in
         starship
         atuin
         (callPackage ./alacritty { })
-        (callPackage ./ghostty { inherit inputs; })
+        # (callPackage ./ghostty { inherit inputs; })
         xterm
         nushell
         fish

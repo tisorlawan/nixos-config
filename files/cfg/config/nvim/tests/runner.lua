@@ -83,8 +83,12 @@ local function hide()
 	eq("yes", vim.wo.signcolumn)
 end
 
+local function state_path(name)
+	return state_dir .. "/" .. name .. "-" .. vim.fn.sha256(vim.fn.getcwd()) .. ".json"
+end
+
 local function read_state(name)
-	return vim.json.decode(table.concat(vim.fn.readfile(state_dir .. "/" .. name .. ".json"), "\n"))
+	return vim.json.decode(table.concat(vim.fn.readfile(state_path(name)), "\n"))
 end
 
 if vim.env.RUNNER_TEST_PHASE == "restart" then
@@ -97,6 +101,17 @@ if vim.env.RUNNER_TEST_PHASE == "restart" then
 	assert(vim.api.nvim_win_get_config(0).relative == "editor")
 	assert(finished():find("runner%-persisted"))
 	hide()
+	local original_cwd = vim.fn.getcwd()
+	vim.cmd.lcd(vim.fn.fnameescape(state_dir .. "/working directory"))
+	eq("below", read_state("layout"))
+	assert(math.abs(26 / 120 - read_state("right-ratio")) < 1e-12)
+	mapped("rr")
+	eq(0, prompts)
+	assert(finished():find("runner%-other%-directory"))
+	assert(vim.api.nvim_win_get_position(0)[1] > 0, "Expected the other directory's bottom split")
+	hide()
+	vim.cmd.lcd(vim.fn.fnameescape(original_cwd))
+
 
 	-- Restore ratios, not fixed dimensions, in a larger editor after restart.
 	vim.o.columns = 160
@@ -132,7 +147,7 @@ mapped("rb")
 eq(1, #vim.api.nvim_list_wins())
 assert(finished():find("runner%-first%-background"))
 -- An invalid saved value has the same behavior as no saved command.
-vim.fn.writefile({ "null" }, state_dir .. "/command.json")
+vim.fn.writefile({ "null" }, state_path("command"))
 
 -- A first run prompts, saves, displays real shell output, and retains it.
 answer = "printf runner-first"
@@ -277,12 +292,37 @@ local original_cwd = vim.fn.getcwd()
 local working_dir = state_dir .. "/working directory"
 vim.fn.mkdir(working_dir, "p")
 vim.cmd.lcd(vim.fn.fnameescape(working_dir))
+local before_directory_prompt = prompts
+answer = "printf runner-other-directory"
+mapped("rb")
+eq(before_directory_prompt + 1, prompts)
+assert(finished():find("runner%-other%-directory"))
+expected_default = answer
+mapped("re")
+expected_default = nil
+-- A new directory starts with a right split, independent of the first layout.
+mapped("rr")
+finished()
+assert(vim.api.nvim_win_get_position(0)[2] > 0, "Expected the default right split")
+vim.api.nvim_win_set_width(0, 26)
+hide()
+selection = 2
+mapped("rf")
+eq("below", read_state("layout"))
 answer = "printf 'runner cwd: '; pwd"
 mapped("rc")
 local cwd_output = finished()
 assert(cwd_output:gsub("\n", ""):find(working_dir, 1, true), vim.inspect(cwd_output))
 hide()
+answer = "printf runner-other-directory"
+mapped("re")
 vim.cmd.lcd(vim.fn.fnameescape(original_cwd))
+eq("full", read_state("layout"))
+assert(math.abs(38 / 120 - read_state("right-ratio")) < 1e-12)
+local before_repeat = prompts
+mapped("rb")
+eq(before_repeat, prompts)
+assert(finished():find("runner%-edited"))
 
 -- Hiding a split must work even after the user closes the editor window.
 selection = 1
@@ -331,9 +371,9 @@ assert(finished(7):find("runner%-error"))
 hide()
 
 -- Corrupt persisted data falls back to a prompt/default layout.
-vim.fn.writefile({ "{broken" }, state_dir .. "/command.json")
-vim.fn.writefile({ '"unknown-layout"' }, state_dir .. "/layout.json")
-vim.fn.writefile({ "0" }, state_dir .. "/right-ratio.json")
+vim.fn.writefile({ "{broken" }, state_path("command"))
+vim.fn.writefile({ '"unknown-layout"' }, state_path("layout"))
+vim.fn.writefile({ "0" }, state_path("right-ratio"))
 answer = "printf runner-recovered"
 old_prompts = prompts
 mapped("rr")

@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-# Use system Mesa instead of the Nix graphics overrides, as the T3 wrappers do.
+# Use system Mesa and Vulkan for transparent Wayland surfaces.
 exec env -u LD_LIBRARY_PATH -u LIBGL_DRIVERS_PATH -u __EGL_VENDOR_LIBRARY_FILENAMES -u GBM_BACKENDS_PATH \
-  "$HOME/.local/bin/tern" "$@"
+  WGPU_BACKEND=vulkan "$HOME/.local/bin/tern" "$@"

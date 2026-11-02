@@ -1,17 +1,22 @@
 * 2 November 2026
 ** TODO NER Report By Project Team
+** TODO Batara disable license
 ** GLLM Evals
 *** TODO fix(gllm-evals): validate inputs and preserve results after judge failures (https://github.com/GDP-ADMIN/gl-sdk/pull/7920)
 **** https://github.com/GDP-ADMIN/gl-sdk/issues/7886
 **** https://github.com/GDP-ADMIN/gl-sdk/issues/7900
 **** https://claude.ai/artifact/ADCfBWXXgEt5nXVqhKuGrk
 **** https://github.com/GDP-ADMIN/gl-sdk/issues/7903
+*** TODO feat(nava): add gllm-evals evaluate_suites pytest evals for the market research agent (https://github.com/GDP-ADMIN/glchat-agents/pull/482)
+*** TODO Update evals in nava etc gllm_inference-v0.6.189 (https://chat.google.com/room/AAQAE-LjMvQ/HYNGT4JirBg/5jZs3Rpq_fs?cls=10)
+** GLLM Privacy
+*** TODO fix(gllm-privacy): resolve Qodana pipeline and type findings (https://github.com/GDP-ADMIN/gl-sdk/pull/8223)
 ** NER
+*** TODO Qodana https://github.com/GDP-ADMIN/gl-sdk/pull/8211
 *** TODO release the image so it apply the tracing reduction  (https://chat.google.com/room/AAQALJ1PW8g/cyCyDrOKR8w/cyCyDrOKR8w?cls=10 )
 *** TODO [GLChat NER] 2 findings - DAST scan #395
 *** TODO PERSON dipisah tab https://chat.google.com/room/AAQAYtQZtE0/a1sjC6GY-Ws/_okEaa3tb9s?cls=10
 *** TODO Make so that InvalidClientException is not recorded in sentry maybe (https://sentry.obrol.id/organizations/sentry-gdplabs/issues/159013/?environment=staging&project=16&query=is%3Aunresolved%20issue.priority%3A%5Bhigh%2C%20medium%5D&referrer=issue-stream)
-*** TODO fix SonarQube issues https://sonarcloud.io/project/issues?issueStatuses=OPEN%2CCONFIRMED&types=BUG&severities=BLOCKER%2CCRITICAL%2CMAJOR%2CMINOR&inNewCodePeriod=true&sinceLeakPeriod=true&id=gllm-privacy
 *** TODO fix tab between person name
 ** MAB
 *** TODO rerun botanica_embedding after debugging done by DD

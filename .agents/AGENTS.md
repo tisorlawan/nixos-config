@@ -6,7 +6,7 @@
 - If fff is unavailable or the search needs files outside its index, use `rg` or `rg --files`.
 
 Start each task by restating my goal and the problem I am solving in your own words.
-For writing, use simplified-technical-english skill.
+For writing, use unslop skill.
 
 ## Quality
 

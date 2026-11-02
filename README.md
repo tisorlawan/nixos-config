@@ -8,7 +8,7 @@ Dotfiles, scripts, and Nix configuration for my machines. Clone this repository 
 |------|----------|
 | `files/cfg/config/` | Per-program configs, linked into `~/.config` (nvim, kitty, hypr, fish, mpv, and others). |
 | `files/cfg/scripts/` | Shell and Python helpers, linked to `~/.scripts`. |
-| `files/cfg/local/` | `~/.local` content: the T3 launchers, the `my-tern` wrapper and its desktop entry, and the agent usage dashboard. |
+| `files/cfg/local/` | `~/.local` content: the T3 launchers, the Tern desktop entry, and the agent usage dashboard. |
 | `files/cfg/` | Dotfiles for `$HOME`: `bashrc`, `gitconfig`, `tmux.conf`, `vimrc`, and similar. |
 | `emacs/` | Emacs config, linked to `~/.config/emacs`. Build output is gitignored. |
 | `.agents/` | `AGENTS.md`, commands, and skills shared by Claude Code, Codex, and opencode. |
@@ -49,13 +49,13 @@ for signature verification, update behavior, and GPU verification details.
 
 ## Tern launcher
 
-Install Tern at `~/.local/bin/tern`, then link the wrapper and desktop entry:
+Install Tern at `~/.local/bin/tern`, then link `~/.scripts` and the desktop entry:
 
 ```sh
 ./links.sh tern
 ```
 
-Select **Tern (System Mesa)** in Rofi. The `my-tern` wrapper removes `LD_LIBRARY_PATH`, `LIBGL_DRIVERS_PATH`, `__EGL_VENDOR_LIBRARY_FILENAMES`, and `GBM_BACKENDS_PATH`, as the T3 wrapper does. It preserves command arguments and leaves the Tern binary unchanged.
+Select **Tern (System Mesa)** in Rofi or run `~/.scripts/my-tern`. The wrapper removes `LD_LIBRARY_PATH`, `LIBGL_DRIVERS_PATH`, `__EGL_VENDOR_LIBRARY_FILENAMES`, and `GBM_BACKENDS_PATH`, as the T3 wrapper does. It sets `WGPU_BACKEND=vulkan` because the OpenGL backend creates opaque surfaces on this Intel Wayland system. Vulkan permits transparency at the configured opacity. The wrapper preserves command arguments and leaves the Tern binary unchanged.
 
 The Hyprland shortcut **Super+Shift+Return** uses the same wrapper. Tern rewrites its own `so.stencil.tern*.desktop` files on launch, so `links.sh` uses a separate `tern.desktop` file. The original **Tern** entry still launches the binary without the wrapper.
 

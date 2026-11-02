@@ -17,7 +17,28 @@ Minimal status bar for Hyprland with [Quickshell](https://quickshell.outfoxxed.m
 | `QuotaButton.qml` | Button for quota and reset controls. |
 | `BarData.qml` | Singleton providing all data: stats polling, media (Mpris), battery (UPower), clock. |
 | `Chip.qml` | Reusable pill/chip component. |
-| `Theme.qml` | Singleton with colors and dimensions. |
+| `ThemePicker.qml` | Bar button and panel to select the theme. |
+| `Theme.qml` | Singleton with the active colors and the dimensions. |
+| `Themes.js` | Theme catalog. Each theme has a dark palette and a light palette. |
+
+## Themes
+
+Each theme has a dark palette and a light palette. The mode in `~/.color` selects the palette.
+`~/.scripts/set-color` and `color-toggle` change the mode.
+
+The themes are Default, Catppuccin, Kanagawa, Gruvbox, Tokyo Night, Rosé Pine, Everforest, and Solarized.
+Default is the original bar palette.
+
+Select the brush icon in the bar to open the theme panel. Then select a theme.
+Each row shows a preview of the dark palette and of the light palette.
+
+The bar keeps the theme ID in `${XDG_STATE_HOME:-~/.local/state}/quickshell-theme/theme`.
+You can also write a theme ID to this file. The bar reads the file and `~/.color` four times each second.
+An ID that is missing or unknown selects Default.
+
+To add a theme, add an entry to `Themes.js`. Give the entry the ten color roles in the header comment for each palette.
+
+The theme changes only the bar, the panels, and the clock. Other applications keep their themes.
 
 ## Account quotas
 

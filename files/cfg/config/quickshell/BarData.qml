@@ -79,14 +79,6 @@ Singleton {
     const battery = batteryDevice;
     return battery ? battery.state === UPowerDeviceState.Charging : false;
   }
-  readonly property color batteryFill: {
-    const battery = batteryDevice;
-    const raw = battery ? (battery.percentage || 0) : 100;
-    const pct = Math.round(raw > 1 ? raw : raw * 100);
-    if (pct <= 15) return Theme.urgent;
-    if (pct <= 30) return "#e6c384";
-    return Theme.chipDark;
-  }
 
   SystemClock {
     id: clock

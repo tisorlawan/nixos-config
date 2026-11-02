@@ -59,9 +59,9 @@ Scope {
         implicitWidth: clockText.implicitWidth + 20
         implicitHeight: clockText.implicitHeight + 12
         radius: 8
-        color: Qt.rgba(0.12, 0.12, 0.16, 0.9)
+        color: Qt.rgba(Theme.panelBg.r, Theme.panelBg.g, Theme.panelBg.b, 0.9)
         border.width: 1
-        border.color: Qt.rgba(1, 1, 1, 0.08)
+        border.color: Theme.chipBorder
 
         Text {
           id: clockText

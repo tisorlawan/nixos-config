@@ -15,8 +15,7 @@ local function notify(message, level)
 	vim.notify(message, level or vim.log.levels.INFO, { title = "Runner" })
 end
 
--- Read each field on demand so separate Neovim sessions do not overwrite
--- another session's command when they change only the terminal layout.
+-- Read fields on demand so concurrent sessions do not overwrite unrelated state.
 local function read_state(name, valid)
 	local path = state_dir .. "/" .. name .. ".json"
 	if vim.fn.filereadable(path) == 0 then
@@ -53,14 +52,18 @@ local function save_state(name, value)
 	return ok
 end
 
-local function last_command()
-	return read_state("command", function(value)
+local function directory_state(name, cwd)
+	return name .. "-" .. vim.fn.sha256(cwd)
+end
+
+local function last_command(cwd)
+	return read_state(directory_state("command", cwd), function(value)
 		return type(value) == "string" and value:find("%S") ~= nil and not value:find("%z")
 	end)
 end
 
-local function layout()
-	return read_state("layout", function(value)
+local function layout(cwd)
+	return read_state(directory_state("layout", cwd), function(value)
 		for _, item in ipairs(layouts) do
 			if item.id == value then
 				return true
@@ -109,7 +112,7 @@ local function remember_split()
 	view.size, view.extent = size, extent
 	-- Ignore editor resizes and a split that expands into the last window.
 	if resized and size < extent then
-		save_state(view.layout .. "-ratio", size / extent)
+		save_state(directory_state(view.layout .. "-ratio", view.cwd), size / extent)
 	end
 end
 
@@ -138,7 +141,7 @@ local function hide()
 	view = nil
 end
 
-function M.show(mode)
+function M.show(mode, cwd)
 	if not has_output() then
 		notify("No runner output yet")
 		return
@@ -146,7 +149,8 @@ function M.show(mode)
 	if view and vim.api.nvim_win_is_valid(view.win) and vim.api.nvim_win_get_buf(view.win) == output.buf then
 		vim.api.nvim_set_current_win(view.win)
 	else
-		mode = mode or layout()
+		cwd = cwd or vim.fn.getcwd()
+		mode = mode or layout(cwd)
 		if mode == "background" then
 			mode = "right"
 		end
@@ -175,7 +179,7 @@ function M.show(mode)
 			win = vim.api.nvim_get_current_win()
 			vim.api.nvim_win_set_buf(win, output.buf)
 			if mode == "right" or mode == "below" then
-				local ratio = read_state(mode .. "-ratio", function(value)
+				local ratio = read_state(directory_state(mode .. "-ratio", cwd), function(value)
 					return type(value) == "number" and value > 0 and value < 1
 				end) or (mode == "right" and 0.5 or 0.3)
 				local _, extent = split_dimensions(win, mode)
@@ -183,7 +187,7 @@ function M.show(mode)
 				set_size(win, math.max(1, math.floor(extent * ratio + 0.5)))
 			end
 		end
-		view = { win = win, layout = mode, previous = previous }
+		view = { win = win, layout = mode, previous = previous, cwd = cwd }
 		if mode == "right" or mode == "below" then
 			view.size, view.extent = split_dimensions(win, mode)
 		end
@@ -200,7 +204,7 @@ local function run(command, background, cwd)
 		notify("A runner command is still active. Use <leader>ro to see it.", vim.log.levels.WARN)
 		return
 	end
-	local split_on_error = not background and layout() == "background"
+	local split_on_error = not background and layout(cwd) == "background"
 	local buf = vim.api.nvim_create_buf(true, true)
 	vim.bo[buf].bufhidden = "hide"
 	vim.b[buf].runner_command = command
@@ -217,7 +221,7 @@ local function run(command, background, cwd)
 						end
 					end
 					if code ~= 0 and split_on_error and has_output() and output.buf == buf then
-						M.show("right")
+						M.show("right", cwd)
 					end
 					notify(
 						"Command exited with code " .. code,
@@ -239,16 +243,16 @@ local function run(command, background, cwd)
 		vim.api.nvim_buf_delete(previous.buf, { force = true })
 	end
 	vim.keymap.set("n", "q", hide, { buffer = buf, desc = "Hide runner terminal" })
-	save_state("command", command)
+	save_state(directory_state("command", cwd), command)
 	if background or split_on_error then
 		notify("Command started without a terminal window. Use <leader>ro for output.")
 	else
-		M.show()
+		M.show(nil, cwd)
 	end
 end
 
-local function prompt(default, execute, background)
-	local cwd = vim.fn.getcwd()
+local function prompt(default, execute, background, cwd)
+	cwd = cwd or vim.fn.getcwd()
 	vim.ui.input({
 		prompt = execute and "Run command: " or "Edit last command: ",
 		default = default or "",
@@ -259,7 +263,7 @@ local function prompt(default, execute, background)
 		end
 		if execute then
 			run(command, background, cwd)
-		elseif save_state("command", command) then
+		elseif save_state(directory_state("command", cwd), command) then
 			notify("Last command saved")
 		end
 	end)
@@ -270,20 +274,23 @@ function M.command()
 end
 
 function M.edit()
-	prompt(last_command(), false, false)
+	local cwd = vim.fn.getcwd()
+	prompt(last_command(cwd), false, false, cwd)
 end
 
 function M.repeat_last(background)
-	local command = last_command()
+	local cwd = vim.fn.getcwd()
+	local command = last_command(cwd)
 	if command then
-		run(command, background, vim.fn.getcwd())
+		run(command, background, cwd)
 	else
-		prompt(nil, true, background)
+		prompt(nil, true, background, cwd)
 	end
 end
 
 function M.select_layout()
-	local current = layout()
+	local cwd = vim.fn.getcwd()
+	local current = layout(cwd)
 	vim.ui.select(layouts, {
 		prompt = "Runner terminal layout (next run):",
 		format_item = function(item)
@@ -291,7 +298,7 @@ function M.select_layout()
 		end,
 	}, function(choice)
 		if choice then
-			save_state("layout", choice.id)
+			save_state(directory_state("layout", cwd), choice.id)
 		end
 	end)
 end

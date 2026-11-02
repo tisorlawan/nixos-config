@@ -171,6 +171,10 @@ Scope {
             Row {
               spacing: Theme.chipGap
 
+              ThemePicker {
+                barWindow: panel
+              }
+
               QuotaWidget {
                 barWindow: panel
               }
@@ -181,7 +185,7 @@ Scope {
                 radius: Theme.chipRadius
                 color: Theme.chipDark
                 border.width: 1
-                border.color: Qt.rgba(1, 1, 1, 0.08)
+                border.color: Theme.chipBorder
 
                 Text {
                   anchors.horizontalCenter: parent.horizontalCenter

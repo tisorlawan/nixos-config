@@ -1,8 +1,17 @@
 # Colorschemes
 
-Dark mode uses the local `tiso-black` theme. Light mode uses `tiso-light`.
-Both themes share their highlight rules and palettes in `lua/tiso.lua`.
-Keywords use bold text. Most syntax uses neutral colors.
+Neovim starts with the local Tiso theme: `tiso-black` in dark mode and `tiso-light` in light mode.
+Use `:colorscheme catppuccin` to select Catppuccin without a change to the startup theme.
+Mode changes and `Space t t` keep the selected theme family.
+Catppuccin uses Latte in light mode and Mocha in dark mode by default.
+An explicit dark flavor, such as `:colorscheme catppuccin-frappe`, remains selected after a light-mode round trip.
+Catppuccin comments use Tiso Black's magenta (`#ee66ff`) in every flavor. Other syntax colors stay unchanged.
+Leap keeps the syntax colors during a search.
+Catppuccin target labels use bold black text on a solid peach background, even when the editor is transparent.
+Match highlights remain visible.
+
+The Tiso themes share their highlight rules and palettes in `lua/tiso.lua`.
+Keywords use bold text. Most Tiso syntax uses neutral colors.
 
 | Role | `tiso-black` | `tiso-light` |
 | --- | --- | --- |
@@ -19,10 +28,15 @@ Values that contain `light` select light mode. All other values select dark mode
 
 Press `Space t t` to toggle transparency for the current mode.
 Both modes start transparent. Each mode keeps its own transparency state for the session.
-Completion menus, documentation popups, and scrollbar gutters follow the same transparency state.
+Catppuccin applies this state to the editor background and floating windows.
+Tiso also applies this state to completion menus, documentation popups, and scrollbar gutters.
+Fenced Markdown code in documentation popups uses the same background as the popup.
+`Space t t` changes both backgrounds together.
 The selected completion keeps a solid background for contrast.
 Use `:colorscheme tiso-black` or `:colorscheme tiso-light` to load a theme directly.
 For an opaque direct load, set `vim.g.tiso_black_transparent` or `vim.g.tiso_light_transparent` to `false` before the command.
+
+Run the theme checks with `sh tests/colors.sh` from this directory. The checks use the full configuration and require its plugins.
 
 Extra cursors use black text in dark mode and white text in light mode.
 Their Visual selections use a green tint, distinct from the main gray selection.
@@ -95,6 +109,7 @@ The Lean plugin starts the language server and opens the Infoview for proof goal
 Diagnostics remain hidden until save for all filetypes.
 Lean still checks edits to keep completion and the Infoview current.
 Native diagnostic signs replace Lean's separate source signs. Source proof markers are disabled.
+Lean inlay hints are disabled.
 
 The local leader is two presses of `Space`. Use these keys in a Lean buffer:
 
@@ -149,9 +164,9 @@ Commands use the configured Neovim shell and the current working directory at in
 The configuration uses Fish when it is available.
 Cancel the command prompt, or submit only spaces, to keep the command unchanged.
 
-The runner saves the last command, terminal layout, and split ratios across sessions in `stdpath("state")/runner/`.
-The command is global, not per project. Repeat uses the current directory, not the directory of the previous run.
-The saved files contain plain text. Do not enter secrets directly in a command.
+The runner saves the last command, terminal layout, and split ratios separately for each current working directory across sessions.
+State is stored in `stdpath("state")/runner/`.
+Saved commands are plain text. Do not enter secrets directly in a command.
 Output does not persist across sessions.
 
 ## Checks

@@ -116,9 +116,9 @@ run_target() {
       link "$CFG/local/share/applications/$name.desktop" "$HOME/.local/share/applications/$name.desktop"
       ;;
 
-    # Preserve the Tern binary and its generated desktop files. Use a separate Mesa wrapper and desktop entry.
+    # Preserve Tern's binary and generated desktop files. Link the scripts and separate desktop entry.
     tern)
-      link "$CFG/local/bin/my-tern" "$HOME/.local/bin/my-tern"
+      link "$CFG/scripts" "$HOME/.scripts"
       link "$CFG/local/share/applications/tern.desktop" "$HOME/.local/share/applications/tern.desktop"
       ;;
 

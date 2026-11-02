@@ -10,7 +10,7 @@ Rectangle {
   radius: Theme.chipRadius
   color: fill
   border.width: 1
-  border.color: Qt.rgba(1, 1, 1, 0.08)
+  border.color: Theme.chipBorder
 
   implicitHeight: Theme.chipHeight
   implicitWidth: row.implicitWidth + Theme.chipPadX * 2

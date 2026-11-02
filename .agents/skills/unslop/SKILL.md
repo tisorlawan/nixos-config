@@ -14,7 +14,7 @@ Edit text to remove AI patterns. Preserve the meaning and the intended tone.
 2. Scan for the patterns below. The reference files hold the full phrase lists, structure tables, and before/after examples.
 3. Rewrite. Do not touch code, quotations, identifiers, or exact error strings. For a file, edit it in place. Otherwise return the rewritten text.
 4. Audit the result against "Score the result". Revise once more if it scores below 35.
-5. End with one line: the final score and the patterns you removed most.
+5. End with one line: the final score and the patterns you removed most. Unless the user not explicitly ask for unslop.
 
 Removing patterns is half the job. Voiceless, uniform text reads as machine-written too, so also apply "Voice".
 

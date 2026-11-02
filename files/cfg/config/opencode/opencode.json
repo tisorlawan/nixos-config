@@ -1,24 +1,28 @@
 {
   "$schema": "https://opencode.ai/config.json",
   "policies": [
-    {
-      "effect": "allow",
-      "action": "provider.use",
-      "resource": "*"
-    },
-    {
-      "effect": "allow",
-      "action": "provider.use",
-      "resource": "opencode-go"
-    },
-    {
-      "effect": "allow",
-      "action": "provider.use",
-      "resource": "cliproxyapi"
-    }
+    { "effect": "deny", "action": "provider.use", "resource": "*" },
+    { "effect": "allow", "action": "provider.use", "resource": "cliproxyapi" },
+    { "effect": "allow", "action": "provider.use", "resource": "opencode" }
   ],
   "plugins": ["*", "-opencode.provider.vllm"],
   "providers": {
+    "opencode": {
+      "models": {
+        "crouton-alpha-free": {
+          "body": { "safety_identifier": "2ec5f1cb-71a3-4c7b-a969-2d428e9b0a2b" }
+        },
+        "beam-free": { "disabled": true },
+        "big-pickle": { "disabled": true },
+        "deepseek-v4.1-flash-free": { "disabled": true },
+        "flint-40b-free": { "disabled": true },
+        "glm-5.3-flash-free": { "disabled": true },
+        "mimo-v2.6-flash-free": { "disabled": true },
+        "nemotron-3.5-lightning-free": { "disabled": true },
+        "nemotron-3.5-super-vl-free": { "disabled": true },
+        "pulse-alpha-free": { "disabled": true }
+      }
+    },
     "cliproxyapi": {
       "name": "CLIProxyAPI",
       "env": [
@@ -32,6 +36,12 @@
         "claude-opus-5-5": {
           "name": "Claude Opus 5.5",
           "package": "@opencode/ai/providers/anthropic-compatible",
+          "capabilities": {
+            "reasoning": {
+              "supported": true,
+              "effort": ["low", "medium", "high"]
+            }
+          },
           "limit": {
             "context": 200000
           }
@@ -39,20 +49,47 @@
         "claude-haiku-5-5": {
           "name": "Claude Haiku 5.5",
           "package": "@opencode/ai/providers/anthropic-compatible",
+          "capabilities": {
+            "reasoning": {
+              "supported": true,
+              "effort": ["low", "medium", "high"]
+            }
+          },
           "limit": {
             "context": 200000
           }
         },
         "gpt-6.1-sol": {
           "name": "GPT 6.1 Sol",
+          "capabilities": {
+            "reasoning": {
+              "supported": true,
+              "effort": ["low", "medium", "high"]
+            }
+          },
           "limit": {
             "context": 272000
           }
         },
-        "gpt-6-luna": {
-          "name": "GPT 6 Luna",
+        "gpt-6.1-terra": {
+          "name": "GPT 6.1 Terra",
+          "compatibility": {
+            "supportsEffortUpdates": false
+          },
+          "capabilities": {
+            "tools": true,
+            "input": ["text", "image", "pdf"],
+            "output": ["text"],
+            "temperature": false,
+            "reasoning": {
+              "supported": true,
+              "effort": ["low", "medium", "high"]
+            }
+          },
           "limit": {
-            "context": 272000
+            "context": 628000,
+            "input": 500000,
+            "output": 128000
           }
         }
       }

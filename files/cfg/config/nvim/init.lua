@@ -710,6 +710,7 @@ vim.api.nvim_create_autocmd("PackChanged", {
 
 vim.g.lean_config = {
 	mappings = true,
+	inlay_hint = { enabled = false },
 	-- Native signs obey the diagnostic visibility controls above.
 	signs = { enabled = false },
 	goal_markers = { unsolved = "", accomplished = "" },
@@ -1385,10 +1386,42 @@ end)
 -- `SPC t t` toggles the current mode without changing the other mode.
 local opaque_bg = { dark = false, light = false }
 vim.pack.add({
+	{ src = "https://github.com/catppuccin/nvim", name = "catppuccin" },
   {
     src = 'https://github.com/oxidescheme/nvim',
     name = 'oxide',
   },
+})
+
+local catppuccin_dark = "mocha"
+vim.api.nvim_create_autocmd("ColorSchemePre", {
+	group = vim.api.nvim_create_augroup("catppuccin_transparency", { clear = true }),
+	pattern = { "catppuccin", "catppuccin-*" },
+	callback = function(event)
+		local catppuccin = require("catppuccin")
+		local flavour = event.match:match("^catppuccin%-(.+)$")
+		local mode = vim.o.background
+		if catppuccin.flavours[flavour] then
+			mode = flavour == "latte" and "light" or "dark"
+			if mode == "dark" then
+				catppuccin_dark = flavour
+			end
+		end
+		local transparent = not opaque_bg[mode]
+		catppuccin.setup({
+			background = { light = "latte", dark = catppuccin_dark },
+			transparent_background = transparent,
+			float = { transparent = transparent },
+			custom_highlights = function(colors)
+				return {
+					Comment = { fg = "#ee66ff" },
+					LeapBackdrop = { fg = "NONE" },
+					LeapLabel = { fg = "#000000", bg = colors.peach, bold = true },
+				}
+			end,
+		})
+	end,
+	desc = "Apply the current transparency state to Catppuccin",
 })
 
 local function get_color_mode()
@@ -1427,10 +1460,13 @@ local function apply_org_highlights()
 	end
 end
 local function apply_color_mode()
-	-- Keep the statusline transparent with either theme.
+	-- Follow the current mode's transparency state in the statusline.
 	vim.api.nvim_create_autocmd("ColorScheme", {
 		group = vim.api.nvim_create_augroup("transparent_statusline", { clear = true }),
 		callback = function()
+			if opaque_bg[vim.o.background] then
+				return
+			end
 			for _, group in ipairs({ "StatusLine", "StatusLineNC", "StatusLineTerm", "StatusLineTermNC" }) do
 				local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
 				hl.bg = "NONE"
@@ -1438,17 +1474,20 @@ local function apply_color_mode()
 				vim.api.nvim_set_hl(0, group, hl)
 			end
 		end,
-		desc = "Keep statusline background transparent",
+		desc = "Apply statusline transparency",
 	})
+
+  -- theme
+	local theme = vim.g.colors_name or "catppuccin"
 	vim.o.background = get_color_mode()
-	if vim.o.background == "light" then
+	if theme == "tiso-black" or theme == "tiso-light" then
 		vim.g.tiso_light_transparent = not opaque_bg.light
-		vim.cmd.colorscheme("tiso-light")
-	else
 		vim.g.tiso_black_transparent = not opaque_bg.dark
-		vim.cmd.colorscheme("tiso-black")
-		-- vim.cmd.colorscheme("catppuccin")
+		theme = vim.o.background == "light" and "tiso-light" or "tiso-black"
+	elseif theme:match("^catppuccin") then
+		theme = "catppuccin"
 	end
+	vim.cmd.colorscheme(theme)
 	-- :colorscheme wipes user highlight links, so (re)apply them here, after
 	-- the theme, rather than once at startup.
 	vim.api.nvim_set_hl(0, "FFFBorder", { link = "FloatBorder" })

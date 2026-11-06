@@ -67,7 +67,11 @@ def account_usage(account, now=None):
         if window.get("label") not in ("5 hours", "Weekly"):
             continue
         percent = window.get("percent")
-        if type(percent) not in (int, float) or not math.isfinite(percent) or percent < 0:
+        if (
+            type(percent) not in (int, float)
+            or not math.isfinite(percent)
+            or percent < 0
+        ):
             raise ValueError("invalid quota percent")
         limits[window["label"]] = window
     if not limits:
@@ -75,7 +79,8 @@ def account_usage(account, now=None):
     short = limits.get("5 hours", {})
     weekly = limits.get("Weekly", {})
     return {
-        "usable": account["available"] and all(item["percent"] < 100 for item in limits.values()),
+        "usable": account["available"]
+        and all(item["percent"] < 100 for item in limits.values()),
         "weekly_reset": iso_ts(weekly.get("resets_at")),
         "weekly_used": weekly.get("percent"),
         "short_reset": iso_ts(short.get("resets_at")),
@@ -106,7 +111,9 @@ def write_priority(path, original_bytes, priority):
     directory = os.path.dirname(path)
     mode = os.stat(path).st_mode & 0o777
     # No .json suffix: the proxy's watcher ignores non-JSON files in the auth dir.
-    fd, tmp = tempfile.mkstemp(dir=directory, prefix=".account-priority-", suffix=".tmp")
+    fd, tmp = tempfile.mkstemp(
+        dir=directory, prefix=".account-priority-", suffix=".tmp"
+    )
     try:
         with os.fdopen(fd, "wb") as fh:
             fh.write(payload)
@@ -181,8 +188,12 @@ def update_provider(provider, accounts, auth_dir, dry_run):
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--auth-dir", default=os.path.expanduser("~/.cli-proxy-api"))
-    parser.add_argument("--dry-run", action="store_true", help="print the plan without writing")
-    parser.add_argument("--quota-url", default=QUOTA_URL, help="local dashboard quota API")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="print the plan without writing"
+    )
+    parser.add_argument(
+        "--quota-url", default=QUOTA_URL, help="local dashboard quota API"
+    )
     parser.add_argument(
         "--provider",
         action="append",
@@ -193,17 +204,26 @@ def main():
 
     try:
         document = http_json(args.quota_url)
-        if not isinstance(document, dict) or not isinstance(document.get("accounts"), list):
+        if not isinstance(document, dict) or not isinstance(
+            document.get("accounts"), list
+        ):
             raise ValueError("invalid quota response")
         accounts = {}
         for account in document["accounts"]:
-            if not isinstance(account, dict) or not isinstance(account.get("id"), str) or not account["id"]:
+            if (
+                not isinstance(account, dict)
+                or not isinstance(account.get("id"), str)
+                or not account["id"]
+            ):
                 raise ValueError("invalid quota account")
             if account["id"] in accounts:
                 raise ValueError("duplicate quota account")
             accounts[account["id"]] = account
     except (OSError, ValueError) as failure:
-        print(f"Quota API unavailable: {failure}; all priorities left unchanged", file=sys.stderr)
+        print(
+            f"Quota API unavailable: {failure}; all priorities left unchanged",
+            file=sys.stderr,
+        )
         return 1
 
     failures = 0

@@ -528,6 +528,7 @@ end
 vim.keymap.set("n", "<leader>na", edit_note(credentials_file), { desc = "Account credentials" })
 vim.keymap.set("n", "<leader>nn", edit_note(notes_dir .. "TODO.org"), { desc = "TODO notes" })
 vim.keymap.set("n", "<leader>nl", edit_note(notes_dir .. "til.org"), { desc = "TIL notes" })
+vim.keymap.set("n", "<leader>ni", edit_note(notes_dir .. "Info.org"), { desc = "Info" })
 vim.keymap.set("n", "<leader>nC", edit_note(notes_dir .. "COMMANDS.org"), { desc = "Commands notes" })
 vim.keymap.set("n", "<leader>nc", edit_note(vim.fn.stdpath("config") .. "/init.lua"), { desc = "Neovim init.lua" })
 vim.keymap.set("n", "<leader>ns", edit_note(secrets_file), { desc = "Secrets (gpg)" })
@@ -862,6 +863,7 @@ end, { desc = "Toggle LazyGit" })
 require("nvim-treesitter").install(treesitter_parsers)
 require("render-markdown").setup({
 	enabled = false,
+	code = { disable_background = true, highlight_border = false },
 	pipe_table = { enabled = false },
 	heading = { icons = {} },
 })
@@ -1412,11 +1414,16 @@ vim.api.nvim_create_autocmd("ColorSchemePre", {
 			background = { light = "latte", dark = catppuccin_dark },
 			transparent_background = transparent,
 			float = { transparent = transparent },
-			custom_highlights = function(colors)
+			custom_highlights = function()
 				return {
 					Comment = { fg = "#ee66ff" },
 					LeapBackdrop = { fg = "NONE" },
-					LeapLabel = { fg = "#000000", bg = colors.peach, bold = true },
+					LeapLabel = {
+						fg = mode == "light" and "#ffffff" or "#11111b",
+						bg = mode == "light" and "#313244" or "#f9e2af",
+						bold = true,
+						nocombine = true,
+					},
 				}
 			end,
 		})

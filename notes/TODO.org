@@ -1,18 +1,12 @@
-* 2 November 2026
-** TODO NER Report By Project Team
-** TODO Batara disable license
+* 16 November 2026
+** TODO Logging gl-observability https://chat.google.com/room/AAQA-yhQs0Y/JUwCnbpt5GI/hB4Q_flka_0?cls=10
+** Implement https://github.com/GDP-ADMIN/gl-sdk/issues/8313
 ** GLLM Evals
-*** TODO fix(gllm-evals): validate inputs and preserve results after judge failures (https://github.com/GDP-ADMIN/gl-sdk/pull/7920)
-**** https://github.com/GDP-ADMIN/gl-sdk/issues/7886
-**** https://github.com/GDP-ADMIN/gl-sdk/issues/7900
-**** https://claude.ai/artifact/ADCfBWXXgEt5nXVqhKuGrk
-**** https://github.com/GDP-ADMIN/gl-sdk/issues/7903
-*** TODO feat(nava): add gllm-evals evaluate_suites pytest evals for the market research agent (https://github.com/GDP-ADMIN/glchat-agents/pull/482)
 *** TODO Update evals in nava etc gllm_inference-v0.6.189 (https://chat.google.com/room/AAQAE-LjMvQ/HYNGT4JirBg/5jZs3Rpq_fs?cls=10)
-** GLLM Privacy
-*** TODO fix(gllm-privacy): resolve Qodana pipeline and type findings (https://github.com/GDP-ADMIN/gl-sdk/pull/8223)
+*** TODO Review PR
+**** TODO https://github.com/GDP-ADMIN/glchat-agents/pull/280
+**** TODO https://github.com/GDP-ADMIN/gl-sdk/pull/8453
 ** NER
-*** TODO Qodana https://github.com/GDP-ADMIN/gl-sdk/pull/8211
 *** TODO release the image so it apply the tracing reduction  (https://chat.google.com/room/AAQALJ1PW8g/cyCyDrOKR8w/cyCyDrOKR8w?cls=10 )
 *** TODO [GLChat NER] 2 findings - DAST scan #395
 *** TODO PERSON dipisah tab https://chat.google.com/room/AAQAYtQZtE0/a1sjC6GY-Ws/_okEaa3tb9s?cls=10
@@ -49,14 +43,56 @@
 *** TODO [BACKLOG] calibrate semua benchmark
 *** TODO [BACKLOG] create skill to update code review leaderboard
 ** Meemo
+*** TODO NEW Summarization Approach https://chat.google.com/room/AAQAYdGYTVg/u4nohhxhT_I/u4nohhxhT_I?cls=10
 *** TODO End to end testing for summarization -> actually calling model
 ** GLLM Privacy
+*** TODO https://github.com/GDP-ADMIN/gl-sdk/issues/8392
 *** TODO Partial match https://chat.google.com/dm/kVRRkyAAAAE/HR0oKY3CR2Y/HR0oKY3CR2Y?cls=10
 *** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)
 *** TODO fix(gllm-privacy): match context at compound word boundaries (https://github.com/GDP-ADMIN/gl-sdk/pull/5953)
 *** TODO fix tab between person name
 *** TODO fix URL 'Text: Parag Agrawal (Former CEO/CTO of Twitter), email aku agung.b.sorlawan@gdplabs.id'
 *** TODO Review PRs
+
+* 9 November 2026
+** READ
+*** DONE https://zonderlabs.com/slop
+** GLLM Evals
+*** DONE feat(gllm-evals): read eval results by test case id instead of row order (https://github.com/GDP-ADMIN/gl-sdk/pull/8376)
+** NER
+*** DONE docs: rewrite docs and comments to follow the AGENTS.md writing rules (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/242)
+*** DONE Qodana https://github.com/GDP-ADMIN/gl-sdk/pull/8211
+** MAB
+*** DONE feat(transcription): store Dur-WER when a run finishes and rank speech runs on the dashboard (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1247)
+*** DONE Benchmark
+**** Muse Ember
+**** Gemini 4 Carbon
+**** Gemini 4 Hydrogen
+*** DONE Recommendation
+**** Add special note for gemini-4-carbon
+*** DONE Review PR
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1238
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1220
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1227
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1203
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1246
+** GLLM Privacy
+*** DONE feat(gllm-privacy): add PrivacyComponent to mask PII around any component (https://github.com/GDP-ADMIN/gl-sdk/pull/8396)
+*** DONE docs(gllm-privacy): add AGENTS.md and rewrite docs to match its writing rules (https://github.com/GDP-ADMIN/gl-sdk/pull/8341)
+
+* 2 November 2026
+** DONE Batara Project: disable license
+** MAB
+*** DONE Help Binus project recommendation
+** GLLM Evals
+*** DONE fix(gllm-evals): validate inputs and preserve results after judge failures (https://github.com/GDP-ADMIN/gl-sdk/pull/7920)
+**** https://github.com/GDP-ADMIN/gl-sdk/issues/7886
+**** https://github.com/GDP-ADMIN/gl-sdk/issues/7900
+**** https://claude.ai/artifact/ADCfBWXXgEt5nXVqhKuGrk
+**** https://github.com/GDP-ADMIN/gl-sdk/issues/7903
+*** DONE feat(nava): add gllm-evals evaluate_suites pytest evals for the market research agent (https://github.com/GDP-ADMIN/glchat-agents/pull/482)
+** GLLM Privacy
+*** DONE fix(gllm-privacy): resolve Qodana pipeline and type findings (https://github.com/GDP-ADMIN/gl-sdk/pull/8223)
 
 * 26 October 2026
 ** DONE Engineer Workflow (https://docs.google.com/document/d/1S_bVH_xVtizRApMUv2GOfEtvSmUBbtCnyr1dn_Hd3CY/edit?tab=t.0#heading=h.552bmrcj3x3y)

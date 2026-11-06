@@ -10,7 +10,10 @@ from quota_cache import UsageCache
 
 CLAUDE = {"five_hour": {"utilization": 0.0, "resets_at": None},
     "seven_day": {"utilization": 100.0, "resets_at": "2026-10-03T07:59:59+00:00"},
-    "seven_day_opus": None}
+    "seven_day_opus": None,
+    "limits": [
+        {"kind": "session", "percent": 0, "resets_at": None, "scope": None},
+        {"kind": "weekly_all", "percent": 100, "resets_at": "2026-10-03T07:59:59+00:00", "scope": None}]}
 CODEX = {"plan_type": "plus", "rate_limit": {
     "primary_window": {"used_percent": 17, "limit_window_seconds": 18000, "reset_at": 1790975387},
     "secondary_window": {"used_percent": 85, "limit_window_seconds": 604800, "reset_at": 1791285713}}}
@@ -66,11 +69,44 @@ class Quota(unittest.TestCase):
                 self.assertEqual(account["priority"], expected)
                 self.assertEqual(account["error"], quota.EXPIRED)
 
-    def test_claude_windows_skip_missing_limits_and_keep_idle_reset_empty(self):
+    def test_claude_session_and_weekly_limits_keep_idle_reset_empty(self):
         windows = quota.claude_windows(CLAUDE)
         self.assertEqual([item["label"] for item in windows], ["5 hours", "Weekly"])
         self.assertEqual(windows[0]["resets_at"], None)
         self.assertEqual(windows[1]["percent"], 100.0)
+
+    def test_scoped_model_limits_use_each_accounts_percent_and_reset(self):
+        temp = auth_dir(
+            {"type": "claude", "access_token": "first"},
+            {"type": "claude", "access_token": "second"})
+        self.addCleanup(temp.cleanup)
+        resets = ["2026-11-15T08:00:00+00:00", "2026-11-14T08:00:00.208598+00:00"]
+
+        def fetch(url, headers):
+            index = 0 if headers["Authorization"] == "Bearer first" else 1
+
+            return {**CLAUDE, "limits": [*CLAUDE["limits"], {
+                "kind": "weekly_scoped", "percent": index, "resets_at": resets[index],
+                "scope": {"model": {"id": None, "display_name": "Fable"}, "surface": None},
+                "is_active": False}]}
+
+        accounts = quota.collect_quota(temp.name, fetch)["accounts"]
+
+        for index, account in enumerate(accounts):
+            self.assertEqual(account["error"], "")
+            self.assertEqual(account["windows"], [
+                {"label": "5 hours", "percent": 0.0, "resets_at": None},
+                {"label": "Weekly", "percent": 100.0, "resets_at": "2026-10-03T07:59:59+00:00"},
+                {"label": "Weekly Fable", "percent": float(index), "resets_at": resets[index]}])
+
+    def test_claude_limits_are_authoritative_and_skip_unsupported_scopes(self):
+        payload = {**CLAUDE, "limits": [
+            {"kind": "weekly_scoped", "percent": 20, "scope": None},
+            {"kind": "weekly_scoped", "percent": 20, "scope": {"model": None}},
+            {"kind": "weekly_scoped", "percent": 20, "scope": {"model": {"id": "unknown"}}},
+            {"kind": "future_limit", "percent": 20}]}
+
+        self.assertEqual(quota.claude_windows(payload), [])
 
     def test_codex_windows_are_labelled_by_length(self):
         windows = quota.codex_windows(CODEX)

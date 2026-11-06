@@ -40,10 +40,6 @@ RESET_MESSAGES = {
     "unavailable": "Resets are unavailable right now. Try again later.",
 }
 
-CLAUDE_WINDOWS = (
-    ("five_hour", "5 hours"), ("seven_day", "Weekly"),
-    ("seven_day_opus", "Weekly Opus"), ("seven_day_sonnet", "Weekly Sonnet"),
-)
 CODEX_LABELS = {18000: "5 hours", 604800: "Weekly"}
 
 
@@ -94,8 +90,30 @@ def window(label: str, percent, resets_at) -> dict:
 
 
 def claude_windows(payload: dict) -> list[dict]:
-    return [window(label, payload[key].get("utilization"), payload[key].get("resets_at"))
-        for key, label in CLAUDE_WINDOWS if isinstance(payload.get(key), dict)]
+    windows = []
+
+    for limit in payload.get("limits") or []:
+
+        if not isinstance(limit, dict):
+            continue
+
+        kind = limit.get("kind")
+        label = {"session": "5 hours", "weekly_all": "Weekly"}.get(kind)
+
+        if kind == "weekly_scoped":
+            scope = limit.get("scope")
+            model = scope.get("model") if isinstance(scope, dict) else None
+            name = model.get("display_name") if isinstance(model, dict) else None
+
+            if not isinstance(name, str) or not name.strip():
+                continue
+
+            label = f"Weekly {name}"
+
+        if label is not None:
+            windows.append(window(label, limit.get("percent"), limit.get("resets_at")))
+
+    return windows
 
 
 def codex_windows(payload: dict) -> list[dict]:
@@ -236,8 +254,7 @@ def claude_credits(payload) -> list[dict]:
     """Claude's banked limit resets (the cedar_ember program), earliest expiry first.
 
     A grant counts when it is not paused, has resets left and is inside its dates.
-    Whether it can be spent right now is left to Anthropic, which refuses a reset
-    while no limit is in use.
+    Anthropic decides whether a grant can be spent right now and which limits it clears.
     """
     block = payload.get("cedar_ember") if isinstance(payload, dict) else None
     if not isinstance(block, dict) or block.get("eligible") is not True:

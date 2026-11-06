@@ -20,18 +20,44 @@ local function expect_documentation_background()
 		"",
 		"Return whether the value is present.",
 	}, "markdown", { title = "Documentation", max_width = 72 })
-	local code_marks
+	local marks
 	vim.cmd.redraw()
 	assert(vim.wait(3000, function()
-		code_marks = vim.tbl_filter(function(mark)
-			return mark[4].hl_group == "RenderMarkdownCode"
-		end, vim.api.nvim_buf_get_extmarks(buf, -1, 0, -1, { details = true }))
-		return #code_marks > 0
-	end, 20), "Markdown code background did not render")
-	for _, mark in ipairs(code_marks) do
-		eq(background("NormalFloat"), background(mark[4].hl_group))
+		marks = vim.api.nvim_buf_get_extmarks(buf, -1, 0, -1, { details = true })
+		for _, mark in ipairs(marks) do
+			for _, chunk in ipairs(mark[4].virt_text or {}) do
+				if chunk[1]:find("python", 1, true) then
+					return true
+				end
+			end
+		end
+		return false
+	end, 20), "Markdown language header did not render")
+	local function expect_background(group)
+		if type(group) == "table" then
+			for _, name in ipairs(group) do
+				expect_background(name)
+			end
+		elseif group then
+			local bg = background(group)
+			assert(bg == nil or bg == background("NormalFloat"), "Hover background mismatch: " .. group)
+		end
+	end
+	for _, mark in ipairs(marks) do
+		expect_background(mark[4].hl_group)
+		for _, chunk in ipairs(mark[4].virt_text or {}) do
+			expect_background(chunk[2])
+		end
 	end
 	vim.api.nvim_win_close(win, true)
+end
+
+local function luminance(color)
+	local function linear(shift)
+		local channel = bit.band(bit.rshift(color, shift), 255) / 255
+		return channel <= 0.04045 and channel / 12.92 or ((channel + 0.055) / 1.055) ^ 2.4
+	end
+	return 0.2126 * linear(16) + 0.7152 * linear(8) + 0.0722 * linear(0)
 end
 
 local function expect_leap_colors()
@@ -49,6 +75,7 @@ local function expect_leap_colors()
 	local jump = require("leap").leap
 	local observed, dimmed, labels = false, false, false
 	local label_contrast = true
+	local label_separation = true
 	vim.defer_fn(function()
 		observed = true
 		for _, mark in ipairs(vim.api.nvim_buf_get_extmarks(buf, -1, 0, -1, { details = true })) do
@@ -61,7 +88,19 @@ local function expect_leap_colors()
 				labels = labels or chunk[2] == "LeapLabel"
 				if chunk[2] == "LeapLabel" then
 					local hl = vim.api.nvim_get_hl(0, { name = chunk[2], link = false })
-					label_contrast = label_contrast and hl.bg ~= nil and hl.fg ~= nil and hl.fg ~= hl.bg
+					if hl.bg and hl.fg then
+						local fg, bg = luminance(hl.fg), luminance(hl.bg)
+						local contrast = (math.max(fg, bg) + 0.05) / (math.min(fg, bg) + 0.05)
+						label_contrast = label_contrast and contrast >= 10
+						local editor_bg = background("Normal")
+						if editor_bg then
+							local editor = luminance(editor_bg)
+							local separation = (math.max(bg, editor) + 0.05) / (math.min(bg, editor) + 0.05)
+							label_separation = label_separation and separation >= 3
+						end
+					else
+						label_contrast = false
+					end
 				end
 			end
 		end
@@ -71,7 +110,8 @@ local function expect_leap_colors()
 	assert(observed, "Leap exited before its labels appeared")
 	assert(labels, "Leap target labels did not render")
 	assert(not dimmed, "Leap recolored the text through its backdrop")
-	assert(label_contrast, "Leap target labels need a solid background and a contrasting foreground")
+	assert(label_contrast, "Leap target labels need a solid background and at least 10:1 text contrast")
+	assert(label_separation, "Leap target backgrounds need at least 3:1 contrast against the editor background")
 	vim.api.nvim_set_current_buf(previous)
 	vim.api.nvim_buf_delete(buf, { force = true })
 end
@@ -81,14 +121,12 @@ local function expect(theme, mode, transparent)
 	eq(mode, vim.o.background)
 	eq(transparent, background("Normal") == nil)
 	eq(transparent, background("NormalFloat") == nil)
-	if theme:match("^tiso%-") then
-		expect_documentation_background()
-	elseif theme:match("^catppuccin%-") then
+	expect_documentation_background()
+	if theme:match("^catppuccin%-") then
 		expect_leap_colors()
 	end
 end
 
-expect("tiso-black", "dark", true)
 vim.cmd.colorscheme("catppuccin")
 expect("catppuccin-mocha", "dark", true)
 toggle()

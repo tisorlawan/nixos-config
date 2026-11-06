@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Unslop
 
-Edit text to remove AI patterns. Preserve the meaning and the intended tone.
+Rewrite the text to remove AI writing patterns. Keep the meaning and tone. If a change makes a sentence awkward, keep the original wording. Choose the version that's easiest to read.
 
 ## Process
 

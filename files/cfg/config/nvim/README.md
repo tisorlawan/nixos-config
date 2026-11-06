@@ -7,7 +7,8 @@ Catppuccin uses Latte in light mode and Mocha in dark mode by default.
 An explicit dark flavor, such as `:colorscheme catppuccin-frappe`, remains selected after a light-mode round trip.
 Catppuccin comments use Tiso Black's magenta (`#ee66ff`) in every flavor. Other syntax colors stay unchanged.
 Leap keeps the syntax colors during a search.
-Catppuccin target labels use bold black text on a solid peach background, even when the editor is transparent.
+Catppuccin target labels use bold dark text (`#11111b`) on pale yellow (`#f9e2af`) in dark mode, so they stand out from the editor background.
+Light mode uses bold white text (`#ffffff`) on dark slate (`#313244`). Labels keep a solid background even when the editor is transparent.
 Match highlights remain visible.
 
 The Tiso themes share their highlight rules and palettes in `lua/tiso.lua`.
@@ -30,7 +31,7 @@ Press `Space t t` to toggle transparency for the current mode.
 Both modes start transparent. Each mode keeps its own transparency state for the session.
 Catppuccin applies this state to the editor background and floating windows.
 Tiso also applies this state to completion menus, documentation popups, and scrollbar gutters.
-Fenced Markdown code in documentation popups uses the same background as the popup.
+Fenced Markdown code and language headers in documentation popups inherit the popup background in both theme families.
 `Space t t` changes both backgrounds together.
 The selected completion keeps a solid background for contrast.
 Use `:colorscheme tiso-black` or `:colorscheme tiso-light` to load a theme directly.

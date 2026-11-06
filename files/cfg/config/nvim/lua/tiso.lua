@@ -177,7 +177,6 @@ function M.load(mode)
 		BlinkCmpLabelDescription = { fg = muted },
 		BlinkCmpDoc = { link = "NormalFloat" },
 		BlinkCmpDocBorder = { link = "FloatBorder" },
-		RenderMarkdownCode = { link = "NormalFloat" },
 		FFFBorder = { link = "FloatBorder" },
 		FFFTitle = { link = "Title" },
 		FFFPreviewMatch = { fg = text, bold = true },

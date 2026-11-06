@@ -259,7 +259,7 @@ Chip {
                         spacing: 8
 
                         Text {
-                          Layout.preferredWidth: 64
+                          Layout.preferredWidth: 104
                           text: limit.modelData.label === "5 hours" ? "5h" : limit.modelData.label
                           color: Theme.mutedText
                           font.family: Theme.fontFamily

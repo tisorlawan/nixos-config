@@ -75,35 +75,10 @@ class Quota(unittest.TestCase):
         self.assertEqual(windows[0]["resets_at"], None)
         self.assertEqual(windows[1]["percent"], 100.0)
 
-    def test_scoped_model_limits_use_each_accounts_percent_and_reset(self):
-        temp = auth_dir(
-            {"type": "claude", "access_token": "first"},
-            {"type": "claude", "access_token": "second"})
-        self.addCleanup(temp.cleanup)
-        resets = ["2026-11-15T08:00:00+00:00", "2026-11-14T08:00:00.208598+00:00"]
-
-        def fetch(url, headers):
-            index = 0 if headers["Authorization"] == "Bearer first" else 1
-
-            return {**CLAUDE, "limits": [*CLAUDE["limits"], {
-                "kind": "weekly_scoped", "percent": index, "resets_at": resets[index],
-                "scope": {"model": {"id": None, "display_name": "Fable"}, "surface": None},
-                "is_active": False}]}
-
-        accounts = quota.collect_quota(temp.name, fetch)["accounts"]
-
-        for index, account in enumerate(accounts):
-            self.assertEqual(account["error"], "")
-            self.assertEqual(account["windows"], [
-                {"label": "5 hours", "percent": 0.0, "resets_at": None},
-                {"label": "Weekly", "percent": 100.0, "resets_at": "2026-10-03T07:59:59+00:00"},
-                {"label": "Weekly Fable", "percent": float(index), "resets_at": resets[index]}])
-
-    def test_claude_limits_are_authoritative_and_skip_unsupported_scopes(self):
+    def test_claude_limits_are_authoritative_and_skip_model_scoped_and_unknown_kinds(self):
         payload = {**CLAUDE, "limits": [
-            {"kind": "weekly_scoped", "percent": 20, "scope": None},
-            {"kind": "weekly_scoped", "percent": 20, "scope": {"model": None}},
-            {"kind": "weekly_scoped", "percent": 20, "scope": {"model": {"id": "unknown"}}},
+            {"kind": "weekly_scoped", "percent": 20, "resets_at": "2026-11-22T08:00:00+00:00",
+                "scope": {"model": {"id": None, "display_name": "Fable"}, "surface": None}},
             {"kind": "future_limit", "percent": 20}]}
 
         self.assertEqual(quota.claude_windows(payload), [])
@@ -172,16 +147,23 @@ class ClaudeResets(unittest.TestCase):
         spent = {**GRANT, "id": "spent", "resets_left": 0}
         expired = {**GRANT, "id": "expired", "ends_at": "2020-02-01T00:00:00+00:00"}
         two = {**GRANT, "id": "two", "resets_left": 2, "ends_at": "2998-01-01T00:00:00+00:00"}
+        fable = {**GRANT, "id": "launch-2610-fable-week", "ends_at": "2997-01-01T00:00:00+00:00",
+            "label": "New model launch: one Fable reset for Pro and Team Standard, launch week only"}
+        usage = claude_usage(GRANT, paused, spent, expired, two, fable)
         temp = self.account()
-        account = quota.collect_quota(temp.name, lambda url, headers: claude_usage(GRANT, paused, spent, expired, two))["accounts"][0]
+
+        account = quota.collect_quota(temp.name, lambda url, headers: usage)["accounts"][0]
         self.assertEqual(account["resets"], {"available": 3})
-        listing = quota.list_resets("0", temp.name, lambda url, headers: claude_usage(GRANT, paused, spent, expired, two))
+
+        listing = quota.list_resets("0", temp.name, lambda url, headers: usage)
         self.assertEqual([item["id"] for item in listing["credits"]], ["two", "launch-reset"])
         self.assertEqual(listing["credits"][1]["title"], "Launch reset")
 
     def test_accounts_without_an_offer_show_no_resets(self):
         temp = self.account()
-        for payload in (CLAUDE, claude_usage(GRANT, eligible=False), claude_usage()):
+        fable = {**GRANT, "label": "New model launch: one Fable reset"}
+
+        for payload in (CLAUDE, claude_usage(GRANT, eligible=False), claude_usage(), claude_usage(fable)):
             account = quota.collect_quota(temp.name, lambda url, headers: payload)["accounts"][0]
             self.assertNotIn("resets", account)
 

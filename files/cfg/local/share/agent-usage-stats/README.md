@@ -45,8 +45,8 @@ stored by CLIProxyAPI (`~/.cli-proxy-api/*.json`, or `CLI_PROXY_AUTH_DIR`). It c
 Anthropic's `/api/oauth/usage` and ChatGPT's `/backend-api/wham/usage` with each
 account's stored access token. Both endpoints are undocumented and may change.
 
-Claude quotas come from the response's `limits` list, including model-specific weekly limits such as Fable.
-Each limit keeps its own percent used and reset timestamp. A zero-use Fable limit still appears.
+Claude quotas come from the response's `limits` list. Only the 5-hour (`session`) and weekly (`weekly_all`) limits appear.
+Model-specific weekly limits, such as Fable, are left out.
 
 Each account also includes its stored integer `priority`, or `null` when no valid value exists.
 The `account-reset-priority.timer` runs the separate priority script about every 10 minutes.
@@ -59,7 +59,7 @@ ChatGPT's `/wham/rate-limit-reset-credits/consume`; for Claude it posts the gran
 reset endpoints are private and were read from third-party notes, and Anthropic only
 answers them for the Claude Code CLI user agent, so the server sends `claude-cli/<installed
 version>`. The provider decides when a grant can be used and which limits it clears.
-The Fable launch grant appears in the existing reset list for each eligible account. Spending a reset cannot be undone. The server
+Grants whose label names Fable are left out of the reset count and list, so a reset never spends them. Spending a reset cannot be undone. The server
 refuses requests that are not same-origin JSON with `confirm: true`, and every failure
 (expired sign-in, no credit, nothing to reset, rate limit, unreachable provider) is shown
 on the account row. Claude accounts without a grant show no reset button; their limits

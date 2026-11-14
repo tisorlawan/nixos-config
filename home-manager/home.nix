@@ -114,7 +114,7 @@ in
         hyprlandGuiUtilsPkgs.hyprland-guiutils
         hyprPkgs.hyprland
         # Hyprland runs `Xwayland` from PATH under nixGL. Ubuntu's Xwayland cannot load the Nix
-        # GBM backend, so it falls back to software and X11 apps (Steam, games) lose the GPU.
+        # GBM backend, so it falls back to software and X11 apps lose the GPU.
         xwayland
         hyprPkgs.xdg-desktop-portal-hyprland
         pkgs-unstable.hyprpaper

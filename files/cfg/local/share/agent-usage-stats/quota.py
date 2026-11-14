@@ -89,7 +89,11 @@ def window(label: str, percent, resets_at) -> dict:
     return {"label": label, "percent": max(0.0, float(percent or 0)), "resets_at": resets_at}
 
 
+CLAUDE_LABELS = {"session": "5 hours", "weekly_all": "Weekly"}
+
+
 def claude_windows(payload: dict) -> list[dict]:
+    """The account-wide limits only; model-scoped weekly limits are left out."""
     windows = []
 
     for limit in payload.get("limits") or []:
@@ -97,18 +101,7 @@ def claude_windows(payload: dict) -> list[dict]:
         if not isinstance(limit, dict):
             continue
 
-        kind = limit.get("kind")
-        label = {"session": "5 hours", "weekly_all": "Weekly"}.get(kind)
-
-        if kind == "weekly_scoped":
-            scope = limit.get("scope")
-            model = scope.get("model") if isinstance(scope, dict) else None
-            name = model.get("display_name") if isinstance(model, dict) else None
-
-            if not isinstance(name, str) or not name.strip():
-                continue
-
-            label = f"Weekly {name}"
+        label = CLAUDE_LABELS.get(limit.get("kind"))
 
         if label is not None:
             windows.append(window(label, limit.get("percent"), limit.get("resets_at")))
@@ -250,10 +243,17 @@ def grant_is_open(grant: dict, now: dt.datetime) -> bool:
         return False
 
 
+def is_fable_grant(grant: dict) -> bool:
+    # The grant names its model only in the label; there is no structured model field.
+    label = grant.get("label")
+
+    return isinstance(label, str) and re.search(r"\bfable\b", label, re.IGNORECASE) is not None
+
+
 def claude_credits(payload) -> list[dict]:
     """Claude's banked limit resets (the cedar_ember program), earliest expiry first.
 
-    A grant counts when it is not paused, has resets left and is inside its dates.
+    A grant counts when it is not paused, has resets left, is inside its dates and is not a Fable grant.
     Anthropic decides whether a grant can be spent right now and which limits it clears.
     """
     block = payload.get("cedar_ember") if isinstance(payload, dict) else None
@@ -263,7 +263,8 @@ def claude_credits(payload) -> list[dict]:
     usable = [{"id": grant["id"], "title": grant.get("label"), "granted_at": grant.get("starts_at"),
         "expires_at": grant.get("ends_at"), "resets_left": count(grant.get("resets_left"))}
         for grant in block.get("grants") or [] if isinstance(grant, dict) and grant.get("id")
-        and not grant.get("paused") and count(grant.get("resets_left")) > 0 and grant_is_open(grant, now)]
+        and not grant.get("paused") and count(grant.get("resets_left")) > 0 and grant_is_open(grant, now)
+        and not is_fable_grant(grant)]
     usable.sort(key=lambda item: (item["expires_at"] is None, item["expires_at"] or ""))
     return usable
 

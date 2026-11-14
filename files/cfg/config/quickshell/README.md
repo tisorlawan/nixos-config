@@ -44,7 +44,6 @@ The theme changes only the bar, the panels, and the clock. Other applications ke
 
 Select **AI** in the bar to open the CLIProxy quota panel. The number shows the account count.
 The panel groups accounts by provider. Each quota row shows the limit, remaining percent, and reset countdown.
-Claude accounts include a **Weekly Fable** row with that subscription's remaining allowance and reset countdown.
 Each account also shows its reset credit count when available.
 
 The `P20` label shows the priority value from that account's auth JSON. Higher values come first within each provider.

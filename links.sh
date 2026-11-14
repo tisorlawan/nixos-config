@@ -26,7 +26,7 @@ TARGETS=(
   bash clang-format git tmux vim images scripts
   claude codex agents
   ghostty rclone
-  t3code codex-desktop tern
+  t3code codex-desktop tern steam
   cliproxyapi agent-usage-stats account-reset-priority
 )
 
@@ -114,6 +114,13 @@ run_target() {
     t3code | codex-desktop)
       link "$CFG/local/bin/$name" "$HOME/.local/bin/$name"
       link "$CFG/local/share/applications/$name.desktop" "$HOME/.local/share/applications/$name.desktop"
+      ;;
+
+    # Steam relinks its own desktop entry over a symlink on every launch, but leaves a regular file.
+    steam)
+      link "$CFG/local/bin/steam" "$HOME/.local/bin/steam"
+      rm -f -- "$HOME/.local/share/applications/steam.desktop"
+      cp -- "$CFG/local/share/applications/steam.desktop" "$HOME/.local/share/applications/steam.desktop"
       ;;
 
     # Preserve Tern's binary and generated desktop files. Link the scripts and separate desktop entry.

@@ -113,6 +113,9 @@ in
         rofi
         hyprlandGuiUtilsPkgs.hyprland-guiutils
         hyprPkgs.hyprland
+        # Hyprland runs `Xwayland` from PATH under nixGL. Ubuntu's Xwayland cannot load the Nix
+        # GBM backend, so it falls back to software and X11 apps (Steam, games) lose the GPU.
+        xwayland
         hyprPkgs.xdg-desktop-portal-hyprland
         pkgs-unstable.hyprpaper
         hyprsunset
@@ -304,7 +307,7 @@ in
         trashy
         # trunk
         cocogitto
-        mold
+        mold-unwrapped
         # google-cloud-sdk
         openconnect
         fastfetch
@@ -392,6 +395,8 @@ in
     "text/plain" = [ "nvim.desktop" ];
     "x-scheme-handler/zoommtg" = [ "zoomus-wrapped.desktop" ];
     "x-scheme-handler/zoomphonecall" = [ "zoomus-wrapped.desktop" ];
+    "x-scheme-handler/t3code" = [ "com.t3tools.T3Code.desktop" ];
+    "x-scheme-handler/tern" = [ "so.stencil.tern.url.desktop" ];
   };
 
   xdg.portal = {

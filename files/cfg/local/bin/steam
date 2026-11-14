@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# Steam and the games it launches use system Mesa and the Intel GPU.
+exec "$HOME/.scripts/clean-gl-env" /usr/games/steam "$@"

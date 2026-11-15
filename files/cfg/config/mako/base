@@ -1,0 +1,7 @@
+# Mako settings without colors. ~/.scripts/theme-colors writes `config` as the
+# selected theme's colors followed by this file, then reloads mako.
+# Edit this file, not `config`, which git ignores.
+default-timeout=5000
+
+[body~="Region copied to clipboard"]
+invisible=1

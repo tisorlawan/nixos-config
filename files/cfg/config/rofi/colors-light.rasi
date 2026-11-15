@@ -1,6 +1,0 @@
-// set-color copies this palette to colors.rasi.
-* {
-    bg:     #fafafa;
-    fg:     #242424;
-    button: #dedede;
-}

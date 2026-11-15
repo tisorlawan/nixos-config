@@ -1,0 +1,109 @@
+#!/usr/bin/env bash
+#
+# Write the theme files of apps that read colors from a file, for the selected
+# theme (set-theme --current) and mode (~/.color), and reload each app whose
+# file changed:
+#
+#   rofi      ~/.config/rofi/colors.rasi, read on each launch.
+#   mako      ~/.config/mako/config, the palette followed by mako/base, then
+#             `makoctl reload` when mako runs.
+#   hyprland  ~/.config/hypr/theme.conf (window borders), then `hyprctl reload`.
+#   kitty     ~/.config/kitty/themes/rice.conf, then SIGUSR1 to every kitty.
+#   btop      ~/.config/btop/themes/rice.theme, read when btop starts.
+#   claude    ~/.claude/themes/rice.json. Claude Code reloads it on change.
+#   wallpaper ~/.rice/wallpaper/current, a link to wallpaper/<theme>-<mode>, or
+#             to wallpaper/<mode> when the theme has no wallpapers for the
+#             mode. hyprpaper restarts to read it.
+#   brave     /etc/brave/policies/managed/color.json, a managed policy with the
+#             theme's seed color, through the root helper that
+#             install-brave-theme-policy sets up. Skipped until that setup runs.
+#             A running Brave reloads its policies at once.
+#
+# set-theme and set-color run this after a change, and Hyprland runs it at
+# startup. The palettes are generated into files/cfg/themes/ by
+# files/cfg/themes/generate.cjs. Git ignores every written file in the repo.
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")" && pwd)"
+THEMES_DIR="$(cd -- "$SCRIPT_DIR/../themes" && pwd)"
+WALLPAPER_DIR="$(cd -- "$SCRIPT_DIR/../../../wallpaper" && pwd)"
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+
+theme="$("$SCRIPT_DIR/set-theme" --current)"
+case "$(cat "$HOME/.color" 2>/dev/null || true)" in
+*light*) mode=light ;;
+*) mode=dark ;;
+esac
+
+# Replace $1 with the concatenation of the remaining files. Succeed only when
+# the contents changed, so callers reload an app only after a real change.
+write() {
+  local target="$1"
+  shift
+  local tmp
+  mkdir -p "$(dirname "$target")"
+  tmp="$(mktemp "$target.XXXXXX")"
+  cat -- "$@" >"$tmp"
+  if cmp -s "$tmp" "$target"; then
+    rm -f "$tmp"
+    return 1
+  fi
+  mv "$tmp" "$target"
+}
+
+write "$CONFIG_DIR/rofi/colors.rasi" "$THEMES_DIR/rofi/$theme-$mode.rasi" || true
+
+# `makoctl mode` succeeds only when mako runs. Its Nix build runs as
+# .mako-wrapped, so a process-name check misses it.
+if write "$CONFIG_DIR/mako/config" "$THEMES_DIR/mako/$theme-$mode.conf" "$CONFIG_DIR/mako/base" &&
+  command -v makoctl >/dev/null 2>&1 && makoctl mode >/dev/null 2>&1; then
+  makoctl reload
+fi
+
+if write "$CONFIG_DIR/hypr/theme.conf" "$THEMES_DIR/hypr/$theme-$mode.conf" &&
+  [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+  hyprctl reload >/dev/null
+fi
+
+# kitty reloads its config on SIGUSR1. Its Nix build runs as .kitty-wrapped.
+if write "$CONFIG_DIR/kitty/themes/rice.conf" "$THEMES_DIR/kitty/$theme-$mode.conf"; then
+  pkill -USR1 -x 'kitty|\.kitty-wrapped' || true
+fi
+
+write "$CONFIG_DIR/btop/themes/rice.theme" "$THEMES_DIR/btop/$theme-$mode.theme" || true
+
+write "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/themes/rice.json" "$THEMES_DIR/claude/$theme-$mode.json" || true
+
+# hyprpaper reads its slideshow directory only at startup, so restart it.
+wallpapers="$theme-$mode"
+[ -d "$WALLPAPER_DIR/$wallpapers" ] || wallpapers="$mode"
+if [ "$(readlink "$WALLPAPER_DIR/current" 2>/dev/null || true)" != "$wallpapers" ]; then
+  ln -sfn "$wallpapers" "$WALLPAPER_DIR/current.tmp.$$"
+  mv -T "$WALLPAPER_DIR/current.tmp.$$" "$WALLPAPER_DIR/current"
+
+  if pgrep -x hyprpaper >/dev/null 2>&1 && [ -n "${HYPRLAND_INSTANCE_SIGNATURE:-}" ]; then
+    pkill -x hyprpaper || true
+    for _ in 1 2 3 4 5; do
+      pgrep -x hyprpaper >/dev/null 2>&1 || break
+      sleep 0.1
+    done
+    hyprctl dispatch exec hyprpaper >/dev/null
+  fi
+fi
+
+# Skip the root write and the browser refresh when the policy already holds
+# this color. `sudo -n` never prompts: the sudoers rule allows the helper
+# without a password, and without the rule the step fails instead of hanging.
+brave_helper=/usr/local/sbin/rice-brave-theme-policy
+if [ -x "$brave_helper" ]; then
+  color="$(cat "$THEMES_DIR/brave/$theme-$mode.color")"
+  if ! grep -qs "\"#$color\"" /etc/brave/policies/managed/color.json; then
+    sudo -n "$brave_helper" "$color"
+
+    # --no-startup-window would start a hidden Brave when none runs.
+    if pgrep -x brave >/dev/null 2>&1; then
+      brave-browser --refresh-platform-policy --no-startup-window >/dev/null 2>&1
+    fi
+  fi
+fi

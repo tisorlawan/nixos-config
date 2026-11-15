@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+#
+# Write Brave's managed theme policy for one seed color. Root runs this copy
+# from /usr/local/sbin/rice-brave-theme-policy, which install-brave-theme-policy
+# installs root-owned, together with a sudoers rule that allows it without a
+# password for exactly six lowercase hex digits. Run install-brave-theme-policy
+# again after a change to this file.
+#
+# The caller picks a color, never a path: the only file this writes is
+# /etc/brave/policies/managed/color.json. Brave applies the policy to every
+# profile and follows the system dark/light setting ("device").
+
+set -euo pipefail
+
+# sudo resets the environment, but pin PATH anyway so root never resolves a
+# helper from a user-writable directory.
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+if [ "$#" -ne 1 ] || [[ ! $1 =~ ^[0-9a-f]{6}$ ]]; then
+  echo "Usage: rice-brave-theme-policy <rrggbb> (six lowercase hex digits)" >&2
+  exit 1
+fi
+
+if [ "$EUID" -ne 0 ]; then
+  echo "rice-brave-theme-policy: run through sudo" >&2
+  exit 1
+fi
+
+dir=/etc/brave/policies/managed
+if [ ! -d "$dir" ] || [ -L "$dir" ]; then
+  echo "rice-brave-theme-policy: $dir is missing; run install-brave-theme-policy" >&2
+  exit 1
+fi
+
+staged="$(mktemp)"
+trap 'rm -f "$staged"' EXIT
+printf '{"BrowserThemeColor": "#%s", "BrowserColorScheme": "device"}\n' "$1" >"$staged"
+install -m 0644 -o root -g root -T "$staged" "$dir/color.json"

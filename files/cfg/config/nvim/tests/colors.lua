@@ -184,4 +184,68 @@ expect("tiso-light", "light", false)
 vim.cmd.colorscheme("default")
 toggle()
 eq("default", vim.g.colors_name)
-print("Colors: Catppuccin and Tiso transparency, theme selection, mode state, and dark flavour checks passed")
+
+-- Every theme in the Quickshell catalog loads through the set-theme state file
+-- in both modes. The opaque editor background matches the bar's panel color.
+local catalog = {}
+local source = table.concat(vim.fn.readfile("../quickshell/Themes.js"), "\n")
+for id, entry in source:gmatch('id: "([%w-]+)"(.-)\n  }') do
+	local dark, light = entry:match('dark: {.-panelBg: "(#%x+)".-light: {.-panelBg: "(#%x+)"')
+	table.insert(catalog, { id = id, dark = dark, light = light })
+end
+assert(#catalog >= 7, "Could not read the theme catalog")
+eq("catppuccin", catalog[1].id)
+
+local state = vim.fs.joinpath(vim.fs.dirname(vim.fn.stdpath("state")), "theme", "current")
+local loads = 0
+vim.api.nvim_create_autocmd("ColorScheme", {
+	callback = function()
+		loads = loads + 1
+	end,
+})
+
+-- Replace the state file with a rename, as set-theme does.
+local function select_theme(id)
+	local before = loads
+	vim.fn.writefile({ id }, state .. ".tmp")
+	assert(vim.uv.fs_rename(state .. ".tmp", state))
+	assert(vim.wait(3000, function()
+		return loads > before
+	end, 20), "No colorscheme load after selecting " .. id)
+end
+
+-- One transparency state clears the background; the other shows `expected`.
+local function expect_transparency_toggle(id, mode, expected)
+	local first = background("Normal")
+	toggle()
+	local second = background("Normal")
+	local opaque = first or second
+	assert((first == nil) ~= (second == nil), id .. " " .. mode .. ": transparency toggle had no effect")
+	eq(expected, string.format("#%06x", opaque))
+end
+
+for _, theme in ipairs(catalog) do
+	vim.env.COLOR = "dark"
+	select_theme(theme.id)
+	eq("dark", vim.o.background)
+	expect_transparency_toggle(theme.id, "dark", theme.dark)
+	vim.env.COLOR = "light"
+	toggle()
+	eq("light", vim.o.background)
+	expect_transparency_toggle(theme.id, "light", theme.light)
+end
+
+-- A hand-picked colorscheme keeps its family across a mode change until the
+-- next theme selection.
+vim.env.COLOR = "dark"
+vim.cmd.colorscheme("tiso-black")
+vim.env.COLOR = "light"
+toggle()
+eq("tiso-light", vim.g.colors_name)
+select_theme("gruvbox")
+eq("gruvbox", vim.g.colors_name)
+
+-- An unknown ID selects Catppuccin.
+select_theme("no-such-theme")
+eq("catppuccin-latte", vim.g.colors_name)
+print("Colors: Catppuccin and Tiso transparency, theme selection, mode state, dark flavour, and set-theme catalog checks passed")

@@ -21,3 +21,10 @@ emacs/tree-sitter/*.so
 .commandcode
 /.agents/skills/synced
 /.agents/skills/.system/
+
+# Written by ~/.scripts/theme-colors for the selected theme and mode.
+files/cfg/config/rofi/colors.rasi
+files/cfg/config/mako/config
+files/cfg/config/hypr/theme.conf
+wallpaper/current
+files/cfg/config/kitty/themes/rice.conf

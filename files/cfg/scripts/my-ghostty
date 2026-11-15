@@ -11,8 +11,6 @@ fi
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 COLOR_MODE="$($SCRIPT_DIR/color-mode)"
 
-BTOP_DIR="$HOME/.config/btop"
-BTOP_CONF="$BTOP_DIR/btop.conf"
 GHOSTTY_DIR="$HOME/.config/ghostty"
 GHOSTTY_CONF="$GHOSTTY_DIR/config"
 MY_GHOSTTY_DEBUG="${MY_GHOSTTY_DEBUG:-0}"
@@ -214,37 +212,8 @@ write_if_changed() {
   mv "$tmp" "$destination"
 }
 
-ensure_btop_theme() {
-  local desired_line
-
-  mkdir -p "$BTOP_DIR"
-  desired_line="color_theme = \"$BTOP_THEME\""
-
-  if [ -f "$BTOP_CONF" ] && grep -qxF "$desired_line" "$BTOP_CONF"; then
-    return 0
-  fi
-
-  if [ -f "$BTOP_CONF" ]; then
-    if grep -q '^color_theme\s*=' "$BTOP_CONF"; then
-      sed -i "s|^color_theme\s*=.*$|$desired_line|" "$BTOP_CONF"
-    else
-      printf '\n%s\n' "$desired_line" >>"$BTOP_CONF"
-    fi
-  else
-    printf '%s\n' "$desired_line" >"$BTOP_CONF"
-  fi
-}
-
 mkdir -p "$GHOSTTY_DIR"
 render_ghostty_config | write_if_changed "$GHOSTTY_CONF"
-
-if [ "$COLOR_MODE" = "light" ]; then
-  BTOP_THEME="adwaita"
-else
-  BTOP_THEME="kanagawa-wave"
-fi
-
-ensure_btop_theme
 
 if [ "$WRITE_CONFIG_ONLY" -eq 1 ]; then
   exit 0

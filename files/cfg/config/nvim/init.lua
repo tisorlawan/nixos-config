@@ -420,6 +420,18 @@ vim.diagnostic.config({
 	underline = true,
 	update_in_insert = false,
 })
+-- Errors get a straight underline in every colorscheme, in the scheme's own
+-- color. Most schemes draw them with an undercurl.
+vim.api.nvim_create_autocmd("ColorScheme", {
+	group = vim.api.nvim_create_augroup("diagnostic_error_underline", { clear = true }),
+	callback = function()
+		local hl = vim.api.nvim_get_hl(0, { name = "DiagnosticUnderlineError", link = false })
+		hl.undercurl = nil
+		hl.underline = true
+		vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", hl)
+	end,
+	desc = "Underline diagnostic errors without a curl",
+})
 
 local function sync_diagnostics(bufnr)
 	vim.diagnostic.enable(diagnostics_visible(bufnr), { bufnr = bufnr })
@@ -430,6 +442,8 @@ vim.keymap.set("n", "<leader>td", function()
 	for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
 		sync_diagnostics(bufnr)
 	end
+	-- Show or hide the statusline's [DD] marker now.
+	require("lualine").refresh()
 	vim.notify("Diagnostics " .. (diagnostics_enabled and "on" or "off"))
 end, { desc = "Toggle diagnostics" })
 vim.api.nvim_create_autocmd({
@@ -745,6 +759,8 @@ vim.pack.add({
 	"https://github.com/aktersnurra/no-clown-fiesta.nvim",
 	"https://github.com/folke/trouble.nvim",
 	"https://github.com/hedyhli/outline.nvim",
+	"https://github.com/linrongbin16/lsp-progress.nvim",
+	"https://github.com/nvim-lualine/lualine.nvim",
 })
 -- Keep the scrolloff margin below the cursor, including at the end of a file.
 require("scrollEOF").setup({ insert_mode = true, floating = false })
@@ -863,7 +879,8 @@ end, { desc = "Toggle LazyGit" })
 require("nvim-treesitter").install(treesitter_parsers)
 require("render-markdown").setup({
 	enabled = false,
-	code = { disable_background = true, highlight_border = false },
+	-- `inline = false` leaves inline code in its treesitter color, with no box.
+	code = { disable_background = true, highlight_border = false, inline = false },
 	pipe_table = { enabled = false },
 	heading = { icons = {} },
 })
@@ -967,9 +984,18 @@ vim.g.fff = {
 		enabled = false,
 		show_scores = false,
 	},
+	-- fzf-lua's default colors: the windows, borders, and titles in `Normal`,
+	-- matches and the prompt in `Special`, the selection in `CursorLine`, and
+	-- directories in `Comment`.
 	hl = {
-		border = "FFFBorder",
-		title = "FFFTitle",
+		normal = "Normal",
+		border = "Normal",
+		title = "Normal",
+		matched = "Special",
+		grep_match = "Special",
+		prompt = "Special",
+		cursor = "CursorLine",
+		directory_path = "Comment",
 		-- fff pins `CursorLine` on the preview's match line (location_utils.lua
 		-- sets `line_hl_group`, at any priority), and Neovim paints a line
 		-- highlight's background over the backgrounds of cell highlights on
@@ -979,7 +1005,7 @@ vim.g.fff = {
 		-- with it: `FFFPreviewMatch` below copies CursorLineNr, the colour of
 		-- the line number that marks the same match line.
 		winhl = {
-			preview = "Normal:NormalFloat,FloatBorder:FloatBorder,FloatTitle:Title,IncSearch:FFFPreviewMatch",
+			preview = "Normal:Normal,FloatBorder:Normal,FloatTitle:Normal,IncSearch:FFFPreviewMatch",
 		},
 	},
 	keymaps = {
@@ -1371,6 +1397,24 @@ vim.keymap.set("n", "<leader>zz", toggle_zen, { desc = "Toggle zen mode" })
 -- Start in Zen before filetype-specific display settings take effect.
 toggle_zen()
 
+-- Each lualine setup sets `laststatus` to 2: the call in the statusline section
+-- below, and the setup lualine runs again on every ColorScheme event and
+-- `background` change. Zen hides the statusline again after each one.
+local function keep_zen_statusline_hidden()
+	if zen_off then
+		vim.o.laststatus = 0
+	end
+end
+do
+	local group = vim.api.nvim_create_augroup("zen_statusline", { clear = true })
+	-- Scheduled, so it runs after lualine's own handler for the same event.
+	local function after_lualine()
+		vim.schedule(keep_zen_statusline_hidden)
+	end
+	vim.api.nvim_create_autocmd("ColorScheme", { group = group, callback = after_lualine })
+	vim.api.nvim_create_autocmd("OptionSet", { group = group, pattern = "background", callback = after_lualine })
+end
+
 vim.keymap.set("n", "<M-x>", ":")
 vim.keymap.set("n", "cq", "<cmd>cclose<CR><cmd>lclose<CR>")
 vim.keymap.set("n", "cn", "<cmd>cnext<CR>")
@@ -1389,6 +1433,12 @@ end)
 local opaque_bg = { dark = false, light = false }
 vim.pack.add({
 	{ src = "https://github.com/catppuccin/nvim", name = "catppuccin" },
+	{ src = "https://github.com/rebelot/kanagawa.nvim", name = "kanagawa" },
+	{ src = "https://github.com/ellisonleao/gruvbox.nvim", name = "gruvbox" },
+	{ src = "https://github.com/folke/tokyonight.nvim", name = "tokyonight" },
+	{ src = "https://github.com/rose-pine/neovim", name = "rose-pine" },
+	{ src = "https://github.com/neanias/everforest-nvim", name = "everforest" },
+	{ src = "https://github.com/maxmx03/solarized.nvim", name = "solarized" },
   {
     src = 'https://github.com/oxidescheme/nvim',
     name = 'oxide',
@@ -1445,6 +1495,140 @@ local function get_color_mode()
 	return raw:find("light") and "light" or "dark"
 end
 
+-- Themes selected by ~/.scripts/set-theme, keyed by the IDs in the Quickshell
+-- catalog (config/quickshell/Themes.js). Each colorscheme follows
+-- `background` for its dark and light variants. `setup` receives whether the
+-- current mode is transparent. Catppuccin is set up by its ColorSchemePre
+-- autocmd above, so a hand-picked flavor gets the same options. Selecting
+-- Catppuccin returns to Mocha, the flavor the bar uses.
+local themes = {
+	catppuccin = {
+		colorscheme = "catppuccin",
+		setup = function()
+			catppuccin_dark = "mocha"
+		end,
+	},
+	kanagawa = {
+		colorscheme = "kanagawa",
+		setup = function(transparent)
+			require("kanagawa").setup({ transparent = transparent, background = { dark = "wave", light = "lotus" } })
+		end,
+	},
+	gruvbox = {
+		colorscheme = "gruvbox",
+		setup = function(transparent)
+			require("gruvbox").setup({ transparent_mode = transparent })
+		end,
+	},
+	tokyonight = {
+		colorscheme = "tokyonight",
+		setup = function(transparent)
+			require("tokyonight").setup({
+				style = "night",
+				light_style = "day",
+				transparent = transparent,
+				-- Leap as in Catppuccin: keep the text colors while leaping and
+				-- show labels as solid blocks. Markdown inline code keeps its
+				-- color without Tokyo Night's background box, as in the other themes.
+				on_highlights = function(hl, c)
+					local dark = vim.o.background == "dark"
+					hl["@markup.raw.markdown_inline"].bg = nil
+					hl.LeapBackdrop = { fg = "NONE" }
+					hl.LeapLabel = {
+						fg = dark and c.bg_dark or c.bg,
+						bg = dark and c.yellow or c.fg,
+						bold = true,
+						nocombine = true,
+					}
+				end,
+			})
+		end,
+	},
+	rosepine = {
+		colorscheme = "rose-pine",
+		setup = function(transparent)
+			-- Only comments are italic. `styles.italic` also covers comments, so
+			-- `Comment` turns italic back on.
+			require("rose-pine").setup({
+				variant = "auto",
+				dark_variant = "main",
+				styles = { italic = false, transparency = transparent },
+				highlight_groups = { Comment = { italic = true } },
+			})
+		end,
+	},
+	everforest = {
+		colorscheme = "everforest",
+		setup = function(transparent)
+			-- `apply_color_mode` sets `background` before this call.
+			local dark = vim.o.background == "dark"
+			require("everforest").setup({
+				background = "hard",
+				transparent_background_level = transparent and 1 or 0,
+				-- Light mode uses the green-white background ramp described in
+				-- quickshell/Themes.js in place of the cream one.
+				colours_override = function(palette)
+					if dark then
+						return
+					end
+					palette.bg_dim = "#e5f3e7"
+					palette.bg0 = "#f4fef5"
+					palette.bg1 = "#ebf9ec"
+					palette.bg2 = "#e5f3e7"
+					palette.bg3 = "#e0eee2"
+					palette.bg4 = "#dbe9dd"
+					palette.bg5 = "#b6c7b8"
+				end,
+				-- "high" draws line numbers in grey0 instead of bg5, which sits
+				-- close to the background.
+				ui_contrast = "high",
+				-- Leap as in Catppuccin: keep the text colors while leaping and
+				-- show labels as solid blocks.
+				on_highlights = function(hl, palette)
+					-- bg1 sits too close to bg0 in the green-white ramp, so the
+					-- light cursor line (also fff's selection) uses bg3.
+					if not dark then
+						hl.CursorLine.bg = palette.bg3
+					end
+					hl.LeapBackdrop = { fg = "NONE" }
+					hl.LeapLabel = {
+						fg = dark and palette.bg_dim or palette.bg0,
+						bg = dark and palette.yellow or palette.fg,
+						bold = true,
+						nocombine = true,
+					}
+				end,
+			})
+		end,
+	},
+	solarized = {
+		colorscheme = "solarized",
+		setup = function(transparent)
+			require("solarized").setup({ transparent = { enabled = transparent } })
+		end,
+	},
+}
+
+-- set-theme writes the ID to $XDG_STATE_HOME/theme/current. stdpath("state")
+-- is the nvim directory inside $XDG_STATE_HOME.
+local theme_path = vim.fs.joinpath(vim.fs.dirname(vim.fn.stdpath("state")), "theme", "current")
+
+-- A missing or unknown ID selects Catppuccin, like the Quickshell bar.
+local function read_theme()
+	local file = io.open(theme_path, "r")
+	local id = ""
+	if file then
+		id = vim.trim(file:read("*a") or "")
+		file:close()
+	end
+	return themes[id] and id or "catppuccin"
+end
+
+local selected_theme = read_theme()
+-- `colors_name` right after the last load of the selected theme. A different
+-- value means a colorscheme was loaded by hand.
+local loaded_theme_colors = nil
+
 local function apply_org_highlights()
 	if vim.o.background == "light" then
 		local levels = { "#111114", "#2b2b31", "#45454c", "#5a5a60", "#6f6d66", "#8c8c90" }
@@ -1466,7 +1650,8 @@ local function apply_org_highlights()
 		vim.api.nvim_set_hl(0, "@org.block", { fg = "#4b4b52" })
 	end
 end
-local function apply_color_mode()
+-- `follow_theme` loads the selected theme even over a hand-picked colorscheme.
+local function apply_color_mode(follow_theme)
 	-- Follow the current mode's transparency state in the statusline.
 	vim.api.nvim_create_autocmd("ColorScheme", {
 		group = vim.api.nvim_create_augroup("transparent_statusline", { clear = true }),
@@ -1484,21 +1669,29 @@ local function apply_color_mode()
 		desc = "Apply statusline transparency",
 	})
 
-  -- theme
-	local theme = vim.g.colors_name or "catppuccin"
+	-- Load the selected theme, unless a colorscheme loaded by hand is active.
+	-- That one keeps its family across mode and transparency changes until the
+	-- next theme selection.
+	local current = vim.g.colors_name
 	vim.o.background = get_color_mode()
-	if theme == "tiso-black" or theme == "tiso-light" then
+	if follow_theme or current == nil or current == loaded_theme_colors then
+		local theme = themes[selected_theme]
+		if theme.setup then
+			theme.setup(not opaque_bg[vim.o.background])
+		end
+		vim.cmd.colorscheme(theme.colorscheme)
+		loaded_theme_colors = vim.g.colors_name
+	elseif current == "tiso-black" or current == "tiso-light" then
 		vim.g.tiso_light_transparent = not opaque_bg.light
 		vim.g.tiso_black_transparent = not opaque_bg.dark
-		theme = vim.o.background == "light" and "tiso-light" or "tiso-black"
-	elseif theme:match("^catppuccin") then
-		theme = "catppuccin"
+		vim.cmd.colorscheme(vim.o.background == "light" and "tiso-light" or "tiso-black")
+	elseif current:match("^catppuccin") then
+		vim.cmd.colorscheme("catppuccin")
+	else
+		vim.cmd.colorscheme(current)
 	end
-	vim.cmd.colorscheme(theme)
-	-- :colorscheme wipes user highlight links, so (re)apply them here, after
-	-- the theme, rather than once at startup.
-	vim.api.nvim_set_hl(0, "FFFBorder", { link = "FloatBorder" })
-	vim.api.nvim_set_hl(0, "FFFTitle", { link = "Title" })
+	-- :colorscheme wipes user highlights, so set this one here, after the
+	-- theme, rather than once at startup.
 	-- Target of the preview `winhl` above. CursorLineNr is the theme's accent
 	-- for text sitting on `CursorLine`'s background, which is the band fff
 	-- pins on the preview's match line, so it is legible there by design. Bold
@@ -1520,6 +1713,125 @@ vim.keymap.set("n", "<leader>tw", function()
 	vim.wo.wrap = not vim.wo.wrap
 end, { desc = "Toggle line wrap" })
 
+-- Statusline. Set up after the first colorscheme load so `theme = "auto"`
+-- starts from the selected theme. lualine rebuilds its colors on each
+-- ColorScheme event, so it follows set-theme and set-color.
+do
+	local function file_path()
+		local path = vim.fn.expand("%:p")
+		local modified = vim.bo.modified and " [+]" or ""
+		local readonly = vim.bo.readonly and " [RO]" or ""
+
+		if path == "" then
+			return "[No Name]" .. modified .. readonly
+		end
+
+		local display = vim.fn.fnamemodify(path, ":.")
+		if display == path or display:match("^%.%.") then
+			display = vim.fn.fnamemodify(path, ":~")
+		end
+
+		local parts = vim.split(display, "/")
+		if #parts > 3 and #display >= 50 then
+			display = parts[1] .. "/…/" .. parts[#parts]
+		end
+
+		return display .. modified .. readonly
+	end
+
+	require("lsp-progress").setup({
+		format = function(client_messages)
+			if #vim.lsp.get_clients({ bufnr = 0 }) == 0 then
+				return ""
+			end
+			if #client_messages > 0 then
+				return " " .. table.concat(client_messages, " ")
+			end
+			return "󰄬"
+		end,
+		client_format = function(_, spinner, series_messages)
+			if #series_messages > 0 then
+				return spinner
+			end
+		end,
+	})
+
+	vim.api.nvim_create_autocmd("User", {
+		group = vim.api.nvim_create_augroup("lsp_progress_status", { clear = true }),
+		pattern = "LspProgressStatusUpdated",
+		callback = function()
+			require("lualine").refresh()
+		end,
+		desc = "Redraw the statusline on LSP progress",
+	})
+
+	-- The same icons as the diagnostic signs.
+	local sign = vim.diagnostic.config().signs.text
+	local severity = vim.diagnostic.severity
+
+	require("lualine").setup({
+		options = {
+			theme = "auto",
+			globalstatus = vim.o.laststatus == 3,
+			disabled_filetypes = { statusline = { "dashboard", "alpha", "ministarter", "snacks_dashboard" } },
+			section_separators = "",
+			component_separators = "",
+		},
+		sections = {
+			lualine_a = {
+				{
+					"mode",
+					fmt = function(str)
+						return str:sub(1, 1)
+					end,
+				},
+			},
+			lualine_b = {},
+			lualine_c = {
+				file_path,
+				{
+					"diagnostics",
+					cond = vim.diagnostic.is_enabled,
+					symbols = {
+						error = sign[severity.ERROR],
+						warn = sign[severity.WARN],
+						info = sign[severity.INFO],
+						hint = sign[severity.HINT],
+					},
+				},
+				{
+					function()
+						return "[DD]"
+					end,
+					cond = function()
+						return not vim.diagnostic.is_enabled()
+					end,
+				},
+			},
+			lualine_x = {
+				function()
+					return require("lsp-progress").progress()
+				end,
+				"diff",
+			},
+			lualine_y = {
+				{ "searchcount", maxcount = 999, timeout = 500 },
+				{ "progress", separator = " ", padding = { left = 1, right = 0 } },
+				{ "location", padding = { left = 0, right = 1 } },
+			},
+			lualine_z = {
+				function()
+					return " " .. os.date("%R")
+				end,
+			},
+		},
+		inactive_sections = {
+			lualine_c = { file_path },
+		},
+	})
+	keep_zen_statusline_hidden()
+end
+
 -- Re-apply the colorscheme when ~/.color changes (see ~/.scripts/set-color).
 -- One persistent handle: a write can queue several inotify events, so apply
 -- is debounced instead of re-arming a new watcher per event.
@@ -1540,6 +1852,31 @@ do
 
 	local handle = vim.uv.new_fs_event()
 	handle:start(color_path, {}, vim.schedule_wrap(apply_debounced))
+end
+
+-- Load the theme when ~/.scripts/set-theme selects one. set-theme replaces the
+-- state file with a rename, which ends a watch on the file itself, so watch
+-- its directory and filter by name.
+do
+	local dir = vim.fs.dirname(theme_path)
+	local name = vim.fs.basename(theme_path)
+	local pending = false
+
+	local function apply_debounced(_, filename)
+		if filename ~= name or pending then
+			return
+		end
+		pending = true
+		vim.defer_fn(function()
+			pending = false
+			selected_theme = read_theme()
+			apply_color_mode(true)
+		end, 100)
+	end
+
+	vim.fn.mkdir(dir, "p")
+	local handle = vim.uv.new_fs_event()
+	handle:start(dir, {}, vim.schedule_wrap(apply_debounced))
 end
 
 -- Fish as the `:terminal` shell, plus the display options for terminal buffers.

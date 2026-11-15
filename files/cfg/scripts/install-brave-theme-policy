@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+#
+# One-time root setup for Brave theme sync. Run it as:
+#
+#   sudo ~/.scripts/install-brave-theme-policy
+#
+# It creates /etc/brave/policies/managed, installs brave-theme-policy as the
+# root-owned /usr/local/sbin/rice-brave-theme-policy, and adds a sudoers rule so
+# the invoking user can run that helper without a password for one color
+# argument. A copy, not a symlink, so the repository's user-writable file never
+# runs as root. Run it again after a change to brave-theme-policy.
+#
+# To undo:
+#   sudo rm -f /usr/local/sbin/rice-brave-theme-policy /etc/sudoers.d/rice-brave-theme \
+#     /etc/brave/policies/managed/color.json
+
+set -euo pipefail
+
+if [ "$EUID" -ne 0 ] || [ -z "${SUDO_USER:-}" ]; then
+  echo "Run with sudo: sudo $0" >&2
+  exit 1
+fi
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")" && pwd)"
+helper=/usr/local/sbin/rice-brave-theme-policy
+rule=/etc/sudoers.d/rice-brave-theme
+
+# A symlink in the policy path could redirect the root write elsewhere.
+for dir in /etc/brave /etc/brave/policies /etc/brave/policies/managed; do
+  if [ -L "$dir" ]; then
+    echo "install-brave-theme-policy: $dir is a symlink; refusing" >&2
+    exit 1
+  fi
+  install -d -m 0755 -o root -g root "$dir"
+done
+
+install -m 0755 -o root -g root -T "$SCRIPT_DIR/brave-theme-policy" "$helper"
+
+staged="$(mktemp)"
+trap 'rm -f "$staged"' EXIT
+cat >"$staged" <<EOF
+# Installed by ~/.rice/files/cfg/scripts/install-brave-theme-policy.
+# Theme switches run from the Quickshell bar without a terminal, so this one
+# write must not ask for a password. The argument is six hex digits, not a
+# wildcard, so the rule cannot be stretched to other arguments.
+$SUDO_USER ALL=(root) NOPASSWD: $helper [0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]
+EOF
+visudo -cf "$staged" >/dev/null
+install -m 0440 -o root -g root -T "$staged" "$rule"
+
+echo "Installed $helper and $rule for $SUDO_USER."

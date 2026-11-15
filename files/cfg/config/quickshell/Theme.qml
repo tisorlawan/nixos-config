@@ -14,26 +14,32 @@ Singleton {
   readonly property bool isLight: rawMode === "light"
 
   // Selected theme. Source of truth is the state file below, written by
-  // select(). Always a valid ID: the poll parses unknown IDs to the default.
+  // ~/.scripts/set-theme, which also applies the theme to other apps.
+  // Always a valid ID: the poll parses unknown IDs to the default.
   property string themeId: Themes.themes[0].id
   readonly property var themes: Themes.themes
   readonly property var theme: Themes.find(themeId)
   readonly property var colors: isLight ? theme.light : theme.dark
 
-  // Shell expression for the theme state directory.
-  readonly property string stateDir: "\"${XDG_STATE_HOME:-$HOME/.local/state}/quickshell-theme\""
+  // Shell expression for the theme state file.
+  readonly property string stateFile: "\"${XDG_STATE_HOME:-$HOME/.local/state}/theme/current\""
 
   readonly property string fontFamily: "Berkeley Mono"
   readonly property string iconFont: "BlexMono Nerd Font"
   readonly property int fontSize: 12
 
-  // Color roles are documented in Themes.js.
+  // Color roles are documented in Themes.js. text, activeText, focusFill,
+  // urgent, and urgentFill come from Themes.barColors, which keeps them
+  // legible.
+  readonly property var barColors: Themes.barColors(colors)
   readonly property color panelBg: colors.panelBg
   readonly property color panelBorder: colors.panelBorder
-  readonly property color text: colors.text
+  readonly property color text: barColors.text
   readonly property color mutedText: colors.mutedText
-  readonly property color activeText: colors.activeText
-  readonly property color urgent: colors.urgent
+  readonly property color activeText: barColors.activeText
+  readonly property color focusFill: barColors.focusFill
+  readonly property color urgent: barColors.urgent
+  readonly property color urgentFill: barColors.urgentFill
   readonly property color chipDark: colors.chipDark
   readonly property color chipLight: colors.chipLight
   readonly property color chipBlue: colors.chipBlue
@@ -49,9 +55,7 @@ Singleton {
   readonly property int textYOffset: -1
 
   function select(id) {
-    themeWriter.command = ["sh", "-c",
-      "dir=" + stateDir + "; mkdir -p \"$dir\" && printf '%s\\n' \"$1\" >\"$dir/theme.tmp\" && mv \"$dir/theme.tmp\" \"$dir/theme\"",
-      "sh", Themes.find(id).id];
+    themeWriter.command = ["sh", "-c", "$HOME/.scripts/set-theme \"$1\"", "sh", Themes.find(id).id];
     themeWriter.startDetached();
   }
 
@@ -64,7 +68,7 @@ Singleton {
   // in quickshell 0.3.0, so use the same polling pattern as Bar.qml.
   Process {
     command: ["sh", "-c",
-      "state=" + stateDir + "/theme; last=''; while :; do "
+      "state=" + stateFile + "; last=''; while :; do "
       + "mode=$(cat \"$HOME/.color\" 2>/dev/null || true); "
       + "case \"$mode\" in *light*) mode=light ;; *) mode=dark ;; esac; "
       + "theme=''; { read -r theme <\"$state\"; } 2>/dev/null; "

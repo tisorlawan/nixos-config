@@ -4,7 +4,6 @@ Rectangle {
   id: root
 
   required property color fill
-  property color fg: Theme.text
   default property alias content: row.data
 
   radius: Theme.chipRadius

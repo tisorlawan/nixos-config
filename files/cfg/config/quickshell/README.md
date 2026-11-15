@@ -19,26 +19,107 @@ Minimal status bar for Hyprland with [Quickshell](https://quickshell.outfoxxed.m
 | `Chip.qml` | Reusable pill/chip component. |
 | `ThemePicker.qml` | Bar button and panel to select the theme. |
 | `Theme.qml` | Singleton with the active colors and the dimensions. |
-| `Themes.js` | Theme catalog. Each theme has a dark palette and a light palette. |
+| `Themes.js` | Theme catalog for the bar and the apps that `set-theme` updates. Each theme has a dark palette and a light palette. |
 
 ## Themes
 
 Each theme has a dark palette and a light palette. The mode in `~/.color` selects the palette.
 `~/.scripts/set-color` and `color-toggle` change the mode.
 
-The themes are Default, Catppuccin, Kanagawa, Gruvbox, Tokyo Night, Rosé Pine, Everforest, and Solarized.
-Default is the original bar palette.
+The themes are Catppuccin, Kanagawa, Gruvbox, Tokyo Night, Rosé Pine, Everforest, and Solarized.
+Catppuccin is the default.
+
+The focused workspace gets a faint accent tint, 25% `activeText` mixed into the panel color, with its number in bold text color.
+The bar darkens its text in light mode, or lightens it in dark mode, until the text reaches a 7:1 contrast ratio on every chip fill, that tint, and the panel.
+It adjusts the accent text the same way, to 4.5:1 on `chipBlue` and the panel. A color that already reaches the ratio stays as it is.
+An urgent workspace gets a tint of 30% `urgent` mixed into the panel color, with its number in bold `urgent`.
+The bar adjusts `urgent` to 4.5:1 on that tint, every chip fill, and the panel, so alerts such as a muted microphone stay readable.
+`Themes.barColors` makes these adjustments for the bar only. Other apps get the palette's own colors.
+Check the ratios with `node --test files/cfg/config/quickshell/tests/themes.test.cjs`.
 
 Select the brush icon in the bar to open the theme panel. Then select a theme.
 Each row shows a preview of the dark palette and of the light palette.
 
-The bar keeps the theme ID in `${XDG_STATE_HOME:-~/.local/state}/quickshell-theme/theme`.
-You can also write a theme ID to this file. The bar reads the file and `~/.color` four times each second.
-An ID that is missing or unknown selects Default.
+The panel runs `~/.scripts/set-theme <id>`. You can also run it from a shell.
+The script writes the theme ID to `${XDG_STATE_HOME:-~/.local/state}/theme/current` and applies the theme to these apps:
 
-To add a theme, add an entry to `Themes.js`. Give the entry the ten color roles in the header comment for each palette.
+| App | How it follows the theme |
+|-----|--------------------------|
+| Quickshell | The bar reads the state file and `~/.color` four times each second. |
+| Neovim | `init.lua` watches the state file and loads the theme's colorscheme plugin. |
+| omp | The script sets `theme.dark` and `theme.light` with `omp config set`. Running sessions reload `~/.omp/agent/config.yml`. |
+| T3 Code | The script runs `t3 theme set`, which publishes the theme file and switches the connected clients. |
+| Tern | With **Follow omp** selected in Tern's appearance settings, Tern uses omp's theme choice. |
+| Rofi | `~/.scripts/theme-colors` writes `config/rofi/colors.rasi`. `set-color` also runs it after a mode change. The next launch reads it. |
+| Mako | `~/.scripts/theme-colors` writes `config/mako/config` as the theme colors followed by `config/mako/base`, then runs `makoctl reload`. Edit `base` for other mako settings. |
+| Brave | `~/.scripts/theme-colors` writes a managed policy with the palette's `browserSeed`, or `panelBg` without one, as the seed color, then a running Brave reloads its policies. Brave derives its own palette from the seed. |
+| Hyprland | `theme-colors` writes the window border colors to `config/hypr/theme.conf`, which `hyprland.conf` sources, then runs `hyprctl reload`. |
+| kitty | `theme-colors` writes `config/kitty/themes/rice.conf`, which `kitty.conf` includes, then sends SIGUSR1 so every running kitty reloads. |
+| btop | `theme-colors` writes `~/.config/btop/themes/rice.theme`, which `btop.conf` selects. btop reads it when it starts. |
+| Claude Code | `theme-colors` writes `~/.claude/themes/rice.json`. Claude Code reloads it in running sessions. `~/.claude/settings.json` selects it with `"theme": "custom:rice"`. |
+| Wallpaper | `theme-colors` points the link `wallpaper/current` at `wallpaper/<theme>-<mode>`, or at `wallpaper/<mode>` when the theme has none for the mode, then restarts hyprpaper. |
 
-The theme changes only the bar, the panels, and the clock. Other applications keep their themes.
+The Hyprland, kitty, btop, and Claude Code files come from Omarchy's templates in `files/cfg/themes/templates/`.
+Only Everforest dark has its own wallpaper, Omarchy's `everforest-dark/1-tree-tops.webp`. Every other theme and mode uses `wallpaper/dark` or `wallpaper/light`.
+To give a theme wallpapers for a mode, add a `wallpaper/<theme>-<mode>/` folder with images.
+
+### Brave
+
+Brave takes one seed color, not a palette, through the Chromium policy `BrowserThemeColor`.
+The policy applies to every profile and replaces each profile's own color. Brave shows "Managed by your organization".
+
+The policy file is root-owned, so the theme needs a one-time setup:
+
+```sh
+sudo ~/.scripts/install-brave-theme-policy
+```
+
+The setup installs a root-owned copy of `scripts/brave-theme-policy` as `/usr/local/sbin/rice-brave-theme-policy` and adds `/etc/sudoers.d/rice-brave-theme`.
+The sudoers rule lets your user run that helper without a password, with one argument of six lowercase hex digits.
+The helper writes only `/etc/brave/policies/managed/color.json`.
+Run the setup again after you change `brave-theme-policy`. Until the setup runs, `theme-colors` skips Brave.
+
+Each app keeps a dark and a light version of the theme, so `set-color` changes the mode without a call to `set-theme`.
+An ID that is missing or unknown selects Catppuccin in the bar and in Neovim. `set-theme` rejects an unknown ID.
+
+`files/cfg/themes/generate.cjs` builds the T3 Code theme files, the Rofi and Mako palettes, the Brave seed colors, and the Hyprland, kitty, btop, and Claude Code files from the palettes in `Themes.js`.
+It also builds omp themes for Kanagawa and Everforest, which omp does not include.
+`set-theme` copies those omp themes to `~/.omp/agent/themes/rice-*.json`.
+
+To add a theme:
+
+1. Add an entry to `Themes.js`. Give the entry the ten color roles in the header comment for each palette.
+2. Add the omp built-in names to `omp_themes` in `set-theme`, or add a palette to `ompPalettes` in the generator.
+3. Run `node files/cfg/themes/generate.cjs` and commit the generated files.
+4. Add the colorscheme plugin to `vim.pack.add` and an entry to `themes` in `nvim/init.lua`.
+
+Check Neovim with `sh tests/colors.sh` from `nvim/`. It loads every catalog theme in both modes.
+
+`set-theme` changes two files outside this repository: `~/.omp/agent/config.yml` and T3 Code's `settings.json` and `themes/`.
+To return omp and T3 Code to their stock themes, run:
+
+```sh
+omp config reset theme.dark && omp config reset theme.light
+rm -f ~/.omp/agent/themes/rice-*.json
+t3 theme clear
+rm -f ~/.t3/userdata/themes/{catppuccin,everforest,gruvbox,kanagawa,rosepine,solarized,tokyonight}.json
+```
+
+After `t3 theme clear`, open clients keep their current theme. Select a theme in T3 Code's appearance settings to change it.
+
+To return Claude Code to its stock dark theme, run:
+
+```sh
+jq '.theme = "dark"' ~/.claude/settings.json > /tmp/claude-settings.json && mv /tmp/claude-settings.json ~/.claude/settings.json
+rm -f ~/.claude/themes/rice.json
+```
+
+To remove the Brave setup and return each profile to its own color, run:
+
+```sh
+sudo rm -f /usr/local/sbin/rice-brave-theme-policy /etc/sudoers.d/rice-brave-theme /etc/brave/policies/managed/color.json
+brave-browser --refresh-platform-policy --no-startup-window
+```
 
 ## Account quotas
 

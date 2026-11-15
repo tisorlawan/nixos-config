@@ -8,6 +8,13 @@ configuration {
 
 @theme "/dev/null"
 
+// Catppuccin dark until ~/.scripts/theme-colors first writes colors.rasi.
+* {
+	bg:     #1e1e2e;
+	fg:     #cdd6f4;
+	button: #333c57;
+}
+
 @import "colors.rasi"
 
 * {

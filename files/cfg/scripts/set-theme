@@ -1,0 +1,123 @@
+#!/usr/bin/env bash
+#
+# Single entrypoint for switching the theme (Catppuccin, Kanagawa, ...).
+# set-color picks dark or light. This script picks the theme, and each app
+# keeps a dark and a light version of it, so a mode change needs no call here.
+#
+# The theme IDs come from the Quickshell catalog (config/quickshell/Themes.js).
+# Quickshell and nvim watch the state file below. omp reloads its config.yml on
+# change. `t3 theme set` switches the connected T3 Code clients. theme-colors
+# writes the rofi and mako color files and the Brave theme policy.
+#
+# `set-theme --current` prints the selected theme: Catppuccin when none is set.
+
+set -euo pipefail
+
+if [ "$#" -ne 1 ]; then
+  printf 'Usage: %s <theme id | --current>\n' "$(basename "$0")" >&2
+  exit 1
+fi
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")" && pwd)"
+THEMES_DIR="$(cd -- "$SCRIPT_DIR/../themes" && pwd)"
+STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/theme"
+STATE_FILE="$STATE_DIR/current"
+OMP_THEMES_DIR="$HOME/.omp/agent/themes"
+
+# Quickshell starts this script with a PATH that lacks the Bun and T3 tools.
+PATH="$HOME/.bun/bin:$HOME/.t3/bin:$PATH"
+
+# Every catalog theme has a generated T3 Code file, so that file marks a valid ID.
+is_theme() {
+  [[ $1 =~ ^[a-z0-9-]+$ ]] && [ -f "$THEMES_DIR/t3code/$1.json" ]
+}
+
+# Print "<dark> <light>": omp's built-in themes, or the generated ones.
+omp_themes() {
+  case "$1" in
+  catppuccin) echo "dark-catppuccin light-catppuccin" ;;
+  gruvbox) echo "dark-gruvbox light-gruvbox" ;;
+  tokyonight) echo "dark-tokyo-night light-tokyo-night" ;;
+  rosepine) echo "dark-rose-pine light-rose-pine" ;;
+  solarized) echo "dark-solarized light-solarized" ;;
+  *)
+    for mode in dark light; do
+      if [ ! -f "$THEMES_DIR/omp/rice-$1-$mode.json" ]; then
+        printf 'set-theme: no omp theme for %s; run files/cfg/themes/generate.cjs\n' "$1" >&2
+        return 1
+      fi
+    done
+    echo "rice-$1-dark rice-$1-light"
+    ;;
+  esac
+}
+
+if [ "$1" = --current ]; then
+  theme="$(cat "$STATE_FILE" 2>/dev/null || true)"
+  if is_theme "$theme"; then
+    printf '%s\n' "$theme"
+  else
+    printf 'catppuccin\n'
+  fi
+  exit 0
+fi
+
+if ! is_theme "$1"; then
+  known=("$THEMES_DIR"/t3code/*.json)
+  known=("${known[@]##*/}")
+  printf 'Unknown theme: %s (expected one of: %s)\n' "$1" "${known[*]%.json}" >&2
+  exit 1
+fi
+
+mkdir -p "$STATE_DIR"
+printf '%s\n' "$1" >"$STATE_FILE.tmp.$$"
+mv "$STATE_FILE.tmp.$$" "$STATE_FILE"
+
+# Apply the latest selection, one run at a time. A run that waited for the lock
+# applies the newest state, so rapid selections end on the last one.
+exec 9>"$STATE_DIR/apply.lock"
+flock 9
+theme="$(cat "$STATE_FILE")"
+if ! is_theme "$theme"; then
+  printf 'set-theme: state file holds an unknown theme: %s\n' "$theme" >&2
+  exit 1
+fi
+
+status=0
+
+# rofi and mako: write their color files for this theme and the current mode.
+"$SCRIPT_DIR/theme-colors" || status=1
+
+# omp: install the generated themes, then point both mode slots at the theme.
+if command -v omp >/dev/null 2>&1; then
+  if names="$(omp_themes "$theme")"; then
+    read -r omp_dark omp_light <<<"$names"
+    mkdir -p "$OMP_THEMES_DIR"
+    for source in "$THEMES_DIR"/omp/*.json; do
+      target="$OMP_THEMES_DIR/$(basename "$source")"
+      if ! cmp -s "$source" "$target"; then
+        cp "$source" "$target.tmp.$$"
+        mv "$target.tmp.$$" "$target"
+      fi
+    done
+
+    if ! omp config set theme.dark "$omp_dark" >/dev/null ||
+      ! omp config set theme.light "$omp_light" >/dev/null; then
+      printf 'set-theme: omp config set failed\n' >&2
+      status=1
+    fi
+  else
+    status=1
+  fi
+fi
+
+# T3 Code: publish the theme file and make it the environment theme.
+if command -v t3 >/dev/null 2>&1; then
+  if ! t3 theme set "$THEMES_DIR/t3code/$theme.json" >/dev/null; then
+    printf 'set-theme: t3 theme set failed\n' >&2
+    status=1
+  fi
+fi
+
+printf 'theme=%s\n' "$theme"
+exit "$status"

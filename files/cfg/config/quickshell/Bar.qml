@@ -71,17 +71,18 @@ Scope {
                 delegate: Chip {
                   required property var modelData
 
+                  // The focused workspace: a faint accent fill under bold text.
                   fill: modelData.urgent
-                    ? Theme.urgent
+                    ? Theme.urgentFill
                     : modelData.focused
-                      ? Theme.chipBlue
+                      ? Theme.focusFill
                       : modelData.active
                         ? Theme.chipGreen
                         : Theme.chipLight
-                  fg: modelData.focused ? Theme.activeText : Theme.text
 
                   Text {
-                    color: modelData.focused ? Theme.activeText : Theme.text
+                    color: modelData.urgent ? Theme.urgent : Theme.text
+                    font.bold: modelData.urgent || modelData.focused
                     text: String(modelData.name).substring(0, 3)
                     font.pixelSize: Theme.fontSize
                     font.family: Theme.fontFamily

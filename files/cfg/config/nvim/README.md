@@ -1,9 +1,23 @@
 # Colorschemes
 
-Neovim starts with the local Tiso theme: `tiso-black` in dark mode and `tiso-light` in light mode.
-Use `:colorscheme catppuccin` to select Catppuccin without a change to the startup theme.
+Neovim follows the theme selected in the Quickshell bar or with `~/.scripts/set-theme <id>`.
+`init.lua` reads `${XDG_STATE_HOME:-~/.local/state}/theme/current` at startup and watches it, so running instances switch too.
+A missing or unknown ID selects Catppuccin.
+
+| Theme ID | Plugin | Dark | Light |
+| --- | --- | --- | --- |
+| `catppuccin` | `catppuccin/nvim` | Mocha | Latte |
+| `kanagawa` | `rebelot/kanagawa.nvim` | Wave | Lotus |
+| `gruvbox` | `ellisonleao/gruvbox.nvim` | Dark | Light |
+| `tokyonight` | `folke/tokyonight.nvim` | Night | Day |
+| `rosepine` | `rose-pine/neovim` | Main | Dawn |
+| `everforest` | `neanias/everforest-nvim` | Hard dark | Medium light |
+| `solarized` | `maxmx03/solarized.nvim` | Dark | Light |
+
+A colorscheme loaded by hand, such as `:colorscheme tiso-black`, keeps its family across mode changes and `Space t t`.
+The next theme selection replaces it.
 Mode changes and `Space t t` keep the selected theme family.
-Catppuccin uses Latte in light mode and Mocha in dark mode by default.
+Catppuccin uses Latte in light mode and Mocha in dark mode. Selecting Catppuccin returns to Mocha.
 An explicit dark flavor, such as `:colorscheme catppuccin-frappe`, remains selected after a light-mode round trip.
 Catppuccin comments use Tiso Black's magenta (`#ee66ff`) in every flavor. Other syntax colors stay unchanged.
 Leap keeps the syntax colors during a search.
@@ -30,6 +44,7 @@ Values that contain `light` select light mode. All other values select dark mode
 Press `Space t t` to toggle transparency for the current mode.
 Both modes start transparent. Each mode keeps its own transparency state for the session.
 Catppuccin applies this state to the editor background and floating windows.
+The other synced themes pass it to their plugin's transparency option, which clears at least the editor background.
 Tiso also applies this state to completion menus, documentation popups, and scrollbar gutters.
 Fenced Markdown code and language headers in documentation popups inherit the popup background in both theme families.
 `Space t t` changes both backgrounds together.

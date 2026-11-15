@@ -3,7 +3,9 @@
 # Single entrypoint for switching dark/light mode. Every app either reads the
 # state file (~/.color) directly with its own watcher (nvim, quickshell) or is
 # reloaded from here (kitty, hyprland, hyprpaper, emacs, ghostty, alacritty,
-# starship, tmux, brave). Rofi reads the selected palette on each launch.
+# starship, tmux, brave, mako). Rofi reads the selected palette on each launch.
+# ~/.scripts/set-theme picks the theme; this script picks its dark or light
+# version.
 
 set -euo pipefail
 
@@ -25,69 +27,9 @@ printf '%s\n' "$mode" >"$HOME/.color"
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
-# rofi: update the shared palette for the next launcher or dmenu invocation.
-ROFI_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/rofi"
-if [ -f "$ROFI_DIR/colors-${mode}.rasi" ]; then
-  tmp="$(mktemp "$ROFI_DIR/colors.rasi.XXXXXX")"
-  cp "$ROFI_DIR/colors-${mode}.rasi" "$tmp"
-  mv "$tmp" "$ROFI_DIR/colors.rasi"
-fi
-
-# kitty: swap the included theme, then hot-reload every running instance.
-KITTY_CONF="${XDG_CONFIG_HOME:-$HOME/.config}/kitty/kitty.conf"
-KITTY_SOCK="${KITTY_SOCK:-/tmp/kitty-${USER}.sock}"
-case "$mode" in
-light) kitty_theme='themes/light.conf' ;;
-dark) kitty_theme='themes/current-theme.conf' ;;
-esac
-
-if [ -f "$KITTY_CONF" ]; then
-  tmp="$(mktemp "${KITTY_CONF}.XXXXXX")"
-  awk -v theme="$kitty_theme" '
-    $1 == "include" && !updated { print "include " theme; updated = 1; next }
-    { print }
-  ' "$KITTY_CONF" >"$tmp"
-  mv "$tmp" "$KITTY_CONF"
-
-  if command -v kitten >/dev/null 2>&1; then
-    kitten @ load-config --to "unix:${KITTY_SOCK}" --no-response >/dev/null 2>&1 || true
-  fi
-fi
-
-# hyprland: swap the sourced theme file and reload.
-HYPR_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/hypr"
-if [ -d "$HYPR_DIR" ] && [ -f "$HYPR_DIR/theme-${mode}.conf" ]; then
-  cp "$HYPR_DIR/theme-${mode}.conf" "$HYPR_DIR/theme.conf"
-  if command -v hyprctl >/dev/null 2>&1; then
-    hyprctl reload >/dev/null 2>&1 || true
-  fi
-fi
-
-# hyprpaper: switch to the mode-specific collection and restart it so its
-# directory slideshow continues using the new mode.
-HYPERPAPER_CONF="$HYPR_DIR/hyprpaper.conf"
-WALLPAPER_DIR="$HOME/.rice/wallpaper/$mode"
-WALLPAPER_PATH="~/.rice/wallpaper/$mode"
-if [ -f "$HYPERPAPER_CONF" ] && [ -d "$WALLPAPER_DIR" ]; then
-  tmp="$(mktemp "${HYPERPAPER_CONF}.XXXXXX")"
-  awk -v path="$WALLPAPER_PATH" '
-    $1 == "path" && !updated { print "    path = " path; updated = 1; next }
-    { print }
-  ' "$HYPERPAPER_CONF" >"$tmp"
-  mv "$tmp" "$HYPERPAPER_CONF"
-
-  if command -v hyprpaper >/dev/null 2>&1 &&
-     command -v hyprctl >/dev/null 2>&1 &&
-     command -v pkill >/dev/null 2>&1 &&
-     pkill -0 -x hyprpaper >/dev/null 2>&1; then
-    pkill -x hyprpaper || true
-    for _ in 1 2 3 4 5; do
-      pkill -0 -x hyprpaper >/dev/null 2>&1 || break
-      sleep 0.1
-    done
-    hyprctl dispatch exec hyprpaper >/dev/null 2>&1 || true
-  fi
-fi
+# rofi, mako, hyprland borders, kitty, btop, claude, wallpaper, and brave:
+# write the selected theme's files for this mode and reload what changed.
+"$SCRIPT_DIR/theme-colors" || true
 
 # system color scheme: GTK apps and Brave (appearance mode "GTK") follow this
 # live via xdg-desktop-portal (org.freedesktop.appearance).

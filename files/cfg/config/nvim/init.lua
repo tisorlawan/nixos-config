@@ -1565,10 +1565,18 @@ local themes = {
 			require("everforest").setup({
 				background = "hard",
 				transparent_background_level = transparent and 1 or 0,
-				-- Light mode uses the green-white background ramp described in
-				-- quickshell/Themes.js in place of the cream one.
+				-- Both modes use the backgrounds described in quickshell/Themes.js.
+				-- Dark mode shifts the hard scale down one step. Light mode uses
+				-- the green-white ramp in place of the cream one.
 				colours_override = function(palette)
 					if dark then
+						palette.bg_dim = "#171b1e"
+						palette.bg0 = "#1e2326"
+						palette.bg1 = "#272e33"
+						palette.bg2 = "#2e383c"
+						palette.bg3 = "#374145"
+						palette.bg4 = "#414b50"
+						palette.bg5 = "#495156"
 						return
 					end
 					palette.bg_dim = "#e5f3e7"

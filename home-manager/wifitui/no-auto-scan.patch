@@ -1,0 +1,115 @@
+--- a/internal/tui/component.go
++++ b/internal/tui/component.go
+@@ -71,7 +71,8 @@
+ 	errorMsg struct{ err error }
+ 
+ 	// To main model
+-	scanMsg    struct{}
++	// cached lists the networks NetworkManager already knows, without a scan.
++	scanMsg    struct{ cached bool }
+ 	connectMsg struct {
+ 		item        connectionItem
+ 		autoConnect bool
+--- a/internal/tui/list.go
++++ b/internal/tui/list.go
+@@ -131,11 +131,9 @@
+ 
+ func (m *ListModel) OnEnter() tea.Cmd {
+ 	m.numScans = 0
+-	return tea.Batch(
+-		m.scanner.SetSchedule(ScanFast),
+-		// Start a scan right away
+-		func() tea.Msg { return scanMsg{} },
+-	)
++	// Show the networks NetworkManager already knows. Scans run only on
++	// request: s scans once, and S turns on the periodic scan.
++	return func() tea.Msg { return scanMsg{cached: true} }
+ }
+ 
+ func NewListModel() *ListModel {
+@@ -342,7 +340,9 @@
+ 		if len(items) > 0 {
+ 			m.numScans++
+ 		}
+-		if m.numScans == 3 {
++		// Only an S-enabled schedule slows down. SetSchedule on an off
++		// schedule would start it.
++		if m.numScans == 3 && m.scanner.interval != ScanOff {
+ 			// Slow down scanner after a few scans
+ 			m.scanner.SetSchedule(ScanSlow)
+ 		}
+--- a/internal/tui/list_test.go
++++ b/internal/tui/list_test.go
+@@ -136,3 +136,25 @@
+ 		t.Fatalf("expected no AP count annotation for a single AP, got: %q", out)
+ 	}
+ }
++
++func TestListModel_ScansOnlyOnRequest(t *testing.T) {
++	m := NewListModel()
++	m.Update(tea.WindowSizeMsg{Width: 100, Height: 30})
++
++	if msg := m.OnEnter()(); msg != (scanMsg{cached: true}) {
++		t.Fatalf("OnEnter sent %#v, want a cached scanMsg", msg)
++	}
++
++	// Three list loads used to slow down, and so start, the scan schedule.
++	loaded := scanFinishedMsg([]wifi.Connection{{SSID: "TestNet1"}})
++	for range 3 {
++		m.Update(loaded)
++	}
++
++	if m.scanner.interval != ScanOff {
++		t.Errorf("scan schedule is %v after three list loads, want off", m.scanner.interval)
++	}
++	if _, cmd := m.Update(tea.KeyMsg{Type: tea.KeyRunes, Runes: []rune("s")}); cmd == nil || cmd() != (scanMsg{}) {
++		t.Errorf("s did not request a scan")
++	}
++}
+--- a/internal/tui/tui.go
++++ b/internal/tui/tui.go
+@@ -99,10 +99,14 @@
+ 			// Skip additional scans while we're still loading
+ 			return m, nil
+ 		}
++		status := "Scanning for networks..."
++		if msg.cached {
++			status = "Loading networks..."
++		}
+ 		return m, tea.Batch(
+-			func() tea.Msg { return statusMsg{status: "Scanning for networks...", loading: true} },
++			func() tea.Msg { return statusMsg{status: status, loading: true} },
+ 			func() tea.Msg {
+-				connections, err := m.backend.BuildNetworkList(true)
++				connections, err := m.backend.BuildNetworkList(!msg.cached)
+ 				if err != nil {
+ 					return errorMsg{err}
+ 				}
+--- a/internal/tui/tui_test.go
++++ b/internal/tui/tui_test.go
+@@ -72,19 +72,13 @@
+ 	updatedModel, cmd := m.Update(popViewMsg{})
+ 	m = updatedModel.(*model)
+ 
+-	// The batch command contains a command to start the scanner and a command to do an initial scan.
+-	// Let's execute the commands and process the resulting messages.
+-	batchCmd := cmd().(tea.BatchMsg)
+-	var scanCmd tea.Cmd
+-	for _, c := range batchCmd {
+-		msg := c()
+-		// We only care about the scanMsg for this test's purpose.
+-		if _, ok := msg.(scanMsg); ok {
+-			updatedModel, scanCmd = m.Update(msg)
+-			m = updatedModel.(*model)
+-			break
+-		}
++	// The list's OnEnter loads the known networks without a scan.
++	msg := cmd()
++	if msg != (scanMsg{cached: true}) {
++		t.Fatalf("expected a cached scanMsg, got %#v", msg)
+ 	}
++	updatedModel, scanCmd := m.Update(msg)
++	m = updatedModel.(*model)
+ 
+ 	if scanCmd == nil {
+ 		t.Fatal("did not find a scan command in the batch")

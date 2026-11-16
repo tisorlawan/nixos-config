@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# Super+Ctrl+W: focus the open wifitui window, or open wifitui in kitty.
+# wifitui manages Wi-Fi through NetworkManager.
+
+address=$(hyprctl -j clients | jq -r 'first(.[] | select(.class == "wifitui") | .address) // empty')
+
+if [ -n "$address" ]; then
+  exec hyprctl dispatch focuswindow "address:$address"
+fi
+
+# Closing the window ends only wifitui, so kitty need not ask first. The window
+# holds one tab, so it hides the tab bar, and it is less see-through than
+# kitty.conf's 0.90.
+exec kitty --class wifitui \
+  -o confirm_os_window_close=0 \
+  -o tab_bar_style=hidden \
+  -o background_opacity=0.97 \
+  -e wifitui

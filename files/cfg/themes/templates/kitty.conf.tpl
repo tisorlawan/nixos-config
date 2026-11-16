@@ -11,7 +11,12 @@ cursor_text_color {{ background }}
 dynamic_background_opacity yes
 
 active_border_color {{ accent }}
-active_tab_background {{ accent }}
+# Monochrome tabs. The active tab inverts the text colors, and kitty.conf
+# draws its title in bold.
+active_tab_foreground {{ background }}
+active_tab_background {{ foreground }}
+inactive_tab_foreground {{ foreground }}
+inactive_tab_background {{ lighter_background }}
 
 color0 {{ background }}
 color1 {{ red }}

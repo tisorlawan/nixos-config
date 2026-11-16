@@ -21,12 +21,12 @@
     "overlay2": "#9da9a0",
     "overlay1": "#859289",
     "overlay0": "#7a8478",
-    "surface2": "#495156",
-    "surface1": "#414b50",
-    "surface0": "#374145",
-    "base": "#272e33",
-    "mantle": "#1e2326",
-    "crust": "#1e2326"
+    "surface2": "#414b50",
+    "surface1": "#374145",
+    "surface0": "#2e383c",
+    "base": "#1e2326",
+    "mantle": "#171b1e",
+    "crust": "#171b1e"
   },
   "colors": {
     "accent": "peach",

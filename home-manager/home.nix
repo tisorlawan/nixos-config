@@ -134,6 +134,12 @@ in
         xwininfo
         xmodmap
         networkmanagerapplet
+        # Wi-Fi TUI for NetworkManager, on Super+Ctrl+W. The patch lists the
+        # known networks on open and scans only when you press s (or turn on
+        # the periodic scan with S).
+        (wifitui.overrideAttrs (old: {
+          patches = (old.patches or [ ]) ++ [ ./wifitui/no-auto-scan.patch ];
+        }))
         sxhkd
         copyq
         redshift
@@ -397,6 +403,10 @@ in
     "x-scheme-handler/zoomphonecall" = [ "zoomus-wrapped.desktop" ];
     "x-scheme-handler/t3code" = [ "com.t3tools.T3Code.desktop" ];
     "x-scheme-handler/tern" = [ "so.stencil.tern.url.desktop" ];
+    # The Claude and ChatGPT apps register these at runtime. Listing them here
+    # keeps a switch from dropping them when it rewrites mimeapps.list.
+    "x-scheme-handler/claude" = [ "com.anthropic.Claude.desktop" ];
+    "x-scheme-handler/codex" = [ "chatgpt.desktop" ];
   };
 
   xdg.portal = {

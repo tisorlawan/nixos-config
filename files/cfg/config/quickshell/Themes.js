@@ -115,13 +115,16 @@ const themes = [
     }
   },
   {
-    // Hard contrast dark / medium contrast light.
     id: "everforest",
     name: "Everforest",
+    // Darker than hard contrast. The dark backgrounds shift the hard scale
+    // down one step: bg0 takes bg_dim (#1e2326), each higher level takes the
+    // one below it, and the new bg_dim is #171b1e. generate.cjs (omp) and
+    // nvim/init.lua use the same shift.
     dark: {
-      panelBg: "#272e33", panelBorder: "#495156",
+      panelBg: "#1e2326", panelBorder: "#414b50",
       text: "#d3c6aa", mutedText: "#859289", activeText: "#7fbbb3", urgent: "#e67e80",
-      chipDark: "#1e2326", chipLight: "#374145", chipBlue: "#384b55", chipGreen: "#3c4841",
+      chipDark: "#171b1e", chipLight: "#2e383c", chipBlue: "#384b55", chipGreen: "#3c4841",
       red: "#e67e80", green: "#a7c080", yellow: "#dbbc7f", blue: "#7fbbb3", magenta: "#d699b6", cyan: "#83c092"
     },
     // A green-white background in place of Everforest's cream: the hard light

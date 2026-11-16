@@ -20,7 +20,10 @@
 // kitty/<id>-<mode>.conf
 //                   templates/*.tpl rendered with the palette. The templates
 //                   are Omarchy's (github.com/basecamp/omarchy, default/themed/),
-//                   except that claude.json.tpl names the theme with {{ name }}.
+//                   except that claude.json.tpl names the theme with {{ name }}
+//                   and kitty.conf.tpl draws monochrome tabs: the active
+//                   one inverts foreground and background, and inactive ones
+//                   put foreground on lighter_background.
 //
 // Run with `node files/cfg/themes/generate.cjs` after a change to Themes.js or
 // to the palettes below. Reading omp's Catppuccin layout needs omp installed.
@@ -120,7 +123,8 @@ function t3Theme(theme) {
 
 // omp palettes in the slots of omp's Catppuccin themes. Each value is the
 // closest color of the theme's own palette, except Lotus surface1 and surface2,
-// which mix lotusWhite0 (#d5cea3) 20% and 40% toward lotusGray2 (#716e61).
+// which mix lotusWhite0 (#d5cea3) 20% and 40% toward lotusGray2 (#716e61), and
+// the Everforest dark mantle and crust (#171b1e), which darken bg_dim.
 const ompPalettes = {
   kanagawa: {
     // Wave.
@@ -145,15 +149,15 @@ const ompPalettes = {
     }
   },
   everforest: {
-    // Hard dark.
+    // Hard dark shifted down one step, as in Themes.js.
     dark: {
       rosewater: '#e69875', flamingo: '#e67e80', pink: '#d699b6', mauve: '#d699b6',
       red: '#e67e80', maroon: '#e67e80', peach: '#e69875', yellow: '#dbbc7f',
       green: '#a7c080', teal: '#83c092', sky: '#7fbbb3', sapphire: '#7fbbb3',
       blue: '#7fbbb3', lavender: '#9da9a0', text: '#d3c6aa', subtext1: '#d3c6aa',
       subtext0: '#9da9a0', overlay2: '#9da9a0', overlay1: '#859289', overlay0: '#7a8478',
-      surface2: '#495156', surface1: '#414b50', surface0: '#374145', base: '#272e33',
-      mantle: '#1e2326', crust: '#1e2326'
+      surface2: '#414b50', surface1: '#374145', surface0: '#2e383c', base: '#1e2326',
+      mantle: '#171b1e', crust: '#171b1e'
     },
     // Light, with the green-white background ramp described in Themes.js.
     light: {

@@ -1,5 +1,5 @@
 # Main background, empty for terminal default, need to be empty if you want transparent background
-theme[main_bg]="#272e33"
+theme[main_bg]="#1e2326"
 
 # Main text color
 theme[main_fg]="#d3c6aa"
@@ -83,8 +83,8 @@ theme[process_mid]="#7fbbb3"
 theme[process_end]="#d699b6"
 
 # Graph gradient colors (spectrum shades from background to foreground)
-theme[gradient_color_0]="#272e33"
-theme[gradient_color_1]="#374145"
+theme[gradient_color_0]="#1e2326"
+theme[gradient_color_1]="#2e383c"
 theme[gradient_color_2]="#384b55"
 theme[gradient_color_3]="#859289"
 theme[gradient_color_4]="#859289"

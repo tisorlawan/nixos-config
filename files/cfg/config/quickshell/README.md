@@ -54,7 +54,7 @@ The script writes the theme ID to `${XDG_STATE_HOME:-~/.local/state}/theme/curre
 | Mako | `~/.scripts/theme-colors` writes `config/mako/config` as the theme colors followed by `config/mako/base`, then runs `makoctl reload`. Edit `base` for other mako settings. |
 | Brave | `~/.scripts/theme-colors` writes a managed policy with the palette's `browserSeed`, or `panelBg` without one, as the seed color, then a running Brave reloads its policies. Brave derives its own palette from the seed. |
 | Hyprland | `theme-colors` writes the window border colors to `config/hypr/theme.conf`, which `hyprland.conf` sources, then runs `hyprctl reload`. |
-| kitty | `theme-colors` writes `config/kitty/themes/rice.conf`, which `kitty.conf` includes, then sends SIGUSR1 so every running kitty reloads. |
+| kitty | `theme-colors` writes `config/kitty/themes/rice.conf`, which `kitty.conf` includes, then sends SIGUSR1 so every running kitty reloads. Its tabs are monochrome: the active tab is `panelBg` on `text`, and inactive tabs are `text` on `chipLight`. |
 | btop | `theme-colors` writes `~/.config/btop/themes/rice.theme`, which `btop.conf` selects. btop reads it when it starts. |
 | Claude Code | `theme-colors` writes `~/.claude/themes/rice.json`. Claude Code reloads it in running sessions. `~/.claude/settings.json` selects it with `"theme": "custom:rice"`. |
 | Wallpaper | `theme-colors` points the link `wallpaper/current` at `wallpaper/<theme>-<mode>`, or at `wallpaper/<mode>` when the theme has none for the mode, then restarts hyprpaper. |

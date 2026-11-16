@@ -186,6 +186,7 @@ in
         fzf
         btop
         tmux
+        shpool
         wget
         atool
         curl

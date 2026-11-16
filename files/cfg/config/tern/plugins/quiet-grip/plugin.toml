@@ -1,0 +1,6 @@
+schema = 1
+id = "quiet-grip"
+name = "Quiet pane grip"
+version = "0.1.0"
+description = "Hides each pane's drag grip until the pointer is near it."
+window = "window.luau"

@@ -28,3 +28,7 @@ files/cfg/config/mako/config
 files/cfg/config/hypr/theme.conf
 wallpaper/current
 files/cfg/config/kitty/themes/rice.conf
+
+# Tern's UI state and account lock, written into the linked ~/.config/tern.
+files/cfg/config/tern/files.json
+files/cfg/config/tern/account.lock

@@ -43,8 +43,8 @@ Values that contain `light` select light mode. All other values select dark mode
 
 Press `Space t t` to toggle transparency for the current mode.
 Both modes start transparent. Each mode keeps its own transparency state for the session.
-Catppuccin applies this state to the editor background and floating windows.
-The other synced themes pass it to their plugin's transparency option, which clears at least the editor background.
+In every synced theme, floating windows, including the `K` documentation popup, clear their background, border background, and title background when transparency is on.
+Turning transparency off restores the theme's floating window colors.
 Tiso also applies this state to completion menus, documentation popups, and scrollbar gutters.
 Fenced Markdown code and language headers in documentation popups inherit the popup background in both theme families.
 `Space t t` changes both backgrounds together.

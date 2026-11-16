@@ -49,7 +49,7 @@ for signature verification, update behavior, and GPU verification details.
 
 ## Tern launcher
 
-Install Tern at `~/.local/bin/tern`, then link `~/.scripts` and the desktop entry:
+Install Tern at `~/.local/bin/tern`, then link `~/.scripts`, the desktop entry, and `~/.config/tern`:
 
 ```sh
 ./links.sh tern
@@ -58,6 +58,12 @@ Install Tern at `~/.local/bin/tern`, then link `~/.scripts` and the desktop entr
 Select **Tern (System Mesa)** in Rofi or run `~/.scripts/my-tern`. The wrapper removes `LD_LIBRARY_PATH`, `LIBGL_DRIVERS_PATH`, `__EGL_VENDOR_LIBRARY_FILENAMES`, and `GBM_BACKENDS_PATH`, as the T3 wrapper does. It sets `WGPU_BACKEND=vulkan` because the OpenGL backend creates opaque surfaces on this Intel Wayland system. Vulkan permits transparency at the configured opacity. The wrapper preserves command arguments and leaves the Tern binary unchanged.
 
 The Hyprland shortcut **Super+Shift+Return** uses the same wrapper. Tern rewrites its own `so.stencil.tern*.desktop` files on launch, so `links.sh` uses a separate `tern.desktop` file. The original **Tern** entry still launches the binary without the wrapper.
+
+`links.sh tern` links the whole `~/.config/tern` directory to `files/cfg/config/tern/`. Tern saves `settings.json` by replacing the file, so a symlink to that file alone would be lost on the first save. Tern's own state files, `files.json` and `account.lock`, are gitignored. The `copy-cwd` plugin makes **Ctrl+Shift+C** copy the focused pane's absolute working directory when nothing is selected, and shows a toast. With a selection, the key copies the selection as before.
+
+The `zen` plugin toggles zen mode with **Alt+B** or **Toggle zen mode** in the command palette. Zen mode hides the tab bar and shrinks the outer padding to 4 px at the window edge and between split panes. The terminal's own padding (`padding_x`, `padding_y`) stays as set. Each window toggles its own zen mode. The plugin keeps the last choice in Tern's plugin data, outside the repository, and windows start with it after a restart.
+
+The `quiet-grip` plugin hides each pane's **Drag to move the pane** grip until the pointer is within about 24 px of it. Clicks in that area reach the grip, so they start a drag or open the pane menu instead of reaching the terminal.
 
 
 ## Account priority

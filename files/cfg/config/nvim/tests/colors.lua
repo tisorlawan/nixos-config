@@ -12,6 +12,12 @@ local function toggle()
 end
 
 local function expect_documentation_background()
+	if background("Normal") == nil then
+		eq(nil, background("NormalFloat"))
+		eq(nil, background("FloatBorder"))
+		eq(nil, background("FloatTitle"))
+	end
+
 	local buf, win = vim.lsp.util.open_floating_preview({
 		"```python",
 		"def classify(value: str) -> bool:",
@@ -217,8 +223,10 @@ end
 -- One transparency state clears the background; the other shows `expected`.
 local function expect_transparency_toggle(id, mode, expected)
 	local first = background("Normal")
+	expect_documentation_background()
 	toggle()
 	local second = background("Normal")
+	expect_documentation_background()
 	local opaque = first or second
 	assert((first == nil) ~= (second == nil), id .. " " .. mode .. ": transparency toggle had no effect")
 	eq(expected, string.format("#%06x", opaque))

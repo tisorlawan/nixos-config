@@ -522,6 +522,31 @@ local function yank_buffer_path(modifier)
 end
 vim.keymap.set("n", "<leader>yp", yank_buffer_path(":."), { desc = "Yank relative path" })
 vim.keymap.set("n", "<leader>yP", yank_buffer_path(":p"), { desc = "Yank absolute path" })
+
+-- `SPC m o` opens the buffer's file in Tern at the cursor line: a split to the right of
+-- Neovim's pane, focused and zoomed. Tern reads the file from disk, so unsaved changes don't show.
+vim.keymap.set("n", "<leader>mo", function()
+	local path = vim.fn.expand("%:p")
+	if path == "" then
+		vim.notify("Buffer has no file path", vim.log.levels.WARN)
+		return
+	end
+	if not vim.env.TERN_PANE then
+		vim.notify("Neovim is not running in a Tern pane", vim.log.levels.WARN)
+		return
+	end
+
+	local target = path .. ":" .. vim.fn.line(".")
+	vim.system({ "tern", "open", "--split", "right", target }, { text = true }, function(open)
+		if open.code ~= 0 then
+			vim.schedule(function()
+				vim.notify("tern open failed: " .. vim.trim(open.stderr), vim.log.levels.ERROR)
+			end)
+			return
+		end
+		vim.system({ "tern", "ctl", "zoom" })
+	end)
+end, { desc = "Open file in a zoomed Tern split" })
 vim.keymap.set("n", "gl", function()
 	if not diagnostics_visible(vim.api.nvim_get_current_buf()) then
 		return
@@ -862,7 +887,12 @@ vim.keymap.set("n", "K", function()
 end, { desc = "Hover docs, or focus the hunk preview" })
 -- Key-hint popup driven by the `desc` annotations on the mappings below.
 vim.cmd.packadd("which-key.nvim")
-require("which-key").setup({})
+-- Wait 500 ms before the popup (default 200 ms); plugin popups such as marks and registers stay instant.
+require("which-key").setup({
+	delay = function(ctx)
+		return ctx.plugin and 0 or 500
+	end,
+})
 
 vim.keymap.set("n", "<leader>gg", function()
 	require("neogit").open()
@@ -1334,6 +1364,10 @@ end
 
 require("neo-tree").setup({
 	close_if_last_window = true,
+	-- The default "NC" style puts the prompt in a title bar whose text color is Normal's
+	-- background. Transparent themes have none, so the prompt was light gray on gray.
+	-- A bordered popup shows it as a border title in Normal's foreground on the float.
+	popup_border_style = "rounded",
 	enable_git_status = true,
 	window = {
 		position = "left",
@@ -1660,21 +1694,24 @@ local function apply_org_highlights()
 end
 -- `follow_theme` loads the selected theme even over a hand-picked colorscheme.
 local function apply_color_mode(follow_theme)
-	-- Follow the current mode's transparency state in the statusline.
+	-- Follow the current mode's transparency state in bars and floating windows.
 	vim.api.nvim_create_autocmd("ColorScheme", {
-		group = vim.api.nvim_create_augroup("transparent_statusline", { clear = true }),
+		group = vim.api.nvim_create_augroup("transparent_windows", { clear = true }),
 		callback = function()
 			if opaque_bg[vim.o.background] then
 				return
 			end
-			for _, group in ipairs({ "StatusLine", "StatusLineNC", "StatusLineTerm", "StatusLineTermNC" }) do
+			for _, group in ipairs({
+				"StatusLine", "StatusLineNC", "StatusLineTerm", "StatusLineTermNC",
+				"NormalFloat", "FloatBorder", "FloatTitle",
+			}) do
 				local hl = vim.api.nvim_get_hl(0, { name = group, link = false })
 				hl.bg = "NONE"
 				hl.ctermbg = "NONE"
 				vim.api.nvim_set_hl(0, group, hl)
 			end
 		end,
-		desc = "Apply statusline transparency",
+		desc = "Apply bar and floating window transparency",
 	})
 
 	-- Load the selected theme, unless a colorscheme loaded by hand is active.

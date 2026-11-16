@@ -116,10 +116,13 @@ run_target() {
       link "$CFG/local/share/applications/$name.desktop" "$HOME/.local/share/applications/$name.desktop"
       ;;
 
-    # Preserve Tern's binary and generated desktop files. Link the scripts and separate desktop entry.
+    # Preserve Tern's binary and generated desktop files. Link the scripts, the separate desktop
+    # entry, and the whole ~/.config/tern: Tern saves settings.json by replacing the file, which
+    # would break a symlink to settings.json alone.
     tern)
       link "$CFG/scripts" "$HOME/.scripts"
       link "$CFG/local/share/applications/tern.desktop" "$HOME/.local/share/applications/tern.desktop"
+      link "$CONFIG/tern" "$HOME/.config/tern"
       ;;
 
     # CLIProxyAPI: install, then replace its config with the one in this repository.

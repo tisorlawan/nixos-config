@@ -14,7 +14,7 @@
       "src": "https://github.com/neanias/everforest-nvim"
     },
     "fff.nvim": {
-      "rev": "924cb4d758f09bb54654555b0c9440bacd1f97f0",
+      "rev": "ab3002a9bfbef53874dd0b56608e34d281791b4c",
       "src": "https://github.com/dmtrKovalenko/fff.nvim"
     },
     "gitsigns.nvim": {
@@ -30,7 +30,7 @@
       "src": "https://github.com/rebelot/kanagawa.nvim"
     },
     "lean.nvim": {
-      "rev": "755fee701e1f289699bdc983af6d1ddce74cfb65",
+      "rev": "3783e6f9b352c54a0ddc219ac546f43213bb5bba",
       "src": "https://github.com/Julian/lean.nvim"
     },
     "leap.nvim": {
@@ -54,7 +54,7 @@
       "src": "https://github.com/nvim-neo-tree/neo-tree.nvim"
     },
     "neogit": {
-      "rev": "aa99b440b266bcf7e03399f149ed46f981555fa3",
+      "rev": "0288a0fe32bce35f4ea1195f9b546a71c5977a82",
       "src": "https://github.com/NeogitOrg/neogit"
     },
     "no-clown-fiesta.nvim": {
@@ -70,7 +70,7 @@
       "src": "https://github.com/windwp/nvim-autopairs"
     },
     "nvim-treesitter": {
-      "rev": "04f17886f75416dfdc25374c950a52c63f0e98fe",
+      "rev": "b706d642dd20d0922e7e92365dc73617f0fdb4ea",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter"
     },
     "org-bullets.nvim": {

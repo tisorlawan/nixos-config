@@ -1,0 +1,6 @@
+schema = 1
+id = "copy-cwd"
+name = "Copy working directory"
+version = "0.1.0"
+description = "Ctrl+Shift+C copies selected text, or the focused pane's absolute working directory when nothing is selected."
+window = "window.luau"

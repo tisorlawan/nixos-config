@@ -1,0 +1,6 @@
+schema = 1
+id = "zen"
+name = "Zen mode"
+version = "0.1.0"
+description = "Hides the tab bar and shrinks the window and terminal padding. Toggle with Alt+B."
+window = "window.luau"

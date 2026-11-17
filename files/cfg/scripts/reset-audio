@@ -1,4 +1,17 @@
 #!/usr/bin/env bash
 
-amixer -q sset "Capture" 70% cap
-amixer -q sset "Master" 70% unmute
+# A headset with a mic (4-pole plug) turns on both jack sensors of the laptop's combo jack.
+jack_on() {
+  amixer -c sofhdadsp cget iface=CARD,name="$1" 2>/dev/null | grep -q 'values=on'
+}
+
+if jack_on 'Headphone Jack' && jack_on 'Mic Jack'; then
+  output=50%
+  input=25%
+else
+  output=70%
+  input=70%
+fi
+
+amixer -q sset "Capture" "$input" cap
+amixer -q sset "Master" "$output" unmute

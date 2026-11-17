@@ -1,6 +1,6 @@
 # Set up CLIProxyAPI, omp, Codex, and Claude Code
 
-Run these steps once on a new machine. `links.sh` repeats the CLIProxyAPI install and config link, so you can skip steps 2 and 3 if you run it.
+Run these steps once on a new machine. `links.sh all` also runs step 2, so you can skip it if you run that.
 
 ## 1. Install the CLIs
 
@@ -9,24 +9,19 @@ curl -fsSL https://chatgpt.com/codex/install.sh | sh
 curl -fsSL https://claude.ai/install.sh | bash
 ```
 
-## 2. Install CLIProxyAPI
+## 2. Install CLIProxyAPI with the repository config
+
+Restore `~/tools` first, then run this from `~/.rice`:
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/router-for-me/cliproxyapi-installer/refs/heads/master/cliproxyapi-installer | bash
+./links.sh cliproxyapi
 ```
 
-## 3. Use the repository config
-
-Run this from `~/.rice`:
-
-```sh
-ln -srf files/cfg/cli-proxy-api/config.yaml ~/cliproxyapi/config.yaml
-systemctl --user restart cliproxyapi.service
-```
+The target links `files/cfg/cli-proxy-api/config.yaml` to `~/tools/cliproxyapi/config.yaml`, then runs `~/tools/cliproxyapi/install-cliproxyapi.sh`. That script installs the latest CLIProxyAPI release, writes the `cliproxyapi.service` user unit, and restarts it. Run the script again to upgrade.
 
 The service listens on `127.0.0.1:8317`. Check it with `systemctl --user status cliproxyapi.service`.
 
-## 4. Point Codex at CLIProxyAPI
+## 3. Point Codex at CLIProxyAPI
 
 T3 Code runs this Codex instance. In T3 Code, open Settings > Providers > Codex, set `CODEX_HOME` to `~/.config/codex-cpa`, and add `CPA_API_KEY` as an instance variable. Use one of the keys under `api-keys` in `config.yaml`.
 
@@ -45,7 +40,7 @@ requires_openai_auth = false
 EOF
 ```
 
-## 5. Point Claude Code at CLIProxyAPI
+## 4. Point Claude Code at CLIProxyAPI
 
 Set these environment variables for Claude Code. Take the token from `api-keys` in `config.yaml`.
 
@@ -57,12 +52,12 @@ ANTHROPIC_MODEL=claude-opus-5-5
 
 Never commit the token. `files/cfg/cli-proxy-api/config.yaml` already contains the client keys, so treat this repository as private.
 
-## 6. Use CLIProxyAPI, OpenCode Go, and Command Code in omp
+## 5. Use CLIProxyAPI, OpenCode Go, and Command Code in omp
 
 The global omp configuration uses these files:
 
 - `~/.omp/agent/models.yml` defines `cliproxy` at `http://127.0.0.1:8317/v1` with a fixed list of five models.
-- Its command-backed `apiKey` reads the first client key from `~/cliproxyapi/config.yaml` through Bun. Do not copy the key into the omp configuration.
+- Its command-backed `apiKey` reads the first client key from `~/tools/cliproxyapi/config.yaml` through Bun. Do not copy the key into the omp configuration.
 - Its `models` selects `anthropic-messages` for Claude and `openai-responses` for GPT. Automatic model discovery is disabled.
 - `~/.omp/agent/config.yml` sets `modelRoles.default` to `cliproxy/gpt-6.1-sol`.
 - `enabledModels` contains the five CLIProxy selectors below, two OpenCode Go selectors, and Glyph Cluster Free from Command Code.

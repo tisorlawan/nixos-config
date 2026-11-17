@@ -6,8 +6,10 @@ selection_background {{ selection_background }}
 cursor {{ bright_foreground }}
 cursor_text_color {{ background }}
 
-# Lets a reload change the background opacity, as Glassy windows do, since
-# kitty only allows that when this is on from launch.
+# See-through in dark mode, like Tern, and opaque in light mode. Dynamic
+# opacity lets a reload change it in running windows, which kitty allows only
+# when the option is on from launch.
+background_opacity {{ background_opacity }}
 dynamic_background_opacity yes
 
 active_border_color {{ accent }}

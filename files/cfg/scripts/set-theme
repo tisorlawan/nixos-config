@@ -7,7 +7,7 @@
 # The theme IDs come from the Quickshell catalog (config/quickshell/Themes.js).
 # Quickshell and nvim watch the state file below. omp reloads its config.yml on
 # change. `t3 theme set` switches the connected T3 Code clients. theme-colors
-# writes the rofi and mako color files and the Brave theme policy.
+# writes the color files of the other apps, including GTK and Qt.
 #
 # `set-theme --current` prints the selected theme: Catppuccin when none is set.
 

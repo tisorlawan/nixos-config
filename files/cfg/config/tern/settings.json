@@ -2,7 +2,8 @@
   "theme": "System",
   "scroll_speed": 400,
   "cursor": {
-    "programs": true
+    "programs": true,
+    "trail": "blaze"
   },
   "link_click": "Command",
   "link_target": "Browser",
@@ -12,10 +13,10 @@
   "font_family_bold": "Berkeley Mono Bold",
   "font_family_italic": "Berkeley Mono Italic",
   "font_family_bold_italic": "Berkeley Mono Bold Italic",
-  "adjust_cell_height": 3,
+  "adjust_cell_height": 2,
   "padding_x": 8,
   "padding_y": 8,
-  "opacity": 65,
+  "code_font": "Berkeley Mono",
   "blur": 24,
   "lenses_disabled": [
     "py.test",
@@ -29,9 +30,9 @@
   "renderer": "gpu",
   "git": {
     "inspector_width": 534.0,
-    "diff_hunk_view": true,
     "diff_wrap": true,
-    "path_tree": true
+    "path_tree": true,
+    "diff_hunk_view": true
   },
   "keybinds": {
     "alt+,": "rename_session",

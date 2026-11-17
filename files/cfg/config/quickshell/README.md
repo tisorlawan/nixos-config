@@ -57,6 +57,8 @@ The script writes the theme ID to `${XDG_STATE_HOME:-~/.local/state}/theme/curre
 | kitty | `theme-colors` writes `config/kitty/themes/rice.conf`, which `kitty.conf` includes, then sends SIGUSR1 so every running kitty reloads. Its tabs are monochrome: the active tab is `panelBg` on `text`, and inactive tabs are `text` on `chipLight`. |
 | btop | `theme-colors` writes `~/.config/btop/themes/rice.theme`, which `btop.conf` selects. btop reads it when it starts. |
 | Claude Code | `theme-colors` writes `~/.claude/themes/rice.json`. Claude Code reloads it in running sessions. `~/.claude/settings.json` selects it with `"theme": "custom:rice"`. |
+| Qt | `theme-colors` writes the qt6ct palette to `config/qt6ct/colors.conf`, which `config/qt6ct/qt6ct.conf` selects. qt6ct reloads running Qt 6 apps from Nix, such as CopyQ and Quickshell's tray menus, about 3 seconds later. `hyprland.conf` and `environment.d` set `QT_QPA_PLATFORMTHEME=qt6ct`. |
+| GTK | `theme-colors` writes two GTK themes, `~/.local/share/themes/rice-<theme>` (light, with a dark variant) and `rice-<theme>-dark`. Each is adw-gtk3 with the palette as libadwaita's color names. gsettings selects one by mode, and running GTK 3 apps reload it. libadwaita apps ignore the GTK theme and read `config/gtk-4.0/gtk.css`, which holds both modes: they follow a mode change at once and a theme change after a restart. |
 | Wallpaper | `theme-colors` points the link `wallpaper/current` at `wallpaper/<theme>-<mode>`, or at `wallpaper/<mode>` when the theme has none for the mode, then restarts hyprpaper. |
 
 The Hyprland, kitty, btop, and Claude Code files come from Omarchy's templates in `files/cfg/themes/templates/`.
@@ -82,7 +84,7 @@ Run the setup again after you change `brave-theme-policy`. Until the setup runs,
 Each app keeps a dark and a light version of the theme, so `set-color` changes the mode without a call to `set-theme`.
 An ID that is missing or unknown selects Catppuccin in the bar and in Neovim. `set-theme` rejects an unknown ID.
 
-`files/cfg/themes/generate.cjs` builds the T3 Code theme files, the Rofi and Mako palettes, the Brave seed colors, and the Hyprland, kitty, btop, and Claude Code files from the palettes in `Themes.js`.
+`files/cfg/themes/generate.cjs` builds the T3 Code theme files, the Rofi and Mako palettes, the Brave seed colors, the GTK colors, the qt6ct palettes, and the Hyprland, kitty, btop, and Claude Code files from the palettes in `Themes.js`.
 It also builds omp themes for Kanagawa and Everforest, which omp does not include.
 `set-theme` copies those omp themes to `~/.omp/agent/themes/rice-*.json`.
 
@@ -112,6 +114,13 @@ To return Claude Code to its stock dark theme, run:
 ```sh
 jq '.theme = "dark"' ~/.claude/settings.json > /tmp/claude-settings.json && mv /tmp/claude-settings.json ~/.claude/settings.json
 rm -f ~/.claude/themes/rice.json
+```
+
+To return GTK and Qt apps to their stock look, run the commands below. Then remove the `QT_*` lines from `hyprland.conf` and `home.nix`, and log in again.
+
+```sh
+gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark
+rm -rf ~/.local/share/themes/rice-* ~/.config/gtk-4.0/gtk.css ~/.config/qt6ct/colors.conf
 ```
 
 To remove the Brave setup and return each profile to its own color, run:

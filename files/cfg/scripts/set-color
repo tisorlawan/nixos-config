@@ -27,19 +27,15 @@ printf '%s\n' "$mode" >"$HOME/.color"
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 
-# rofi, mako, hyprland borders, kitty, btop, claude, wallpaper, and brave:
-# write the selected theme's files for this mode and reload what changed.
+# rofi, mako, hyprland borders, kitty, btop, claude, Qt, GTK, wallpaper, and
+# brave: write the selected theme's files for this mode and reload what changed.
 "$SCRIPT_DIR/theme-colors" || true
 
-# system color scheme: GTK apps and Brave (appearance mode "GTK") follow this
-# live via xdg-desktop-portal (org.freedesktop.appearance).
+# system color scheme: GTK 4 apps and Brave (appearance mode "GTK") follow this
+# live via xdg-desktop-portal (org.freedesktop.appearance). theme-colors sets
+# the GTK theme.
 if command -v gsettings >/dev/null 2>&1; then
-  case "$mode" in
-    light) gsettings set org.gnome.desktop.interface color-scheme prefer-light
-      gsettings set org.gnome.desktop.interface gtk-theme Adwaita ;;
-    dark) gsettings set org.gnome.desktop.interface color-scheme prefer-dark
-      gsettings set org.gnome.desktop.interface gtk-theme Adwaita-dark ;;
-  esac
+  gsettings set org.gnome.desktop.interface color-scheme "prefer-$mode"
 fi
 
 # process-compose: theme applies on next launch (no live reload API).

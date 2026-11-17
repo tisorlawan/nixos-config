@@ -15,7 +15,7 @@ CONFIG=$CFG/config
 # ~/.config entries that have the same name as their directory under files/cfg/config.
 CONFIG_ENTRIES=(
   alacritty.toml bspwm dunst eww fish greenclip.toml gtk-3.0 gtk-4.0 hypr kitty
-  lazygit mako mpd mpv nix nushell nvim picom quickshell redshift
+  lazygit mako mpd mpv nix nushell nvim picom qt6ct quickshell redshift
   rofi swappy sxhkd user-dirs.dirs waybar wezterm yazi zellij
 )
 
@@ -125,18 +125,17 @@ run_target() {
       link "$CONFIG/tern" "$HOME/.config/tern"
       ;;
 
-    # CLIProxyAPI: install, then replace its config with the one in this repository.
+    # CLIProxyAPI: link the config in this repository, then let the installer in ~/tools install
+    # the latest release, write the user unit, and restart the service.
     cliproxyapi)
-      curl -fsSL https://raw.githubusercontent.com/router-for-me/cliproxyapi-installer/refs/heads/master/cliproxyapi-installer | bash
-      link "$CFG/cli-proxy-api/config.yaml" "$HOME/cliproxyapi/config.yaml"
-      systemctl --user enable cliproxyapi.service
-      systemctl --user restart cliproxyapi.service
+      link "$CFG/cli-proxy-api/config.yaml" "$HOME/tools/cliproxyapi/config.yaml"
+      "$HOME/tools/cliproxyapi/install-cliproxyapi.sh"
       ;;
 
     # Every 10 minutes, give the Codex and Claude accounts whose weekly quota resets soonest the
     # highest CLIProxyAPI "priority", so their quota is used before it resets.
     account-reset-priority)
-      link "$CFG/cli-proxy-api/account_reset_priority.py" "$HOME/cliproxyapi/account_reset_priority.py"
+      link "$CFG/cli-proxy-api/account_reset_priority.py" "$HOME/tools/cliproxyapi/account_reset_priority.py"
       for unit in account-reset-priority.service account-reset-priority.timer; do
         link "$CONFIG/systemd/user/$unit" "$HOME/.config/systemd/user/$unit"
       done

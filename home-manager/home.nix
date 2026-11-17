@@ -147,6 +147,10 @@ in
         (flameshot.override { enableWlrSupport = true; })
         playerctl
         adwaita-icon-theme
+        # GTK and Qt follow the theme picker: ~/.scripts/theme-colors builds
+        # GTK themes on adw-gtk3 and writes the qt6ct palette.
+        adw-gtk3
+        qt6Packages.qt6ct
         file-roller
         eww
         rofi
@@ -510,6 +514,8 @@ in
       LANG=en_US.UTF-8
       LC_ALL=en_US.UTF-8
       LC_CTYPE=en_US.UTF-8
+      QT_QPA_PLATFORMTHEME=qt6ct
+      QT_PLUGIN_PATH=$HOME/.nix-profile/lib/qt-6/plugins
     '';
 
   };

@@ -11,6 +11,10 @@
 #   kitty     ~/.config/kitty/themes/rice.conf, then SIGUSR1 to every kitty.
 #   btop      ~/.config/btop/themes/rice.theme, read when btop starts.
 #   claude    ~/.claude/themes/rice.json. Claude Code reloads it on change.
+#   qt        ~/.config/qt6ct/colors.conf. qt6ct reloads running Qt apps.
+#   gtk       ~/.config/gtk-4.0/gtk.css, read when a GTK 4 app starts, and
+#             the GTK themes ~/.local/share/themes/rice-<theme>{,-dark}.
+#             gsettings selects one, and running GTK 3 apps reload it.
 #   wallpaper ~/.rice/wallpaper/current, a link to wallpaper/<theme>-<mode>, or
 #             to wallpaper/<mode> when the theme has no wallpapers for the
 #             mode. hyprpaper restarts to read it.
@@ -29,6 +33,7 @@ SCRIPT_DIR="$(cd -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")" && p
 THEMES_DIR="$(cd -- "$SCRIPT_DIR/../themes" && pwd)"
 WALLPAPER_DIR="$(cd -- "$SCRIPT_DIR/../../../wallpaper" && pwd)"
 CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}"
+DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}"
 
 theme="$("$SCRIPT_DIR/set-theme" --current)"
 case "$(cat "$HOME/.color" 2>/dev/null || true)" in
@@ -72,6 +77,47 @@ if write "$CONFIG_DIR/kitty/themes/rice.conf" "$THEMES_DIR/kitty/$theme-$mode.co
 fi
 
 write "$CONFIG_DIR/btop/themes/rice.theme" "$THEMES_DIR/btop/$theme-$mode.theme" || true
+
+# qt6ct watches its config folder and reloads the palette in running apps.
+write "$CONFIG_DIR/qt6ct/colors.conf" "$THEMES_DIR/qt6ct/$theme-$mode.conf" || true
+
+# libadwaita ignores the GTK theme. GTK 4 reads gtk.css when an app starts, and
+# the file holds both modes.
+write "$CONFIG_DIR/gtk-4.0/gtk.css" "$THEMES_DIR/gtk4/$theme.css" || true
+
+# GTK 3 reloads its theme when the theme name changes. Like adw-gtk3, each
+# theme comes as rice-<theme> (light, plus a dark variant in gtk-dark.css) and
+# rice-<theme>-dark, and gsettings selects one by mode. libhandy apps need the
+# pair: they turn X-dark into X with its dark variant. Each stylesheet is
+# adw-gtk3 followed by the palette. GTK 4 apps without libadwaita take
+# adw-gtk3's look from the theme and the colors from gtk.css above.
+
+# gtk_variant THEME FILE ADW_THEME PALETTE_MODE: write FILE of a GTK theme for
+# GTK 3 and GTK 4.
+gtk_variant() {
+  local dir="$DATA_DIR/themes/$1" adw="$HOME/.nix-profile/share/themes/$3"
+  write "$dir/gtk-3.0/$2" \
+    <(printf '@import url("file://%s/gtk-3.0/gtk.css");\n\n' "$adw") \
+    "$THEMES_DIR/gtk3/$theme-$4.css" || true
+  write "$dir/gtk-4.0/$2" <(printf '@import url("file://%s/gtk-4.0/gtk.css");\n' "$adw") || true
+}
+
+gtk_variant "rice-$theme" gtk.css adw-gtk3 light
+gtk_variant "rice-$theme" gtk-dark.css adw-gtk3-dark dark
+gtk_variant "rice-$theme-dark" gtk.css adw-gtk3-dark dark
+
+if command -v gsettings >/dev/null 2>&1; then
+  gtk_theme="rice-$theme"
+  [ "$mode" = dark ] && gtk_theme="rice-$theme-dark"
+  gsettings set org.gnome.desktop.interface gtk-theme "$gtk_theme"
+fi
+
+for dir in "$DATA_DIR"/themes/rice-*; do
+  case "${dir##*/}" in
+  "rice-$theme" | "rice-$theme-dark") ;;
+  *) rm -rf -- "$dir" ;;
+  esac
+done
 
 write "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/themes/rice.json" "$THEMES_DIR/claude/$theme-$mode.json" || true
 

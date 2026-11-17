@@ -151,6 +151,12 @@ If a request conflicts with repository evidence or would create a fragile design
 export UV_INDEX_GEN_AI_INTERNAL_USERNAME="oauth2accesstoken"
 export UV_INDEX_GEN_AI_INTERNAL_PASSWORD="$(gcloud auth print-access-token)"
 ```
+- For a python file do this order
+    - Imports
+    - Constants and configuration
+    - Public / high-level functions (order by importance)
+    - Private helper functions (_helper_name)
+    - main() and the if __name__ == "__main__": entry point
 
 ## Code Style
 

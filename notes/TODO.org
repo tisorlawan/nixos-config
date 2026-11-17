@@ -1,18 +1,22 @@
 * 16 November 2026
 ** TODO Logging gl-observability https://chat.google.com/room/AAQA-yhQs0Y/JUwCnbpt5GI/hB4Q_flka_0?cls=10
+** TODO GLChat Evals https://chat.google.com/room/AAQAAFd5mQk/uaDTMG4zzio/uaDTMG4zzio?cls=10
 ** Implement https://github.com/GDP-ADMIN/gl-sdk/issues/8313
 ** GLLM
 *** DONE feat(gllm-docproc): lazy import LightRAG and LlamaIndex graph indexers (https://github.com/GDP-ADMIN/gl-sdk/pull/8499)
 ** GLLM Evals
 *** TODO Update evals in nava etc gllm_inference-v0.6.189 (https://chat.google.com/room/AAQAE-LjMvQ/HYNGT4JirBg/5jZs3Rpq_fs?cls=10)
+*** DONE docs(gllm-evals): add Evals in pytest tutorial (https://github.com/GDP-ADMIN/gl-sdk/pull/8463)
 *** DONE https://github.com/GDP-ADMIN/glchat-agents/pull/523
 *** TODO Review PR
-**** TODO https://github.com/GDP-ADMIN/glchat-agents/pull/280
-**** TODO https://github.com/GDP-ADMIN/gl-sdk/pull/8453
-**** TODO https://github.com/GDP-ADMIN/gl-sdk/pull/8463
+**** TODO test: add On Lee calendar evaluation suite (https://github.com/GDP-ADMIN/glchat-agents/pull/280)
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/8453
 **** DONE https://github.com/GDP-ADMIN/glchat-agents/pull/483
 ** NER
-*** TODO perf: cut NER worker RAM by 34% by running ONNX without PyTorch (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/243)
+*** TODO feat: download the image's own model when LLM_MODELS is not set (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/244)
+    Then update glops
+*** DONE perf: cut NER worker RAM by 34% by running ONNX without PyTorch (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/243)
+**** Kabarin tim infra
 *** TODO release the image so it apply the tracing reduction  (https://chat.google.com/room/AAQALJ1PW8g/cyCyDrOKR8w/cyCyDrOKR8w?cls=10 )
 *** TODO [GLChat NER] 2 findings - DAST scan #395
 *** TODO PERSON dipisah tab https://chat.google.com/room/AAQAYtQZtE0/a1sjC6GY-Ws/_okEaa3tb9s?cls=10
@@ -21,6 +25,13 @@
 ** MAB
 *** Recommendation
 **** Use muse-ember for LAJ LLM https://chat.google.com/room/AAQA2VsQdXg/hSE-mnfT9LM/hSE-mnfT9LM?cls=10
+*** TODO Handle API Key rotation
+    1. request rotate OpenAI Prod (staging dan local nggak usah krn kita bisa create API key sendiri karena ada akses)
+    2. request rotate OpenRouter Prod
+    3. request rotate OpenRouter Staging
+    4. untuk masing-masing orang request OpenrRouter Local
+*** TODO Resolve MAB Korikachat Beta API Key issue
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1264
 *** TODO rerun botanica_embedding after debugging done by DD
 *** TODO Korikachat Beta Token usage
 *** TODO Implement MAB skill
@@ -54,6 +65,9 @@
 *** TODO NEW Summarization Approach https://chat.google.com/room/AAQAYdGYTVg/u4nohhxhT_I/u4nohhxhT_I?cls=10
 *** TODO End to end testing for summarization -> actually calling model
 ** GLLM Privacy
+*** TODO Feature Custom Masking
+**** https://docs.google.com/document/d/1lsFiOWLF_fTUra9TN1zWsErAt6P4QDhk-PXXCdDVcFw/edit?tab=t.y101264i3zdj#heading=h.bj79ljx9eqg8
+**** https://claude.ai/artifact/6oR9tphZaxpBbEuAi5gVtw
 *** TODO https://github.com/GDP-ADMIN/gl-sdk/issues/8392
 *** TODO Partial match https://chat.google.com/dm/kVRRkyAAAAE/HR0oKY3CR2Y/HR0oKY3CR2Y?cls=10
 *** TODO feat(gllm-privacy): support configurable URL-ignored entities (https://github.com/GDP-ADMIN/gl-sdk/pull/5431)

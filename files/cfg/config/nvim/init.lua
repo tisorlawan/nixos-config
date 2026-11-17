@@ -420,17 +420,20 @@ vim.diagnostic.config({
 	underline = true,
 	update_in_insert = false,
 })
--- Errors get a straight underline in every colorscheme, in the scheme's own
--- color. Most schemes draw them with an undercurl.
+-- Diagnostics of every severity get a straight underline in every colorscheme,
+-- in the scheme's own color. Most schemes draw them with an undercurl.
 vim.api.nvim_create_autocmd("ColorScheme", {
-	group = vim.api.nvim_create_augroup("diagnostic_error_underline", { clear = true }),
+	group = vim.api.nvim_create_augroup("diagnostic_underline", { clear = true }),
 	callback = function()
-		local hl = vim.api.nvim_get_hl(0, { name = "DiagnosticUnderlineError", link = false })
-		hl.undercurl = nil
-		hl.underline = true
-		vim.api.nvim_set_hl(0, "DiagnosticUnderlineError", hl)
+		for _, severity in ipairs({ "Error", "Warn", "Info", "Hint" }) do
+			local name = "DiagnosticUnderline" .. severity
+			local hl = vim.api.nvim_get_hl(0, { name = name, link = false })
+			hl.undercurl = nil
+			hl.underline = true
+			vim.api.nvim_set_hl(0, name, hl)
+		end
 	end,
-	desc = "Underline diagnostic errors without a curl",
+	desc = "Underline diagnostics without a curl",
 })
 
 local function sync_diagnostics(bufnr)

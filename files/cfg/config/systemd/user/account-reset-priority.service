@@ -5,4 +5,4 @@ After=network-online.target cliproxyapi.service agent-usage-stats.service
 
 [Service]
 Type=oneshot
-ExecStart=%h/cliproxyapi/account_reset_priority.py
+ExecStart=%h/tools/cliproxyapi/account_reset_priority.py

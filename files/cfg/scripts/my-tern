@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 # Use system Mesa and Vulkan for transparent Wayland surfaces.
-exec "$HOME/.scripts/clean-gl-env" env WGPU_BACKEND=vulkan "$HOME/.local/bin/tern" "$@"
+exec "$HOME/.scripts/clean-gl-env" env STENCIL_GPU_API=vulkan "$HOME/.local/bin/tern" "$@"

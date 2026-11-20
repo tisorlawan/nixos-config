@@ -8,13 +8,13 @@ Dotfiles, scripts, and Nix configuration for my machines. Clone this repository 
 |------|----------|
 | `files/cfg/config/` | Per-program configs, linked into `~/.config` (nvim, kitty, hypr, fish, mpv, and others). |
 | `files/cfg/scripts/` | Shell and Python helpers, linked to `~/.scripts`. |
-| `files/cfg/local/` | `~/.local` content: the T3 launchers, the Tern desktop entry, and the agent usage dashboard. |
+| `files/cfg/local/` | `~/.local` content: desktop launchers, desktop entries, and the local quota service. |
 | `files/cfg/` | Dotfiles for `$HOME`: `bashrc`, `gitconfig`, `tmux.conf`, `vimrc`, and similar. |
 | `emacs/` | Emacs config, linked to `~/.config/emacs`. Build output is gitignored. |
 | `.agents/` | `AGENTS.md`, commands, and skills shared by Claude Code, Codex, and opencode. |
 | `flake.nix`, `hosts/default/` | NixOS system config. |
 | `home-manager/` | Standalone home-manager flake for machines that do not run NixOS. |
-| `install-script/` | Bootstrap scripts for fresh machines (`install.sh`, `runpod.sh`) and the dashboard setup. |
+| `install-script/` | Bootstrap scripts for fresh machines (`install.sh`, `runpod.sh`). |
 | `notes/`, `learning/` | Org notes and study notes. |
 | `fonts/`, `wallpaper/` | Font files and wallpapers. |
 | `pass.sh`, `passlock.enc`, `priv/`, `secrets.org.gpg`, `backup.sh` | Encrypted secrets and the scripts that open them. |
@@ -26,9 +26,9 @@ Dotfiles, scripts, and Nix configuration for my machines. Clone this repository 
 | Link configs into `$HOME` | `./links.sh all`, or `./links.sh nvim codex` for specific targets |
 | Rebuild NixOS | `./rebuild.sh` |
 | Rebuild home-manager | `cd home-manager && ./update.sh` (add `--upgrade` to update flake inputs first) |
-| Set up the usage dashboard only | `install-script/setup-agent-usage-stats.sh` |
+| Set up the quota service and account-priority timer | `./links.sh cli-quota account-reset-priority` |
 
-`links.sh` deletes each destination before it links, so a file that already exists in `$HOME` is replaced. The `cliproxyapi` target also runs `~/tools/cliproxyapi/install-cliproxyapi.sh`, which installs or upgrades CLIProxyAPI and restarts it. The `agent-usage-stats` target builds the usage dashboard. Run `./links.sh` with no arguments to list the targets. See [SETUP.md](SETUP.md) for the one-time install steps.
+`links.sh` deletes each destination before it links, so a file that already exists in `$HOME` is replaced. The `cliproxyapi` target also runs `~/tools/cliproxyapi/install-cliproxyapi.sh`, which installs or upgrades CLIProxyAPI and restarts it. Run `./links.sh` with no arguments to list the targets. See [SETUP.md](SETUP.md) for the one-time install steps.
 
 ## T3 Code stable launcher
 
@@ -68,15 +68,15 @@ The `quiet-grip` plugin hides each pane's **Drag to move the pane** grip until t
 
 ## Account priority
 
-When CLIProxyAPI has several Codex or Claude logins, `files/cfg/cli-proxy-api/account_reset_priority.py` steers new sessions to the account whose weekly quota resets soonest, so that quota is used before it expires. It reads the local dashboard's `/api/quota` endpoint and writes a `priority` field into the auth files in `~/.cli-proxy-api`. The dashboard owns provider reads and HTTP 429 cooldowns. The proxy reloads the auth files without a restart and compares priority only between accounts of the same provider. Accounts at their 5-hour or weekly limit drop to priority 0.
+When CLIProxyAPI has several Codex or Claude logins, `files/cfg/cli-proxy-api/account_reset_priority.py` steers new sessions to the account whose weekly quota resets soonest, so that quota is used before it expires. It reads the local quota API and writes a `priority` field into the auth files in `~/.cli-proxy-api`. The proxy reloads the auth files without a restart and compares priority only between accounts of the same provider. Accounts at their 5-hour or weekly limit drop to priority 0.
 
-The `account-reset-priority.timer` user unit runs it every 10 minutes and requires `agent-usage-stats.service`. `links.sh` links the script to `~/tools/cliproxyapi/` and the units to `~/.config/systemd/user/`, then enables the timer. Run the script with `--dry-run` to see the ranking without writing, or `--provider claude` to limit it to one provider. Accounts with a quota error, or quota data older than 10 minutes, keep their current priority. Check past runs with `journalctl --user -u account-reset-priority`.
+The `account-reset-priority.timer` user unit runs the script about every 10 minutes. It needs `cli-quota.service`. Run `./links.sh cli-quota account-reset-priority` to link and enable both. Run the script with `--dry-run` to see the ranking without writing, or `--provider claude` to limit it to one provider. Accounts with a quota error, or quota data older than 10 minutes, keep their current priority. Check past runs with `journalctl --user -u account-reset-priority`.
 
-## Agent usage dashboard
+## Quota service
 
-The dashboard shows Codex and Claude token usage at http://127.0.0.1:8770, grouped by model and by day in WIB (UTC+7). The React app is in `files/cfg/local/share/agent-usage-stats`, and its systemd unit is `files/cfg/config/systemd/user/agent-usage-stats.service`.
+`cli-quota.service` serves quota data and reset credits to Quickshell at `http://127.0.0.1:8770/api/quota`. It uses Python's standard library and backs off after provider rate limits. Run `./links.sh cli-quota` to set up the service without the account-priority timer. Use `systemctl --user restart cli-quota.service` after changing the Python code.
 
-`setup-agent-usage-stats.sh` links the app to `~/.local/share/agent-usage-stats` and `~/tools/codex-usage-stats`, links the unit into `~/.config/systemd/user`, builds the app, and enables the service at login. Pass `--skip-build` to relink and restart without rebuilding. Dependencies, builds, and usage snapshots are gitignored. The [dashboard README](files/cfg/local/share/agent-usage-stats/README.md) covers development and token accounting.
+The service reads Codex and Claude credentials from `~/.cli-proxy-api` and Antigravity credentials from T3. To refresh an expired Antigravity access token in memory, it needs `~/.config/cli-quota/antigravity-client.json` with `client_id` and `client_secret`. Keep that file private and outside the repository.
 
 ## Wallpapers
 

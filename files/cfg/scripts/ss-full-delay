@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+# Wait 2 seconds, capture every output with the cursor, save to /tmp/screenshot, copy to clipboard, notify.
+set -euo pipefail
+
+dir=/tmp/screenshot
+
+sleep 2
+file="$dir/$(date +%Y-%m-%d-%H-%M-%S).png"
+mkdir -p "$dir"
+grim -c "$file"
+
+wl-copy --type image/png <"$file"
+notify-send --icon "$file" "Screenshot" "Saved to $file and copied to clipboard"

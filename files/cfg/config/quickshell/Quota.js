@@ -1,4 +1,4 @@
-// The dashboard reports percent used. The widget only exposes percent remaining.
+// The API reports percent used. The widget only shows percent remaining.
 function parseDocument(text) {
   const document = JSON.parse(text);
   if (!document || !Array.isArray(document.accounts)

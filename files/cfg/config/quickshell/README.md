@@ -10,7 +10,7 @@ Minimal status bar for Hyprland with [Quickshell](https://quickshell.outfoxxed.m
 | `Bar.qml` | Bar layout: workspaces, media, stats, systray, clock. |
 | `Clock.qml` | Standalone top-right clock window with its own visibility toggle. |
 | `QuotaWidget.qml` | Bar button and panel for provider quotas, accounts, and reset times. |
-| `QuotaData.qml` | Shared quota data from the local dashboard API. |
+| `QuotaData.qml` | Shared quota data from the local quota API. |
 | `Quota.js` | Quota response parser and reset countdowns. |
 | `ResetData.qml` | Reset credit list, selection, and request state. |
 | `ResetCredits.qml` | Credit entries and reset confirmation. |
@@ -132,12 +132,13 @@ brave-browser --refresh-platform-policy --no-startup-window
 
 ## Account quotas
 
-Select **AI** in the bar to open the CLIProxy quota panel. The number shows the account count.
+Select **AI** in the bar to open the quota panel. The number shows the account count.
 The panel groups accounts by provider. Each quota row shows the limit, remaining percent, and reset countdown.
 Each account also shows its reset credit count when available.
 
 The `P20` label shows the priority value from that account's auth JSON. Higher values come first within each provider.
-The `account-reset-priority.timer` runs the priority script about every 10 minutes. The dashboard only reads the stored value.
+Accounts without a priority, such as Antigravity, show no label.
+The `account-reset-priority.timer` runs the priority script about every 10 minutes. The quota service only reads the stored value.
 
 Point to a reset count to see the available credit entries and their expiry dates.
 Select **Use** beside an entry, then select **Use reset** to confirm that credit.
@@ -149,15 +150,17 @@ If the result is uncertain, check the account before another attempt. The widget
 
 Select **↻** to refresh the data. Select **×**, press Escape, or click outside the panel to close it.
 
-The widget reads `http://127.0.0.1:8770/api/quota` from the local
-[agent usage dashboard](../../local/share/agent-usage-stats/README.md).
-The dashboard reads the accounts that CLIProxy stores. It supports Claude and Codex quotas.
+The widget reads `http://127.0.0.1:8770/api/quota` from `cli-quota.service`.
+The service reads the Claude and Codex accounts that CLIProxy stores, and the Antigravity login that T3 keeps for agy.
+Antigravity shows the `Gemini 5h` and `Gemini 7d` limits that Gemini models share, the same numbers as agy's `/usage` panel.
+Google returns the Gemini limits only to a recent `antigravity/cli/<version>` user agent, so the service sends the installed agy version.
+The service reads them from `daily-cloudcode-pa.googleapis.com`, the host agy uses. The production host keeps separate quota.
 Quickshell needs no provider token or management key. Hover only reads the reset list.
 Only the **Use reset** confirmation sends a reset request.
 
-The widget refreshes every 60 seconds. The dashboard reads each account's provider quota at most once every five minutes.
+The widget refreshes every 60 seconds. The quota service reads each account's provider quota at most once every five minutes.
 The priority script and Claude credit lists share those reads.
-After HTTP 429, the dashboard pauses reads for that provider. It respects `Retry-After` and increases the cooldown after repeated failures.
+After HTTP 429, the quota service pauses reads for that provider. It respects `Retry-After` and increases the cooldown after repeated failures.
 
 The panel keeps the last known quota and shows the next check time. This cannot guarantee that a provider never returns HTTP 429.
 
@@ -165,10 +168,10 @@ If a request fails, the panel keeps the last successful data and shows an error.
 An exclamation mark in the bar indicates an account error, a request error, or data older than three minutes.
 The provider endpoints are undocumented and can change. Other CLIProxy providers do not appear in this API.
 
-If the API is unavailable, check the dashboard service:
+If the API is unavailable, check the quota service:
 
 ```sh
-systemctl --user status agent-usage-stats.service
+systemctl --user status cli-quota.service
 ```
 
 Run the quota parser checks with Node.js:

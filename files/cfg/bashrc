@@ -180,3 +180,7 @@ boat() {
   return "$boat_status"
 }
 # ASCII BOAT SHELL INTEGRATION END boat
+
+
+# Added by Antigravity CLI installer
+export PATH="/home/agung-b-sorlawan/.local/bin:$PATH"

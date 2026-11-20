@@ -3,7 +3,7 @@
   "scroll_speed": 400,
   "cursor": {
     "programs": true,
-    "trail": "blaze"
+    "trail": "comet"
   },
   "link_click": "Command",
   "link_target": "Browser",
@@ -17,6 +17,7 @@
   "padding_x": 8,
   "padding_y": 8,
   "code_font": "Berkeley Mono",
+  "opacity": 70,
   "blur": 24,
   "lenses_disabled": [
     "py.test",
@@ -33,6 +34,14 @@
     "diff_wrap": true,
     "path_tree": true,
     "diff_hunk_view": true
+  },
+  "sqlite": {
+    "recent": [
+      {
+        "path": "/home/agung-b-sorlawan/Downloads/tasks-rag-2026-11-20.csv",
+        "read_only": false
+      }
+    ]
   },
   "keybinds": {
     "alt+,": "rename_session",

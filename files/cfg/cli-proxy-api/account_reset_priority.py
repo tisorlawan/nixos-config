@@ -4,7 +4,7 @@
 CLIProxyAPI reads a top-level "priority" from each auth JSON (higher wins; the
 highest available tier is used until it is in cooldown). Priority is compared
 only between accounts of the same provider. For each supported provider this
-script reads the local dashboard's shared quota API and
+script reads the local quota API and
 rewrites "priority" so that:
 
   * usable accounts are ranked by weekly reset time, soonest first, with the
@@ -12,7 +12,7 @@ rewrites "priority" so that:
   * accounts at their 5-hour or weekly limit drop to priority 0;
   * accounts whose usage lookup fails keep their current priority.
 
-Supported providers: Codex and Claude. The dashboard owns provider reads and cooldowns.
+Supported providers: Codex and Claude. The quota service owns provider reads and cooldowns.
 
 Files are only rewritten when the value changes. Each write is an atomic
 replace guarded by a re-read, so a concurrent token refresh by the proxy is
@@ -192,7 +192,7 @@ def main():
         "--dry-run", action="store_true", help="print the plan without writing"
     )
     parser.add_argument(
-        "--quota-url", default=QUOTA_URL, help="local dashboard quota API"
+        "--quota-url", default=QUOTA_URL, help="local quota API"
     )
     parser.add_argument(
         "--provider",

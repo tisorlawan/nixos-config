@@ -27,7 +27,7 @@ TARGETS=(
   claude codex agents
   ghostty rclone
   t3code codex-desktop tern
-  cliproxyapi agent-usage-stats account-reset-priority
+  cliproxyapi cli-quota account-reset-priority
 )
 
 usage() {
@@ -132,6 +132,13 @@ run_target() {
       "$HOME/tools/cliproxyapi/install-cliproxyapi.sh"
       ;;
 
+    cli-quota)
+      link "$CFG/local/share/cli-quota" "$HOME/.local/share/cli-quota"
+      link "$CONFIG/systemd/user/cli-quota.service" "$HOME/.config/systemd/user/cli-quota.service"
+      systemctl --user daemon-reload
+      systemctl --user enable --now cli-quota.service
+      ;;
+
     # Every 10 minutes, give the Codex and Claude accounts whose weekly quota resets soonest the
     # highest CLIProxyAPI "priority", so their quota is used before it resets.
     account-reset-priority)
@@ -142,9 +149,6 @@ run_target() {
       systemctl --user daemon-reload
       systemctl --user enable --now account-reset-priority.timer
       ;;
-
-    # Agent usage dashboard: link the app and unit, build the React app, start the service.
-    agent-usage-stats) bash install-script/setup-agent-usage-stats.sh ;;
   esac
 }
 

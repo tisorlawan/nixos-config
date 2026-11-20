@@ -210,5 +210,128 @@ class ClaudeResets(unittest.TestCase):
             quota.reset_credit("0", None, temp.name, lambda url, headers: claude_usage(GRANT), post)
 
 
+SUMMARY = {"groups": [
+    {"displayName": "Gemini Models", "buckets": [
+        {"bucketId": "gemini-weekly", "window": "weekly", "resetTime": "2026-11-27T11:51:26Z", "remainingFraction": 0.68},
+        {"bucketId": "gemini-5h", "window": "5h", "resetTime": "2026-11-20T21:51:26Z", "remainingFraction": 0.87}]},
+    {"displayName": "Claude and GPT models", "buckets": [
+        {"bucketId": "3p-weekly", "window": "weekly", "resetTime": "2026-11-27T17:05:34Z", "remainingFraction": 1},
+        {"bucketId": "3p-5h", "window": "5h", "resetTime": "2026-11-20T22:05:34Z", "remainingFraction": 1}]},
+    {"displayName": "Gemini 4 Argon", "buckets": [
+        {"bucketId": "gemini-argon-wtu-weekly", "window": "weekly", "resetTime": "2026-11-27T17:05:34Z",
+            "remainingFraction": 1}]}]}
+
+
+def antigravity_reply(url):
+    endpoint = url.rsplit(":", 1)[1]
+
+    return {"loadCodeAssist": {"cloudaicompanionProject": "project-1"}, "retrieveUserQuotaSummary": SUMMARY}[endpoint]
+
+
+class Antigravity(unittest.TestCase):
+    def login(self, expiry="2999-01-01T00:00:00.123456789+07:00", client=True):
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        token = Path(temp.name, "ac0a3dfd6ddd", "antigravity-acp", "antigravity-oauth-token")
+        token.parent.mkdir(parents=True)
+        token.write_text(json.dumps({"token": {"access_token": "stored", "refresh_token": "refresh",
+            "expiry": expiry, "token_type": "Bearer"}, "id_token_email": "g@example.com"}))
+        client_path = Path(temp.name, "client.json")
+
+        if client:
+            client_path.write_text(json.dumps({"client_id": "id", "client_secret": "secret"}))
+
+        return token, client_path
+
+    def collect(self, token, client_path, post):
+        return quota.collect_quota(Path(token).parent, lambda *args: {}, None, [token], post,
+            client_path)["accounts"][0]
+
+    def test_windows_show_only_the_gemini_limits_five_hours_first(self):
+        windows = quota.antigravity_windows(SUMMARY)
+
+        self.assertEqual([(item["label"], round(item["percent"], 1), item["resets_at"]) for item in windows],
+            [("Gemini 5h", 13.0, "2026-11-20T21:51:26Z"), ("Gemini 7d", 32.0, "2026-11-27T11:51:26Z")])
+
+    def test_a_missing_fraction_is_used_up_and_a_summary_without_gemini_shows_nothing(self):
+        used_up = {"groups": [{"buckets": [{"bucketId": "gemini-5h", "resetTime": "2026-11-20T21:51:26Z"}]}]}
+        old_client = {"groups": [SUMMARY["groups"][1]]}
+
+        self.assertEqual(quota.antigravity_windows(used_up)[0]["percent"], 100.0)
+        self.assertEqual(quota.antigravity_windows(old_client), [])
+
+    def test_a_valid_token_reads_the_project_then_the_summary_as_antigravity(self):
+        token, client_path = self.login()
+        calls = []
+
+        def post(url, headers, body):
+            calls.append((url, headers, body))
+
+            return antigravity_reply(url)
+
+        account = self.collect(token, client_path, post)
+
+        self.assertEqual([call[0] for call in calls], [f"https://daily-cloudcode-pa.googleapis.com/v1internal:{name}"
+            for name in ("loadCodeAssist", "retrieveUserQuotaSummary")])
+        self.assertEqual(calls[1][1], {"User-Agent": quota.antigravity_user_agent(), "Authorization": "Bearer stored"})
+        self.assertRegex(calls[1][1]["User-Agent"], r"^antigravity/cli/\d+\.\d+\.\d+$")
+        self.assertEqual(calls[1][2], {"project": "project-1"})
+        self.assertEqual((account["id"], account["provider"], account["name"]),
+            ("antigravity-ac0a3dfd", "antigravity", "g@example.com"))
+        self.assertEqual(account["error"], "")
+        self.assertEqual(len(account["windows"]), 2)
+        self.assertTrue(account["updated_at"])
+
+    def test_an_expired_token_is_refreshed_in_memory_and_the_file_is_left_alone(self):
+        token, client_path = self.login(expiry="2020-01-01T00:00:00+00:00")
+        before = token.read_text()
+        calls = []
+
+        def post(url, headers, body):
+            calls.append((url, headers, body))
+
+            if url == quota.GOOGLE_TOKEN_URL:
+                return {"access_token": "fresh", "expires_in": 3599}
+
+            return antigravity_reply(url)
+
+        account = self.collect(token, client_path, post)
+
+        self.assertEqual(calls[0][2], {"grant_type": "refresh_token", "refresh_token": "refresh",
+            "client_id": "id", "client_secret": "secret"})
+        self.assertEqual(calls[2][1]["Authorization"], "Bearer fresh")
+        self.assertEqual(account["error"], "")
+        self.assertEqual(token.read_text(), before)
+
+    def test_a_rejected_refresh_token_reports_an_expired_sign_in(self):
+        token, client_path = self.login(expiry="2020-01-01T00:00:00+00:00")
+
+        def post(url, headers, body):
+            raise urllib.error.HTTPError(url, 400, "invalid_grant", {}, None)
+
+        account = self.collect(token, client_path, post)
+
+        self.assertEqual(account["error"], quota.ANTIGRAVITY_EXPIRED)
+        self.assertEqual(account["windows"], [])
+
+    def test_an_expired_token_without_the_client_file_sends_nothing(self):
+        token, client_path = self.login(expiry="2020-01-01T00:00:00+00:00", client=False)
+
+        def post(url, headers, body):
+            raise AssertionError("must not be sent")
+
+        account = self.collect(token, client_path, post)
+
+        self.assertIn("is missing", account["error"])
+
+    def test_a_file_that_is_not_a_login_is_skipped(self):
+        token, client_path = self.login()
+        token.write_text(json.dumps({"token": {"access_token": "t"}}))
+
+        accounts = quota.collect_quota(token.parent, lambda *args: {}, None, [token], None, client_path)["accounts"]
+
+        self.assertEqual(accounts, [])
+
+
 if __name__ == "__main__":
     unittest.main()

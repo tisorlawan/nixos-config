@@ -34,3 +34,7 @@ if type -q atuin
 end
 
 git wt --init fish | source
+
+
+# Added by Antigravity CLI installer
+set -gx PATH "/home/agung-b-sorlawan/.local/bin" $PATH

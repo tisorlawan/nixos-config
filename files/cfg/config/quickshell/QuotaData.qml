@@ -36,10 +36,10 @@ Singleton {
           root.generatedAt = document.generatedAt;
           root.error = "";
         } catch (failure) {
-          root.error = "Invalid quota response. Check the dashboard service.";
+          root.error = "Invalid quota response. Check cli-quota.service.";
         }
       } else {
-        root.error = "Quota unavailable. Check agent-usage-stats.service.";
+        root.error = "Quota unavailable. Check cli-quota.service.";
       }
       root.request = null;
     };
@@ -70,7 +70,7 @@ Singleton {
       const pending = root.request;
       root.request = null;
       if (pending) pending.abort();
-      root.error = "Quota request timed out. Check the dashboard service.";
+      root.error = "Quota request timed out. Check cli-quota.service.";
     }
   }
 

@@ -1,0 +1,11 @@
+[Unit]
+Description=Local quota API for Quickshell and CLIProxyAPI account priority
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 -Bu %h/.local/share/cli-quota/serve.py
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=default.target

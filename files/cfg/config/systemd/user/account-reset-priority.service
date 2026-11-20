@@ -1,7 +1,7 @@
 [Unit]
 Description=Prefer the CLIProxyAPI account (Codex, Claude) whose weekly quota resets soonest
-Requires=agent-usage-stats.service
-After=network-online.target cliproxyapi.service agent-usage-stats.service
+Requires=cli-quota.service
+After=network-online.target cliproxyapi.service cli-quota.service
 
 [Service]
 Type=oneshot

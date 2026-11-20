@@ -10,14 +10,15 @@ relevant checks. Give council the updated implementation; do not defer known
 fixes until reviews return. If the user wants to discard the implementation
 and explore new ideas, skip fixes to code being replaced.
 
-Bring in two delegates to help with the user's request, usually for review
-or feedback: Claude Opus and GPT Sol, both at high reasoning effort. Use the
-latest available version of each model.
+Use Claude Opus and GPT Sol by default. If the user names one or more models
+for the council, use only those models. For example, `council with Opus only`
+starts one delegate. Use high reasoning effort for each delegate. Honor any
+version the user names; otherwise use the latest available version of each model.
 
 In T3 Code, use `orchestrator_capabilities` to resolve the models, then
 `delegate_task` to start one delegate per model in parallel. Elsewhere, use
-the harness's subagent tools. If either model is unavailable, report it
-instead of substituting.
+the harness's subagent tools. Report any unavailable model without substituting
+another one.
 
 Give each delegate the request and relevant context. For review or feedback,
 keep their work read-only. Collect their responses and summarize the useful
@@ -41,7 +42,8 @@ Rounds: 2
 | GPT Sol | 8/10 | 10/10 |
 ```
 
-If a delegate gives no score, write `no score`. Do not invent one.
+List the delegates that took part, not the example names. If a delegate gives
+no score, write `no score`. Do not invent one.
 If the PR is open, edit the description. Do not post a comment for this.
 If there is no PR, put the same results in the final reply only.
 

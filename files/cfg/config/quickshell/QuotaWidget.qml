@@ -14,7 +14,7 @@ Chip {
   fill: expanded ? Theme.chipBlue : Theme.chipDark
   activeFocusOnTab: true
   Accessible.role: Accessible.Button
-  Accessible.name: "CLIProxy account quotas"
+  Accessible.name: "AI account quotas"
   Accessible.onPressAction: toggle()
   Keys.onReturnPressed: toggle()
   Keys.onSpacePressed: toggle()
@@ -75,7 +75,7 @@ Chip {
           spacing: 8
 
           Text {
-            text: "CLIProxy"
+            text: "AI quotas"
             color: Theme.text
             font.family: Theme.fontFamily
             font.pixelSize: 16
@@ -127,7 +127,7 @@ Chip {
           Layout.fillWidth: true
           visible: QuotaData.accountCount === 0
           text: QuotaData.busy && QuotaData.generatedAt === null ? "Read quotas…"
-            : QuotaData.generatedAt !== null ? "No Claude or Codex accounts." : ""
+            : QuotaData.generatedAt !== null ? "No accounts." : ""
           color: Theme.mutedText
           font.family: Theme.fontFamily
           font.pixelSize: Theme.fontSize
@@ -205,7 +205,8 @@ Chip {
                         elide: Text.ElideMiddle
                       }
                       Text {
-                        text: "P" + (account.modelData.priority === null ? "—" : account.modelData.priority)
+                        visible: account.modelData.priority !== null
+                        text: "P" + account.modelData.priority
                         color: Theme.mutedText
                         font.family: Theme.fontFamily
                         font.pixelSize: Theme.fontSize - 1

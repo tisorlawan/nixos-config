@@ -1,27 +1,10 @@
-* 16 November 2026
+* 23 November 2026
 ** TODO Logging gl-observability https://chat.google.com/room/AAQA-yhQs0Y/JUwCnbpt5GI/hB4Q_flka_0?cls=10
-** TODO GLChat Evals https://chat.google.com/room/AAQAAFd5mQk/uaDTMG4zzio/uaDTMG4zzio?cls=10
-** Implement https://github.com/GDP-ADMIN/gl-sdk/issues/8313
-** GLLM
-*** DONE feat(gllm-docproc): lazy import LightRAG and LlamaIndex graph indexers (https://github.com/GDP-ADMIN/gl-sdk/pull/8499)
+** TODO Implement https://github.com/GDP-ADMIN/gl-sdk/issues/8313
+** TODO PII Masking Feature for GLChat Admin (Grooming Feature Request Custom PII Masking)
 ** GLLM Evals
 *** TODO Update evals in nava etc gllm_inference-v0.6.189 (https://chat.google.com/room/AAQAE-LjMvQ/HYNGT4JirBg/5jZs3Rpq_fs?cls=10)
-*** DONE docs(gllm-evals): add Evals in pytest tutorial (https://github.com/GDP-ADMIN/gl-sdk/pull/8463)
-*** DONE https://github.com/GDP-ADMIN/glchat-agents/pull/523
-*** TODO Review PR
-**** TODO test: add On Lee calendar evaluation suite (https://github.com/GDP-ADMIN/glchat-agents/pull/280)
-**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/8453
-**** DONE https://github.com/GDP-ADMIN/glchat-agents/pull/483
-** NER
-*** TODO feat: download the image's own model when LLM_MODELS is not set (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/244)
-    Then update glops
-*** DONE perf: cut NER worker RAM by 34% by running ONNX without PyTorch (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/243)
-**** Kabarin tim infra
-*** TODO release the image so it apply the tracing reduction  (https://chat.google.com/room/AAQALJ1PW8g/cyCyDrOKR8w/cyCyDrOKR8w?cls=10 )
-*** TODO [GLChat NER] 2 findings - DAST scan #395
-*** TODO PERSON dipisah tab https://chat.google.com/room/AAQAYtQZtE0/a1sjC6GY-Ws/_okEaa3tb9s?cls=10
-*** TODO Make so that InvalidClientException is not recorded in sentry maybe (https://sentry.obrol.id/organizations/sentry-gdplabs/issues/159013/?environment=staging&project=16&query=is%3Aunresolved%20issue.priority%3A%5Bhigh%2C%20medium%5D&referrer=issue-stream)
-*** TODO fix tab between person name
+*** TODO Upgrade GLLM Evals in MAB
 ** MAB
 *** Recommendation
 **** Use muse-ember for LAJ LLM https://chat.google.com/room/AAQA2VsQdXg/hSE-mnfT9LM/hSE-mnfT9LM?cls=10
@@ -30,8 +13,6 @@
     2. request rotate OpenRouter Prod
     3. request rotate OpenRouter Staging
     4. untuk masing-masing orang request OpenrRouter Local
-*** TODO Resolve MAB Korikachat Beta API Key issue
-**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1264
 *** TODO rerun botanica_embedding after debugging done by DD
 *** TODO Korikachat Beta Token usage
 *** TODO Implement MAB skill
@@ -61,6 +42,41 @@
 *** TODO Explore and give recommendation for provider replacement
 *** TODO [BACKLOG] calibrate semua benchmark
 *** TODO [BACKLOG] create skill to update code review leaderboard
+
+* 16 November 2026
+** GLLM Docproc
+*** DONE [perf(gllm-docproc): cut idle RAM by ~330 MiB by dropping PyTorch from the pii extra](https://github.com/GDP-ADMIN/gl-sdk/pull/8498)
+** GLLM Evals
+*** DONE docs(gllm-evals): add Evals in pytest tutorial (https://github.com/GDP-ADMIN/gl-sdk/pull/8463)
+*** DONE GLChat Evals https://chat.google.com/room/AAQAAFd5mQk/uaDTMG4zzio/uaDTMG4zzio?cls=10
+*** DONE https://github.com/GDP-ADMIN/glchat-agents/pull/523
+*** DONE Review PR
+**** DONE test: add On Lee calendar evaluation suite (https://github.com/GDP-ADMIN/glchat-agents/pull/280)
+**** DONE https://github.com/GDP-ADMIN/gl-sdk/pull/8453
+**** DONE https://github.com/GDP-ADMIN/glchat-agents/pull/483
+** NER
+*** TODO feat: download the image's own model when LLM_MODELS is not set (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/244)
+    Then update glops
+*** DONE perf: cut NER worker RAM by 34% by running ONNX without PyTorch (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/243)
+**** Kabarin tim infra
+*** TODO release the image so it apply the tracing reduction  (https://chat.google.com/room/AAQALJ1PW8g/cyCyDrOKR8w/cyCyDrOKR8w?cls=10 )
+*** TODO [GLChat NER] 2 findings - DAST scan #395
+*** TODO PERSON dipisah tab https://chat.google.com/room/AAQAYtQZtE0/a1sjC6GY-Ws/_okEaa3tb9s?cls=10
+*** TODO Make so that InvalidClientException is not recorded in sentry maybe (https://sentry.obrol.id/organizations/sentry-gdplabs/issues/159013/?environment=staging&project=16&query=is%3Aunresolved%20issue.priority%3A%5Bhigh%2C%20medium%5D&referrer=issue-stream)
+*** TODO fix tab between person name
+** MAB
+*** DONE Resolve MAB Korikachat Beta API Key issue
+**** DONE https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1264
+*** DONE [fix(dashboard): let the sign-in buttons reach Google under the CSP's form-action 'self'](https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1273)
+*** DONE [fix(ranking): rank audio and video transcription by Dur-WER and cost, not Dur-WER alone](https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1272)
+*** DONE [fix(drive): read benchmark videos from shared drives](https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1267)
+*** DONE [test: prune 165 tests that guard no behavior, and the dead code they kept](https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1266)
+*** DONE [chore: update glchat credentials](https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1263)
+*** DONE [fix(reranker): let Jev 1.14 run the reranker benchmark through its pinned deployment](https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1258)
+** NER
+*** DONE [docs: say that an empty LLM_MODELS also uses the image default](https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/245)
+*** DONE [feat: download the image's own model when LLM_MODELS is not set](https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/244)
+*** DONE [perf: cut NER worker RAM by 34% by running ONNX without PyTorch](https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/243)
 ** Meemo
 *** TODO NEW Summarization Approach https://chat.google.com/room/AAQAYdGYTVg/u4nohhxhT_I/u4nohhxhT_I?cls=10
 *** TODO End to end testing for summarization -> actually calling model

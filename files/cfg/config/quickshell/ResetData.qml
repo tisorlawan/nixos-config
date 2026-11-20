@@ -73,7 +73,7 @@ Singleton {
         document = JSON.parse(pending.responseText);
         if (pending.status !== 200) {
           throw new Error(document && typeof document.error === "string" ? document.error
-            : "Request failed. Check the dashboard service.");
+            : "Request failed. Check cli-quota.service.");
         }
         if (mutation) {
           if (!document || document.ok !== true) throw new Error("Could not confirm the reset. Check the account before another attempt.");
@@ -88,7 +88,7 @@ Singleton {
       } catch (failure) {
         root.error = pending.status === 0 || !document
           ? mutation ? "Could not confirm the reset. Check the account before another attempt."
-            : "Could not read reset credits. Check the dashboard service."
+            : "Could not read reset credits. Check cli-quota.service."
           : failure.message;
         root.state = ResetData.Failed;
       }

@@ -30,6 +30,8 @@ Dotfiles, scripts, and Nix configuration for my machines. Clone this repository 
 
 `links.sh` deletes each destination before it links, so a file that already exists in `$HOME` is replaced. The `cliproxyapi` target also runs `~/tools/cliproxyapi/install-cliproxyapi.sh`, which installs or upgrades CLIProxyAPI and restarts it. Run `./links.sh` with no arguments to list the targets. See [SETUP.md](SETUP.md) for the one-time install steps.
 
+Home Manager installs Neovide from its `nixpkgs-unstable` pin and wraps it with nixGL. Run `neovide` to open a window with the `nvim` already on your `PATH`.
+
 ## T3 Code stable launcher
 
 Install or update the latest stable release with `~/tools/t3/install-t3.sh`, then

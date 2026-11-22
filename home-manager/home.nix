@@ -350,7 +350,7 @@ in
 
       # Graphical applications
       guiApplications = [
-        (nixGLWrapped neovide "neovide")
+        (nixGLWrapped pkgs-unstable.neovide "neovide")
         (nixGLWrapped evince "evince")
         (nixGLWrapped sioyek "sioyek")
         nautilus
@@ -408,10 +408,10 @@ in
     "x-scheme-handler/zoomphonecall" = [ "zoomus-wrapped.desktop" ];
     "x-scheme-handler/t3code" = [ "com.t3tools.T3Code.desktop" ];
     "x-scheme-handler/tern" = [ "so.stencil.tern.url.desktop" ];
-    # The Claude and ChatGPT apps register these at runtime. Listing them here
-    # keeps a switch from dropping them when it rewrites mimeapps.list.
+    # Home Manager rewrites mimeapps.list. Keep the handlers these apps register at runtime.
     "x-scheme-handler/claude" = [ "com.anthropic.Claude.desktop" ];
     "x-scheme-handler/codex" = [ "chatgpt.desktop" ];
+    "x-scheme-handler/postman" = [ "postman.desktop" ];
   };
 
   xdg.portal = {

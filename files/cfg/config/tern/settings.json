@@ -5,6 +5,7 @@
     "programs": true,
     "trail": "comet"
   },
+  "reduce_motion": "on",
   "link_click": "Command",
   "link_target": "Browser",
   "font_size": 17,

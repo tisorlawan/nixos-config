@@ -209,7 +209,7 @@ Emacs binding when missing or older than its C source."
          (line-end (+ line-beg (length line)))
          (candidate (concat file ":" line ":" (plist-get match :text))))
     (add-text-properties 0 file-end
-                         `(face consult-file consult--prefix-group ,file)
+                         `(face consult-file consult--group ,file)
                          candidate)
     (put-text-property line-beg line-end 'face 'consult-line-number candidate)
     (put-text-property 0 1 'tiso/fff-match match candidate)

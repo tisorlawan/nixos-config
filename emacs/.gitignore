@@ -16,4 +16,5 @@
 /fff/*.so
 /fff/.installed-version
 /.cache
-/straight
+/straight/*
+!/straight/versions/

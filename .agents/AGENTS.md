@@ -166,11 +166,21 @@ export UV_INDEX_GEN_AI_INTERNAL_PASSWORD="$(gcloud auth print-access-token)"
   A function reads as gathering inputs, computing the result, then using it. Keep related one-line assignments, a block of React hooks, and assertions on one result together.
   Put the blank line above a comment that opens a step, never between the comment and its line, and do not give every line its own group.
 
-## Repo Alias
-For these repo please check the directory. When i say these check the directory, branch, etc. Chek if the branch is latest.
-- glchat: ~/Documents/glchat
-- glchat-be: ~/Documents/glchat/applications/glchat-be
-- dpo: ~/Documents/glchat/applications/glchat-dpo
-- aip: ~/Documents/ai-agent-platform and ~/Documents/glaip-sdk
-- mab: ~/Documents/model-accuracy-benchmarking
-- gllm-{name}: ~/Documents/gen-ai-internal/libs/{name}
+## Repository Aliases
+
+When I reference any of the aliases below, automatically inspect the corresponding local directory before taking action:
+
+- **glchat**: `~/Documents/glchat`
+- **glchat-be**: `~/Documents/glchat/applications/glchat-be`
+- **dpo**: `~/Documents/glchat/applications/glchat-dpo`
+- **aip**: `~/Documents/ai-agent-platform` and `~/Documents/glaip-sdk`
+- **mab**: `~/Documents/model-accuracy-benchmarking`
+- **gllm-{name}**: `~/Documents/gen-ai-internal/libs/gllm-{name}`
+- **gl-{name}**: `~/Documents/gen-ai-internal/libs/gl-{name}`
+- **meemo-summarization**: `~/Documents/services-llm-service`
+
+### Required Checks
+For each referenced repository, verify:
+1. **Directory**: Confirm you are operating in the correct path.
+2. **Git state**: Check the active branch and working tree status.
+3. **Sync status**: Verify whether the current branch is up to date with the latest remote commits (warn me if it is behind).

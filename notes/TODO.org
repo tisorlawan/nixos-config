@@ -3,14 +3,21 @@
 ** TODO Logging gl-observability https://chat.google.com/room/AAQA-yhQs0Y/JUwCnbpt5GI/hB4Q_flka_0?cls=10
 ** TODO Implement https://github.com/GDP-ADMIN/gl-sdk/issues/8313
 ** TODO PII Masking Feature for GLChat Admin (Grooming Feature Request Custom PII Masking)
+** TODO email '[Djarum Feedback] User interface issue, AIP's PII masking - PII masking in agent sometimes masks the masked en'
 ** DONE GLLM Privacy -- refactor(gllm-privacy): Migrate to built-in Python logging so apps control log levels (https://github.com/GDP-ADMIN/gl-sdk/pull/8638)
 ** TODO NER -- fix: make LOG_LEVEL control the API's own logs (https://github.com/GDP-ADMIN/gdplabs-ner-api/pull/249)
 ** GLLM Evals
 *** TODO Update evals in nava etc gllm_inference-v0.6.189 (https://chat.google.com/room/AAQAE-LjMvQ/HYNGT4JirBg/5jZs3Rpq_fs?cls=10)
 *** TODO Upgrade GLLM Evals in MAB
+*** Review PR
+**** https://github.com/GDP-ADMIN/gl-sdk/pull/8675
+**** https://github.com/GDP-ADMIN/gl-sdk/pull/8692
+**** https://github.com/GDP-ADMIN/gl-sdk/pull/8697
 ** MAB
 *** Recommendation
 **** Use muse-ember for LAJ LLM https://chat.google.com/room/AAQA2VsQdXg/hSE-mnfT9LM/hSE-mnfT9LM?cls=10
+*** DONE Review PR
+**** DONE fix(transcription): return fallback string when Vertex ASR returns none (https://github.com/GDP-ADMIN/model-accuracy-benchmarking/pull/1285)
 *** TODO Handle API Key rotation
     1. request rotate OpenAI Prod (staging dan local nggak usah krn kita bisa create API key sendiri karena ada akses)
     2. request rotate OpenRouter Prod

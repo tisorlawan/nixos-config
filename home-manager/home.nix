@@ -351,6 +351,9 @@ in
       # Graphical applications
       guiApplications = [
         (nixGLWrapped pkgs-unstable.neovide "neovide")
+        # Neomacs also ships `emacs` and `emacsclient`; low priority keeps GNU Emacs on those names.
+        # It bundles Mesa's Vulkan drivers, so it needs no nixGL wrapper.
+        (lib.lowPrio inputs.neomacs.packages.${system}.default)
         (nixGLWrapped evince "evince")
         (nixGLWrapped sioyek "sioyek")
         nautilus

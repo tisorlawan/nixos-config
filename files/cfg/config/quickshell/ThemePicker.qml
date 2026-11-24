@@ -163,6 +163,65 @@ Chip {
             TapHandler { onTapped: Theme.select(option.modelData.id) }
           }
         }
+
+        Rectangle {
+          Layout.fillWidth: true
+          Layout.topMargin: 6
+          Layout.bottomMargin: 6
+          implicitHeight: 1
+          color: Theme.panelBorder
+        }
+
+        // Demo mode: the AI widget shows one account per provider.
+        Rectangle {
+          id: demoToggle
+
+          Layout.fillWidth: true
+          implicitHeight: 28
+          color: activeFocus || demoHover.hovered ? Theme.chipLight : "transparent"
+          activeFocusOnTab: true
+          Accessible.role: Accessible.CheckBox
+          Accessible.name: "Demo"
+          Accessible.checked: QuotaData.demo
+          Accessible.onPressAction: QuotaData.demo = !QuotaData.demo
+          Keys.onReturnPressed: QuotaData.demo = !QuotaData.demo
+          Keys.onSpacePressed: QuotaData.demo = !QuotaData.demo
+          Keys.onUpPressed: nextItemInFocusChain(false).forceActiveFocus()
+          Keys.onDownPressed: nextItemInFocusChain(true).forceActiveFocus()
+
+          RowLayout {
+            anchors.fill: parent
+            anchors.leftMargin: 8
+            anchors.rightMargin: 8
+            spacing: 8
+
+            Text {
+              Layout.fillWidth: true
+              text: "Demo"
+              color: Theme.text
+              font.family: Theme.fontFamily
+              font.pixelSize: Theme.fontSize
+            }
+            Rectangle {
+              implicitWidth: root.swatchWidth
+              implicitHeight: 16
+              color: QuotaData.demo ? Theme.chipBlue : "transparent"
+              border.width: 1
+              border.color: Theme.panelBorder
+
+              Text {
+                anchors.centerIn: parent
+                text: QuotaData.demo ? "On" : "Off"
+                color: QuotaData.demo ? Theme.activeText : Theme.mutedText
+                font.family: Theme.fontFamily
+                font.pixelSize: Theme.fontSize - 1
+              }
+            }
+          }
+
+          HoverHandler { id: demoHover }
+          TapHandler { onTapped: QuotaData.demo = !QuotaData.demo }
+        }
       }
     }
   }

@@ -39,6 +39,8 @@ Check the ratios with `node --test files/cfg/config/quickshell/tests/themes.test
 
 Select the brush icon in the bar to open the theme panel. Then select a theme.
 Each row shows a preview of the dark palette and of the light palette.
+The **Demo** toggle below the themes makes the AI quota panel show one account per provider, `tisorlawan@gmail.com` when the provider has it.
+Demo mode is off each time Quickshell starts.
 
 The panel runs `~/.scripts/set-theme <id>`. You can also run it from a shell.
 The script writes the theme ID to `${XDG_STATE_HOME:-~/.local/state}/theme/current` and applies the theme to these apps:
@@ -133,7 +135,7 @@ brave-browser --refresh-platform-policy --no-startup-window
 ## Account quotas
 
 Select **AI** in the bar to open the quota panel. The number shows the account count.
-The panel groups accounts by provider. Each quota row shows the limit, remaining percent, and reset countdown.
+The panel groups accounts by provider. In demo mode, the number and the panel count only the shown accounts. Each quota row shows the limit, remaining percent, and reset countdown.
 Each account also shows its reset credit count when available.
 
 The `P20` label shows the priority value from that account's auth JSON. Higher values come first within each provider.

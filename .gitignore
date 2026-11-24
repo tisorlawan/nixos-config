@@ -34,3 +34,4 @@ files/cfg/config/gtk-4.0/gtk.css
 # Tern's UI state and account lock, written into the linked ~/.config/tern.
 files/cfg/config/tern/files.json
 files/cfg/config/tern/account.lock
+emacs/staright

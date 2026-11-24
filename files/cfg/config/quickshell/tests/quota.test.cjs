@@ -60,6 +60,22 @@ test('keep account errors and distinguish zero credits from unknown credits', ()
   assert.deepEqual(Array.from(accounts, item => item.resetCredits), [0, 2, null, null]);
 });
 
+test('demo mode keeps the preferred account per provider, or else the first account', () => {
+  const groups = parse([
+    account('claude', [], { id: 'claude-work', name: 'work@example.com' }),
+    account('claude', [], { id: 'claude-main', name: 'main@example.com' }),
+    account('codex', [], { id: 'codex-other', name: 'other@example.com' }),
+    account('codex', [], { id: 'codex-second', name: 'second@example.com' })
+  ]).groups;
+
+  const demo = quota.demoGroups(groups, 'main@example.com');
+
+  assert.deepEqual(Array.from(demo, group => group.name), ['Claude', 'Codex']);
+  assert.deepEqual(Array.from(demo, group => Array.from(group.accounts, item => item.id)),
+    [['claude-main'], ['codex-other']]);
+  assert.equal(groups[0].accounts.length, 2);
+});
+
 test('reject invalid responses so the caller can retain the last successful snapshot', () => {
   for (const payload of ['null', '{}', '{', JSON.stringify({ accounts: [], generated_at: 'invalid' })]) {
     assert.throws(() => quota.parseDocument(payload));

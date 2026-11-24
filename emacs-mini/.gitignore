@@ -1,0 +1,5 @@
+# Track only the config files. Emacs and straight.el write everything else.
+/*
+!/.gitignore
+!/early-init.el
+!/init.el

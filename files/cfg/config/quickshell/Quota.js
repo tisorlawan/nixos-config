@@ -52,6 +52,15 @@ function parseDocument(text) {
   return { generatedAt: Date.parse(document.generated_at), groups: groups };
 }
 
+// Keep one account per provider: the account named preferredName, or else the first one.
+function demoGroups(groups, preferredName) {
+  return groups.map(group => {
+    const account = group.accounts.find(item => item.name === preferredName) || group.accounts[0];
+
+    return Object.assign({}, group, { accounts: account ? [account] : [] });
+  });
+}
+
 function parseCredits(document) {
   if (!document || !Array.isArray(document.credits)) {
     throw new Error("Invalid reset list.");

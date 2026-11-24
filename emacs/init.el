@@ -17,6 +17,9 @@
 ;; straight checks each package's git state on every start; this is a large
 ;; share of bootstrap cost. This config is git-managed and stable, so skip it.
 (setq straight-check-for-modifications nil)
+;; GNU Emacs and Neomacs report different `emacs-version's. A shared build
+;; directory makes each switch rebuild every package; keep one per version.
+(setq straight-use-version-specific-build-dir t)
 (let ((bootstrap-file
        (expand-file-name
         "straight/repos/straight.el/bootstrap.el"
@@ -66,8 +69,8 @@
 (defun my/reset-font ()
   "Restore the configured fonts, line spacing, and text scale."
   (interactive)
-  (setq-default line-spacing 0.05)
-  (set-face-attribute 'default nil        :family "Berkeley Mono"       :height 140)
+  (setq-default line-spacing 0.08)
+  (set-face-attribute 'default nil        :family "Berkeley Mono"       :height 130)
   (set-face-attribute 'fixed-pitch nil    :family "Aporetic Serif Mono" :height 1.0)
   (set-face-attribute 'variable-pitch nil :family "Aporetic Sans"       :height 1.0)
   (text-scale-set 0.0))
@@ -264,6 +267,20 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
   (global-set-key (kbd "C-x C-, t w") #'toggle-truncate-lines))
 
 
+(when (featurep 'neomacs)
+  (require 'neomacs-effects)
+  (setopt neomacs-window-animations-off t
+          neomacs-child-frame-animations-off t
+          neomacs-cursor-motion-enabled nil
+          neomacs-cursor-size-transition-enabled nil
+          neomacs-cursor-blink-enabled nil
+          neomacs-buffer-transition-enabled nil
+          neomacs-scroll-transition-enabled nil
+          pixel-scroll-precision-interpolate-mice nil
+          pixel-scroll-precision-interpolate-page nil
+          pixel-scroll-precision-use-momentum nil))
+
+
 (use-package which-key
   :straight nil
   :config
@@ -308,6 +325,9 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
       (my/enable-frame-transparency frame))))
 
 (use-package ef-themes
+  ;; The GNU ELPA mirror recipe copies every file, including .dir-locals.el,
+  ;; which native-comp then fails on. `:defaults' excludes it.
+  :straight (:files (:defaults))
   :config
   (my/set-theme (my/color-mode)))
 
@@ -448,10 +468,13 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
     (let ((project-list-exclude nil))
       (call-interactively #'project-remember-project)))
   :bind
-  (("C-x p a" . my/project-remember))
+  (("C-x p a" . my/project-remember)
+   :map project-prefix-map
+   ("t" . ghostel-project))
   :config
   (setq project-vc-extra-root-markers '("pyproject.toml" "Cargo.toml")
-        project-list-exclude (list (lambda (_project) t))))
+        project-list-exclude (list (lambda (_project) t)))
+  (add-to-list 'project-switch-commands '(ghostel-project "Ghostel") t))
 
 
 (use-package magit
@@ -484,19 +507,12 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
   :config
   (treemacs-follow-mode 1)
   (treemacs-filewatch-mode 1)
+  ;; The default `deferred' git mode draws a directory from cached git
+  ;; status, and the startup prefetch caps at ~100 ignored paths, so ignored
+  ;; entries show until a manual refresh. `extended' waits for each
+  ;; directory's `git status' before drawing it.
+  (treemacs-git-mode 'extended)
   (treemacs-hide-gitignored-files-mode 1)
-  ;; The gitignore prefetch runs before any project is loaded from the
-  ;; persist file, so the first render still shows ignored entries. Refresh
-  ;; once the deferred git status has filled the ignore cache.
-  (defun my/treemacs-refresh-after-cache-fill ()
-    "Refresh this Treemacs buffer once its git ignore cache is filled."
-    (let ((buffer (current-buffer)))
-      (run-with-timer 3 nil
-                      (lambda ()
-                        (when (buffer-live-p buffer)
-                          (with-current-buffer buffer
-                            (treemacs--do-refresh (current-buffer) 'all)))))))
-  (add-hook 'treemacs-mode-hook #'my/treemacs-refresh-after-cache-fill)
   (setq treemacs-show-hidden-files nil))
 
 
@@ -889,7 +905,7 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
   (setq-local indent-tabs-mode nil)
   (setq-local tab-width 2)
   (when (derived-mode-p 'typescript-ts-mode 'tsx-ts-mode)
-    (setq-local typescript-ts-mode-indent-offset 2))
+    (setq-local typescript-ts-indent-offset 2))
   (when (derived-mode-p 'js-ts-mode)
     (setq-local js-indent-level 2)))
 
@@ -934,11 +950,6 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
    (side . right)
    (window-width . 0.4)))
 
-(with-eval-after-load 'compile
-  (require 'ghostel)
-  (require 'ghostel-compile)
-  (ghostel-compile-global-mode 1))
-
 (with-eval-after-load 'cc-mode (my--bind-compilation-keys c-mode-map))
 (with-eval-after-load 'c-ts-mode (my--bind-compilation-keys c-ts-mode-map))
 (with-eval-after-load 'rust-mode (my--bind-compilation-keys rust-mode-map))
@@ -976,6 +987,12 @@ Relative to the project root when ABSOLUTE is nil, absolute otherwise."
                      :files ("lisp/*.el" "etc" "src" "vendor"
                              "build.zig" "build.zig.zon" "symbols.map"))
   :defer t
+  :init
+  ;; Inside `:init' so straight has put ghostel on `load-path' even when
+  ;; `compile' is already loaded (native-comp's log buffer loads it early).
+  (with-eval-after-load 'compile
+    (require 'ghostel-compile)
+    (ghostel-compile-global-mode 1))
   :custom
   (ghostel-module-auto-install 'ask)
   (ghostel-module-directory "~/.cache/emacs/ghostel/")

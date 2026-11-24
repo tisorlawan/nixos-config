@@ -7,7 +7,12 @@ import "Quota.js" as Quota
 Singleton {
   id: root
 
-  property var groups: []
+  // Demo mode shows one account per provider. It lives only in memory, so
+  // every launch starts with it off.
+  readonly property string demoAccount: "tisorlawan@gmail.com"
+  property bool demo: false
+  property var allGroups: []
+  readonly property var groups: demo ? Quota.demoGroups(allGroups, demoAccount) : allGroups
   property var generatedAt: null
   property string error: ""
   property var request: null
@@ -32,7 +37,7 @@ Singleton {
       if (pending.status === 200) {
         try {
           const document = Quota.parseDocument(pending.responseText);
-          root.groups = document.groups;
+          root.allGroups = document.groups;
           root.generatedAt = document.generatedAt;
           root.error = "";
         } catch (failure) {

@@ -1,3 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env bash
+# Start Emacs with the minimal config in the repository's emacs-mini directory.
+# Usage: emacs-mini [EMACS-ARGS...]
+set -euo pipefail
 
-emacs --init-directory ~/.config/emacs
+script=$(readlink -f -- "${BASH_SOURCE[0]}")
+repo=$(cd -- "$(dirname -- "$script")/../../.." && pwd)
+
+exec emacs --init-directory "$repo/emacs-mini" "$@"

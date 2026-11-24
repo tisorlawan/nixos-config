@@ -19,6 +19,8 @@
       url = "github:nix-community/emacs-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # No `follows`: Neomacs's own pinned nixpkgs matches the eval-exec.cachix.org build.
+    neomacs.url = "github:eval-exec/neomacs/v0.0.21";
   };
 
   outputs = { self, nixpkgs, nixpkgs-unstable, flake-utils, home-manager, ... }:
